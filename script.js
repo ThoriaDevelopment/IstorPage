@@ -29,6 +29,23 @@
     applyTheme(nextDark);
   });
 
+  // ── citation preview ───────────────────────────────────────────
+  // The mock answer on the landing page carries two live citations;
+  // clicking one swaps the quoted passage shown underneath.
+  document.querySelectorAll(".answer-mock").forEach(function (mock) {
+    var cites = mock.querySelectorAll(".cite");
+    var passages = mock.querySelectorAll(".am-passage");
+    cites.forEach(function (cite) {
+      cite.addEventListener("click", function () {
+        var n = cite.getAttribute("data-passage");
+        cites.forEach(function (c) { c.classList.toggle("active", c === cite); });
+        passages.forEach(function (p) {
+          p.classList.toggle("active", p.getAttribute("data-for") === n);
+        });
+      });
+    });
+  });
+
   // ── privacy rotator ────────────────────────────────────────────
   // The bar is the clock: it sweeps the full width once per interval and,
   // when it hits the end, the list advances to the next claim. Hovering
