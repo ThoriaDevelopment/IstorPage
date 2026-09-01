@@ -747,7 +747,7 @@ a { color: inherit; }
   padding: 0;
 }
 
-.faq-box h2 { text-align: left; }
+.faq-box h2 { text-align: left; margin-bottom: 2.25rem; }
 
 .faq-box details {
   margin-top: 0;

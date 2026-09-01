@@ -47,17 +47,12 @@
       {
         "@type": "Question",
         "name": "Does asking a question send my data anywhere?",
-        "acceptedAnswer": { "@type": "Answer", "text": "No. Retrieval, prompting and inference all happen on your machine. Nothing leaves it unless you trigger a fetch yourself." }
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Retrieval, prompting and inference all happen on your machine. Nothing leaves it unless you trigger a fetch yourself, and the whole library exports as a zip any time." }
       },
       {
         "@type": "Question",
         "name": "What hardware does it need?",
         "acceptedAnswer": { "@type": "Answer", "text": "A GTX 1650 class GPU runs the local roster comfortably. There is no cloud requirement, so the hardware you have is the hardware it uses." }
-      },
-      {
-        "@type": "Question",
-        "name": "Where is my data stored?",
-        "acceptedAnswer": { "@type": "Answer", "text": "In a SQLite database on your own disk. The library can export a full backup as a zip at any time." }
       },
       {
         "@type": "Question",
@@ -68,21 +63,6 @@
         "@type": "Question",
         "name": "What if my sources do not contain the answer?",
         "acceptedAnswer": { "@type": "Answer", "text": "Istor says so. It names what it could not find and what it would need, rather than producing an answer your sources do not support." }
-      },
-      {
-        "@type": "Question",
-        "name": "Can I see the model's reasoning?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Thinking streams on every answer surface while the model works, so you can follow the path behind a claim as it forms." }
-      },
-      {
-        "@type": "Question",
-        "name": "How do I move my research to another machine?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Export the library as a zip from inside the app and open it on the other machine. Everything travels in that one file." }
-      },
-      {
-        "@type": "Question",
-        "name": "Who can see my sources?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Nobody. There is no account and no server. Your research is as private as your machine." }
       }
     ]
   }
@@ -461,15 +441,11 @@
         </details>
         <details>
           <summary>Does asking a question send my data anywhere?</summary>
-          <p>No. Retrieval, prompting and inference all happen on your machine. Nothing leaves it unless you trigger a fetch yourself.</p>
+          <p>No. Retrieval, prompting and inference all happen on your machine. Nothing leaves it unless you trigger a fetch yourself, and the whole library exports as a zip any time.</p>
         </details>
         <details>
           <summary>What hardware does it need?</summary>
           <p>A GTX 1650 class GPU runs the local roster comfortably. There is no cloud requirement, so the hardware you have is the hardware it uses.</p>
-        </details>
-        <details>
-          <summary>Where is my data stored?</summary>
-          <p>In a SQLite database on your own disk. The library can export a full backup as a zip at any time.</p>
         </details>
         <details>
           <summary>Can I choose which model to use?</summary>
@@ -478,18 +454,6 @@
         <details>
           <summary>What if my sources do not contain the answer?</summary>
           <p>Istor says so. It names what it could not find and what it would need, rather than producing an answer your sources do not support.</p>
-        </details>
-        <details>
-          <summary>Can I see the model's reasoning?</summary>
-          <p>Yes. Thinking streams on every answer surface while the model works, so you can follow the path behind a claim as it forms.</p>
-        </details>
-        <details>
-          <summary>How do I move my research to another machine?</summary>
-          <p>Export the library as a zip from inside the app and open it on the other machine. Everything travels in that one file.</p>
-        </details>
-        <details>
-          <summary>Who can see my sources?</summary>
-          <p>Nobody. There is no account and no server. Your research is as private as your machine.</p>
         </details>
       </div>
     </section>
