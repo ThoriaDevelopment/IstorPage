@@ -139,23 +139,25 @@
       <p class="micro">Local model, local database, no telemetry. The only network traffic is the fetches you trigger.</p>
     </section>
 
-    <section id="grounded" class="grounded">
-      <div class="grounded-grid">
-        <div class="grounded-copy">
-          <p class="eyebrow">Grounded answers</p>
-          <h2>An answer you can check.</h2>
-          <p class="lead">
+    <section id="grounded" class="story">
+      <p class="eyebrow">Why Istor</p>
+      <h2>A research partner, not an answer machine</h2>
+
+      <div class="story-row">
+        <div class="story-copy">
+          <svg class="story-icon" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="4" y="5" width="18" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M9 11 H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="23" cy="21" r="5.5" fill="var(--canvas)" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M20.8 21 L22.4 22.6 L25.4 19.4" fill="none" stroke="var(--witness)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>An answer you can check.</h3>
+          <p>
             Most tools hand you a paragraph and hope you trust it. Istor
             answers from your own sources, and every claim carries a
             citation you can open.
           </p>
-          <p>
-            Ask about a paper and Istor quotes the passage it read. Ask
-            about a website and it points at the exact section. If your
-            sources do not contain the answer, Istor tells you so instead
-            of filling the gap with something plausible.
-          </p>
-          <p class="fine">The citations in this preview work. Try them.</p>
+          <p class="story-fine">The citations in this preview work. Try them.</p>
         </div>
         <div class="answer-mock" aria-label="Preview of a cited answer">
           <p class="am-tag">Example</p>
@@ -174,6 +176,60 @@
           <div class="am-passage" data-for="1">
             <p class="am-src">Field survey report, 2019 · page 17</p>
             <p class="am-quote">Interior plots beyond 500 metres from any edge showed no significant change in recorded richness between 2012 and 2019.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="story-row">
+        <div class="story-copy">
+          <svg class="story-icon" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="13" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M19.5 19.5 L27 27" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M9.5 13 Q11 9.5 13 13 Q15 16.5 16.5 13" fill="none" stroke="var(--witness)" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <h3>Search the idea, not the words.</h3>
+          <p>
+            Full-text search finds the exact phrase. Semantic search finds
+            the passage that means what you asked, even when the wording
+            is completely different.
+          </p>
+        </div>
+        <div class="search-mock" aria-label="Preview of a search result">
+          <p class="sm-query">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            transect methods for dawn bird counts
+          </p>
+          <div class="hit-mock">
+            <p class="am-src">Field notes, 2021 · page 3</p>
+            <p class="sm-quote">Counts followed fixed transects, beginning thirty minutes before sunrise.</p>
+            <p class="sm-tag">Matched the words</p>
+          </div>
+          <div class="hit-mock">
+            <p class="am-src">Field survey report, 2019 · page 9</p>
+            <p class="sm-quote">Transects were walked within one hour of sunrise, at a fixed pace, on three consecutive mornings each month.</p>
+            <p class="sm-tag">Matched the meaning</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="story-row">
+        <div class="story-copy">
+          <svg class="story-icon" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M4 24 L12 10 L18 18 L22 13 L28 24 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+            <circle cx="22" cy="8" r="2.2" fill="var(--witness)" stroke="none"/>
+          </svg>
+          <h3>It says when the sources run out.</h3>
+          <p>
+            Ask something your library cannot support and Istor does not
+            improvise. It names what it could not find and what it would
+            need, so you always know where the edge of your evidence is.
+          </p>
+        </div>
+        <div class="empty-mock" aria-label="Preview of an unanswered question">
+          <p class="am-q">Why did the survey stop at the eastern river?</p>
+          <div class="empty-body">
+            <p>Your sources do not say. Three papers mention the river, but none explains the decision.</p>
+            <p class="sm-tag">No answer offered</p>
           </div>
         </div>
       </div>
@@ -214,6 +270,37 @@
           <p>Every claim carries a citation. Click one and the exact passage opens beside the answer.</p>
         </article>
       </div>
+    </section>
+
+    <section id="inside" class="showcase">
+      <p class="eyebrow">Inside the notebook</p>
+      <h2>One quiet room for everything.</h2>
+      <div class="scene" aria-hidden="true">
+        <div class="sheet" id="sheet">
+          <div class="sheet-face">
+            <svg class="sheet-mark" viewBox="0 0 64 64">
+              <use href="#m-page" stroke="currentColor" stroke-width="3.6" fill="var(--canvas)"/>
+              <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+              <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+                <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+              </g>
+              <use href="#m-sclera" stroke="currentColor" stroke-width="2.4" fill="var(--canvas)"/>
+              <circle cx="29.9" cy="27.1" r="4.3" fill="var(--witness)" clip-path="url(#m-clip)"/>
+              <circle cx="30.2" cy="26.8" r="2.1" fill="var(--dot)"/>
+            </svg>
+            <div class="sheet-line w60"></div>
+            <div class="sheet-line w90"></div>
+            <div class="sheet-line w80"></div>
+            <div class="sheet-line w75"></div>
+            <div class="sheet-line w85"></div>
+            <div class="sheet-line w70"></div>
+            <div class="sheet-line w40"></div>
+          </div>
+          <p class="float-chip c1">Citation · p. 14</p>
+          <p class="float-chip c2">Citation · p. 17</p>
+        </div>
+      </div>
+      <p class="showcase-note">Your library, your model and every citation, in one window. Nothing is a tab you have to hunt for.</p>
     </section>
 
     <section id="features" class="features">

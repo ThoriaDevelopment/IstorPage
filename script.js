@@ -29,6 +29,52 @@
     applyTheme(nextDark);
   });
 
+  // ── scroll reveal ──────────────────────────────────────────────
+  // Classes are added here rather than in the HTML, so a visitor
+  // without JavaScript still sees the full page. Elements already on
+  // screen are shown without waiting for the observer.
+  if ("IntersectionObserver" in window) {
+    var targets = document.querySelectorAll(".story-row, .loop-grid > article");
+    var shown = [];
+    targets.forEach(function (el) {
+      if (el.getBoundingClientRect().top < window.innerHeight) return;
+      el.classList.add("reveal");
+      shown.push(el);
+    });
+    if (shown.length) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("on");
+          io.unobserve(entry.target);
+        });
+      }, { threshold: 0.12 });
+      shown.forEach(function (el) { io.observe(el); });
+    }
+  }
+
+  // ── the 3d page ────────────────────────────────────────────────
+  // The sheet rotates as the reader moves through its section: the
+  // scroll progress across the stage maps onto rotateX/rotateY.
+  var sheet = document.getElementById("sheet");
+  if (sheet && matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+    function pose() {
+      var r = sheet.getBoundingClientRect();
+      var p = (window.innerHeight - r.top) / (window.innerHeight + r.height);
+      p = Math.max(0, Math.min(1, p));
+      var ry = -26 + 34 * p;
+      var rx = 9 - 9 * p;
+      sheet.style.transform = "rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
+    }
+    var sheetTick = false;
+    window.addEventListener("scroll", function () {
+      if (sheetTick) return;
+      sheetTick = true;
+      requestAnimationFrame(function () { sheetTick = false; pose(); });
+    }, { passive: true });
+    pose();
+  }
+
   // ── citation preview ───────────────────────────────────────────
   // The mock answer on the landing page carries two live citations;
   // clicking one swaps the quoted passage shown underneath.
