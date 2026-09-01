@@ -79,20 +79,49 @@
   // scroll progress across the stage maps onto rotateX/rotateY.
   var sheet = document.getElementById("sheet");
   if (sheet && matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+    // The scroll progress across the section sets the base pose; the
+    // pointer (fine pointers only) leans the sheet a few degrees on
+    // top of it. Both feed the same rAF-throttled repaint.
+    var baseRX = 9, baseRY = -26;
+    var leanX = 0, leanY = 0;
+
+    function paint() {
+      sheet.style.transform = "rotateX(" + (baseRX + leanX).toFixed(2) + "deg) rotateY(" + (baseRY + leanY).toFixed(2) + "deg)";
+    }
+
     function pose() {
       var r = sheet.getBoundingClientRect();
       var p = (window.innerHeight - r.top) / (window.innerHeight + r.height);
       p = Math.max(0, Math.min(1, p));
-      var ry = -26 + 34 * p;
-      var rx = 9 - 9 * p;
-      sheet.style.transform = "rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
+      baseRY = -26 + 34 * p;
+      baseRX = 9 - 9 * p;
+      paint();
     }
+
     var sheetTick = false;
-    window.addEventListener("scroll", function () {
+    function schedule() {
       if (sheetTick) return;
       sheetTick = true;
       requestAnimationFrame(function () { sheetTick = false; pose(); });
-    }, { passive: true });
+    }
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+
+    var scene = sheet.closest(".scene");
+    if (scene && matchMedia("(pointer: fine)").matches) {
+      scene.addEventListener("mousemove", function (e) {
+        var r = scene.getBoundingClientRect();
+        leanY = ((e.clientX - r.left) / r.width - 0.5) * 7;
+        leanX = -((e.clientY - r.top) / r.height - 0.5) * 5;
+        schedule();
+      });
+      scene.addEventListener("mouseleave", function () {
+        leanX = 0;
+        leanY = 0;
+        schedule();
+      });
+    }
+
     pose();
   }
 
