@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
+  <!-- Istor · the witnessed page (canonical icon master, large slots ≥ 48 px + website)
+       Geometry: outline page · fold tint 14% · text rhythm 1+2 · centered almond eye,
+       iris/pupil one glance up-right. Re-ink via CSS variables (fallbacks = light world):
+       --mark-ink #171717 · --mark-iris #F2726F · --mark-pupil #D93A3A · dark ground lifts
+       iris/pupil to #56C0EC / #2E97F2. -->
+  <defs>
+    <path id="page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+    <path id="fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+    <path id="sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+    <clipPath id="scleraClip"><use href="#sclera"/></clipPath>
+  </defs>
+  <g transform="translate(3.5 0)">
+  <use href="#page" fill="var(--mark-paper, #FFFFFF)" stroke="var(--mark-ink, #171717)" stroke-width="3.6"/>
+  <use href="#fold" fill="var(--mark-ink, #171717)" opacity="0.14"/>
+  <g stroke="var(--mark-ink, #171717)" stroke-width="3.4" stroke-linecap="round" fill="none">
+    <path d="M21 16.6 H30"/>
+    <path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+  </g>
+  <use href="#sclera" fill="var(--mark-paper, #FFFFFF)" stroke="var(--mark-ink, #171717)" stroke-width="2.4"/>
+  <circle cx="29.9" cy="27.1" r="4.3" fill="var(--mark-iris, #F2726F)" clip-path="url(#scleraClip)"/>
+  <circle cx="30.2" cy="26.8" r="2.1" fill="var(--mark-pupil, #D93A3A)"/>
+  </g>
+</svg>

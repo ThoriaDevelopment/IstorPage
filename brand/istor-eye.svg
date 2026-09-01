@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
+  <!-- Istor · the witness (small-slot icon master, ≤ 32 px)
+       An exact ×2.8 uniform scale of the in-page eye (sclera 20×9.5 → 56×26.5,
+       outline 2.4 → 6.7), iris/pupil at 75% of the strict scale per final art
+       direction. Same variable contract as istor-page.svg. -->
+  <defs>
+    <path id="scleraBig" d="M8 32 Q32 5.4 56 32 Q32 58.6 8 32 Z"/>
+    <clipPath id="scleraBigClip"><use href="#scleraBig"/></clipPath>
+  </defs>
+  <use href="#scleraBig" fill="var(--mark-paper, #FFFFFF)" stroke="var(--mark-ink, #171717)" stroke-width="6.7"/>
+  <circle cx="35.9" cy="28.6" r="9" fill="var(--mark-iris, #F2726F)" clip-path="url(#scleraBigClip)"/>
+  <circle cx="36.8" cy="27.8" r="4.4" fill="var(--mark-pupil, #D93A3A)"/>
+</svg>
