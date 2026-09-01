@@ -17,8 +17,9 @@
   }
 
   function applyTheme(dark) {
-    if (dark) document.documentElement.setAttribute("data-theme", "dark");
-    else document.documentElement.removeAttribute("data-theme");
+    // dark is stamped directly; light is stamped too, so it beats a
+    // dark OS preference in the stylesheet
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
   }
 
   document.querySelector(".theme-toggle").addEventListener("click", function () {
@@ -28,6 +29,10 @@
     try { localStorage.setItem(KEY, nextDark ? "dark" : "light"); } catch (_) {}
     applyTheme(nextDark);
   });
+
+  // A stored choice survives the reload; "system" resolves the same
+  // way the stylesheet's media query does, with or without this script.
+  applyTheme(isDark());
 
   // ── hero entrance ──────────────────────────────────────────────
   // A short staggered rise on load, applied from here only so a

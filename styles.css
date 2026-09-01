@@ -68,9 +68,25 @@
   --g2: #3ED6C4;
 }
 
-/* explicit light beats a dark OS */
+/* the dark OS world, for visitors before (or without) the script;
+   an explicit light choice still wins */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="dark"]):not([data-theme="light"]) { }
+  :root:not([data-theme="light"]) {
+    /* grounds (dark) */
+    --canvas: #0A0A0A;
+    --subtle: #141414;
+    --ink: #EDEDED;
+    --mist: #A5A19B;
+    --hairline: #242424;
+
+    /* the witness pair (dark ground) */
+    --witness: #4DA3FF;
+    --dot: #4DA3FF;
+
+    /* gradient highlight, judged on black */
+    --g1: #4DA3FF;
+    --g2: #3ED6C4;
+  }
 }
 
 * { box-sizing: border-box; }
