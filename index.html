@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Istor: a local-first research notebook</title>
+  <meta name="description" content="Add sources, ask grounded questions, and read cited answers. Istor is a research notebook that runs entirely on your machine." />
+  <link rel="canonical" href="https://istor.fyi/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Istor: a local-first research notebook" />
+  <meta property="og:description" content="Add sources, ask grounded questions, and read cited answers. Everything runs on your machine." />
+  <meta property="og:url" content="https://istor.fyi/" />
+  <meta property="og:image" content="https://istor.fyi/brand/wordmark-dark.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="brand/istor-page.svg" />
+
+  <!-- Theme before first paint: 'system' follows the OS, stored choices win. -->
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        if (dark) document.documentElement.setAttribute("data-theme", "dark");
+        matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
+          try {
+            var p = localStorage.getItem("istor.site.theme") || "system";
+            if (p !== "system") return;
+            if (e.matches) document.documentElement.setAttribute("data-theme", "dark");
+            else document.documentElement.removeAttribute("data-theme");
+          } catch (_) {}
+        });
+      } catch (_) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="site-head">
+    <a class="brand" href="./" aria-label="Istor home">
+      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+          <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+          <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+          <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+        </defs>
+        <g transform="translate(3.5 0)">
+          <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+          <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+          <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+            <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+          </g>
+          <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+          <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+          <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+        </g>
+      </svg>
+      <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="#loop">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">FAQ</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2.5v2.4"/><path d="M12 19.2v2.4"/><path d="M2 12h2.4"/><path d="M19.6 12H22"/><path d="M4.9 4.9l1.7 1.7"/><path d="M17.4 17.4l1.7 1.7"/><path d="M19.1 4.9l-1.7 1.7"/><path d="M6.6 17.4l-1.7 1.7"/></g></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 11 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
+      <a class="cta" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Ask your sources <span class="grad">anything</span>.</h1>
+      <p class="sub">
+        Istor is a research notebook that runs on your machine. Add papers,
+        websites and notes, ask in your own words, and read answers where
+        every claim points back to the passage it came from.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download Istor</a>
+        <a class="btn btn-ghost" href="#loop">See how it works</a>
+      </div>
+      <p class="micro">Local model, local database, no telemetry. The only network traffic is the fetches you trigger.</p>
+    </section>
+
+    <section id="loop" class="loop">
+      <p class="eyebrow">The loop</p>
+      <h2>From sources to cited answers</h2>
+      <div class="loop-grid">
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M14 6 H28 L38 16 V38 A4 4 0 0 1 24 42 H14 A4 4 0 0 1 10 38 V14 A4 4 0 0 1 14 10 Z" transform="translate(-1 -1)" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M28 5 V10 A5 5 0 0 0 33 15 H38" fill="currentColor" opacity="0.14" stroke="none"/>
+            <g stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <path d="M17 13 H25"/><path d="M17 25 H31"/><path d="M17 31 H31"/>
+            </g>
+            <circle cx="33" cy="13" r="2.4" class="acc-fill" stroke="none"/>
+          </svg>
+          <h3>Add your sources</h3>
+          <p>Drop in PDFs, websites and your own notes. Istor extracts the text and keeps the originals in a library you own.</p>
+        </article>
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M8 24 Q24 8 40 24 Q24 40 8 24 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <circle cx="25" cy="22.6" r="5.4" class="acc-fill" stroke="none"/>
+            <circle cx="25.6" cy="22" r="2.6" class="ink-fill" stroke="none"/>
+          </svg>
+          <h3>Ask grounded questions</h3>
+          <p>Ask in your own words. Istor reads the library and answers from what your sources actually say.</p>
+        </article>
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M10 28 Q8 18 16 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M10 28 Q10 34 16 36 Q13 30 16 26 Q10 28 10 28 Z" class="ink-fill" stroke="none"/>
+            <circle cx="33" cy="31" r="4.4" class="acc-fill" stroke="none"/>
+          </svg>
+          <h3>Check the citations</h3>
+          <p>Every claim carries a citation. Click one and the exact passage opens beside the answer.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="privacy" class="privacy">
+      <div class="privacy-inner">
+        <p class="eyebrow">Privacy</p>
+        <h2>Your research stays yours.</h2>
+        <p class="sub">Istor runs entirely on your machine. That is a design decision, not a setting.</p>
+        <div class="rotator" tabindex="0" aria-label="What stays on your machine">
+          <ul>
+            <li class="active">
+              <h3>Local model</h3>
+              <p>Inference runs on your own hardware through open models. Nothing is sent to a server.</p>
+            </li>
+            <li>
+              <h3>Local library</h3>
+              <p>Your sources live in a SQLite database on your own disk. Back it up, copy it, carry it.</p>
+            </li>
+            <li>
+              <h3>No telemetry</h3>
+              <p>No accounts, no analytics, no usage reports. There is nothing to opt out of.</p>
+            </li>
+            <li>
+              <h3>You trigger the traffic</h3>
+              <p>The only requests Istor makes are the fetches you ask for.</p>
+            </li>
+          </ul>
+          <div class="rotor-bar" aria-hidden="true"><span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="faq">
+      <div class="faq-box">
+        <h2>We have answers to your questions</h2>
+        <details>
+          <summary>Does Istor need an internet connection?</summary>
+          <p>No. Research works fully offline. Istor only touches the network when you ask it to fetch a web source.</p>
+        </details>
+        <details>
+          <summary>What hardware does it need?</summary>
+          <p>A GTX 1650 class GPU runs the local roster comfortably. There is no cloud requirement, so the hardware you have is the hardware it uses.</p>
+        </details>
+        <details>
+          <summary>Where is my data stored?</summary>
+          <p>In a SQLite database on your own disk. The library can export a full backup as a zip at any time.</p>
+        </details>
+        <details>
+          <summary>Can I choose which model to use?</summary>
+          <p>Yes. The model roster is selectable in settings, and swapping models does not require a restart.</p>
+        </details>
+        <details>
+          <summary>Who can see my sources?</summary>
+          <p>Nobody. There is no account and no server. Your research is as private as your machine.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="ending">
+      <h2 class="grad">Start your notebook.</h2>
+      <a class="btn btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download Istor</a>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+    <nav aria-label="Footer">
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <span class="foot-note">© 2026 Thoria. No telemetry, ever.</span>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
