@@ -1,14 +1,18 @@
 ---
 name: istor-brand
-description: Istor brand law for any design or frontend work on istor.fyi — palette, mark usage, typography, motion, and copy discipline. Use when touching HTML/CSS, designing sections, choosing colors or type, or writing site copy.
+description: Istor brand law for any design or frontend work on istor.fyi — the mark, the written mark, grounds, gradients, SEO and dwell-time goals, and copy discipline. Use when touching HTML/CSS, designing sections, choosing colors or type, or writing site copy.
 ---
 
-# The Istor Brand Law
+# The Istor Website Law
 
 Istor is a local-first, private research notebook: add sources, ask grounded
-questions, read cited answers. The brand is **the witness** — a document that
-watches, and a name that grounds every claim. Everything below is locked
-unless Thoria says otherwise. Open items are marked ⚠️ at the bottom.
+questions, read cited answers. The site is istor.fyi — its job is to (1)
+explain what Istor is at a glance and (2) get the visitor to download.
+
+**The application's design laws do not govern the website.** This site has
+its own brief and is optimized for **SEO** and **dwell time** — the visitor
+should feel like they want to stay. Everything below is locked unless Thoria
+says otherwise; open items are marked ⚠️ at the bottom.
 
 ## The mark
 
@@ -36,48 +40,68 @@ unless Thoria says otherwise. Open items are marked ⚠️ at the bottom.
 - Didot runs small: nudge the font-size one notch larger than the surrounding
   scale would suggest.
 
-## Palette — paper and ink
+## Palette — grounds
 
-- Grounds come from the mark, not from a landing-page template:
-  - light: canvas `#FFFFFF`, subtle `#FAFAFA`, ink `#171717`
-  - dark: canvas `#0A0A0A`, surface `#171717`, text `#EDEDED`
-- The only accent is the witness pair (red/blue by ground). Never introduce a
-  second accent, a gradient hero, or purple.
-- Greys carry a slight warm bias (mist `#EDE9E4` territory), never pure mid-grey.
+- Light theme: white ground (`#FFFFFF` family). Dark theme: black ground
+  (`#0A0A0A` family). Both themes are first-class; neither is an afterthought.
+- Text and body copy stay near-ink on light / near-white on dark; greys may
+  carry a slight warm bias rather than pure mid-grey.
+- Beyond the mark's own colors, the site is free to introduce supporting
+  hues — the constraint is per-element: whatever sits on a ground must
+  read well **on that ground** (see the gradient law for the pattern).
 
-## Motion
+## The gradient highlight (law)
 
-- Near-zero motion is the design soul. The **only** sanctioned ambient motion
-  is the breath on the mark: opacity 0.72 → 1, ~3.6s ease-in-out, infinite.
-- Only `transform` and `opacity` are ever animated.
-- Everything animating is gated by `prefers-reduced-motion: reduce`.
-- No scroll-jacking, no parallax, no entrance-choreography.
+The hero highlight is **text**, and it uses **two colors per ground that
+blend into a good gradient**:
 
-## Design discipline
+- light theme: 2 colors that gradient well **under a white background**;
+- dark theme: 2 colors that gradient well **under a black background**.
 
-- No stock landing-page furniture: no purple-to-blue gradient hero, no
-  `rounded-lg` everywhere, no emoji section markers, no centered-everything.
-- Type scale is deliberate and small; headings get `text-wrap: balance`;
-  body text stays near 65 characters.
-- Theme is structured at the token level: complete light palette on bare
-  `:root`, dark redefinition under `[data-theme="dark"]` / `prefers-color-scheme`,
-  components read tokens only. No color may exist solely inside a theme block.
-- Wide content scrolls inside its own container; the body never scrolls sideways.
-- No telemetry of any kind, and nothing that implies otherwise.
+The two pairs are independent — they need not share a hue with each other or
+with the mark. The test is always on the actual background: contrast and
+blend quality, judged in place. Specific hues are chosen at hero design time.
+
+## Header (adopted pattern — notebook.google)
+
+- Left: the page mark + the ἵστωρ wordmark.
+- Right: a small number of plain links, then one distinct download CTA pinned
+  top-right. The CTA reads as *the* action, visually separated from the plain
+  links.
+- Quiet and unobtrusive; the page content is the show.
+
+## Feature grid (adopted pattern — notebook.google)
+
+- Three columns ("How people are using …" pattern).
+- Line-art vector icons, floating and unboxed — no tile, no rounded-square
+  badge behind them. Icons carry color to stand out on a minimal page.
+- **No visible borders anywhere** — separation comes from whitespace and the
+  background itself; no hover color-changing outlines.
+
+## SEO & dwell
+
+- Semantic HTML first: one `h1`, descriptive `title`/`meta description`,
+  canonical URL, Open Graph tags, `lang` attributes (el for ἵστωρ).
+- Fast by construction: no framework, no build step — static HTML + CSS +
+  bundled assets on GitHub Pages. Every asset pulled over the network is a
+  runtime liability; bundle locally.
+- Write for a visitor deciding whether to stay: specific claims over vague
+  slogans, breathing room over density.
 
 ## Copy
 
 - Active voice; a control says what happens ("Download", then it downloads).
 - The privacy claim is load-bearing: local model, local SQLite, only network
   traffic is the fetches the user triggers. Never soften or hedge it.
-- Specific beats clever; house style is doc-heavy and honest.
+- Specific beats clever; honest and doc-heavy.
 
 ## Structure (⚠️ open — agreed so far)
 
-- Purpose: (1) explain what Istor is at a glance, (2) get the visitor to
-  download. Both, because nobody downloads what they don't understand.
-- Stack: no framework, no build step — static HTML + CSS + bundled assets,
-  published to GitHub Pages. Download button targets
-  `ThoriaDevelopment/Istor` releases (same host the updater trusts).
-- Page structure and detailed design direction: **pending Thoria's direction**.
-  Do not invent pricing, roadmap, or screenshot sections until decided.
+- Stack: static HTML + CSS + bundled assets, published to GitHub Pages.
+  Download button targets `ThoriaDevelopment/Istor` releases (same host the
+  updater trusts).
+- Adopted sections so far: header, three-feature grid.
+- No showcase visuals.
+- Remaining page structure and detailed design direction: **pending Thoria's
+  patches**. Do not invent pricing, roadmap, or screenshot sections until
+  decided.
