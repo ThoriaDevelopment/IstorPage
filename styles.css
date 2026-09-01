@@ -521,12 +521,24 @@ a { color: inherit; }
   font-size: clamp(1.75rem, 4vw, 2.5rem);
 }
 
+/* the wrapper pins, so the note travels with the sheet instead of
+   sliding underneath it; the scene stays a plain box inside */
+.scene-wrap {
+  position: sticky;
+  top: 9vh;
+  margin: 3.5rem auto 0;
+  width: min(24rem, 100%);
+}
+
 .scene {
   perspective: 1400px;
-  width: min(24rem, 100%);
+  width: 100%;
   aspect-ratio: 4 / 5;
-  margin: 3.5rem auto 0;
 }
+
+/* scroll room for the pinned wrapper; margins on a sticky element
+   would count against its own pin range, so this is a spacer */
+.showcase-run { height: 75vh; }
 
 .sheet {
   position: relative;
@@ -535,6 +547,14 @@ a { color: inherit; }
   transform-style: preserve-3d;
   transform: rotateX(8deg) rotateY(-8deg);
   will-change: transform;
+}
+
+/* the page turns over partway through the section and shows the
+   answer face; both faces hide their backs so the swap reads clean */
+.flip {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
 }
 
 .sheet-face {
@@ -549,9 +569,38 @@ a { color: inherit; }
   align-items: flex-start;
   gap: 1.25rem;
   padding: 2.25rem 2rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.sheet-face.back {
+  transform: rotateY(180deg);
+  border-radius: 26px 6px 6px 6px;
 }
 
 .sheet-mark { width: 34%; height: auto; color: var(--ink); flex: none; }
+
+.sheet-q {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.sheet-a {
+  font-size: 0.875rem;
+  line-height: 1.8;
+  color: var(--mist);
+}
+
+.sheet-hl { color: var(--witness); }
+
+.sheet-src {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mist);
+}
 
 .sheet-line {
   height: 0.5rem;

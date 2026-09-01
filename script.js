@@ -84,17 +84,27 @@
     // top of it. Both feed the same rAF-throttled repaint.
     var baseRX = 9, baseRY = -26;
     var leanX = 0, leanY = 0;
+    var flip = document.getElementById("flip");
 
     function paint() {
       sheet.style.transform = "rotateX(" + (baseRX + leanX).toFixed(2) + "deg) rotateY(" + (baseRY + leanY).toFixed(2) + "deg)";
+      if (flip) flip.style.transform = "rotateY(" + flipDeg.toFixed(2) + "deg)";
     }
 
+    var flipDeg = 0;
+    var stage = document.getElementById("inside");
+
     function pose() {
-      var r = sheet.getBoundingClientRect();
-      var p = (window.innerHeight - r.top) / (window.innerHeight + r.height);
+      // progress runs across the whole section while the sheet stays
+      // pinned, so the reader always sees the page and its turn
+      var r = stage.getBoundingClientRect();
+      var p = (window.innerHeight - r.top) / (r.height + window.innerHeight);
       p = Math.max(0, Math.min(1, p));
-      baseRY = -26 + 34 * p;
-      baseRX = 9 - 9 * p;
+      baseRY = -30 + 16 * p;
+      baseRX = 12 - 8 * p;
+      // past the midpoint the page turns over to the answer face
+      var q = (p - 0.5) / 0.22;
+      flipDeg = Math.max(0, Math.min(1, q)) * 180;
       paint();
     }
 

@@ -256,32 +256,43 @@
     <section id="inside" class="showcase">
       <p class="eyebrow">Inside the notebook</p>
       <h2>One quiet room for everything.</h2>
-      <div class="scene" aria-hidden="true">
-        <div class="sheet" id="sheet">
-          <div class="sheet-face">
-            <svg class="sheet-mark" viewBox="0 0 64 64">
-              <use href="#m-page" stroke="currentColor" stroke-width="3.6" fill="var(--canvas)"/>
-              <use href="#m-fold" fill="currentColor" opacity="0.14"/>
-              <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
-                <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
-              </g>
-              <use href="#m-sclera" stroke="currentColor" stroke-width="2.4" fill="var(--canvas)"/>
-              <circle cx="29.9" cy="27.1" r="4.3" fill="var(--witness)" clip-path="url(#m-clip)"/>
-              <circle cx="30.2" cy="26.8" r="2.1" fill="var(--dot)"/>
-            </svg>
-            <div class="sheet-line w60"></div>
-            <div class="sheet-line w90"></div>
-            <div class="sheet-line w80"></div>
-            <div class="sheet-line w75"></div>
-            <div class="sheet-line w85"></div>
-            <div class="sheet-line w70"></div>
-            <div class="sheet-line w40"></div>
+      <div class="scene-wrap" aria-hidden="true">
+        <div class="scene">
+          <div class="sheet" id="sheet">
+          <div class="flip" id="flip">
+            <div class="sheet-face front">
+              <svg class="sheet-mark" viewBox="0 0 64 64">
+                <use href="#m-page" stroke="currentColor" stroke-width="3.6" fill="var(--canvas)"/>
+                <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+                <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+                  <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+                </g>
+                <use href="#m-sclera" stroke="currentColor" stroke-width="2.4" fill="var(--canvas)"/>
+                <circle cx="29.9" cy="27.1" r="4.3" fill="var(--witness)" clip-path="url(#m-clip)"/>
+                <circle cx="30.2" cy="26.8" r="2.1" fill="var(--dot)"/>
+              </svg>
+              <div class="sheet-line w60"></div>
+              <div class="sheet-line w90"></div>
+              <div class="sheet-line w80"></div>
+              <div class="sheet-line w75"></div>
+              <div class="sheet-line w85"></div>
+              <div class="sheet-line w70"></div>
+              <div class="sheet-line w40"></div>
+            </div>
+            <div class="sheet-face back">
+              <p class="am-tag">Answer</p>
+              <p class="sheet-q">What did the field survey find about habitat fragmentation?</p>
+              <p class="sheet-a">Species richness fell most sharply in <span class="sheet-hl">small habitat patches</span>, while core forest interiors stayed <span class="sheet-hl">relatively stable</span> across the seven-year window.</p>
+              <p class="sheet-src">Field survey report, 2019 · page 14</p>
+              <p class="float-chip c1">Citation · p. 14</p>
+              <p class="float-chip c2">Citation · p. 17</p>
+            </div>
           </div>
-          <p class="float-chip c1">Citation · p. 14</p>
-          <p class="float-chip c2">Citation · p. 17</p>
         </div>
+        </div>
+        <p class="showcase-note">Your library, your model and every citation, in one window. Nothing is a tab you have to hunt for.</p>
       </div>
-      <p class="showcase-note">Your library, your model and every citation, in one window. Nothing is a tab you have to hunt for.</p>
+      <div class="showcase-run" aria-hidden="true"></div>
     </section>
 
     <section id="features" class="features">
