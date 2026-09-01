@@ -70,13 +70,47 @@ blend quality, judged in place. Specific hues are chosen at hero design time.
   links.
 - Quiet and unobtrusive; the page content is the show.
 
-## Feature grid (adopted pattern — notebook.google)
+## Feature grid (adopted patterns — notebook.google + elicit.com)
 
-- Three columns ("How people are using …" pattern).
-- Line-art vector icons, floating and unboxed — no tile, no rounded-square
-  badge behind them. Icons carry color to stand out on a minimal page.
-- **No visible borders anywhere** — separation comes from whitespace and the
-  background itself; no hover color-changing outlines.
+Two approved feature-section layouts (final choice at structure time):
+
+- **Three columns** ("How people are using …" pattern): line-art vector
+  icons, floating and unboxed — no tile, no rounded-square badge behind them;
+  icons carry color to stand out on a minimal page.
+- **1/3–2/3 split** (Elicit pattern): left third = the explanation (eyebrow
+  pill, heading, paragraph), right two-thirds = the visual explanation.
+
+In both: **no visible borders anywhere** — separation comes from whitespace
+and the background itself; no hover color-changing outlines.
+
+## The texture band (adopted pattern — elicit.com)
+
+Exactly **one** section on the site breaks the minimal ground and goes
+**textured, artistic, editorial for a moment** — then snaps back to the
+quiet ground. This contrast of worlds is the hook; craft it deliberately and
+place it where the visitor's attention should lock (final placement at
+design time).
+
+## How color arrives (law — answerthis.io)
+
+Color beyond ink+witness enters **through texture** (grain, noise, generated
+fields) and is then picked up **as text/link colors** — never as flat colored
+boxes. When a section needs color, texture introduces it first.
+
+## Interactive elements are design (law — answerthis.io)
+
+Links, CTAs, and other interactables get the design treatment (gradient text,
+textural grounds) so they read as part of the composition — not as furniture
+bolted on top of it.
+
+## Two approved mechanisms (answerthis.io)
+
+- **Auto-rotating list with a progress line**: items rotate automatically;
+  a thin witness-colored line (red on light / blue on dark) runs as the
+  progress bar and, at its end, the list advances. Candidate for the privacy
+  band or a claims/citations section.
+- **FAQ in its own box**: the accordion sits in a distinct centered box with
+  its own heading, so the section visibly differs from the surrounding ground.
 
 ## SEO & dwell
 
@@ -100,7 +134,8 @@ blend quality, judged in place. Specific hues are chosen at hero design time.
 - Stack: static HTML + CSS + bundled assets, published to GitHub Pages.
   Download button targets `ThoriaDevelopment/Istor` releases (same host the
   updater trusts).
-- Adopted sections so far: header, three-feature grid.
+- Adopted sections so far: header, features (three-column and/or 1/3–2/3),
+  a texture band, FAQ in its own box, a gradient ending with treated CTA.
 - No showcase visuals.
 - Remaining page structure and detailed design direction: **pending Thoria's
   patches**. Do not invent pricing, roadmap, or screenshot sections until
