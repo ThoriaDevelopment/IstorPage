@@ -29,6 +29,27 @@
     applyTheme(nextDark);
   });
 
+  // ── hero entrance ──────────────────────────────────────────────
+  // A short staggered rise on load, applied from here only so a
+  // visitor without JavaScript sees the hero immediately.
+  if (matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+    var heroBits = document.querySelectorAll(".hero > *");
+    var entering = [];
+    heroBits.forEach(function (el, i) {
+      el.classList.add("enter");
+      el.style.transitionDelay = (i * 0.07).toFixed(2) + "s";
+      entering.push(el);
+    });
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        entering.forEach(function (el) {
+          el.classList.add("on");
+          el.style.transitionDelay = "";
+        });
+      });
+    });
+  }
+
   // ── scroll reveal ──────────────────────────────────────────────
   // Classes are added here rather than in the HTML, so a visitor
   // without JavaScript still sees the full page. Elements already on

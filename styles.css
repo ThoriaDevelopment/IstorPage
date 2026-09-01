@@ -483,6 +483,13 @@ a { color: inherit; }
   color: var(--mist);
 }
 
+.sm-foot {
+  margin-top: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mist);
+}
+
 .empty-body {
   margin-top: 1.25rem;
   padding: 1.125rem 1.375rem;
@@ -588,6 +595,32 @@ a { color: inherit; }
 }
 
 .acc-stroke { stroke: var(--witness); }
+
+/* ── who it is for ──────────────────────────────────────────────── */
+
+.uses { padding-top: 0; }
+
+.uses-grid { margin-top: 3rem; gap: 2rem; }
+
+.uses-grid > article {
+  padding: 2rem 1.75rem 2.25rem;
+  border: 1px solid var(--hairline);
+  border-radius: 1.25rem;
+  background: var(--subtle);
+}
+
+.uses-icon { width: 1.75rem; height: 1.75rem; color: var(--ink); }
+
+.uses-grid h3 {
+  margin-top: 1.125rem;
+  font-size: 1.1875rem;
+}
+
+.uses-grid p {
+  margin-top: 0.625rem;
+  font-size: 0.9375rem;
+  color: var(--mist);
+}
 
 /* ── privacy band ───────────────────────────────────────────────── */
 
@@ -804,6 +837,17 @@ a { color: inherit; }
 /* ── scroll reveal (classes are applied by script.js only, so the
    page renders fully with JavaScript disabled) ─────────────────── */
 
+.enter {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.enter.on {
+  opacity: 1;
+  transform: none;
+}
+
 .reveal {
   opacity: 0;
   transform: translateY(14px);
@@ -846,6 +890,11 @@ a { color: inherit; }
   html { scroll-behavior: auto; }
   .brand-mark { animation: none; }
   .sheet { transform: rotateX(8deg) rotateY(-8deg) !important; }
+  .enter {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
   .reveal {
     opacity: 1;
     transform: none;
