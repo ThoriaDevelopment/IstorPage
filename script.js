@@ -1,5 +1,5 @@
 // Istor site behaviour: theme toggle + the timed privacy rotator.
-// Deliberately small; the page must work with JS disabled.
+// Deliberately small; the page works without this script.
 
 (function () {
   "use strict";
@@ -22,59 +22,74 @@
   }
 
   document.querySelector(".theme-toggle").addEventListener("click", function () {
-    // The toggle flips the actual world on screen and stores a plain
-    // light/dark choice, so a "system" pref resolves to one of the two.
+    // The toggle flips the visible world and stores a plain light/dark
+    // choice; a "system" preference resolves to one of the two.
     var nextDark = !isDark();
     try { localStorage.setItem(KEY, nextDark ? "dark" : "light"); } catch (_) {}
     applyTheme(nextDark);
   });
 
   // ── privacy rotator ────────────────────────────────────────────
+  // The bar is the clock: it sweeps the full width once per interval and,
+  // when it hits the end, the list advances to the next claim. Hovering
+  // pauses the sweep in place; leaving resumes from where it stopped. The
+  // dots below the bar jump straight to a claim.
   var rotator = document.querySelector(".rotator");
-  if (rotator) {
-    var items = rotator.querySelectorAll("li");
-    var bar = rotator.querySelector(".rotor-bar span");
-    var INTERVAL = 4200;
-    var index = 0;
-    var timer = null;
-    var started = null;
+  if (!rotator) return;
 
-    function show(n) {
-      items[index].classList.remove("active");
-      index = n;
-      items[index].classList.add("active");
-    }
+  var items = rotator.querySelectorAll("li");
+  var tabs = rotator.querySelectorAll(".rotor-dots [role='tab']");
+  var bar = rotator.querySelector(".rotor-bar span");
+  var INTERVAL = 4200;
+  var index = 0;
+  var elapsed = 0;          // ms into the current sweep
+  var paused = false;
+  var last = null;
 
-    // The bar is the clock: when its run finishes, the list advances.
-    function tick(ts) {
-      if (!started) started = ts;
-      var t = Math.min((ts - started) / INTERVAL, 1);
-      bar.style.width = (t * 100) + "%";
-      if (t >= 1) {
-        started = ts;
+  function show(n) {
+    items[index].classList.remove("active");
+    tabs[index].classList.remove("active");
+    tabs[index].setAttribute("aria-selected", "false");
+    index = n;
+    items[index].classList.add("active");
+    tabs[index].classList.add("active");
+    tabs[index].setAttribute("aria-selected", "true");
+  }
+
+  function frame(ts) {
+    if (last === null) last = ts;
+    var delta = ts - last;
+    last = ts;
+    if (!paused) {
+      elapsed += delta;
+      if (elapsed >= INTERVAL) {
+        elapsed = 0;
         show((index + 1) % items.length);
       }
-      requestAnimationFrame(tick);
     }
-
-    function start() { requestAnimationFrame(tick); }
-
-    // Respect reduced motion: the list still rotates, the bar just does
-    // not sweep. A full bar marks the active item instead.
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      bar.style.width = "100%";
-    } else {
-      var running = false;
-      function run() { if (!running) { running = true; start(); } }
-      run();
-      // Pause while the visitor is reading up close.
-      rotator.addEventListener("mouseenter", function () { started = null; });
-      rotator.addEventListener("mouseleave", function () { started = null; if (!running) { running = true; start(); } });
-    }
-
-    rotator.addEventListener("keydown", function (e) {
-      if (e.key === "ArrowRight") { started = null; show((index + 1) % items.length); }
-      if (e.key === "ArrowLeft") { started = null; show((index - 1 + items.length) % items.length); }
-    });
+    bar.style.width = (Math.min(elapsed / INTERVAL, 1) * 100) + "%";
+    requestAnimationFrame(frame);
   }
+
+  // Reduced motion: no sweep. The bar sits full width as an active marker
+  // and the list still rotates on its own.
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    elapsed = 0;
+    bar.style.width = "100%";
+    setInterval(function () { show((index + 1) % items.length); }, INTERVAL);
+  } else {
+    requestAnimationFrame(frame);
+
+    rotator.addEventListener("mouseenter", function () { paused = true; });
+    rotator.addEventListener("mouseleave", function () { paused = false; });
+    rotator.addEventListener("focusin", function () { paused = true; });
+    rotator.addEventListener("focusout", function () { paused = false; });
+  }
+
+  tabs.forEach(function (tab, n) {
+    tab.addEventListener("click", function () {
+      elapsed = 0;
+      show(n);
+    });
+  });
 })();
