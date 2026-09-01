@@ -1,6 +1,6 @@
 ---
 name: istor-brand
-description: Istor brand law for any design or frontend work on istor.fyi — the mark, the written mark, grounds, gradients, SEO and dwell-time goals, and copy discipline. Use when touching HTML/CSS, designing sections, choosing colors or type, or writing site copy.
+description: Istor brand law for any design or frontend work on istor.fyi. Covers the mark, the written mark, grounds, gradients, SEO and dwell-time goals, and copy discipline. Use when touching HTML/CSS, designing sections, choosing colors or type, or writing site copy.
 ---
 
 # The Istor Website Law
