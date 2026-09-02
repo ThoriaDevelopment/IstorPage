@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is a context window?</title>
+  <meta name="description" content="A model's context window is everything it can read at once: your question, the passages retrieved, and the answer being written. What it bounds, how retrieval works around it, and why bigger is not automatically better." />
+  <link rel="canonical" href="https://istor.fyi/what-is-a-context-window/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is a context window?" />
+  <meta property="og:description" content="Everything a model can read at once: your question, the retrieved passages, the answer being written. What it bounds and how retrieval works around it." />
+  <meta property="og:url" content="https://istor.fyi/what-is-a-context-window/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a context window in simple terms?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It is the model's working memory. Everything the model can read at once, your question, any passages placed in front of it, and the answer it is writing, has to fit inside a fixed size measured in tokens, which are chunks of a few characters. What falls outside the window might as well not exist for that answer." }
+      },
+      {
+        "@type": "Question",
+        "name": "How does retrieval work around a small context window?",
+        "acceptedAnswer": { "@type": "Answer", "text": "By choosing what goes in. Instead of cramming a whole library or document into the window, retrieval selects the few passages most likely to bear on the question and places only those in front of the model. A small window with the right passages beats a large window full of the wrong ones, which is why retrieval quality matters more than raw context size." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is a bigger context window always better?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Larger windows cost memory and speed, which matters on local hardware, and models attend less reliably to the middle of a very long context. A moderate window with well-chosen passages is usually the better research tool than a huge one stuffed with everything. The window is a budget; what you put in it is the craft." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is a context window?</h1>
+    <p class="lede">The fixed size of what a model can read at once. It explains most of what people assume is intelligence or laziness in AI answers.</p>
+
+    <div class="capsule">
+      <p>The context window is a model's working memory: everything it can read at once, measured in tokens. Your question, the passages placed in front of it, and the answer being written all share one fixed space. What does not fit might as well not exist for that answer. Retrieval is how a small window gets used well: only the passages that matter go in, and the rest of the library stays on disk.</p>
+    </div>
+
+    <h2>The working memory of a model.</h2>
+    <p>When a model answers, it reads a block of text: your question, whatever context was added, and its own answer so far. That block is the context window, and it has a hard ceiling. Text beyond it is invisible, not compressed or remembered. This is why a model can lose the thread of a long chat, why it does not know about documents you never gave it, and why <a href="/can-local-ai-summarize-pdfs/">a two-hundred-page PDF cannot be summarized in one gulp</a>. The window is not ignorance; it is a budget.</p>
+
+    <h2>How retrieval spends the budget well.</h2>
+    <p>This constraint is exactly why <a href="/what-is-rag/">retrieval-augmented generation</a> exists. Rather than stuffing a whole library into the window, a retrieval step picks the handful of passages most relevant to your question and places only those in front of the model. The window fills with the right text instead of all the text. On local hardware this matters twice over: a larger window needs more memory and more time for every answer, so the skill is in choosing well rather than in choosing everything.</p>
+
+    <h2>Why bigger is not automatically better.</h2>
+    <p>Large windows are real and useful, but two honest caveats follow them. First, models attend less reliably in the middle of very long contexts, so what goes in is not all equally read. Second, memory and speed costs grow with the window, which is <a href="/does-local-ai-need-a-gpu/">the same memory the model itself competes for</a> on a local machine. The practical takeaway for research work is unchanged by either trend: put the right passages in a modest window, verify the claims against them, and treat the context window as the boundary that makes retrieval a discipline rather than a limitation to apologize for.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/can-local-ai-summarize-pdfs/">Can a local AI summarize PDFs?</a></li>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/does-local-ai-need-a-gpu/">Does local AI need a GPU?</a></li>
+        <li><a href="/why-ai-hallucinates-citations/">Why do AI chatbots invent citations?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
