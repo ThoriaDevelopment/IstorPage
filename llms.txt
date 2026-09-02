@@ -16,6 +16,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Can you run a research AI on a GTX 1650?](https://istor.fyi/run-research-ai-gtx-1650/): what fits on entry-level GPU hardware and how the grounding loop runs on it.
 - [Is local RAG private?](https://istor.fyi/is-local-rag-private/): what actually leaves the machine in a local retrieval loop, and the questions to ask of any tool.
 - [What is retrieval-augmented generation?](https://istor.fyi/what-is-rag/): the technique behind chat with your documents, what it fixes, what it does not, and how it runs locally.
+- [Can an AI do research with no internet?](https://istor.fyi/research-ai-offline/): what a local research AI does with the network unplugged, what it honestly cannot, and when offline is the point.
 - [What is the most private way to chat with PDFs?](https://istor.fyi/private-pdf-chat/): a checklist for private document question answering, and how Istor satisfies each item.
 
 ## Download
