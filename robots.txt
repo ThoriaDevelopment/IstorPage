@@ -1,4 +1,27 @@
+# Everything is welcome to crawl istor.fyi: search engines for
+# distribution, AI crawlers because the answers they build cite sources
+# and this site is one. The blanket allow below already permits these
+# agents; listing them makes that stance a documented decision.
+
 User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 
 Sitemap: https://istor.fyi/sitemap.xml

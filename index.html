@@ -46,49 +46,68 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Istor",
-    "operatingSystem": "Windows",
-    "applicationCategory": "BusinessApplication",
-    "description": "Add sources, ask grounded questions, and read cited answers. Istor is a research notebook that runs entirely on your machine.",
-    "downloadUrl": "https://github.com/ThoriaDevelopment/Istor/releases/latest",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
-  }
-  </script>
-  <link rel="stylesheet" href="styles.css" />
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
+    "@graph": [
       {
-        "@type": "Question",
-        "name": "Does Istor need an internet connection?",
-        "acceptedAnswer": { "@type": "Answer", "text": "No. Research works fully offline. Istor only touches the network when you ask it to fetch a web source." }
+        "@type": "Organization",
+        "@id": "https://istor.fyi/#org",
+        "name": "Thoria",
+        "url": "https://istor.fyi/",
+        "sameAs": ["https://github.com/ThoriaDevelopment"]
       },
       {
-        "@type": "Question",
-        "name": "Does asking a question send my data anywhere?",
-        "acceptedAnswer": { "@type": "Answer", "text": "No. Retrieval, prompting and inference all happen on your machine. Nothing leaves it unless you trigger a fetch yourself, and the whole library exports as a zip any time." }
+        "@type": "WebSite",
+        "@id": "https://istor.fyi/#site",
+        "url": "https://istor.fyi/",
+        "name": "Istor",
+        "publisher": { "@id": "https://istor.fyi/#org" },
+        "inLanguage": "en"
       },
       {
-        "@type": "Question",
-        "name": "What hardware does it need?",
-        "acceptedAnswer": { "@type": "Answer", "text": "A GTX 1650 class GPU runs the models comfortably. There is no cloud requirement, so the hardware you have is the hardware it uses." }
+        "@type": "SoftwareApplication",
+        "@id": "https://istor.fyi/#app",
+        "name": "Istor",
+        "operatingSystem": "Windows",
+        "applicationCategory": "BusinessApplication",
+        "description": "Add sources, ask grounded questions, and read cited answers. Istor is a research notebook that runs entirely on your machine.",
+        "downloadUrl": "https://github.com/ThoriaDevelopment/Istor/releases/latest",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "publisher": { "@id": "https://istor.fyi/#org" }
       },
       {
-        "@type": "Question",
-        "name": "Can I choose which model to use?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pick your model in settings, and a swap takes effect without a restart." }
-      },
-      {
-        "@type": "Question",
-        "name": "What if my sources do not contain the answer?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Istor says so, and names what a real answer would need. It will not produce one your sources do not support." }
+        "@type": "FAQPage",
+        "@id": "https://istor.fyi/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does Istor need an internet connection?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Research works fully offline. Istor only touches the network when you ask it to fetch a web source." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does asking a question send my data anywhere?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Retrieval, prompting and inference all happen on your machine. Nothing leaves it unless you trigger a fetch yourself, and the whole library exports as a zip any time." }
+          },
+          {
+            "@type": "Question",
+            "name": "What hardware does it need?",
+            "acceptedAnswer": { "@type": "Answer", "text": "A GTX 1650 class GPU runs the models comfortably. There is no cloud requirement, so the hardware you have is the hardware it uses." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I choose which model to use?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pick your model in settings, and a swap takes effect without a restart." }
+          },
+          {
+            "@type": "Question",
+            "name": "What if my sources do not contain the answer?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Istor says so, and names what a real answer would need. It will not produce one your sources do not support." }
+          }
+        ]
       }
     ]
   }
   </script>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 

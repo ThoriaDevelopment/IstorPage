@@ -1309,3 +1309,155 @@ a { color: inherit; }
 @media (prefers-contrast: more) and (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) { --mist: #C4C0B8; --hairline: #3A3A3A; }
 }
+/* ── sub-pages ─────────────────────────────────────────────────
+   A minimal article scaffold for the comparison and question
+   pages. It reuses the tokens, fonts and buttons above; it adds
+   only layout: a slim header bar, a centered prose measure, and
+   a footer. No scripts run here, so everything below must hold
+   with the inline theme stamp and the media queries alone. */
+
+.page-head {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.page-head-in {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-head .brand { font-size: 1.25rem; }
+
+.page-home {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--mist);
+  text-decoration: none;
+  padding: 0.5rem 0;
+}
+.page-home:hover { color: var(--ink); }
+
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 4.5rem;
+}
+
+.page h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0 0 1rem;
+  color: var(--ink);
+}
+
+.page .lede {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--mist);
+  margin: 0 0 2.5rem;
+}
+
+/* the capsule: a short answer lifted whole, placed before the detail */
+.capsule {
+  border-left: 3px solid var(--cite-ink);
+  background: var(--subtle);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 0.75rem 0.75rem 0;
+  margin: 0 0 2.75rem;
+}
+.capsule p { margin: 0; color: var(--ink); line-height: 1.65; }
+
+.page h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.25;
+  margin: 2.75rem 0 0.9rem;
+  color: var(--ink);
+}
+
+.page h3 {
+  font-size: 1.0625rem;
+  margin: 2rem 0 0.5rem;
+  color: var(--ink);
+}
+
+.page p, .page li {
+  line-height: 1.7;
+  color: var(--ink);
+  margin: 0 0 1rem;
+}
+
+.page ul, .page ol { padding-left: 1.25rem; margin: 0 0 1.25rem; }
+.page li { margin-bottom: 0.4rem; }
+
+.page a { color: var(--cite-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.page a:hover { text-decoration-thickness: 2px; }
+
+/* the side-by-side table on the comparison page */
+.page table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0 2rem;
+  font-size: 0.9375rem;
+}
+.page th, .page td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.page th {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mist);
+  font-weight: 400;
+}
+.page td:first-child { color: var(--mist); width: 30%; }
+
+.page-foot {
+  border-top: 1px solid var(--hairline);
+}
+.page-foot-in {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: var(--mist);
+}
+.page-foot-in a { color: var(--mist); text-decoration: none; padding: 0.25rem 0; }
+.page-foot-in a:hover { color: var(--ink); }
+
+/* related questions close each page, so the cluster links itself */
+.page-related {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline);
+}
+.page-related p {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin-bottom: 0.75rem;
+}
+.page-related ul { list-style: none; padding: 0; margin: 0; }
+.page-related li { margin-bottom: 0.5rem; }
+
+@media (max-width: 720px) {
+  .page-head-in, .page-foot-in { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .page { padding: 2.5rem 1.25rem 3.5rem; }
+}
