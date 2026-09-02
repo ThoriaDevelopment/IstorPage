@@ -8,6 +8,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 
 - [Home](https://istor.fyi/): what Istor is, how the research loop works, hardware and privacy facts, and the full FAQ.
 - [Istor and NotebookLM, compared](https://istor.fyi/vs-notebooklm/): a factual comparison for people weighing a cloud notebook against one that runs on their own machine.
+- [Istor and AnythingLLM, compared](https://istor.fyi/vs-anythingllm/): two open-source tools that run AI on your own documents locally, and the different bets they make.
 - [Can you run a research AI on a GTX 1650?](https://istor.fyi/run-research-ai-gtx-1650/): what fits on entry-level GPU hardware and how the grounding loop runs on it.
 - [Is local RAG private?](https://istor.fyi/is-local-rag-private/): what actually leaves the machine in a local retrieval loop, and the questions to ask of any tool.
 - [What is the most private way to chat with PDFs?](https://istor.fyi/private-pdf-chat/): a checklist for private document question answering, and how Istor satisfies each item.

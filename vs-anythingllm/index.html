@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Istor and AnythingLLM, compared</title>
+  <meta name="description" content="A factual comparison of Istor and AnythingLLM: two open-source tools that run AI on your own documents locally, and the different bets they make." />
+  <link rel="canonical" href="https://istor.fyi/vs-anythingllm/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Istor and AnythingLLM, compared" />
+  <meta property="og:description" content="Two open-source tools that run AI on your own documents locally, and the different bets they make." />
+  <meta property="og:url" content="https://istor.fyi/vs-anythingllm/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How is Istor different from AnythingLLM?",
+        "acceptedAnswer": { "@type": "Answer", "text": "AnythingLLM is a flexible, general-purpose AI application: it connects to many model providers, local or cloud, and adds agents, workspaces and platform breadth. Istor is a research notebook with one opinionated loop: a curated model roster that runs on a GTX 1650 class GPU, and a grounding gate that verifies every claim against its source and refuses when the sources do not contain an answer." }
+      },
+      {
+        "@type": "Question",
+        "name": "Are both Istor and AnythingLLM open source?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Both projects are MIT licensed and free to download. Both can also run entirely on your own machine with no data leaving it." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which tool is simpler to run on weak hardware?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Istor ships a curated three-model roster sized for a GTX 1650 class GPU, so there is nothing to configure. AnythingLLM lets you pick any model from any provider, which is more flexible but puts the sizing decision on you." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Istor and AnythingLLM, compared.</h1>
+    <p class="lede">Both are open source, both run on your own documents, and both can run entirely on your own machine. They make different bets about what a tool like this should be.</p>
+
+    <div class="capsule">
+      <p>AnythingLLM is a flexible, general-purpose AI application: it connects to many model providers, local or cloud, and adds agents, workspaces and broad platform support. Istor is a research notebook with one opinionated loop: a curated model roster sized for a GTX 1650 class GPU, and a grounding gate that verifies every claim against its source, refusing when the sources do not contain an answer. Choose by whether you want maximum flexibility or a loop you cannot accidentally configure into hallucinating.</p>
+    </div>
+
+    <h2>What AnythingLLM does well.</h2>
+    <p>AnythingLLM, by Mintplex Labs, is one of the most successful open-source AI applications there is, and the breadth is real. It runs on Windows, macOS and Linux. It connects to dozens of model providers, from Ollama and LM Studio locally to the major cloud APIs, and its desktop app ships with a built-in local engine, a CPU embedder and a bundled vector database so a first run needs no setup. Workspaces isolate knowledge per project. It has agents, dictation, meeting transcription, a developer API, and a Docker deployment with multi-user roles for teams. If the job is "talk to my documents with the model of my choice", it is an excellent answer.</p>
+
+    <h2>Where Istor differs.</h2>
+    <p>Istor is not trying to be a universal AI app. It is a research notebook, and it makes two bets that shape everything else.</p>
+    <p>The first bet is the grounding gate. In Istor, every claim in an answer is checked against the passage it cites before you see it, and when the sources do not contain the answer, the loop says so and names what a real answer would need. That refusal is a product decision, not a setting. A general-purpose tool has to keep answering; a research tool earns trust by knowing when not to.</p>
+    <p>The second bet is curation over configuration. Istor ships a three-model roster, cheap routing, accurate writing, vision for scanned pages, sized for a GTX 1650 class GPU and swapped automatically as a research turn progresses. There is no provider list to choose from, and nothing to tune. AnythingLLM's flexibility is a strength; it also means the person installing it owns the model sizing decision.</p>
+    <p>What Istor has that AnythingLLM does not aim at: the research loop itself, where web fetches happen only when you trigger them, answers cite your pages, and notes live beside the sources they came from. It is one window built around one workflow.</p>
+
+    <h2>Side by side.</h2>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col"></th><th scope="col">Istor</th><th scope="col">AnythingLLM</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>License</td><td>MIT, open source</td><td>MIT, open source</td></tr>
+        <tr><td>Runs fully local</td><td>Yes, that is the only mode</td><td>Yes, one of several modes</td></tr>
+        <tr><td>Model support</td><td>Curated roster, preconfigured</td><td>Any provider, local or cloud</td></tr>
+        <tr><td>Grounding</td><td>Hard gate: refuses when sources lack the answer</td><td>Citations in RAG answers</td></tr>
+        <tr><td>Platform</td><td>Windows</td><td>Windows, macOS, Linux, Docker</td></tr>
+        <tr><td>Agents and tools</td><td>Research fetches only</td><td>Extensive agents and MCP support</td></tr>
+        <tr><td>Multi-user</td><td>No</td><td>Yes, in the Docker deployment</td></tr>
+        <tr><td>Hardware target</td><td>GTX 1650 class GPU</td><td>Your choice of model and provider</td></tr>
+        <tr><td>Notes</td><td>Built in, beside the sources</td><td>No</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Which one fits.</h2>
+    <p>Choose AnythingLLM if you want to pick your own models, need macOS or Linux, want agents and automations, or run a shared deployment for a team. It is the more capable toolbox, and it is genuinely local when configured that way.</p>
+    <p>Choose Istor if your work is research: reading sources, asking questions, trusting the answers. The grounding gate, the curated hardware story, and the notebook workflow are one connected design, and on a GTX 1650 class machine it works out of the box.</p>
+    <p><a href="/">The full picture of Istor is on the home page.</a></p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
