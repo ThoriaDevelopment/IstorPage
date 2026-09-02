@@ -14,20 +14,23 @@
   <meta property="og:image" content="https://istor.fyi/brand/wordmark-dark.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/svg+xml" href="brand/istor-page.svg" />
+  <link rel="preload" href="assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/fraunces-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/gfs-didot.woff2" as="font" type="font/woff2" crossorigin />
 
-  <!-- Theme before first paint: 'system' follows the OS, stored choices win. -->
+  <!-- Theme before first paint: 'system' follows the OS, stored choices win.
+       Light is stamped too, so it beats a dark OS in the stylesheet. -->
   <script>
     (function () {
       try {
         var pref = localStorage.getItem("istor.site.theme") || "system";
         var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-        if (dark) document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
         matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
           try {
             var p = localStorage.getItem("istor.site.theme") || "system";
             if (p !== "system") return;
-            if (e.matches) document.documentElement.setAttribute("data-theme", "dark");
-            else document.documentElement.removeAttribute("data-theme");
+            document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
           } catch (_) {}
         });
       } catch (_) {}
