@@ -43,6 +43,20 @@
       } catch (_) {}
     })();
   </script>
+  <!-- Without JavaScript the rotator cannot rotate: the claims stack
+       into a plain list instead, and the privacy bar still fills. -->
+  <noscript>
+    <style>
+      .rotator li {
+        position: static;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        margin-bottom: 1.25rem;
+      }
+      .rotor-dots { display: none; }
+    </style>
+  </noscript>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",

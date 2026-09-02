@@ -1403,7 +1403,9 @@ a { color: inherit; }
 .page a { color: var(--cite-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 .page a:hover { text-decoration-thickness: 2px; }
 
-/* the side-by-side table on the comparison page */
+/* the side-by-side table on the comparison page; the wrap keeps a
+   320px viewport from being pushed sideways by the min-content width */
+.table-wrap { overflow-x: auto; }
 .page table {
   width: 100%;
   border-collapse: collapse;
