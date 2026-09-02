@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Can a local AI summarize PDFs?</title>
+  <meta name="description" content="Yes: a local model summarizes PDFs on your machine. The interesting part is what a summary should be: grounded, checkable against the passages it came from, and honest about length limits." />
+  <link rel="canonical" href="https://istor.fyi/can-local-ai-summarize-pdfs/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Can a local AI summarize PDFs?" />
+  <meta property="og:description" content="Yes, on your machine. What makes a summary checkable, how long documents get handled, and where length limits bite." />
+  <meta property="og:url" content="https://istor.fyi/can-local-ai-summarize-pdfs/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Can a local AI summarize a PDF?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The PDF's text is extracted on your machine and the local model condenses it, with no upload at any step. The summary quality depends on the model and how it is prompted, and a small model with the document in front of it is usually better company than a larger model working from memory." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can a local AI summarize a very long PDF?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not all at once, and that is fine. A model's context window bounds how much it can read at once, so long documents are handled in pieces: sections summarized and then the summaries themselves combined. The honest trade is that a piecewise summary can miss a connection across the whole; asking pointed questions of the full text recovers most of what a one-shot summary would lose." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I know a summary is accurate?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The same way you check any claim: against the source. A grounded summary cites the passages it condensed, so you can spot-check the claims in it with a click. A summary that cannot show you where its statements came from is a summary to be cautious with, whoever produced it." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Can a local AI summarize PDFs?</h1>
+    <p class="lede">Yes, and the interesting question is not whether but what kind: a summary you can check against the source, or one you simply have to believe.</p>
+
+    <div class="capsule">
+      <p>Yes. A local model reads the PDF's extracted text on your machine and condenses it, with no upload anywhere. Long documents are handled in sections rather than all at once, and the checkable kind of summary cites the passages it condensed, so you can verify any line of it against the source. The limits are the model's context window and the quality of the extraction, not privacy.</p>
+    </div>
+
+    <h2>What summarizing actually is.</h2>
+    <p>Extract the text, hand it to the model, and ask for the shorter version. Everything in that sentence runs locally: extraction by the tool, generation by <a href="/what-is-a-local-llm/">a model on your own hardware</a>. A small local model doing this with the full document in front of it is a genuinely useful summarizer, because the task rewards attention to the given text over breadth of world knowledge. The frontier advantage narrows when the answer must come from a fixed document.</p>
+
+    <h2>Long documents, honestly.</h2>
+    <p>Every model has a context window, and a two-hundred-page report does not fit in any of them. The standard approach is piecewise: summarize sections, then summarize the summaries, and be aware that a connection spanning distant chapters can fall between the pieces. The better habit for research is often to skip the single summary and ask pointed questions instead, since <a href="/what-is-rag/">retrieval finds the exact passages</a> that bear on what you want to know. A summary is what you read first; a question is what you ask when it matters.</p>
+
+    <h2>The difference that matters: checkability.</h2>
+    <p>Any tool can produce a fluent summary; the useful distinction is whether you can check it. A grounded summary attaches citations, line by line, to the passages it condensed, so "the paper claims X" comes with the spot where the paper says it. A verification gate then catches the classic summarizer failure, a claim slightly stronger than its source, before you ever read it. That is the difference between a summary you trust and a summary you hope is right, and it is the reason to prefer one that shows its passages over one that shows only confidence.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/local-ai-literature-review/">Can a local AI do a literature review?</a></li>
+        <li><a href="/what-formats-can-local-ai-read/">What formats can a local AI read?</a></li>
+        <li><a href="/local-ai-scanned-pdfs/">Can a local AI read scanned PDFs?</a></li>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

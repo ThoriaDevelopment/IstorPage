@@ -25,6 +25,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is the most private way to chat with PDFs?](https://istor.fyi/private-pdf-chat/): a checklist for private document question answering, and how Istor satisfies each item.
 - [Can a local AI read scanned PDFs?](https://istor.fyi/local-ai-scanned-pdfs/): local OCR and vision models read scans on your machine, and the limits of what photographs of pages give up.
 - [What formats can a local AI read?](https://istor.fyi/what-formats-can-local-ai-read/): the common research formats read on your machine, and why a tool's format list is also its upload list.
+- [Can a local AI summarize PDFs?](https://istor.fyi/can-local-ai-summarize-pdfs/): yes, on your machine; what makes a summary checkable, how long documents get handled, and where length limits bite.
 - [Why do AI chatbots invent citations?](https://istor.fyi/why-ai-hallucinates-citations/): why language models generate plausible-looking references, why retrieval alone does not fix it, and what a verification gate does.
 
 ## Download
