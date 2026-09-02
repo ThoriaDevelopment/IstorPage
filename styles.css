@@ -446,7 +446,9 @@ a { color: inherit; }
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8FA6A3;
+  /* var(--mist), never a literal: the literal failed contrast on the
+     light sheet face (2.57:1) and dodged the token swap per theme */
+  color: var(--mist);
 }
 
 .am-q {
