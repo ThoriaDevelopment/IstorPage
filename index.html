@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -171,7 +171,7 @@
           </p>
           <p class="story-fine">The citations in this preview work. Try them.</p>
         </div>
-        <div class="answer-mock" aria-label="Preview of a cited answer">
+        <div class="answer-mock" role="group" aria-label="Preview of a cited answer">
           <p class="am-tag">Example</p>
           <p class="am-q">What did the 2019 field survey find about habitat fragmentation?</p>
           <p class="am-a">
@@ -206,7 +206,7 @@
             is completely different.
           </p>
         </div>
-        <div class="search-mock" aria-label="Preview of a search result">
+        <div class="search-mock" role="group" aria-label="Preview of a search result">
           <p class="sm-query">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             transect methods for dawn bird counts
@@ -238,7 +238,7 @@
             need, so you always know where the edge of your evidence is.
           </p>
         </div>
-        <div class="empty-mock" aria-label="Preview of an unanswered question">
+        <div class="empty-mock" role="group" aria-label="Preview of an unanswered question">
           <p class="am-q">Why did the survey stop at the eastern river?</p>
           <div class="empty-body">
             <p>Your sources do not say. Three papers mention the river, but none explains the decision.</p>
@@ -469,7 +469,7 @@
         <p class="eyebrow">Privacy</p>
         <h2>Your research stays yours.</h2>
         <p class="sub">Istor runs entirely on your machine.</p>
-        <div class="rotator" tabindex="0" role="region" aria-label="What stays on your machine">
+        <section class="rotator" tabindex="0" aria-label="What stays on your machine">
           <ul>
             <li class="active">
               <h3>Local model</h3>
@@ -490,12 +490,12 @@
           </ul>
           <div class="rotor-bar" aria-hidden="true"><span></span></div>
           <div class="rotor-dots" role="group" aria-label="Choose a claim">
-            <button class="active" aria-current="true" aria-label="Show claim: local model"></button>
-            <button aria-current="false" aria-label="Show claim: local library"></button>
-            <button aria-current="false" aria-label="Show claim: no telemetry"></button>
-            <button aria-current="false" aria-label="Show claim: you trigger the traffic"></button>
+            <button class="active" type="button" aria-current="true" aria-label="Show claim: local model"></button>
+            <button type="button" aria-current="false" aria-label="Show claim: local library"></button>
+            <button type="button" aria-current="false" aria-label="Show claim: no telemetry"></button>
+            <button type="button" aria-current="false" aria-label="Show claim: you trigger the traffic"></button>
           </div>
-        </div>
+        </section>
       </div>
     </section>
 
