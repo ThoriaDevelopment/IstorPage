@@ -98,8 +98,8 @@
     <h2>The checklist.</h2>
     <p>Any tool claiming private PDF chat should clear every one of these, and you should be able to verify each yourself rather than take it on faith.</p>
     <ol>
-      <li><strong>Local inference.</strong> The model that reads and answers runs on your GPU or CPU. If the settings mention an API key, the model is not local.</li>
-      <li><strong>Local embeddings.</strong> The text extracted from the PDF is indexed on your machine. A cloud embedding service has already seen every passage, whether or not the chat is local.</li>
+      <li><strong>Local inference.</strong> The model that reads and answers runs on <a href="/run-research-ai-gtx-1650/">your GPU or CPU</a>. If the settings mention an API key, the model is not local.</li>
+      <li><strong>Local embeddings.</strong> The text extracted from the PDF is indexed on <a href="/is-local-rag-private/">your machine</a>. A cloud embedding service has already seen every passage, whether or not the chat is local.</li>
       <li><strong>No telemetry.</strong> With the app idle and nothing requested, it should contact nothing. A packet capture settles this in a minute.</li>
       <li><strong>User-triggered network only.</strong> When the tool does touch the network, because you asked it to fetch a source, the request should carry only the URL you pointed at.</li>
       <li><strong>Local storage you can take with you.</strong> The library and its index are files you can copy, back up, and delete. Not a server-side workspace.</li>

@@ -96,7 +96,7 @@
     <p>The GTX 1650 has 4 GB of VRAM. That rules out the large general-purpose models people screenshot on social media, and it does not need to rule anything else out. A 4B model that reads your sources and writes cited paragraphs is a different job from writing screenplays, and the smaller end handles it well.</p>
 
     <h2>Where each part of the loop runs.</h2>
-    <p>A research loop is not one model call. It has distinct stages, and they do not all need the GPU.</p>
+    <p>A research loop is not one model call. <a href="/what-is-rag/">It has distinct stages</a>, and they do not all need the GPU.</p>
     <p><strong>Retrieval</strong> is a database query against an index that already exists on disk. It costs milliseconds and no VRAM.</p>
     <p><strong>Embedding</strong>, turning a passage into a vector, runs on the CPU at this scale. It is fast enough that waiting for it is never the bottleneck of a research turn.</p>
     <p><strong>Inference</strong> is the GPU's job. The routing model that decides how to read a question, the summarizer that condenses fetched pages, and the writer that composes the final answer all fit in the roster described above, swapping in and out of VRAM as the turn progresses.</p>
