@@ -12,6 +12,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Istor and AnythingLLM, compared](https://istor.fyi/vs-anythingllm/): two open-source tools that run AI on your own documents locally, and the different bets they make.
 - [Istor and GPT4All, compared](https://istor.fyi/vs-gpt4all/): one built to chat on any CPU, one built to ground research answers on a modest GPU.
 - [Istor and Zotero, compared](https://istor.fyi/vs-zotero/): a reference manager organizes what you have read; a grounded local notebook reads it with you. Why they complement each other.
+- [Istor and Mendeley, compared](https://istor.fyi/vs-mendeley/): the same pairing from the Elsevier side of the reference-manager world, and what each tool's trust model means for your library.
 - [Istor and Obsidian, compared](https://istor.fyi/vs-obsidian/): a plain-text knowledge base of notes you write, and a local research notebook that reads the sources themselves. Two local-first tools, different jobs.
 - [Can a local AI do a literature review?](https://istor.fyi/local-ai-literature-review/): what a grounded local tool contributes to reviewing literature, and where the line sits.
 - [Local AI for field research](https://istor.fyi/local-ai-field-research/): the whole analysis loop offline, where ethics rules forbid uploads and coverage is unreliable.

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Istor and Mendeley, compared</title>
+  <meta name="description" content="Mendeley is a reference manager in the Elsevier ecosystem: it collects and formats sources. Istor is a local research notebook: it reads them and answers with citations. What each does, and why they are not rivals." />
+  <link rel="canonical" href="https://istor.fyi/vs-mendeley/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Istor and Mendeley, compared" />
+  <meta property="og:description" content="Mendeley organizes what you have read. Istor reads it with you. Two different jobs, one library of PDFs." />
+  <meta property="og:url" content="https://istor.fyi/vs-mendeley/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is Istor a replacement for Mendeley?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Mendeley collects and formats references; Istor reads sources and answers questions over them with citations. Neither attempts the other's job. If your bibliography pipeline runs through Mendeley, it can keep running while Istor reads the same PDF files on your machine." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Mendeley answer questions about my papers?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Mendeley's reference manager stores, annotates and formats sources. It is not built to retrieve passages or answer questions across a library. Asking what your sources collectively say about a question is the job a grounded reading tool takes on." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does my Mendeley library stay private if I add Istor?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The two tools store separately. Mendeley syncs your library through its own service, so what happens there depends on that account. Istor runs entirely on your machine with no account: point its import at the same folder of PDFs and the reading loop, embeddings and answers all stay local." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Istor and Mendeley, compared.</h1>
+    <p class="lede">Another reference manager, another comparison of two different jobs. Mendeley collects and formats what you have read; Istor reads it with you.</p>
+
+    <div class="capsule">
+      <p>Different jobs again. Mendeley is a reference manager, owned by Elsevier, that collects sources, annotates PDFs, and formats citations through its word-processor plugin. Istor is a local research notebook: it reads the sources, answers questions across all of them with every claim cited, and refuses when they do not contain the answer. The tools are complementary. Mendeley organizes what you have read; Istor reads it with you.</p>
+    </div>
+
+    <h2>What Mendeley does well.</h2>
+    <p>Mendeley has a long history in academic work and the backing of Elsevier, which puts it close to the parts of the research world many scientists already use. Its job is the reference manager's job: import sources with their metadata, keep the library organized, read and annotate PDFs inside the app, and insert citations into a document while building the bibliography automatically. A free account covers the core features, and shared collections let a lab pool references. As a system for keeping references tidy and getting them into a manuscript in the right format, it does the work.</p>
+    <p>What it is not built to do is read for you. The library is organized, but asking what the whole library says about a question has no place to land in it.</p>
+
+    <h2>Where Istor differs.</h2>
+    <p>Istor's unit of work is the question, not the reference. It imports the same PDFs, extracts and indexes the full text, and answers questions across the whole library at once, with <a href="/what-is-rag/">retrieval pulling the actual passages</a> and a verification gate checking every claim against the passage it cites before you see the answer. When the sources do not contain an answer, it refuses instead of guessing.</p>
+    <p>The trust model differs too. Mendeley syncs your library through its own service, so using it means an account and your references on Elsevier's side of the wall. Istor runs entirely on your machine with no account and no sync: the index, the reading and the answers stay on the disk, it works offline, and the library never leaves. Where Mendeley formats citations to a style guide, Istor cites passages, so every claim points to the exact spot it came from.</p>
+
+    <h2>Side by side.</h2>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col"></th><th scope="col">Istor</th><th scope="col">Mendeley</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>What it is</td><td>A grounded research notebook</td><td>A reference manager</td></tr>
+        <tr><td>Core job</td><td>Answering questions over your library, with citations</td><td>Collecting, organizing and formatting references</td></tr>
+        <tr><td>Reads your PDFs</td><td>Retrieval and grounded answers over full text</td><td>Stores and annotates them</td></tr>
+        <tr><td>Bibliography styles</td><td>No; it cites passages, not style guides</td><td>Word-processor plugin builds formatted citations</td></tr>
+        <tr><td>Sync</td><td>None, all local</td><td>Account-based sync through Mendeley's service</td></tr>
+        <tr><td>Works offline</td><td>Yes</td><td>Yes, the desktop app</td></tr>
+        <tr><td>Owner</td><td>Independent, open source</td><td>Elsevier</td></tr>
+        <tr><td>Price</td><td>Free, open source</td><td>Free account; extra storage is paid</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Which one fits.</h2>
+    <p>If your workflow already runs through Mendeley, nothing here says to abandon it. The reference pipeline, the annotations and the formatted bibliography are its job, and switching tools mid-project costs more than it returns.</p>
+    <p>If your problem is the reading, that is the gap a reference manager has always left. Keep Mendeley for the references and the manuscript, point Istor at the same folder of PDFs, and the questions get answered beside the organizing. The same pairing works with <a href="/vs-zotero/">Zotero</a>, and <a href="/local-ai-literature-review/">how the reading fits into a literature review</a> is its own page.</p>
+    <p><a href="/">The full picture of Istor is on the home page.</a></p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/vs-zotero/">Istor and Zotero, compared.</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/vs-chatgpt/">Istor and ChatGPT, compared.</a></li>
+        <li><a href="/vs-obsidian/">Istor and Obsidian, compared.</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/local-ai-literature-review/">Can a local AI do a literature review?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
