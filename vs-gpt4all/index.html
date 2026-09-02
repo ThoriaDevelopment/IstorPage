@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Istor and GPT4All, compared</title>
+  <meta name="description" content="A factual comparison of Istor and GPT4All: both open source and fully local, one built to chat on any CPU, the other built to ground research answers on a modest GPU." />
+  <link rel="canonical" href="https://istor.fyi/vs-gpt4all/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Istor and GPT4All, compared" />
+  <meta property="og:description" content="Both open source and fully local: one built to chat on any CPU, the other built to ground research answers on a modest GPU." />
+  <meta property="og:url" content="https://istor.fyi/vs-gpt4all/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How is Istor different from GPT4All?",
+        "acceptedAnswer": { "@type": "Answer", "text": "GPT4All is a general local chat application built to run on almost any CPU, with a model gallery you pick from and a LocalDocs mode for your files. Istor is a research notebook built around one gated loop: a curated model roster sized for a GTX 1650 class GPU, a hard grounding check on every claim, and an explicit refusal when the sources do not contain an answer." }
+      },
+      {
+        "@type": "Question",
+        "name": "Are both Istor and GPT4All open source?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Both projects are MIT licensed, free to download, and run entirely on your own machine with no data leaving it." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which one works without a GPU?",
+        "acceptedAnswer": { "@type": "Answer", "text": "GPT4All is designed to run on CPU alone, with modest requirements, and uses a GPU only when one is available. Istor targets a GTX 1650 class GPU and sizes its model roster to it, so a GPU is part of its expected setup." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Istor and GPT4All, compared.</h1>
+    <p class="lede">Both are open source, MIT licensed, and fully local. One is built to bring local chat to almost any computer. The other is built to ground research answers on a modest GPU.</p>
+
+    <div class="capsule">
+      <p>GPT4All, by Nomic AI, is a general local chat application: it runs on CPU alone, spans Windows, macOS and Linux, and its LocalDocs mode answers questions over your own files. Istor is a research notebook: a curated model roster sized for a GTX 1650 class GPU, a hard grounding gate that verifies every claim against its cited passage, and a refusal, not a guess, when the sources lack the answer. Pick GPT4All for broad local chat on any hardware. Pick Istor when the answers have to be checked, not just produced.</p>
+    </div>
+
+    <h2>What GPT4All does well.</h2>
+    <p>GPT4All is one of the most popular local AI projects there is, with tens of thousands of GitHub stars, and its achievement is reach. It runs on Windows, macOS and Linux, including Windows on ARM, and it needs nothing more than an ordinary Intel or AMD CPU from the last decade. There is a model gallery to download from, optional Vulkan acceleration when a GPU exists, an OpenAI-compatible local API server for developers, and a Python SDK. LocalDocs links a folder, indexes it with on-device embedding models, and shows which files informed each response. As a way to put a private model on any machine, it is an excellent answer.</p>
+
+    <h2>Where Istor differs.</h2>
+    <p>Istor narrows the ambition on purpose. It is a Windows research notebook, and the narrowing shows up in three places.</p>
+    <p>The first is the gate. GPT4All presents a model's answer, with LocalDocs noting the files behind it. Istor goes a step further: every claim in an answer is verified against the specific passage it cites before the answer is shown, and when the sources do not support one, the loop says so and names what would be needed. In a research workflow, an answer you cannot trust is worse than a refusal.</p>
+    <p>The second is the roster. GPT4All's gallery puts the choice on you: which model, which quantization, whether it fits. Istor ships three preconfigured models, cheap routing, accurate writing, and vision for scanned pages, sized for a GTX 1650 class GPU and swapped automatically as a research turn progresses. Nothing to pick, nothing to tune.</p>
+    <p>The third is the shape of the work. GPT4All is a chat window. Istor is a notebook: sources on one side, answers with citations beside them, notes living next to the passages they came from, and web fetches only when you trigger them. It optimizes for reading and checking, not conversing.</p>
+
+    <h2>Side by side.</h2>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col"></th><th scope="col">Istor</th><th scope="col">GPT4All</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>License</td><td>MIT, open source</td><td>MIT, open source</td></tr>
+        <tr><td>Runs fully local</td><td>Yes, that is the only mode</td><td>Yes, that is the design</td></tr>
+        <tr><td>Runs without a GPU</td><td>No, targets a GTX 1650 class GPU</td><td>Yes, CPU is the baseline</td></tr>
+        <tr><td>Platform</td><td>Windows</td><td>Windows, macOS, Linux, Windows ARM</td></tr>
+        <tr><td>Models</td><td>Curated roster, preconfigured</td><td>Gallery of GGUF models, your choice</td></tr>
+        <tr><td>Grounding</td><td>Hard gate: refuses when sources lack the answer</td><td>LocalDocs shows referenced files</td></tr>
+        <tr><td>Developer surface</td><td>None</td><td>Python SDK, local API server</td></tr>
+        <tr><td>Notes</td><td>Built in, beside the sources</td><td>No</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Which one fits.</h2>
+    <p>Choose GPT4All if your machine has no useful GPU, if you use macOS or Linux, if you want to pick models yourself, or if you want a local API server for your own code. It brings private local chat to hardware nothing else reaches.</p>
+    <p>Choose Istor if your machine has a GTX 1650 class GPU and your work is research: sources to read, questions to ask, answers you intend to check. The gate, the roster and the notebook are one design, and they start working the moment the app does.</p>
+    <p><a href="/">The full picture of Istor is on the home page.</a></p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/vs-anythingllm/">Istor and AnythingLLM, compared.</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
