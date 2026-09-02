@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Istor and Zotero, compared</title>
+  <meta name="description" content="Zotero is a reference manager: it collects and formats sources. Istor is a local research notebook: it reads them and answers with citations. Why the two are complementary, not rivals." />
+  <link rel="canonical" href="https://istor.fyi/vs-zotero/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Istor and Zotero, compared" />
+  <meta property="og:description" content="Zotero organizes what you have read. Istor reads it with you. How the two tools fit together instead of competing." />
+  <meta property="og:url" content="https://istor.fyi/vs-zotero/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is Istor a replacement for Zotero?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. The two do different jobs. Zotero collects and formats references, which Istor does not attempt. Istor reads your sources and answers questions over them with citations, which Zotero does not attempt. Researchers who have built a Zotero library can point Istor at the same PDF folder and get a grounded reading tool beside their bibliography." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Zotero answer questions about my papers?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Zotero's built-in PDF reader handles annotating, and its job is managing and formatting references. It is not built to retrieve passages or answer questions across your library. Reading and questioning the full text is the job Istor takes on." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use the same PDFs in both tools?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The files stay yours in both cases: point Istor's import at the same folder of PDFs your Zotero storage holds. Both tools work on your machine, and neither changes the originals." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Istor and Zotero, compared.</h1>
+    <p class="lede">This is the least adversarial comparison on the site. One tool organizes what you have read. The other reads it with you. Most serious setups want both.</p>
+
+    <div class="capsule">
+      <p>Different jobs. Zotero is a free, open-source reference manager: it collects sources, keeps their metadata tidy, and formats citations and bibliographies in thousands of styles. Istor is a local research notebook: it reads the sources, answers questions over them with every claim cited, and refuses when they do not contain the answer. The tools are complementary rather than rivals. Zotero organizes what you have read; Istor reads it with you.</p>
+    </div>
+
+    <h2>What Zotero does well.</h2>
+    <p>Zotero has been the reference manager much of academia runs on for years, and the reasons are the same as ever. It is free, open source, and built by an independent nonprofit. A browser connector grabs a source's metadata in a click; collections, tags and notes keep a growing library navigable; and its word-processor plugins insert citations and build bibliographies in thousands of citation styles. Zotero 6 and later also read and annotate PDFs directly. As a system for collecting references and turning them into a correctly formatted bibliography, it is excellent.</p>
+    <p>What it is not built to do is read for you. Ask Zotero "what do my sources say about this" and there is nothing to ask, because managing references and understanding them are different problems.</p>
+
+    <h2>Where Istor differs.</h2>
+    <p>Istor's unit of work is the question, not the reference. It imports the same PDFs and papers, extracts and indexes the full text, and then answers questions across the whole library at once, with <a href="/what-is-rag/">retrieval pulling the actual passages</a> and a verification gate checking every claim against the passage it cites before you see the answer. When the library does not contain an answer, it refuses instead of guessing.</p>
+    <p>Where you work is different too. Zotero syncs through its own servers, which is convenient and requires an account. Istor runs entirely on your machine with no account and no sync, so it works offline and the library never leaves the disk. And where Zotero formats citations to a style guide, Istor cites passages: every claim points to the exact spot in the source it came from.</p>
+
+    <h2>Side by side.</h2>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col"></th><th scope="col">Istor</th><th scope="col">Zotero</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>What it is</td><td>A grounded research notebook</td><td>A reference manager</td></tr>
+        <tr><td>Core job</td><td>Answering questions over your library, with citations</td><td>Collecting, organizing and formatting references</td></tr>
+        <tr><td>Reads your PDFs</td><td>Retrieval and grounded answers over full text</td><td>Stores and annotates them</td></tr>
+        <tr><td>Bibliography styles</td><td>No; it cites passages, not style guides</td><td>Thousands of styles, word-processor plugins</td></tr>
+        <tr><td>Sync</td><td>None, all local</td><td>Account-based sync through Zotero's servers</td></tr>
+        <tr><td>Works offline</td><td>Yes</td><td>Yes, the desktop app</td></tr>
+        <tr><td>Price</td><td>Free, open source</td><td>Free, open source; storage above a free quota is paid</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Which one fits.</h2>
+    <p>If your problem is a bibliography, Zotero is the right tool and this page is not arguing otherwise. Collect with the browser connector, format with the plugins, and let it do the job it has done for years.</p>
+    <p>If your problem is that forty PDFs are sitting in a folder nobody has time to read, that is the job Istor takes. The two compose cleanly: keep Zotero for the references and the final formatting, point Istor at the same files, and the reading happens beside the organizing. <a href="/local-ai-literature-review/">How that looks in a literature review</a> is its own page.</p>
+    <p><a href="/">The full picture of Istor is on the home page.</a></p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/vs-chatgpt/">Istor and ChatGPT, compared.</a></li>
+        <li><a href="/vs-anythingllm/">Istor and AnythingLLM, compared.</a></li>
+        <li><a href="/vs-gpt4all/">Istor and GPT4All, compared.</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/local-ai-literature-review/">Can a local AI do a literature review?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

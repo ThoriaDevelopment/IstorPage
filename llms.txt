@@ -11,6 +11,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Istor and ChatGPT, compared](https://istor.fyi/vs-chatgpt/): a general-purpose cloud assistant with frontier-scale models, and a local research notebook where documents never leave your machine.
 - [Istor and AnythingLLM, compared](https://istor.fyi/vs-anythingllm/): two open-source tools that run AI on your own documents locally, and the different bets they make.
 - [Istor and GPT4All, compared](https://istor.fyi/vs-gpt4all/): one built to chat on any CPU, one built to ground research answers on a modest GPU.
+- [Istor and Zotero, compared](https://istor.fyi/vs-zotero/): a reference manager organizes what you have read; a grounded local notebook reads it with you. Why they complement each other.
 - [Can a local AI do a literature review?](https://istor.fyi/local-ai-literature-review/): what a grounded local tool contributes to reviewing literature, and where the line sits.
 - [Local AI for field research](https://istor.fyi/local-ai-field-research/): the whole analysis loop offline, where ethics rules forbid uploads and coverage is unreliable.
 - [Writing with sources, on a local AI](https://istor.fyi/local-ai-writing-projects/): keeping the library searchable beside the draft, with citations as you write.
