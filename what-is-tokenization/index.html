@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is tokenization?</title>
+  <meta name="description" content="How a language model breaks text into pieces before reading it: what a token is, why models count in them instead of words, and what that means for speed, limits and long documents." />
+  <link rel="canonical" href="https://istor.fyi/what-is-tokenization/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is tokenization?" />
+  <meta property="og:description" content="How a model breaks text into pieces before reading it, and why models count in tokens instead of words." />
+  <meta property="og:url" content="https://istor.fyi/what-is-tokenization/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a token in simple terms?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A chunk of text a few characters long. Before a model reads anything, the text is split into these pieces and each one becomes a number the model works with. A rough rule of thumb is that one token is about three quarters of an English word, so a thousand words come to roughly thirteen hundred tokens." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do models count in tokens instead of words?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because splitting on words leaves holes. Rare words, names, numbers and other languages would each need an entry of their own, while characters alone would make sequences far too long to process. Tokens in between get full coverage: anything written can be represented, and common words still cost only one piece each." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does tokenization affect the quality of answers?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Indirectly. Everything a model reads and writes is measured in tokens, so the token count decides how much fits inside the context window and how fast an answer can be generated. Text in languages that tokenize less efficiently costs more tokens for the same content, which shortens how much of it fits in a given limit." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is tokenization?</h1>
+    <p class="lede">The step before everything else. How text becomes pieces a model can read, and why the pieces matter more than people expect.</p>
+
+    <div class="capsule">
+      <p>Tokenization is how a model breaks text into pieces before reading it. Each token is a short chunk, usually a few characters, and the model never sees letters or words directly, only the tokens they became. Every limit that governs an answer, from the size of the context window to the speed of generation, is measured in tokens, which makes this invisible step the unit of account for everything a model does.</p>
+    </div>
+
+    <h2>Pieces, not words.</h2>
+    <p>A model cannot read. It reads numbers, and tokenization is the mapping from text to those numbers. Each token is a short chunk of text, a common word in one piece, a rarer word split into parts, punctuation and spaces folded in as the scheme allows. The mapping is fixed per model: the same text always becomes the same tokens. A rough rule of thumb says one token is about three quarters of an English word, so a thousand words cost around thirteen hundred tokens, and a long research paper is a few thousand of them. This is also the unit underneath the <a href="/what-is-a-context-window/">context window</a>, which is measured in tokens, not words or pages.</p>
+
+    <h2>Why not just use words?</h2>
+    <p>Splitting on whole words leaves holes a research tool cannot afford. Names, numbers, chemical formulas, citations in other languages: a word-level scheme would meet each one as an unknown, or would need an unmanageable dictionary. Splitting on single characters goes the other way, stretching every sentence into long sequences that take longer to process. Tokens sit in between and get the useful property: anything written can be represented, common words cost one piece, and the rare or foreign text still costs only a few pieces rather than failing outright. For a library of PDFs, where terminology is dense and multilingual sources are normal, that coverage is the difference between text that can be indexed and text that cannot.</p>
+
+    <h2>What it costs you.</h2>
+    <p>Tokens are the currency of every limit a model has. The context window holds a fixed number of them, generation produces a few dozen per second on local hardware, and the memory needed grows with the count. Two practical consequences follow. First, long documents do not fit whole, which is why <a href="/can-local-ai-summarize-pdfs/">summaries of long PDFs work in sections</a> rather than in one pass. Second, text that tokenizes inefficiently, including many non-English languages, dense technical notation, pays more tokens for the same content, so the effective window is smaller than its label suggests. None of this is a reason to worry; it is a reason the budget exists.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-context-window/">What is a context window?</a></li>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/can-local-ai-summarize-pdfs/">Can a local AI summarize PDFs?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/what-is-quantization/">What is quantization?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
