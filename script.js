@@ -188,7 +188,18 @@
         steps: ["read the library · 3 sources", "compose the answer", "check every claim against its source"],
         empty: true,
         refusal: "Your sources do not say. Three papers mention the river, but none explains why the survey ended there.",
-        offer: "Fetch the survey methodology from the web?"
+        offer: "Fetch the survey methodology from the web?",
+        // the offer is a button; clicking it plays the second half of
+        // the loop, where the fetch you triggered produces a cited answer
+        fetched: {
+          q: "Why did the survey stop at the eastern river?",
+          steps: ["you triggered the fetch · 1 source from the web", "compose the answer", "check every claim against its source"],
+          a: ["The methodology note says the survey ", { hl: "ended at the eastern river because the east-bank access permit was still pending" }, ", and the team chose to close the season rather than wait."],
+          cites: [
+            { n: "Survey methodology (fetched) · p. 2", quote: "Fieldwork on the east bank was suspended pending the access permit; rather than delay the season, the survey concluded at the eastern river." },
+            { n: "Field notes, 2021 · p. 8", quote: "A return to the east bank was planned once the permit cleared, but the project ended before the next season." }
+          ]
+        }
       }
     ];
 
@@ -245,13 +256,23 @@
         frag.appendChild(box);
         t += 450;
 
-        var offer = demoEl("p", "tp-offer");
+        // The offer is a real button when a follow-through exists, so
+        // clicking it can play the second half of the loop; otherwise
+        // it stays a preview line.
+        var offer = demoEl(d.fetched ? "button" : "p", "tp-offer" + (d.fetched ? " tp-offer-btn" : ""));
+        if (d.fetched) offer.type = "button";
         var stroke = demoEl("span", "acc-stroke");
         stroke.textContent = "→";
         offer.appendChild(stroke);
         offer.appendChild(document.createTextNode(d.offer));
         stageIn(offer, animate ? t : 0);
         frag.appendChild(offer);
+
+        if (d.fetched) {
+          offer.addEventListener("click", function () {
+            renderDemo(d.fetched, !reduce);
+          });
+        }
       } else {
         var answer = demoEl("p", "tp-a");
         d.a.forEach(function (part) {

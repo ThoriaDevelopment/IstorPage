@@ -696,6 +696,21 @@ a { color: inherit; }
 
 .tp-offer .acc-stroke { margin-right: 0.375rem; font-family: var(--font-mono); stroke: #56C0EC; }
 
+/* when the offer is a real button (the third demo), it reads as a
+   control: reset the browser button chrome, brighten on hover */
+.tp-offer-btn {
+  display: block;
+  padding: 0.25rem 0;
+  background: none;
+  border: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s var(--ease-out);
+}
+.tp-offer-btn:hover { color: #F2F1EE; }
+
 .tp-chips {
   display: flex;
   flex-wrap: wrap;
