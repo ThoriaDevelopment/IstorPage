@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Why do AI chatbots invent citations?</title>
+  <meta name="description" content="Because a language model writes text that looks like a citation, it does not look one up. Why retrieval alone does not fix it, and what a real verification gate does instead." />
+  <link rel="canonical" href="https://istor.fyi/why-ai-hallucinates-citations/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Why do AI chatbots invent citations?" />
+  <meta property="og:description" content="A model writes text shaped like a citation; it does not look one up. Why retrieval alone does not fix it, and what a verification gate does." />
+  <meta property="og:url" content="https://istor.fyi/why-ai-hallucinates-citations/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Why do AI chatbots make up citations?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because a language model is trained to produce text that looks right, not to look things up. A citation is a pattern of author, title and year, and the model can generate that pattern fluently whether or not the source exists. Confident tone is a property of the writing, not evidence that anything was checked." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does RAG stop hallucinated citations?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Partly. Retrieval gives the model real passages to work from, which removes the need to invent a source from nothing. But the model can still misdescribe a passage, blend two sources into one, or state more than the passage supports. The remaining fix is a verification step that checks each claim against the passage it cites." }
+      },
+      {
+        "@type": "Question",
+        "name": "How can I tell if an AI answer is really sourced?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Click the citations. A real one opens the passage it came from, and the passage says what the answer says it says. If citations are plain text with nothing behind them, or if they lead to pages that do not contain the claim, the answer was not grounded, however confident it sounds." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Why do AI chatbots invent citations?</h1>
+    <p class="lede">Every researcher who has asked a chatbot for sources has met the invented reference. It looks right, it is formatted perfectly, and it does not exist.</p>
+
+    <div class="capsule">
+      <p>Because a language model writes text shaped like a citation; it does not look one up. Trained to produce plausible text, it can generate a convincing author, title and year whether or not the source exists. Retrieval fixes half of this by giving the model real passages to read. The other half needs a gate: every claim checked against the passage it cites, and a refusal when the sources contain no answer.</p>
+    </div>
+
+    <h2>Why models invent sources.</h2>
+    <p>A language model has no index of the world to consult. It has a statistical memory of what text tends to follow other text, and "the study, published in a journal, found" is a pattern it has seen many times. So it continues the pattern. The result is not a lie in any useful sense; there is no intent behind it. It is a sentence shaped exactly like a citation, generated with the same ease as any other sentence. That is also why the invented ones feel so credible: the fluency is real, only the referent is missing.</p>
+
+    <h2>Why retrieval alone does not fix it.</h2>
+    <p><a href="/what-is-rag/">Retrieval-augmented generation</a> changes the setup: instead of answering from memory, the model is handed actual passages from your documents and asked to answer from those. The invented-source problem mostly disappears, because the model now has real material to cite. What does not disappear is the accuracy problem. A model can still quote a passage slightly beyond what it says, merge two authors into one claim, or cite the right document for the wrong sentence. The answer is grounded in real sources and still partly wrong.</p>
+
+    <h2>What actually fixes it.</h2>
+    <p>The fix is structural, not a matter of asking the model nicely. After the model writes its answer, a separate verification pass compares each claim against the exact passage the answer attaches to it. Claims the passage does not support get removed or rewritten; a question the sources cannot answer gets a refusal instead of a guess. That gate is the difference between an answer that carries citations and an answer that earns them. You can see it in any grounded tool by doing one thing: click the citation. A real one opens the passage, and the passage says what the answer said it would. That test works on <a href="/vs-chatgpt/">cloud assistants</a> and local ones alike, and it is the first thing to run on any tool before it gets to touch your research.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/vs-chatgpt/">Istor and ChatGPT, compared.</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/research-ai-offline/">Can an AI do research with no internet?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
