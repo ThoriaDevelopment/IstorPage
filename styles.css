@@ -49,6 +49,9 @@
   --font-sans: "Inter", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  /* every entrance on the page leaves through this one curve */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :root[data-theme="dark"] {
@@ -421,6 +424,7 @@ a { color: inherit; }
   font: inherit;
   color: #56C0EC;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .cite:hover,
@@ -435,7 +439,16 @@ a { color: inherit; }
   background: rgba(255, 255, 255, 0.045);
 }
 
-.am-passage.active { display: block; }
+/* Re-showing a passage restarts this, so swaps read as one motion
+   instead of a hard cut. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+.am-passage.active {
+  display: block;
+  animation: rise-in 0.35s var(--ease-out);
+}
 
 .am-src {
   font-family: var(--font-mono);
@@ -649,6 +662,7 @@ a { color: inherit; }
   letter-spacing: 0.06em;
   color: #8FA6A3;
   cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .tp-chip:hover { border-color: rgba(86, 192, 236, 0.5); color: #56C0EC; }
@@ -664,7 +678,7 @@ a { color: inherit; }
 .tp-anim {
   opacity: 0;
   transform: translateY(6px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
+  transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
 }
 
 .tp-anim.on { opacity: 1; transform: none; }
@@ -823,7 +837,7 @@ a { color: inherit; }
   border: 1px solid var(--hairline);
   border-radius: 1.25rem;
   background: var(--subtle);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
 }
 
 .uses-grid > article:hover {
@@ -902,7 +916,7 @@ a { color: inherit; }
   inset: 0;
   opacity: 0;
   transform: translateY(6px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
+  transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
   pointer-events: none;
 }
 
@@ -1066,7 +1080,7 @@ a { color: inherit; }
 .enter {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
 }
 
 .enter.on {
@@ -1077,7 +1091,7 @@ a { color: inherit; }
 .reveal {
   opacity: 0;
   transform: translateY(14px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
 }
 
 .reveal.on {
@@ -1133,6 +1147,7 @@ a { color: inherit; }
     transform: none;
   }
   .rotor-bar span { transition: none; }
+  .am-passage.active { animation: none; }
   .tp-anim {
     opacity: 1;
     transform: none;
