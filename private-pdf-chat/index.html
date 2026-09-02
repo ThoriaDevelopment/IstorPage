@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is the most private way to chat with PDFs?</title>
+  <meta name="description" content="A checklist for asking questions of PDFs without uploading them: local inference, local embeddings, no telemetry, user-triggered network only. And how Istor satisfies each item." />
+  <link rel="canonical" href="https://istor.fyi/private-pdf-chat/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is the most private way to chat with PDFs?" />
+  <meta property="og:description" content="Local inference, local embeddings, no telemetry, user-triggered network only. A checklist, and how Istor satisfies each item." />
+  <meta property="og:url" content="https://istor.fyi/private-pdf-chat/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the most private way to chat with PDFs?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Run the whole pipeline on your own machine: a locally served language model, local embeddings, local storage, and no telemetry. The moment a PDF is uploaded to any web service, privacy depends on that service's promises. The moment it stays on disk and the model comes to it, privacy depends only on your own hardware." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I have to upload PDFs to use an AI on them?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Tools that run a local model, such as Istor, read the PDF from your disk, extract and index its text locally, and answer questions with a model running on your GPU. Nothing is uploaded at any point." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can scanned PDFs be searched privately?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, if the OCR also runs locally. Istor uses the OCR engine built into Windows for scanned pages, so a scan never leaves the machine to be read." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is the most private way to chat with PDFs?</h1>
+    <p class="lede">Most tools answer this by asking you to trust their servers. There is a better arrangement, and it has a short checklist.</p>
+
+    <div class="capsule">
+      <p>Run the whole pipeline on your own machine: a locally served language model, local embeddings, local storage, and no telemetry. The moment a PDF is uploaded to any web service, privacy depends on that service's promises. The moment it stays on disk and the model comes to it, privacy depends only on your own hardware, which you can verify.</p>
+    </div>
+
+    <h2>Why uploads are the weak point.</h2>
+    <p>A web tool that chats with PDFs has to read them somewhere, and that somewhere is its server. Your contract with it is a privacy policy. Even an honest policy can be subject to legal process, a breach, or a change of terms, and after any of those the document is out. Once a confidential PDF has been uploaded, you cannot un-upload it.</p>
+    <p>The alternative inverts the arrangement. Instead of sending your document to the model, you run the model where the document already is. The PDF never moves.</p>
+
+    <h2>The checklist.</h2>
+    <p>Any tool claiming private PDF chat should clear every one of these, and you should be able to verify each yourself rather than take it on faith.</p>
+    <ol>
+      <li><strong>Local inference.</strong> The model that reads and answers runs on your GPU or CPU. If the settings mention an API key, the model is not local.</li>
+      <li><strong>Local embeddings.</strong> The text extracted from the PDF is indexed on your machine. A cloud embedding service has already seen every passage, whether or not the chat is local.</li>
+      <li><strong>No telemetry.</strong> With the app idle and nothing requested, it should contact nothing. A packet capture settles this in a minute.</li>
+      <li><strong>User-triggered network only.</strong> When the tool does touch the network, because you asked it to fetch a source, the request should carry only the URL you pointed at.</li>
+      <li><strong>Local storage you can take with you.</strong> The library and its index are files you can copy, back up, and delete. Not a server-side workspace.</li>
+    </ol>
+
+    <h2>How Istor clears each item.</h2>
+    <p>Istor is a Windows application built around this exact list. PDFs are read from disk, their text extracted locally, and scanned pages go through the OCR engine that ships with Windows, so even a scan is read on your own hardware. Embedding and retrieval run locally, the language models are served on your GPU, and the app makes zero network requests unless you trigger a fetch yourself. The library is a SQLite file in your app-data folder, and the whole thing exports as a zip.</p>
+    <p>One consequence of the local design is worth knowing: when your sources do not contain the answer, Istor says so instead of improvising. Every claim in an answer carries a citation back to the passage it came from, so you can check it.</p>
+    <p><a href="/">The rest of what Istor does is on the home page.</a></p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

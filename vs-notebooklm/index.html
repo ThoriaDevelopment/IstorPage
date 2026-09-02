@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Istor and NotebookLM, compared</title>
+  <meta name="description" content="A factual comparison of Istor and NotebookLM: where your documents are processed, what hardware you need, and how citations work in each." />
+  <link rel="canonical" href="https://istor.fyi/vs-notebooklm/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Istor and NotebookLM, compared" />
+  <meta property="og:description" content="Where your documents are processed, what hardware you need, and how citations work in each." />
+  <meta property="og:url" content="https://istor.fyi/vs-notebooklm/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the main difference between Istor and NotebookLM?",
+        "acceptedAnswer": { "@type": "Answer", "text": "NotebookLM is a cloud service: your sources are uploaded to and processed on Google's infrastructure, and you sign in with a Google account. Istor runs entirely on your own Windows machine, so your documents never leave it and no account exists." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is Istor free like NotebookLM?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Istor is free and open source. The difference is where the compute comes from: NotebookLM runs on Google's servers, while Istor runs on the hardware you already own, a GTX 1650 class GPU is enough." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Istor work without an internet connection?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Research works fully offline. Istor only touches the network when you ask it to fetch a web source." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Istor and NotebookLM, compared.</h1>
+    <p class="lede">Both tools answer questions against the documents you give them. The difference is where that happens, and what you have to trust for it to work.</p>
+
+    <div class="capsule">
+      <p>NotebookLM is a cloud service from Google: you upload sources, and they are processed on Google's infrastructure under a Google account. Istor is a Windows application that runs the same kind of grounded question answering entirely on your own machine, with no account and no upload. If your sources are confidential, that is the whole decision.</p>
+    </div>
+
+    <h2>What NotebookLM does well.</h2>
+    <p>NotebookLM is a genuinely good product, and this page is not here to pretend otherwise. It grounds its answers in the sources you upload instead of answering from thin air, which is the approach Istor is built around too. Its audio overviews turn a stack of documents into something you can listen to, which nothing in Istor attempts. It runs on Google's hardware, so an old laptop works as well as a new one. It is free, polished, and integrated with the Google account most people already have. For public material and low-sensitivity work, it is a reasonable choice.</p>
+
+    <h2>Where Istor differs.</h2>
+    <p>The difference is not a feature list. It is where the work happens and who sees it.</p>
+    <p>NotebookLM processes your documents on Google's side. That is not a criticism, it is how a cloud service works, but it does mean the document leaves your computer before any answer comes back. Istor's retrieval, prompting and inference all run on your machine. Nothing leaves it unless you ask Istor to fetch a web source, and even then only the URL you pointed at goes out.</p>
+    <p>There is no account in Istor, because there is no server to sign into. Your library is a SQLite file in your app-data folder, and the whole thing exports as a zip whenever you want a copy.</p>
+    <p>The cost of that privacy is hardware. Istor needs a GPU to run its models, though a modest one: a GTX 1650 class card runs the roster comfortably, which is the point. NotebookLM needs nothing but a browser, because Google's machines do the work.</p>
+
+    <h2>Side by side.</h2>
+    <table>
+      <thead>
+        <tr><th scope="col"></th><th scope="col">Istor</th><th scope="col">NotebookLM</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Where sources are processed</td><td>On your machine</td><td>On Google's infrastructure</td></tr>
+        <tr><td>Account required</td><td>None</td><td>Google account</td></tr>
+        <tr><td>Works offline</td><td>Yes, research included</td><td>No, it is a web service</td></tr>
+        <tr><td>Hardware</td><td>GTX 1650 class GPU or better</td><td>Any browser</td></tr>
+        <tr><td>Citations</td><td>Every claim points back to its source passage</td><td>Answers cite their sources</td></tr>
+        <tr><td>Open source</td><td>Yes</td><td>No</td></tr>
+        <tr><td>Price</td><td>Free</td><td>Free tier</td></tr>
+        <tr><td>Platform</td><td>Windows application</td><td>Web</td></tr>
+        <tr><td>Audio overviews</td><td>No</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Which one fits.</h2>
+    <p>Choose NotebookLM if your sources are not sensitive, you want to work from a browser or share notebooks with a team, and you would rather use Google's hardware than own any. It is good at what it does.</p>
+    <p>Choose Istor if the documents are yours alone: client files, unpublished research, medical records, legal work, a thesis before it is submitted. Choose it too if your connection is unreliable, because research that works offline keeps working. And if a GTX 1650 is the GPU you have, it is enough.</p>
+    <p><a href="/">Read what Istor does, and how the research loop works.</a></p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

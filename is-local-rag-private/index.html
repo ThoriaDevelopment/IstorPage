@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Is local RAG private?</title>
+  <meta name="description" content="Local RAG keeps embeddings, retrieval and inference on your machine. What can still leave it, and the questions to ask of any tool before you trust it with sources." />
+  <link rel="canonical" href="https://istor.fyi/is-local-rag-private/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Is local RAG private?" />
+  <meta property="og:description" content="What stays on your machine in a local RAG loop, what can still leave it, and the questions to ask of any tool." />
+  <meta property="og:url" content="https://istor.fyi/is-local-rag-private/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is local RAG private?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It can be, when all three stages run on your machine: the embeddings that index your documents, the retrieval that searches them, and the inference that writes the answer. Local RAG is private exactly to the extent that none of those stages call a remote service, and that the tool itself sends no telemetry." }
+      },
+      {
+        "@type": "Question",
+        "name": "What can still leave my machine in a local RAG setup?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Two things: any pipeline stage that calls a remote API, such as a cloud embedding service, and telemetry from the tool itself. Web fetches you deliberately trigger also send the URL you asked for, which is fine as long as it is your choice and the request carries nothing else." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I check that a tool is actually local?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Ask what happens to a document between import and answer. If any step names a cloud API, the data leaves the machine. A firewall log or a packet capture will also show you everything a tool contacts, which is harder evidence than a privacy policy." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Is local RAG private?</h1>
+    <p class="lede">The word "local" does a lot of work in that question. Here is what it has to mean for the answer to be yes.</p>
+
+    <div class="capsule">
+      <p>It can be, when all three stages run on your machine: the embeddings that index your documents, the retrieval that searches them, and the inference that writes the answer. Local RAG is private exactly to the extent that none of those stages call a remote service, and that the tool itself sends no telemetry. "Local model, cloud embeddings" is a hybrid, not a local system, and your documents still travel.</p>
+    </div>
+
+    <h2>What the three stages actually touch.</h2>
+    <p>Retrieval-augmented generation sounds like one thing but is a pipeline, and privacy is decided stage by stage.</p>
+    <p><strong>Embedding</strong> converts your passages into vectors. If this calls a cloud embedding API, every passage in your library has already been sent somewhere else, and it was sent in full. This is the stage most often overlooked, because the chat window feels local even when the index is not.</p>
+    <p><strong>Retrieval</strong> searches those vectors. On a truly local system this is a database query on your disk, and it cannot leak anything because it never talks to anyone.</p>
+    <p><strong>Inference</strong> reads the retrieved passages and writes the answer. A locally served model keeps this on your GPU. A model behind an API sends the retrieved passages, which is to say your documents, as part of every prompt.</p>
+    <p>If all three stages are local, the pipeline is local, and your sources do not leave the machine during a research turn.</p>
+
+    <h2>What can still leave.</h2>
+    <p>Two things deserve scrutiny even in a local setup.</p>
+    <p>Telemetry from the application itself: crash reports, usage pings, update checks that carry identifiers. None of it contains your documents, but a private tool that phones home is a contradiction, and you should be able to see it in a packet capture if it happens.</p>
+    <p>Web fetches you trigger. A research tool that can read the web sends a request when you ask it to, and the URL you asked for is visible to the site it reaches. That is inherent to fetching, and it is fine when it is your decision, made per fetch, carrying only the URL and nothing else.</p>
+
+    <h2>Four questions to ask of any tool.</h2>
+    <ol>
+      <li>What happens to a document between import and answer? Every stage should be nameable, and none of them should be a cloud API.</li>
+      <li>What does the application contact when I have asked it for nothing? A packet capture answers this better than a privacy policy does.</li>
+      <li>Where does the index live, and can I take it? A library you can export as files is a library you control.</li>
+      <li>When the tool fetches a web source, what exactly is sent? The URL should be all of it.</li>
+    </ol>
+
+    <p><a href="/">Istor's answer to all four</a>: embeddings, retrieval and inference run on your machine, it makes zero network requests unless you trigger a fetch, the library is a SQLite file that exports as a zip, and a fetched source sends only the URL you pointed at.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

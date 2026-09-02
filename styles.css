@@ -1332,6 +1332,10 @@ a { color: inherit; }
 
 .page-head .brand { font-size: 1.25rem; }
 
+/* the download CTA rides in the slim header bar, so it wears the
+   compact size the nav links set the rhythm for */
+.page-head .btn-grad { padding: 0.5rem 1.1rem; font-size: 0.875rem; white-space: nowrap; }
+
 .page-home {
   font-family: var(--font-mono);
   font-size: 0.8125rem;

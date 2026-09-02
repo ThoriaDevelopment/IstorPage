@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Can you run a research AI on a GTX 1650?</title>
+  <meta name="description" content="Yes. Quantized 2B to 4B models fit in 4 GB of VRAM, and a grounded research loop runs on that class of GPU. What fits, and how Istor uses it." />
+  <link rel="canonical" href="https://istor.fyi/run-research-ai-gtx-1650/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Can you run a research AI on a GTX 1650?" />
+  <meta property="og:description" content="Yes. Quantized 2B to 4B models fit in 4 GB of VRAM, and a grounded research loop runs on that class of GPU." />
+  <meta property="og:url" content="https://istor.fyi/run-research-ai-gtx-1650/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Can you run a research AI on a GTX 1650?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Quantized small models, roughly 2 to 4 billion parameters at 3 to 4 bit precision, fit in the GTX 1650's 4 GB of VRAM and answer grounded questions at a usable speed. The rest of the research loop, embedding and retrieval, is light enough to run on the CPU." }
+      },
+      {
+        "@type": "Question",
+        "name": "How much VRAM do local research models need?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A 2B parameter model at 4 bit quantization needs about 1.5 GB, and a 4B model at 3 bit fits in roughly 2.5 GB. Both leave headroom on a 4 GB card for the context window." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is a GTX 1650 enough for local RAG?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Embedding and vector search run on the CPU, and the GPU only needs to serve the language model. Istor is built and tested on exactly this class of hardware." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Can you run a research AI on a GTX 1650?</h1>
+    <p class="lede">The short answer is yes, and this page explains what actually fits in 4 GB of VRAM and where the work goes.</p>
+
+    <div class="capsule">
+      <p>Yes. Quantized small models, roughly 2 to 4 billion parameters at 3 to 4 bit precision, fit in the GTX 1650's 4 GB of VRAM and answer grounded questions at a usable speed. Embedding and retrieval run on the CPU, so the GPU only carries the language model. Most local AI marketing assumes an RTX 4090; the GTX 1650 audience is real, and this hardware class is what Istor is built and tested on.</p>
+    </div>
+
+    <h2>What the numbers actually are.</h2>
+    <p>A model's memory footprint is its parameter count times the bytes each parameter takes after quantization. At 4 bit precision that is roughly half a byte per parameter, so a 2B model needs about 1.5 GB once you count the overhead, and a 4B model at 3 bit lands near 2.5 GB. Both leave room on a 4 GB card for the context window, which is what grows as your question and the retrieved passages feed in.</p>
+    <p>The GTX 1650 has 4 GB of VRAM. That rules out the large general-purpose models people screenshot on social media, and it does not need to rule anything else out. A 4B model that reads your sources and writes cited paragraphs is a different job from writing screenplays, and the smaller end handles it well.</p>
+
+    <h2>Where each part of the loop runs.</h2>
+    <p>A research loop is not one model call. It has distinct stages, and they do not all need the GPU.</p>
+    <p><strong>Retrieval</strong> is a database query against an index that already exists on disk. It costs milliseconds and no VRAM.</p>
+    <p><strong>Embedding</strong>, turning a passage into a vector, runs on the CPU at this scale. It is fast enough that waiting for it is never the bottleneck of a research turn.</p>
+    <p><strong>Inference</strong> is the GPU's job. The routing model that decides how to read a question, the summarizer that condenses fetched pages, and the writer that composes the final answer all fit in the roster described above, swapping in and out of VRAM as the turn progresses.</p>
+    <p><strong>The grounding check</strong>, where every claim in the draft answer is verified against the passage it cites, reuses the same small models. This stage is why the loop needs a model that follows instructions carefully rather than one that is merely large.</p>
+
+    <h2>What this feels like in practice.</h2>
+    <p>On a GTX 1650, an answer over a local library arrives in seconds, not instantly. Reading a hundred-page PDF for the first time takes longer, because ingestion, extraction and embedding happen once per document and then the index is yours. Research turns that fetch web sources add network time, which dwarfs everything else. The GPU is rarely the thing you are waiting on.</p>
+    <p><a href="/">Istor runs this whole loop on your machine.</a> The model roster ships configured for this hardware class, so there is nothing to tune.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
