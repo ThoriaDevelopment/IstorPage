@@ -322,6 +322,29 @@
     renderDemo(DEMOS[0], false);
   }
 
+  // ── read progress ──────────────────────────────────────────────
+  // The header's bottom edge fills as the page is read; the same
+  // rAF throttle the sheet uses, and no transition, so a scroll is
+  // never smoothed twice.
+  var readBar = document.querySelector(".read-bar span");
+  if (readBar) {
+    var readTick = false;
+    function paintRead() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var p = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+      readBar.style.width = (p * 100).toFixed(2) + "%";
+      readTick = false;
+    }
+    function scheduleRead() {
+      if (readTick) return;
+      readTick = true;
+      requestAnimationFrame(paintRead);
+    }
+    window.addEventListener("scroll", scheduleRead, { passive: true });
+    window.addEventListener("resize", scheduleRead, { passive: true });
+    paintRead();
+  }
+
   // ── privacy rotator ────────────────────────────────────────────
   // The bar is the clock: it sweeps the full width once per interval and,
   // when it hits the end, the list advances to the next claim. Hovering

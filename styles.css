@@ -188,6 +188,24 @@ a { color: inherit; }
 
 .cite-dot { color: var(--dot); }
 
+/* the read bar: the header's bottom edge fills as the page is read,
+   the same functional-line language the privacy rotator's sweep uses */
+.read-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  pointer-events: none;
+}
+
+.read-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--witness);
+}
+
 .site-nav {
   display: flex;
   align-items: center;
