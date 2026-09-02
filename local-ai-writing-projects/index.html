@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Writing with sources on a local AI</title>
+  <meta name="description" content="For a thesis, a nonfiction book or a long report, the hard part is writing against sources without losing track of them. Here is how a local research notebook keeps the library beside the draft, with citations as you write." />
+  <link rel="canonical" href="https://istor.fyi/local-ai-writing-projects/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Writing with sources on a local AI" />
+  <meta property="og:description" content="How a local research notebook keeps the library beside the draft, with citations as you write." />
+  <meta property="og:url" content="https://istor.fyi/local-ai-writing-projects/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Can a local AI help me write a thesis or a book?",
+        "acceptedAnswer": { "@type": "Answer", "text": "As a writing assistant with your sources at hand, yes: it answers questions against your library, hands you passages with citations, and keeps notes beside the material. It does not write the thesis for you, and a tool that claims to is offering prose nobody can verify. The argument and the voice stay yours." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why write on a local AI instead of a cloud one?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Two reasons. A draft is the most sensitive file a writer has: unfinished, unpublished work, which is exactly what should not be uploaded to a service. And cloud assistants answer from general knowledge, while a grounded local tool answers from the sources you have collected, with every claim carrying a citation back to the passage it came from." }
+      },
+      {
+        "@type": "Question",
+        "name": "What hardware does a local writing assistant need?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A GTX 1650 class GPU is enough. Istor ships a curated model roster sized for that card, including a vision model for scanned sources, and there is nothing to configure." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Writing with sources, on a local AI.</h1>
+    <p class="lede">A thesis, a nonfiction book, a long report: the writing is only half the work. The other half is not losing track of what your sources actually say.</p>
+
+    <div class="capsule">
+      <p>Long writing projects fail in the middle, and they fail at the sources. Chapter four needs the thing you read in March, and nobody remembers which paper it was. A local research notebook turns that problem into a question: ask your library, get the passage back with its citation, and write from it while it is on the screen. What the tool will not do is write the chapter. It grounds your drafting in your own evidence, and the draft, the argument and the voice stay yours.</p>
+    </div>
+
+    <h2>The middle of a long project.</h2>
+    <p>The start of a writing project is fun: reading, collecting, outlining. The end is editing. The middle is where it gets lost, because the middle is where you have read more than you can hold and written less than you need. The stack of sources has become a fog, and the draft stalls on a fact you cannot place.</p>
+    <p>What helps is not a better writing model. It is keeping the library searchable and next to the draft, so that "where did I read this" costs a question instead of an afternoon. That is a retrieval problem, and it is the part a grounded tool genuinely does well.</p>
+
+    <h2>How the loop fits the writing desk.</h2>
+    <p>Everything you have collected lives in one local library: the papers, the reports, the transcripts, the scanned pages. While drafting, you ask it questions. The answers cite the passages they drew on, so a quote that goes into the manuscript arrives with its source already attached, and checking it is a click rather than a search session.</p>
+    <p>Notes sit in the same window as the sources they came from. That is where the writing actually happens, in the exchange between reading and drafting, and it is why Istor is one window rather than a chat app beside an editor. When you need what the open web has, you trigger a fetch yourself and it becomes a source like any other, cited and kept.</p>
+    <p>And the draft itself is private by construction. Unpublished work is the most exposed file a writer has, and on a local tool it never leaves the machine. Neither does the library it grew from.</p>
+
+    <h2>What the tool does not do.</h2>
+    <p>It does not write the argument. A chapter is a claim about what the evidence means, and a model asked to generate one produces prose shaped like an argument, verified by no one. What it does instead is refuse that job quietly: it answers from your sources or it says the answer is not there, and every claim it does make points back to the passage it came from. That is the difference between a tool that writes for you and a tool you can write with.</p>
+    <p>The model on your GPU is also not a frontier model. Istor's roster is sized for a GTX 1650 class card, and the trade is deliberate: a good local model you can verify beats a distant one you cannot, because in a writing project every borrowed sentence has to survive a citation check anyway.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/local-ai-literature-review/">Can a local AI do a literature review?</a></li>
+        <li><a href="/local-ai-field-research/">Local AI for field research.</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/vs-anythingllm/">Istor and AnythingLLM, compared.</a></li>
+        <li><a href="/vs-gpt4all/">Istor and GPT4All, compared.</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
