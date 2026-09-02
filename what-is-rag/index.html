@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is retrieval-augmented generation (RAG)?</title>
+  <meta name="description" content="A plain-language definition of RAG: how retrieval-augmented generation works, what it fixes, what it does not, and how it runs entirely on your own machine." />
+  <link rel="canonical" href="https://istor.fyi/what-is-rag/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is retrieval-augmented generation (RAG)?" />
+  <meta property="og:description" content="How retrieval-augmented generation works, what it fixes, what it does not, and how it runs locally." />
+  <meta property="og:url" content="https://istor.fyi/what-is-rag/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is retrieval-augmented generation?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Retrieval-augmented generation (RAG) is a method where a language model answers from documents found for the question rather than from its training alone. The question is matched against a document collection, the most relevant passages are placed into the prompt, and the answer is written from those passages, ideally with a citation back to each one." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does RAG require the cloud?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Retrieval, the embeddings used to match questions to passages, and the model that writes the answer can all run on your own machine. A GTX 1650 class GPU is enough for a local RAG loop over thousands of documents, and nothing leaves the machine unless a web fetch is triggered." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do RAG answers still hallucinate?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because retrieval finds passages but does not force the model to use them faithfully. A model can write a claim the passages do not support, or blend two sources into one. Fixing it takes a verification step: every claim is checked against the passage it cites before the answer is shown, and the answer is refused when the sources do not contain one." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is retrieval-augmented generation?</h1>
+    <p class="lede">The technique behind "chat with your documents", explained plainly: what retrieval contributes, what the model still gets wrong, and why the local version is different.</p>
+
+    <div class="capsule">
+      <p>Retrieval-augmented generation (RAG) is a method where a language model answers from documents found for the question instead of from its training alone. The question is matched against a document collection, the most relevant passages are placed into the prompt, and the answer is written from those passages, ideally with a citation back to each one. A model that has never seen your files can answer questions about them.</p>
+    </div>
+
+    <h2>The three steps.</h2>
+    <p>First, retrieval. Your documents are indexed ahead of time, usually as embeddings, which are number representations of meaning that let a question match passages by sense rather than by exact words. When you ask, the system finds the passages that bear on the question. Good systems use hybrid retrieval, combining that semantic match with plain keyword search, because each catches what the other misses.</p>
+    <p>Second, assembly. The retrieved passages are placed into the prompt alongside your question, so the model reads them as context. What goes in is what the answer can draw on, which is why retrieval quality bounds answer quality.</p>
+    <p>Third, generation. The model writes an answer grounded in those passages. Done well, every claim points to the passage it came from, so the reader can check it in a click.</p>
+
+    <h2>What RAG fixes, and what it does not.</h2>
+    <p>What it fixes is access. A model's training data stops at a date and never included your private files; retrieval lets it answer from what is actually in the room. It is the difference between asking a well-read stranger and asking someone holding your documents.</p>
+    <p>What it does not fix is faithfulness. Retrieval finds the passages; it cannot force the model to stick to them. A model can still write a claim the passages do not support, blend two sources into one, or answer past what was retrieved from memory of its training. This is the quiet failure of a lot of RAG products: the citations look convincing whether or not they hold.</p>
+    <p>The fix is verification, not more retrieval. A grounded system checks each claim against the passage it cites before the answer is shown, and refuses when the sources do not contain the answer. Refusal is the feature: in research work, "your sources do not say" is a finding, and an invented answer is a liability.</p>
+
+    <h2>The local version.</h2>
+    <p>Nothing in the RAG loop needs a server. The index, the embeddings, the retrieval and the model can all run on one machine, and when they do, your documents are never uploaded to be processed. That is what "local RAG" means: the same technique, with the trust question removed, because there is nobody to send anything to. A GTX 1650 class GPU runs it comfortably, and it works offline the whole way through.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/local-ai-literature-review/">Can a local AI do a literature review?</a></li>
+        <li><a href="/local-ai-field-research/">Local AI for field research.</a></li>
+        <li><a href="/local-ai-writing-projects/">Writing with sources, on a local AI.</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/vs-anythingllm/">Istor and AnythingLLM, compared.</a></li>
+        <li><a href="/vs-gpt4all/">Istor and GPT4All, compared.</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
