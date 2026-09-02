@@ -93,7 +93,7 @@
 
     <h2>What the three stages actually touch.</h2>
     <p><a href="/what-is-rag/">Retrieval-augmented generation</a> sounds like one thing but is a pipeline, and privacy is decided stage by stage.</p>
-    <p><strong>Embedding</strong> converts your passages into vectors. If this calls a cloud embedding API, every passage in your library has already been sent somewhere else, and it was sent in full. This is the stage most often overlooked, because the chat window feels local even when the index is not.</p>
+    <p><strong>Embedding</strong> converts your passages into <a href="/what-is-an-embedding/">vectors</a>. If this calls a cloud embedding API, every passage in your library has already been sent somewhere else, and it was sent in full. This is the stage most often overlooked, because the chat window feels local even when the index is not.</p>
     <p><strong>Retrieval</strong> searches those vectors. On a truly local system this is a database query on your disk, and it cannot leak anything because it never talks to anyone.</p>
     <p><strong>Inference</strong> reads the retrieved passages and writes the answer. A locally served model keeps this on your GPU. A model behind an API sends the retrieved passages, which is to say your documents, as part of every prompt.</p>
     <p>If all three stages are local, the pipeline is local, and your sources do not leave the machine during a research turn.</p>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is an embedding?</title>
+  <meta name="description" content="An embedding turns a passage of text into a list of numbers that captures its meaning, so search can find passages by sense instead of by exact words. What embeddings do, why retrieval needs them, and why they run fine on your own machine." />
+  <link rel="canonical" href="https://istor.fyi/what-is-an-embedding/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is an embedding?" />
+  <meta property="og:description" content="A passage of text turned into numbers that capture its meaning, so search can find passages by sense instead of by exact words." />
+  <meta property="og:url" content="https://istor.fyi/what-is-an-embedding/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is an embedding in simple terms?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A way of turning text into numbers that keep its meaning. Each passage becomes a long list of values, and passages that mean similar things end up with similar lists. A computer cannot compare two paragraphs directly, but it can compare two lists of numbers instantly, which is what makes meaning-level search possible." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does retrieval need embeddings?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because keywords miss paraphrases. If you ask about drug safety and a paper says adverse events, a keyword search finds nothing, while an embedding search matches the meanings. Good retrieval systems use both, so exact terms are never lost and meaning-level matches are added on top." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do embeddings send my documents to the cloud?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not necessarily. Embedding models are small enough to run on ordinary laptops, so the conversion can happen entirely on your own machine, and the resulting numbers stay in a local database. Whether they do is a property of the tool: it is worth asking of any product where the embedding step runs." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is an embedding?</h1>
+    <p class="lede">The quiet conversion that makes meaning-level search possible. Every grounded answer over a library depends on it happening once, well.</p>
+
+    <div class="capsule">
+      <p>An embedding turns a passage of text into a list of numbers that captures what it means. Passages about similar things get similar lists, so a question can be matched to sources by sense rather than by exact wording. This is the step that lets retrieval find a passage even when it shares no keywords with your question, and it runs fine on your own machine.</p>
+    </div>
+
+    <h2>Text as coordinates.</h2>
+    <p>A computer cannot compare two paragraphs directly, but it can compare two lists of numbers without effort. An embedding model reads a passage and outputs one such list, often several hundred values long, chosen so that meaning maps to position: two passages about the same finding land near each other even if one says efficacy and the other says how well it worked. Nothing magical sits in the numbers. They are the residue of a model trained on enormous amounts of text, and their nearness is a usable stand-in for sameness of subject.</p>
+
+    <h2>Why search needs them.</h2>
+    <p>Keyword search has an honest strength and an honest limit. It never misses an exact term, and it cannot see a paraphrase. Ask about drug safety while a paper says adverse events, and keywords return nothing while the meaning sits right there. This is why <a href="/what-is-rag/">retrieval-augmented generation</a> systems run both searches together: keywords for the terms you actually used, embeddings for the ones you did not. In Istor the two are blended, so a quoted phrase still finds its source and a reworded concept still finds its passage.</p>
+
+    <h2>Where the conversion happens.</h2>
+    <p>Embedding models are small by language-model standards, small enough to run on a laptop CPU without anyone noticing. That fact carries a privacy consequence: the conversion that makes your documents searchable does not require sending them anywhere. In a local tool the embeddings are computed on your machine and stored in a local database, which is part of what <a href="/is-local-rag-private/">keeps a local RAG loop private</a>. When you evaluate any tool that searches documents, the question to ask is simply where that step runs.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/what-is-a-context-window/">What is a context window?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/what-formats-can-local-ai-read/">What formats can a local AI read?</a></li>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
