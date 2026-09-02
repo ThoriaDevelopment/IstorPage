@@ -41,6 +41,10 @@
   --witness: #D93A3A;
   --dot: #D93A3A;
 
+  /* citation accent, judged on the light mock panels */
+  --cite-ink: #0E7490;
+  --cite-wash: rgba(14, 116, 144, 0.12);
+
   /* gradient highlight, judged on white */
   --g1: #D93A3A;
   --g2: #CE7F14;
@@ -69,6 +73,10 @@
   --witness: #4DA3FF;
   --dot: #4DA3FF;
 
+  /* citation accent, judged on the dark mock panels */
+  --cite-ink: #56C0EC;
+  --cite-wash: rgba(86, 192, 236, 0.16);
+
   /* gradient highlight, judged on black */
   --g1: #4DA3FF;
   --g2: #3ED6C4;
@@ -89,6 +97,10 @@
     /* the witness pair (dark ground) */
     --witness: #4DA3FF;
     --dot: #4DA3FF;
+
+    /* citation accent, judged on the dark mock panels */
+    --cite-ink: #56C0EC;
+    --cite-wash: rgba(86, 192, 236, 0.16);
 
     /* gradient highlight, judged on black */
     --g1: #4DA3FF;
@@ -155,6 +167,14 @@ a { color: inherit; }
   position: sticky;
   top: 0;
   z-index: 10;
+  background: color-mix(in srgb, var(--canvas) 82%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* the bar's ground runs the full viewport width; only the content
+   inside is held to the page's measure */
+.head-in {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -162,9 +182,6 @@ a { color: inherit; }
   max-width: var(--max);
   margin: 0 auto;
   padding: 1rem 1.5rem;
-  background: color-mix(in srgb, var(--canvas) 82%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .brand {
@@ -234,14 +251,14 @@ a { color: inherit; }
   width: 2rem;
   height: 2rem;
   padding: 0;
-  border: 1px solid var(--hairline);
+  border: none;
   border-radius: 999px;
   background: none;
   color: var(--mist);
   cursor: pointer;
 }
 
-.theme-toggle:hover { color: var(--ink); }
+.theme-toggle:hover { color: var(--ink); background: var(--subtle); }
 
 .icon-moon { display: none; }
 :root[data-theme="dark"] .icon-moon { display: block; }
@@ -434,11 +451,9 @@ a { color: inherit; }
 .answer-mock {
   margin-top: 0.5rem;
   padding: 2rem 2.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--hairline);
   border-radius: 1.25rem;
-  background:
-    radial-gradient(60rem 24rem at 80% -20%, rgba(86, 192, 236, 0.14), transparent 65%),
-    #0D1A1D;
+  background: var(--subtle);
 }
 
 .am-tag {
@@ -512,6 +527,28 @@ a { color: inherit; }
   font-size: 0.9375rem;
   color: #E5E3DF;
 }
+
+/* The hero example follows the theme like the search and empty mocks
+   beside it: token ground, token text. Its citation teal reads the
+   citation tokens so it stays legible on the light sheet. The demo
+   panel keeps its own dark room and the literals above. */
+.answer-mock .am-q { color: var(--ink); }
+
+.answer-mock .am-a { color: var(--mist); }
+
+.answer-mock .cite { color: var(--cite-ink); }
+
+.answer-mock .cite:hover,
+.answer-mock .cite.active { background: var(--cite-wash); }
+
+.answer-mock .am-passage {
+  border-color: var(--hairline);
+  background: var(--canvas);
+}
+
+.answer-mock .am-src { color: var(--cite-ink); }
+
+.answer-mock .am-quote { color: var(--ink); }
 
 .search-mock,
 .empty-mock {
@@ -765,18 +802,23 @@ a { color: inherit; }
   font-size: clamp(1.75rem, 4vw, 2.5rem);
 }
 
-/* the wrapper pins, so the note travels with the sheet instead of
-   sliding underneath it; the scene stays a plain box inside */
+/* the wrapper pins for the whole section and fills the viewport, so
+   the sheet itself rides the exact middle of the screen while it
+   turns; the note lives at the bottom edge of the same pin */
 .scene-wrap {
   position: sticky;
-  top: 9vh;
-  margin: 3.5rem auto 0;
-  width: min(24rem, 100%);
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .scene {
   perspective: 1400px;
-  width: 100%;
+  width: min(24rem, 100%);
+  margin: 0 auto;
   aspect-ratio: 4 / 5;
 }
 
@@ -878,8 +920,13 @@ a { color: inherit; }
 .float-chip.c2 { right: -2rem; bottom: 20%; transform: translateZ(56px) rotate(-3deg); }
 
 .showcase-note {
-  margin: 2.5rem auto 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(1.5rem, 6vh, 3.5rem);
+  margin: 0 auto;
   max-width: 44ch;
+  padding: 0 1.5rem;
   font-size: 0.9375rem;
   color: var(--mist);
 }
@@ -1015,27 +1062,39 @@ a { color: inherit; }
   background: #56C0EC;
 }
 
+/* labeled pills instead of bare dots: a visitor sees the claims are
+   buttons without waiting out the sweep */
 .rotor-dots {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   justify-content: center;
 }
 
-/* the dot is 8px but the button is a 24px hit area (target-size) */
 .rotor-dots button {
-  width: 1.5rem;
-  height: 1.5rem;
-  padding: 0;
-  border: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0.25rem, transparent 0.25rem);
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.72);
   cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
 
-.rotor-dots button:hover { background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0.25rem, transparent 0.25rem); }
+.rotor-dots button:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.92);
+}
 
-.rotor-dots button.active { background: radial-gradient(circle, #56C0EC 0.25rem, transparent 0.25rem); }
+.rotor-dots button.active {
+  border-color: rgba(86, 192, 236, 0.5);
+  background: rgba(86, 192, 236, 0.12);
+  color: #56C0EC;
+}
 
 /* ── faq ────────────────────────────────────────────────────────── */
 
@@ -1178,7 +1237,7 @@ a { color: inherit; }
 /* ── narrow ─────────────────────────────────────────────────────── */
 
 @media (max-width: 720px) {
-  .site-head { flex-wrap: wrap; padding: 0.875rem 1.25rem 0; }
+  .head-in { flex-wrap: wrap; padding: 0.875rem 1.25rem 0; }
   .site-nav { gap: 0.875rem; }
   .site-nav > a:not(.cta) { display: none; }
   .head-links {

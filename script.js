@@ -289,15 +289,19 @@
         t += 450;
 
         var chips = demoEl("div", "tp-chips");
+        var chipBase = t;
         d.cites.forEach(function (cite, i) {
           var chip = demoEl("button", "tp-chip" + (i === 0 ? " active" : ""));
           chip.type = "button";
           chip.textContent = cite.n;
           chip.setAttribute("data-passage", String(i));
+          // each chip lands on its own beat, so the run shows the
+          // citations arriving in order rather than as one block
+          stageIn(chip, animate ? chipBase + i * 450 : 0);
           chips.appendChild(chip);
         });
-        stageIn(chips, animate ? t : 0);
         frag.appendChild(chips);
+        t += d.cites.length * 450;
 
         d.cites.forEach(function (cite, i) {
           var passage = demoEl("div", "am-passage" + (i === 0 ? " active" : ""));
@@ -308,6 +312,8 @@
           quote.textContent = cite.quote;
           passage.appendChild(src);
           passage.appendChild(quote);
+          // only the active passage is displayed; it follows its chip
+          stageIn(passage, animate ? chipBase + i * 450 + 350 : 0);
           frag.appendChild(passage);
         });
       }
