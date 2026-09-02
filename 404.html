@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Istor: page not found</title>
+<meta name="description" content="The address you followed does not exist on istor.fyi.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="brand/istor-page.svg">
+<script>
+/* stamp the theme before first paint, the same way index.html does */
+(function () {
+  try {
+    var pref = localStorage.getItem("istor.site.theme") || "system";
+    var dark = pref === "dark" ||
+      (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  } catch (_) {}
+})();
+</script>
+<style>
+/* standalone page, same token world as styles.css: bare :root is light,
+   the dark world only redefines tokens, guarded so an explicit choice wins */
+@font-face {
+  font-family: "Fraunces";
+  src: url("assets/fonts/fraunces-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("assets/fonts/inter-var.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GFS Didot";
+  src: url("assets/fonts/gfs-didot.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+  --canvas: #FFFFFF;
+  --ink: #171717;
+  --mist: #6E6A66;
+  --hairline: #E9E4DE;
+  --witness: #D93A3A;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-theme="dark"] {
+  --canvas: #0A0A0A;
+  --ink: #EDEDED;
+  --mist: #A5A19B;
+  --hairline: #242424;
+  --witness: #4DA3FF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --canvas: #0A0A0A;
+    --ink: #EDEDED;
+    --mist: #A5A19B;
+    --hairline: #242424;
+    --witness: #4DA3FF;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: "Inter", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* the 404 is the app's honesty law as a page: the loop refusing to
+   answer gets the same panel the site's demo refusal gets */
+.panel {
+  max-width: 34rem;
+  width: 100%;
+  padding: 2.75rem 2.5rem 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(60rem 24rem at 80% -20%, rgba(86, 192, 236, 0.14), transparent 65%),
+    url("assets/textures/paper-grain.webp"),
+    #0D1A1D;
+  color: #F2F1EE;
+}
+
+.wordmark {
+  font-family: "GFS Didot", Georgia, serif;
+  font-size: 1.5rem;
+  color: #F2F1EE;
+}
+.wordmark .dot { color: #56C0EC; }
+
+.tag {
+  margin: 1.75rem 0 0;
+  font-family: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8FA6A3;
+}
+
+h1 {
+  margin: 0.5rem 0 0;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  line-height: 1.15;
+  text-wrap: balance;
+  color: #F2F1EE;
+}
+
+.lede {
+  margin: 1rem 0 0;
+  color: #B9BDB8;
+}
+
+.nav {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.btn-home {
+  background: #F2F1EE;
+  color: #0D1A1D;
+}
+.btn-home:hover { background: #FFFFFF; }
+
+.btn-ghost {
+  border: 1px solid rgba(242, 241, 238, 0.35);
+  color: #F2F1EE;
+}
+.btn-ghost:hover { border-color: rgba(242, 241, 238, 0.7); }
+
+.micro {
+  margin: 1.75rem 0 0;
+  font-family: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.7rem;
+  color: #8FA6A3;
+}
+.micro a { color: #56C0EC; text-decoration: none; }
+.micro a:hover { text-decoration: underline; }
+
+:focus-visible {
+  outline: 2px solid #56C0EC;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel { animation: rise 0.45s var(--ease-out); }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+  }
+}
+
+@media (max-width: 480px) {
+  .panel { padding: 2rem 1.5rem 1.75rem; }
+}
+</style>
+</head>
+<body>
+
+<main class="panel">
+  <p class="wordmark">ἵστωρ<span class="dot" aria-hidden="true">.</span></p>
+  <p class="tag">404 · not in the library</p>
+  <h1>This page has no citation.</h1>
+  <p class="lede">The address you followed does not exist here. Istor does not invent answers, and this site does not invent pages.</p>
+  <div class="nav">
+    <a class="btn btn-home" href="/">Back to the front page</a>
+    <a class="btn btn-ghost" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download Istor</a>
+  </div>
+  <p class="micro">The rest of the site lives at <a href="https://istor.fyi">istor.fyi</a>.</p>
+</main>
+
+</body>
+</html>
