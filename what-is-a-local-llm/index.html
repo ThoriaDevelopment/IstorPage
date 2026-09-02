@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is a local LLM?</title>
+  <meta name="description" content="A plain-language definition of a local LLM: a language model that runs on your own hardware, what it can and cannot do compared to cloud models, and why privacy follows from the design." />
+  <link rel="canonical" href="https://istor.fyi/what-is-a-local-llm/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is a local LLM?" />
+  <meta property="og:description" content="A language model that runs on your own hardware: what it can do, what it cannot, and why privacy follows from the design." />
+  <meta property="og:url" content="https://istor.fyi/what-is-a-local-llm/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a local LLM?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A local LLM is a language model that runs on your own hardware instead of a company's servers. The model's weights are files on your disk, your questions are answered by your own GPU or CPU, and nothing is sent anywhere to generate an answer." }
+      },
+      {
+        "@type": "Question",
+        "name": "Are local LLMs as good as ChatGPT?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not at general capability. Frontier cloud models are far larger and will out-reason any model that fits on consumer hardware. Local models are competitive on narrow, well-scoped work, such as answering questions over a set of retrieved documents, summarizing, and writing with sources, where the grounding around the model matters as much as the model's size." }
+      },
+      {
+        "@type": "Question",
+        "name": "What hardware does a local LLM need?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It depends on model size, which is governed by memory. Quantized small models of 2 to 4 billion parameters fit in 4 GB of VRAM, which is a GTX 1650 class GPU, and larger models need proportionally more. Without any GPU, models can run on an ordinary CPU, more slowly." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is a local LLM?</h1>
+    <p class="lede">A language model that runs on your own hardware instead of a company's servers: what that means in practice, what it can and cannot do, and why privacy follows from the design.</p>
+
+    <div class="capsule">
+      <p>A local LLM is a language model that runs on your own hardware instead of a company's servers. The model's weights are files on your disk, your questions are answered by your own GPU or CPU, and nothing is sent anywhere to generate an answer. The trade is size: a local model is far smaller than a frontier cloud model, and gives up general range for privacy, offline use, and independence from any account.</p>
+    </div>
+
+    <h2>What "local" actually means.</h2>
+    <p>A language model is, at bottom, a large file of numbers, its weights, plus the code that runs those numbers over your text. In a cloud product the file lives on the company's servers and your words travel to it. In a local LLM the file lives on your disk, and the computation happens on your silicon. The question never leaves the machine, because the machine is where the model is.</p>
+    <p>That physical fact is what privacy rests on. There is no upload to weigh, no policy to trust, no retention window to wonder about. A local LLM does not promise to handle your words well; it makes the journey impossible.</p>
+
+    <h2>What local models can and cannot do.</h2>
+    <p>The honest limit first: frontier cloud models are far larger, and no model that fits on consumer hardware matches their general reasoning and world knowledge. If you need the broadest possible mind, the cloud wins and it is not close.</p>
+    <p>What local models do well is narrower work. <a href="/what-is-rag/">Answering questions over retrieved documents</a>, summarizing a paper, drafting with sources attached, checking a claim against a passage: these jobs are bounded, and a small model grounded in the right context performs them usefully. Around the model, tooling matters as much as raw size, which is why a grounded research loop can produce answers worth checking even on modest hardware.</p>
+    <p>Local also wins on availability. It works offline, on a plane, in a dead zone, on a machine with no account, and it stops working only when your hardware does. There is no rate limit, no subscription, and no one to change the terms.</p>
+
+    <h2>What it takes to run one.</h2>
+    <p>Model size is a memory question. The weights must fit in VRAM if you want GPU speed, or in ordinary RAM if you accept CPU speed. Quantization, storing each number in fewer bits, shrinks the file: a 2 to 4 billion parameter model at 3 to 4 bit precision fits in about 4 GB, which is <a href="/run-research-ai-gtx-1650/">a GTX 1650 class GPU</a>, and each step up in capability costs memory in proportion. On a CPU alone, almost any small model runs, just slowly.</p>
+    <p>Getting started is a download, not a deployment. Tools such as <a href="/vs-gpt4all/">GPT4All</a> put a model gallery on nearly any machine, and research tools such as Istor ship a preconfigured roster so there is nothing to pick. Either way the model arrives as a file, and your documents never go the other way.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/vs-chatgpt/">Istor and ChatGPT, compared.</a></li>
+        <li><a href="/vs-gpt4all/">Istor and GPT4All, compared.</a></li>
+        <li><a href="/research-ai-offline/">Can an AI do research with no internet?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
