@@ -20,6 +20,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is a local LLM?](https://istor.fyi/what-is-a-local-llm/): a language model that runs on your own hardware, what it can and cannot do, and what it takes to run one.
 - [Can an AI do research with no internet?](https://istor.fyi/research-ai-offline/): what a local research AI does with the network unplugged, what it honestly cannot, and when offline is the point.
 - [What is the most private way to chat with PDFs?](https://istor.fyi/private-pdf-chat/): a checklist for private document question answering, and how Istor satisfies each item.
+- [Can a local AI read scanned PDFs?](https://istor.fyi/local-ai-scanned-pdfs/): local OCR and vision models read scans on your machine, and the limits of what photographs of pages give up.
 
 ## Download
 

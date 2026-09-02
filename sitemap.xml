@@ -11,6 +11,11 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://istor.fyi/local-ai-scanned-pdfs/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
     <loc>https://istor.fyi/what-is-a-local-llm/</loc>
     <lastmod>2026-09-02</lastmod>
     <changefreq>monthly</changefreq>
