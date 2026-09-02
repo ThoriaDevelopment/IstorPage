@@ -43,7 +43,10 @@
 
   /* gradient highlight, judged on white */
   --g1: #D93A3A;
-  --g2: #E39B2D;
+  --g2: #CE7F14;
+  /* the grad button darkens its gradient so white text clears 4.5:1
+     on the warm end; the dark ground needs no shade */
+  --btn-shade: rgba(10, 10, 10, 0.32);
 
   --max: 68rem;
   --font-sans: "Inter", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -69,6 +72,7 @@
   /* gradient highlight, judged on black */
   --g1: #4DA3FF;
   --g2: #3ED6C4;
+  --btn-shade: transparent;
 }
 
 /* the dark OS world, for visitors before (or without) the script;
@@ -89,6 +93,7 @@
     /* gradient highlight, judged on black */
     --g1: #4DA3FF;
     --g2: #3ED6C4;
+    --btn-shade: transparent;
   }
 }
 
@@ -125,6 +130,23 @@ a { color: inherit; }
   outline: 2px solid var(--witness);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* the skip link is invisible until a keyboard visitor reaches it */
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 20;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--ink);
+  color: var(--canvas);
+  transition: top 0.15s var(--ease-out);
+}
+
+.skip:focus-visible {
+  top: 0.75rem;
 }
 
 /* ── header ─────────────────────────────────────────────────────── */
@@ -238,7 +260,9 @@ a { color: inherit; }
   padding: 0.875rem 1.75rem;
   font-size: 1rem;
   color: var(--canvas);
-  background: linear-gradient(120deg, var(--g1), var(--g2));
+  background:
+    linear-gradient(var(--btn-shade), var(--btn-shade)),
+    linear-gradient(120deg, var(--g1), var(--g2));
 }
 
 /* ── hero ───────────────────────────────────────────────────────── */
@@ -956,19 +980,20 @@ a { color: inherit; }
   justify-content: center;
 }
 
-.rotor-dots [role='tab'] {
-  width: 0.5rem;
-  height: 0.5rem;
+/* the dot is 8px but the button is a 24px hit area (target-size) */
+.rotor-dots button {
+  width: 1.5rem;
+  height: 1.5rem;
   padding: 0;
   border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0.25rem, transparent 0.25rem);
   cursor: pointer;
 }
 
-.rotor-dots [role='tab']:hover { background: rgba(255, 255, 255, 0.4); }
+.rotor-dots button:hover { background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0.25rem, transparent 0.25rem); }
 
-.rotor-dots [role='tab'].active { background: #56C0EC; }
+.rotor-dots button.active { background: radial-gradient(circle, #56C0EC 0.25rem, transparent 0.25rem); }
 
 /* ── faq ────────────────────────────────────────────────────────── */
 

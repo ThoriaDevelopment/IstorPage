@@ -331,7 +331,7 @@
   if (!rotator) return;
 
   var items = rotator.querySelectorAll("li");
-  var tabs = rotator.querySelectorAll(".rotor-dots [role='tab']");
+  var tabs = rotator.querySelectorAll(".rotor-dots button");
   var bar = rotator.querySelector(".rotor-bar span");
   var INTERVAL = 4200;
   var index = 0;
@@ -342,11 +342,11 @@
   function show(n) {
     items[index].classList.remove("active");
     tabs[index].classList.remove("active");
-    tabs[index].setAttribute("aria-selected", "false");
+    tabs[index].setAttribute("aria-current", "false");
     index = n;
     items[index].classList.add("active");
     tabs[index].classList.add("active");
-    tabs[index].setAttribute("aria-selected", "true");
+    tabs[index].setAttribute("aria-current", "true");
   }
 
   function frame(ts) {

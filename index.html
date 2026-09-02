@@ -87,6 +87,8 @@
 </head>
 <body>
 
+  <a class="skip" href="#main">Skip to content</a>
+
   <header class="site-head">
     <a class="brand" href="./" aria-label="Istor home">
       <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
@@ -122,7 +124,7 @@
     </nav>
   </header>
 
-  <main>
+  <main id="main">
     <section class="hero">
       <h1>Ask your sources <span class="grad">anything</span>.</h1>
       <p class="sub">
@@ -455,7 +457,7 @@
         <p class="eyebrow">Privacy</p>
         <h2>Your research stays yours.</h2>
         <p class="sub">Istor runs entirely on your machine.</p>
-        <div class="rotator" tabindex="0" aria-label="What stays on your machine">
+        <div class="rotator" tabindex="0" role="region" aria-label="What stays on your machine">
           <ul>
             <li class="active">
               <h3>Local model</h3>
@@ -475,11 +477,11 @@
             </li>
           </ul>
           <div class="rotor-bar" aria-hidden="true"><span></span></div>
-          <div class="rotor-dots" role="tablist" aria-label="Choose a claim">
-            <button role="tab" class="active" aria-selected="true" aria-label="Local model"></button>
-            <button role="tab" aria-selected="false" aria-label="Local library"></button>
-            <button role="tab" aria-selected="false" aria-label="No telemetry"></button>
-            <button role="tab" aria-selected="false" aria-label="You trigger the traffic"></button>
+          <div class="rotor-dots" role="group" aria-label="Choose a claim">
+            <button class="active" aria-current="true" aria-label="Show claim: local model"></button>
+            <button aria-current="false" aria-label="Show claim: local library"></button>
+            <button aria-current="false" aria-label="Show claim: no telemetry"></button>
+            <button aria-current="false" aria-label="Show claim: you trigger the traffic"></button>
           </div>
         </div>
       </div>
