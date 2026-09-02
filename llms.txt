@@ -29,6 +29,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Why do AI chatbots invent citations?](https://istor.fyi/why-ai-hallucinates-citations/): why language models generate plausible-looking references, why retrieval alone does not fix it, and what a verification gate does.
 - [What is a context window?](https://istor.fyi/what-is-a-context-window/): the model's working memory, what fits inside it, and how retrieval decides what goes in.
 - [What is an embedding?](https://istor.fyi/what-is-an-embedding/): the number representation that lets search match by meaning, and why the conversion runs fine locally.
+- [What is quantization?](https://istor.fyi/what-is-quantization/): storing a model's numbers in fewer bits, the compression that lets serious models run on ordinary hardware.
 
 ## Download
 

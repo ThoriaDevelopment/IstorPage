@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is quantization?</title>
+  <meta name="description" content="Storing a model's numbers in fewer bits so it fits in less memory. Why nearly every local model is quantized, what the accuracy trade actually is, and why the file size decides which GPU can run it." />
+  <link rel="canonical" href="https://istor.fyi/what-is-quantization/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is quantization?" />
+  <meta property="og:description" content="Storing a model's numbers in fewer bits so it fits in memory. Why local models are quantized and what the accuracy trade actually is." />
+  <meta property="og:url" content="https://istor.fyi/what-is-quantization/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is quantization in simple terms?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Storing a model's numbers with fewer digits. A model is a very large collection of numbers, and full precision stores each one in 16 or 32 bits. Quantization rounds them into 4 or fewer bits, which makes the file several times smaller so that modest hardware can hold it, at a small and usually tolerable cost in precision." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does quantization make answers worse?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A little, usually much less than people expect. Going from 16 bit to 4 bit storage costs a small amount of measured accuracy, and for question answering over documents the difference is rarely noticeable. The far bigger quality factors are the model's training, how good the retrieved passages are, and whether the answer is checked against them." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do local models need quantization?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because of memory. A 4 billion parameter model at full precision needs about 8 GB just to hold, which rules out most consumer GPUs. At 4 bit precision the same model fits in roughly 2.5 GB with room left for context, which is what lets an entry-level card like a GTX 1650 run serious research work locally." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is quantization?</h1>
+    <p class="lede">The reason a language model fits on the hardware you already own. A compression step with a small, honest cost.</p>
+
+    <div class="capsule">
+      <p>Quantization stores a model's numbers in fewer bits than they were trained with. A model is a very large collection of numbers, and rounding them from 16 bit to 4 bit precision makes the file several times smaller, which is what lets a modest GPU hold one at all. The cost is a small loss of precision that rarely changes the quality of an answer; the benefit is that serious models run on ordinary hardware.</p>
+    </div>
+
+    <h2>A model is a very large list of numbers.</h2>
+    <p>Everything a language model knows lives in its parameters, the values tuned during training. At full precision each one takes 16 or 32 bits of storage, and the counts run into the billions, so the memory bill is enormous: a 4 billion parameter model wants roughly 8 GB before it has answered a word. Quantization rounds each parameter into fewer bits, typically 4 or fewer. The rounded values are not identical to the originals, but they are close enough that the model's behavior survives, the way a photo survives being saved as a JPEG.</p>
+
+    <h2>Why local AI leans on it.</h2>
+    <p>The compression is what makes the local story arithmetic that works. At 4 bit precision a parameter takes about half a byte, so a 2 billion parameter model fits near 1.5 GB and a 4 billion parameter model near 2.5 GB, which is what lets <a href="/run-research-ai-gtx-1650/">a GTX 1650's 4 GB of VRAM</a> carry a model and still leave room for the <a href="/what-is-a-context-window/">context window</a> around it. Without quantization, local research tools would need workstation hardware, and <a href="/does-local-ai-need-a-gpu/">the GPU question</a> would have a very different answer.</p>
+
+    <h2>The trade, honestly.</h2>
+    <p>Quantization does cost something, and pretending otherwise would be the wrong way to earn trust. Measured benchmarks dip slightly at 4 bit, and the loss grows if you go more aggressive than that. For grounded question answering the loss is dominated by other factors anyway: the relevance of the retrieved passages and whether the answer is verified against them matter far more than the storage precision of the model reading them. The honest summary is that quantization trades a sliver of theoretical accuracy for the ability to run at all on hardware people actually own, and in practice that trade is almost always worth it.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/does-local-ai-need-a-gpu/">Does local AI need a GPU?</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/what-is-a-context-window/">What is a context window?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

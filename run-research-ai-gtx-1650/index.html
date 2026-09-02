@@ -92,7 +92,7 @@
     </div>
 
     <h2>What the numbers actually are.</h2>
-    <p>A model's memory footprint is its parameter count times the bytes each parameter takes after quantization. At 4 bit precision that is roughly half a byte per parameter, so a 2B model needs about 1.5 GB once you count the overhead, and a 4B model at 3 bit lands near 2.5 GB. Both leave room on a 4 GB card for the context window, which is what grows as your question and the retrieved passages feed in.</p>
+    <p>A model's memory footprint is its parameter count times the bytes each parameter takes after <a href="/what-is-quantization/">quantization</a>. At 4 bit precision that is roughly half a byte per parameter, so a 2B model needs about 1.5 GB once you count the overhead, and a 4B model at 3 bit lands near 2.5 GB. Both leave room on a 4 GB card for the context window, which is what grows as your question and the retrieved passages feed in.</p>
     <p>The GTX 1650 has 4 GB of VRAM. That rules out the large general-purpose models people screenshot on social media, and it does not need to rule anything else out. A 4B model that reads your sources and writes cited paragraphs is a different job from writing screenplays, and the smaller end handles it well.</p>
 
     <h2>Where each part of the loop runs.</h2>
