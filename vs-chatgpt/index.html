@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Istor and ChatGPT, compared</title>
+  <meta name="description" content="A factual comparison of Istor and ChatGPT: a general-purpose cloud assistant with frontier-scale models, and a local research notebook where documents stay on your machine and every claim is checked." />
+  <link rel="canonical" href="https://istor.fyi/vs-chatgpt/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Istor and ChatGPT, compared" />
+  <meta property="og:description" content="A cloud assistant with frontier-scale models, and a local research notebook where documents never leave your machine." />
+  <meta property="og:url" content="https://istor.fyi/vs-chatgpt/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How is Istor different from ChatGPT?",
+        "acceptedAnswer": { "@type": "Answer", "text": "ChatGPT, by OpenAI, is a general-purpose assistant that runs in the cloud: you make an account, and files you attach are uploaded and processed on OpenAI's servers. Istor is a research notebook that runs entirely on your machine: documents stay on disk, every claim in an answer is verified against the passage it cites, and the tool refuses when your sources do not contain the answer." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is ChatGPT private for documents?",
+        "acceptedAnswer": { "@type": "Answer", "text": "ChatGPT is a cloud service, so privacy rests on OpenAI's terms and infrastructure: anything you attach has been uploaded, and uploaded text can be retained or reviewed under those terms. A local tool makes a different promise by construction: the document never leaves your machine, so there is no server policy to trust and no account to hold." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which should I use for research with sources?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Use ChatGPT when you want the broadest general assistant and the documents are not sensitive. Use a grounded local tool when the sources are private or unpublished, when every claim needs a citation you can check, or when the work has to continue offline. A frontier model is the stronger general mind; a grounded loop is the one that shows its work." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Istor and ChatGPT, compared.</h1>
+    <p class="lede">Both answer questions. One is a general-purpose assistant that runs in the cloud. The other is a research instrument that runs on your desk and checks its own claims.</p>
+
+    <div class="capsule">
+      <p>ChatGPT, by OpenAI, is a general-purpose cloud assistant: frontier-scale models behind an account, and files you attach are uploaded and processed on OpenAI's servers. Istor is a local research notebook: documents never leave your machine, every claim in an answer is verified against the passage it cites, and it refuses when your sources do not contain the answer. ChatGPT is the broader mind. Istor is the one that shows its work.</p>
+    </div>
+
+    <h2>What ChatGPT does well.</h2>
+    <p>ChatGPT is the most widely used AI assistant there is, and the reasons are real. Its models are frontier-scale, far larger than anything that fits on a consumer GPU, and that shows in general knowledge, difficult reasoning, and fluent writing across nearly any topic. It accepts file uploads in a conversation, can read the web when asked, and carries a huge ecosystem of integrations. As a general-purpose helper for drafting, brainstorming and quick questions, it is the default for good reasons.</p>
+    <p>The honest comparison starts where those strengths stop being the point: with documents you cannot upload, answers you intend to check, and work that has to run without a server.</p>
+
+    <h2>Where Istor differs.</h2>
+    <p>Istor is narrower on purpose, and the narrowing shows up in three places.</p>
+    <p>The first is where the documents go. In ChatGPT, an attached file is uploaded and processed on OpenAI's infrastructure under OpenAI's terms; whatever the policy says, the copy now exists on a server. In Istor the document never moves. Extraction, indexing, retrieval and inference all happen on your machine, so there is no upload to weigh and no policy to trust, and unpublished work stays unpublished.</p>
+    <p>The second is the gate. ChatGPT writes confident answers and, when sources are involved, can name them, but the claims are not checked against those sources before you read the answer. Istor runs a grounding pass on every claim in a draft answer, verifying it against the specific passage it cites, and refuses rather than guess when the library does not contain the answer. For research, "your sources do not say" is a finding, not a failure.</p>
+    <p>The third is the desk. ChatGPT is a chat window in a browser behind a login. Istor is a notebook on your machine: sources on one side, answers with citations beside them, notes living next to the passages they came from. It works on a plane, in a dead zone, and on hardware as modest as a GTX 1650, with no account anywhere in the loop.</p>
+
+    <h2>Side by side.</h2>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col"></th><th scope="col">Istor</th><th scope="col">ChatGPT</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Where it runs</td><td>Your machine, fully</td><td>OpenAI's cloud</td></tr>
+        <tr><td>Documents</td><td>Stay on your disk</td><td>Uploaded to OpenAI's servers</td></tr>
+        <tr><td>Account</td><td>None</td><td>OpenAI account required</td></tr>
+        <tr><td>Model scale</td><td>Curated small models, GTX 1650 class GPU</td><td>Frontier-scale, datacenter hardware</td></tr>
+        <tr><td>Grounding</td><td>Hard gate: every claim verified, refusal when sources lack the answer</td><td>Can name sources; claims are not verified per passage</td></tr>
+        <tr><td>Works offline</td><td>Yes, over your own library</td><td>No</td></tr>
+        <tr><td>Notes</td><td>Built in, beside the sources</td><td>No</td></tr>
+        <tr><td>Price</td><td>Free, open source</td><td>Free tier, paid plans above it</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Which one fits.</h2>
+    <p>Use ChatGPT for everything a general assistant is for: drafting, brainstorming, quick questions, wide knowledge where the material is not sensitive. Nothing local matches a frontier model's raw range, and this page does not claim otherwise.</p>
+    <p>Use Istor when the work is research over sources: papers, reports, transcripts, scanned archives. When the material is private or unpublished, when every claim in the answer needs a citation you can open, and when the work must continue offline, a grounded local loop is not the budget option. It is the instrument built for the job.</p>
+    <p><a href="/">The full picture of Istor is on the home page.</a></p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/vs-anythingllm/">Istor and AnythingLLM, compared.</a></li>
+        <li><a href="/vs-gpt4all/">Istor and GPT4All, compared.</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/research-ai-offline/">Can an AI do research with no internet?</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
