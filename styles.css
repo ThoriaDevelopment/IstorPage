@@ -1237,3 +1237,16 @@ a { color: inherit; }
     transition: none;
   }
 }
+
+/* readers who ask for more contrast get stronger quiet text and
+   stronger lines; tokens only, so every component follows, and the
+   dark overrides mirror the theme architecture: stamped dark always,
+   unstamped dark only under a dark OS */
+@media (prefers-contrast: more) {
+  :root { --mist: #55514C; --hairline: #C9C2B8; }
+  :root[data-theme="dark"] { --mist: #C4C0B8; --hairline: #3A3A3A; }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --mist: #C4C0B8; --hairline: #3A3A3A; }
+}
