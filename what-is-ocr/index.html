@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is OCR?</title>
+  <meta name="description" content="Optical character recognition: how text is read out of images of pages. What OCR does, where it fails, and why it can run entirely on your own machine instead of an upload service." />
+  <link rel="canonical" href="https://istor.fyi/what-is-ocr/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is OCR?" />
+  <meta property="og:description" content="How text is read out of images of pages, where it fails, and why it can run entirely on your own machine." />
+  <meta property="og:url" content="https://istor.fyi/what-is-ocr/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What does OCR stand for?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Optical character recognition. It is the process of looking at an image of text, a scan, a photograph of a page, and producing the editable, searchable text those marks represent. The output joins the document as a text layer, which is what search and later processing actually read." }
+      },
+      {
+        "@type": "Question",
+        "name": "When does OCR make mistakes?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Mostly on input that is hard to read to begin with: skewed or tilted scans, faint photocopies, tight multi-column layouts, tables, and handwriting of any kind. Clean printed pages come through nearly perfect. Spot-checking extracted text against the page image before quoting anything is a habit worth keeping." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can OCR run without uploading my documents?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. OCR engines are old, well-understood software, and modern operating systems ship one; Windows includes an engine that a local tool can use with no download and no account. The conversion happens on your machine, so scans of confidential material never need to leave it to become searchable." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is OCR?</h1>
+    <p class="lede">The step that turns pictures of pages back into text. Decades old, still the gate between archives and search.</p>
+
+    <div class="capsule">
+      <p>OCR, optical character recognition, reads text out of images of pages. A scanned PDF is a photograph, and a tool that searches photographs finds nothing; OCR converts the picture back into text so it can be searched, quoted and cited like any born-digital document. The software is decades old and runs comfortably on your own machine, which means scans of confidential material never need an upload to become searchable.</p>
+    </div>
+
+    <h2>Pictures of pages are not text.</h2>
+    <p>A born-digital PDF carries its text inside it, and a tool can lift that text out without doing anything clever. A scanned PDF carries only an image, pixels arranged in the shape of letters. Until something reads those pixels, the document is invisible to every search box, which is why archives of court filings, old journal articles and scanned theses sit unreachable in folders. OCR closes that gap: it looks at the image and produces the text the marks represent, stored alongside the page as a searchable layer. That text is what a research tool indexes, which is how <a href="/local-ai-scanned-pdfs/">scans join the same research loop</a> as everything else in a library.</p>
+
+    <h2>Where it fails.</h2>
+    <p>OCR is very good at exactly one thing: clean, printed, upright text. It degrades on tilted scans, faint photocopies, tight columns, tables, and handwriting, and it can fail silently, returning confident text with wrong characters rather than reporting that it could not read the page. Vision models take a different route, reading the page image directly, and handle layouts that trip plain OCR. Neither excuses the reader from checking: extracted text that you intend to quote deserves a look against the page image, the same way any citation does. The tool makes the text reachable; the judgment stays with you.</p>
+
+    <h2>Why it can stay local.</h2>
+    <p>OCR is not a frontier-model problem. The engines are small, well-understood software, and modern operating systems ship one: Windows includes an OCR engine that a local tool can call with no download, no account and no upload. The usual cloud pattern, sending scans to a service that reads them, is a habit of convenience, not a requirement. For anything confidential, from unpublished clinical work to a thesis before submission, keeping the conversion on your own machine is the difference between a searchable archive and a leak. It is one more part of the loop that <a href="/is-local-rag-private/">never has to leave the disk</a>.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/local-ai-scanned-pdfs/">Can a local AI read scanned PDFs?</a></li>
+        <li><a href="/what-formats-can-local-ai-read/">What formats can a local AI read?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
