@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What formats can a local AI read?</title>
+  <meta name="description" content="The common research formats, read on your machine: PDF including scans, DOCX, EPUB, HTML, Markdown and plain text. Why the format list is also a privacy list." />
+  <link rel="canonical" href="https://istor.fyi/what-formats-can-local-ai-read/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What formats can a local AI read?" />
+  <meta property="og:description" content="PDF including scans, DOCX, EPUB, HTML, Markdown and plain text, all extracted on your machine. Why the format list is also a privacy list." />
+  <meta property="og:url" content="https://istor.fyi/what-formats-can-local-ai-read/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What file formats can a local AI read?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The formats research actually arrives in: PDF, both born-digital and scanned, DOCX, EPUB, HTML, Markdown and plain text. Each is opened by an extractor running on your machine, its text pulled out, and the text indexed so questions can retrieve it. A good local tool covers the formats already in your folders rather than asking you to convert them." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can a local AI read Word documents?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. A DOCX file is a container of XML plus embedded media, and reading the text out is ordinary local parsing, no account or conversion service involved. The document is opened the same way your word processor opens it, except nothing leaves the disk while it happens." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does the format change how citations work?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Once the text is extracted, every format joins the same index and behaves the same way: passages are retrieved and cited back to their place in the original document. A quote from a PDF, a web page and a Markdown note can sit in one answer, each pointing at its own source." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What formats can a local AI read?</h1>
+    <p class="lede">Research does not arrive in one format. It arrives as the folder you actually have, and a local tool reads it where it sits.</p>
+
+    <div class="capsule">
+      <p>The common research formats: PDF, including <a href="/local-ai-scanned-pdfs/">scanned pages</a>, DOCX, EPUB, HTML, Markdown and plain text. Each is opened by an extractor running on your machine, the text pulled out and indexed, so questions reach every document at once. No format requires an account, a converter service or an upload, because the reading happens where the files already are. And once import finishes, the format stops mattering: every document joins the same searchable, citable index.</p>
+    </div>
+
+    <h2>The formats that matter.</h2>
+    <p>Born-digital PDFs carry their text and open directly. DOCX files are parsed for their text, headings and tables. EPUB and HTML are text under a wrapper. Markdown and plain text barely need an extractor at all. The odd one out is the scanned PDF, which is a photograph of a page and needs OCR or a vision model to become text; that path is its own subject. Together these cover what a working library actually holds: downloaded papers, reports, exported web pages, lecture notes, drafts, and the long tail of scans.</p>
+
+    <h2>Why the format list is a privacy list.</h2>
+    <p>Every format a tool claims is also a place it sends your file. When a cloud assistant reads a DOCX, the document is uploaded first; the format support and the data transfer are the same event. With a local tool the two come apart. The extractor runs on your machine, next to the retrieval and the model, so supporting a format costs bandwidth nothing. A DOCX of unpublished results, an EPUB of licensed material, a scan of a confidential record: each is read where it lies, and the copy that exists after import is the one already on your disk.</p>
+
+    <h2>What happens on import.</h2>
+    <p>Whichever format a file arrives in, the pipeline after extraction is the same. The text is <a href="/what-is-rag/">chunked and embedded</a> so retrieval can find its passages, duplicates are detected so re-importing an updated version does not fork the library, and citations keep pointing at the original document rather than the extracted text. Formats stop mattering the moment import finishes: <a href="/local-ai-field-research/">a field notebook's photos, an archive scan and a downloaded paper</a> end up in one index, answerable together.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/local-ai-scanned-pdfs/">Can a local AI read scanned PDFs?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/local-ai-field-research/">Local AI for field research.</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
