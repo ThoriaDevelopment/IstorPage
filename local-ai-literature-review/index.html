@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Can a local AI do a literature review?</title>
+  <meta name="description" content="Yes, and here is what that looks like: importing sources, asking grounded questions across the whole library, checking every claim against its passage, and keeping notes where the evidence lives." />
+  <link rel="canonical" href="https://istor.fyi/local-ai-literature-review/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Can a local AI do a literature review?" />
+  <meta property="og:description" content="Import sources, ask grounded questions across the library, check every claim against its passage, and keep notes where the evidence lives." />
+  <meta property="og:url" content="https://istor.fyi/local-ai-literature-review/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Can a local AI do a literature review?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The reading, the cross-source questions and the note keeping are exactly what a grounded local tool does well. What it will not do is write the review for you: a literature review is an argument about how sources relate, and that judgment stays yours. Istor's grounding gate helps by refusing to answer when the sources in your library do not contain one." }
+      },
+      {
+        "@type": "Question",
+        "name": "How many PDFs can a local AI handle?",
+        "acceptedAnswer": { "@type": "Answer", "text": "More than a person can read. Istor stores the library in a local SQLite database, extracts text from PDFs, DOCX, EPUB, HTML, Markdown and plain text, and retrieves by hybrid keyword and semantic search, so the question is matched against every source at once. A GTX 1650 class GPU runs the models that do this." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my unpublished research safe with a local literature tool?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, as long as the tool runs inference on your machine. Istor's retrieval, prompting and model inference are all local, so drafts, preprints and confidential papers never leave the machine. The only network use is a web fetch you trigger yourself." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Can a local AI do a literature review?</h1>
+    <p class="lede">The reading and the cross-checking, yes. The argument, no. Here is what a local tool actually contributes to reviewing literature, and where the line sits.</p>
+
+    <div class="capsule">
+      <p>Yes, a local AI can do most of a literature review's mechanical work: hold every source at once, answer questions across all of them, verify each claim against the passage it cites, and keep notes beside the evidence. What it cannot do is the review itself. A literature review is an argument about how sources relate, and that judgment is yours. The tool's job is to make sure nothing in the pile gets lost, and that nothing gets asserted that the pile does not support.</p>
+    </div>
+
+    <h2>The parts a local AI is good at.</h2>
+    <p>A literature review starts as an ingestion problem. Papers arrive as PDFs, sometimes a dozen formats deep, and half the work of a review is simply knowing what is in the pile. A local tool turns that pile into a searchable library: every document is extracted, deduplicated and embedded, so a question reaches all of it at once. You stop remembering which paper said the thing and start asking what the pile says.</p>
+    <p>The cross-source question is the other mechanical win. "Which of these studies report the effect under blinding?" is a retrieval question, and a grounded tool answers it by pulling the passages that bear on it, from every source that has them. Doing that by hand means a day with browser tabs and a highlighter.</p>
+    <p>There is a privacy reason to want this local, too. A thesis before submission, a grant application, a review of unpublished clinical work: none of it should be uploaded to a service to be processed. On a local tool the sources never leave the machine, and on hardware as modest as a GTX 1650 the models run fine.</p>
+
+    <h2>The line the tool cannot cross.</h2>
+    <p>A literature review is not a summary of sources. It is a claim about a field: what is established, what is contested, what nobody has looked at. No model makes that argument, and one that tried would produce the worst kind of review, fluent and unaccountable. The tool reads and retrieves; you decide what the state of the field is.</p>
+    <p>What a well-built local tool does instead is keep you honest while you work. Istor's grounding gate checks every claim in an answer against the passage it cites before you see it, and when the library does not contain an answer, it refuses and says what a real answer would need. That refusal matters in review work, because the failure mode of a confident model against a thin pile is invented consensus.</p>
+    <p>Notes are the third piece. A review accumulates findings over weeks, and they are only useful if they stay attached to their evidence. In Istor notes live in the same window as the sources they came from, and every answer already carries citations back to the passages it drew on.</p>
+
+    <h2>How the loop maps to review work.</h2>
+    <p>Import the pile, in whatever formats you have. Ask the cross-source questions, and read the cited passages rather than trusting the prose. When the answer names a gap, that is usually the review's contribution taking shape. Pull web sources only when you choose to, and note what you find beside the answers. When the tool refuses, believe it: the library is telling you the claim is not in there yet, which is either a missing source or a finding.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/vs-anythingllm/">Istor and AnythingLLM, compared.</a></li>
+        <li><a href="/vs-gpt4all/">Istor and GPT4All, compared.</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
