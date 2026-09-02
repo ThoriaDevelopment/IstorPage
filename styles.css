@@ -1184,7 +1184,9 @@ a { color: inherit; }
 
 .site-foot nav {
   display: flex;
-  gap: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.25rem;
+  max-width: 100%;
 }
 
 .site-foot a {
@@ -1198,6 +1200,22 @@ a { color: inherit; }
 .foot-note {
   font-size: 0.8125rem;
   color: var(--mist);
+}
+
+.site-foot-pages {
+  flex-basis: 100%;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.site-foot-pages a {
+  font-size: 0.75rem;
+  color: var(--mist);
+  text-decoration: none;
 }
 
 /* ── scroll reveal (classes are applied by script.js only, so the
