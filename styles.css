@@ -206,6 +206,13 @@ a { color: inherit; }
   background: var(--witness);
 }
 
+/* the section links' second row, shown only where the main nav drops
+   them; display:none keeps it out of the accessibility tree on desktop,
+   where the main nav already carries the same four links */
+.head-links {
+  display: none;
+}
+
 .site-nav {
   display: flex;
   align-items: center;
@@ -1154,9 +1161,25 @@ a { color: inherit; }
 /* ── narrow ─────────────────────────────────────────────────────── */
 
 @media (max-width: 720px) {
-  .site-head { padding: 0.875rem 1.25rem; }
+  .site-head { flex-wrap: wrap; padding: 0.875rem 1.25rem 0; }
   .site-nav { gap: 0.875rem; }
   .site-nav > a:not(.cta) { display: none; }
+  .head-links {
+    display: flex;
+    flex-basis: 100%;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 0 0.25rem;
+    border-top: 1px solid var(--hairline);
+  }
+  .head-links a {
+    font-size: 0.8125rem;
+    color: var(--mist);
+    text-decoration: none;
+    padding: 0.375rem 0; /* a 13px label alone is under the 24px target */
+  }
+  .head-links a:hover { color: var(--ink); }
+  section[id] { scroll-margin-top: 6.5rem; }
   .hero { padding: 4.5rem 1.25rem 5rem; }
   .story { padding: 3.5rem 1.25rem; }
   .story-row { grid-template-columns: 1fr; gap: 1.75rem; margin-top: 3rem; }
