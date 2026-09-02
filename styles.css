@@ -1,4 +1,4 @@
-/* Istor — istor.fyi
+/* Istor: istor.fyi
    Token-level theming: the bare :root carries the complete light world,
    the dark world only redefines tokens, and components read tokens alone. */
 
