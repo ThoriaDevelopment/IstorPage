@@ -43,6 +43,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is a GGUF file?](https://istor.fyi/what-is-a-gguf/): the single-file format local models ship in, weights plus metadata with quantization baked in; why it became the standard for local runtimes.
 - [What is hybrid search?](https://istor.fyi/what-is-hybrid-search/): keyword search and vector search run together, each covering what the other misses; the merge that feeds retrieval, and why it runs on a laptop.
 - [How do you cite an AI answer?](https://istor.fyi/how-to-cite-ai/): credit the tool in the text, cite the recoverable sources you verified, and disclose what you asked; the principles that outlast the style guides' current rules.
+- [What is an open-weight model?](https://istor.fyi/what-is-open-weight/): a model whose trained numbers are downloadable, the completeness that makes local AI a copy operation; what open weights give you and what they still do not.
 
 ## Download
 

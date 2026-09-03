@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is an open-weight model?</title>
+  <meta name="description" content="The trained numbers are downloadable, so the model runs wherever you copy it. What open weights give you, what they still do not, and why the term is not the same as open source." />
+  <link rel="canonical" href="https://istor.fyi/what-is-open-weight/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is an open-weight model?" />
+  <meta property="og:description" content="The trained numbers are downloadable, so the model runs wherever you copy it. What open weights give you and what they still do not." />
+  <meta property="og:url" content="https://istor.fyi/what-is-open-weight/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is an open-weight model the same as open source?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not quite, and the distinction matters. Open source in software means the recipe ships with the program: code, build files and a license that permits reuse. An open-weight model ships the finished numbers, usually without the training data, the training code or the compute that produced them. You get the model itself to run and inspect, not everything that made it." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I fine-tune an open-weight model?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Usually yes, within whatever the license allows, and the smaller open-weight models are practical to adapt on consumer hardware using methods that train only a fraction of the parameters. Whether adapting is worth it depends on the job: for knowledge you would rather add a document library and retrieval than retrain, and for tone or format a small amount of tuning can go a long way." }
+      },
+      {
+        "@type": "Question",
+        "name": "Are open-weight models as good as cloud ones?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The frontier cloud models are still ahead on raw capability, but the gap keeps narrowing, and for grounded work the gap matters less than it seems. When an answer comes from retrieved passages in your library rather than from the model's memory, a competent open-weight model that reads carefully is close to what the task needs, and it runs on hardware you own with nothing sent anywhere." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is an open-weight model?</h1>
+    <p class="lede">A model whose trained numbers anyone can download. The mind is on your disk, which is the whole trick that makes local AI possible.</p>
+
+    <div class="capsule">
+      <p>An open-weight model is one you can download, because its parameters are published rather than kept behind an API. You get the <a href="/what-does-7b-mean/">trained numbers</a> and a license that lets you run them, on your own machine, for inspection, adaptation or anything the license allows. You do not get the training data or the training process. Open weights are what every local tool runs on, and the term exists because they are not quite open source.</p>
+    </div>
+
+    <h2>The weights are the model.</h2>
+    <p>A language model is nothing but its parameters and a way to read them, so publishing the weights really does publish the model. Nothing else is held back at inference time: there is no server-side ingredient the model needs, no key, and no account. That completeness is why <a href="/what-is-a-local-llm/">running a local LLM</a> is a download rather than a service, and why an open-weight model keeps working on a machine that never touches the internet.</p>
+
+    <h2>What you get, and what you do not.</h2>
+    <p>Open weights buy you control. The model runs where your data is, its behavior does not change without a version you chose to install, and there is no meter between you and it. What you do not get is the recipe: the training data, the training code and the compute behind those weights usually stay private, which is why "open weight" is the honest term where "open source" would overpromise. The <a href="/what-is-a-gguf/">file format</a> the community standardized makes the distinction concrete: you hold the finished artifact, not the kitchen it was baked in.</p>
+
+    <h2>Why it carries local research work.</h2>
+    <p>Grounded tools lean on open weights differently from chat tools. A chatbot needs the model's memory to be vast; a research notebook needs the model to read carefully, since the knowledge in the answers comes from your retrieved documents rather than from the model. Models in the 7B class handle that reading work well, which is why a personal machine is enough hardware and why the capability question shifts from what the model remembers to <a href="/what-is-rag/">how well retrieval feeds it</a>.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/what-is-a-gguf/">What is a GGUF file?</a></li>
+        <li><a href="/what-does-7b-mean/">What does 7B mean in a model name?</a></li>
+        <li><a href="/what-is-quantization/">What is quantization?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
