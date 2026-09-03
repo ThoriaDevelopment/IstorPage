@@ -66,6 +66,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is a benchmark in AI?](https://istor.fyi/what-is-a-benchmark/): the fixed test that lets model quality claims be compared; useful as a filter, and still not a description of how a model handles your documents.
 - [What is a knowledge base?](https://istor.fyi/what-is-a-knowledge-base/): the organized, searchable collection behind grounded answers; why it is a property of documents rather than a product, and what retrieval needs from it.
 - [What is a chat template?](https://istor.fyi/what-is-a-chat-template/): the text wrapper a model was trained to expect around a conversation; where it travels in the model file, and what goes wrong without it.
+- [Can a local AI write code?](https://istor.fyi/can-local-ai-write-code/): yes, within limits; everyday scripts and fixes work well, hard problems want review, and proprietary code never leaves the machine.
 
 ## Download
 
