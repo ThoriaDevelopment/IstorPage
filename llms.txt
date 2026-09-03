@@ -38,6 +38,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [How does document chunking work?](https://istor.fyi/how-document-chunking-works/): why long documents are cut into passages before search, what good boundaries preserve, and why the step runs locally.
 - [What is inference?](https://istor.fyi/what-is-inference/): running a trained model on your input to produce an answer; the act is offline, local, and changes nothing in the model.
 - [What is a vector database?](https://istor.fyi/what-is-a-vector-database/): the index that matches meaning instead of wording, why a personal library needs no server product, and what the vectors point back to.
+- [How do you stop an AI from making things up?](https://istor.fyi/how-to-stop-ai-hallucinating/): grounded retrieval, citations that open passages, a verification gate that refuses; confidence is not a fix, structure is.
 
 ## Download
 

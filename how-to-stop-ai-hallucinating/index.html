@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>How do you stop an AI from making things up?</title>
+  <meta name="description" content="Grounded retrieval, citations that open passages, and a verification gate that refuses when sources lack the answer. What actually reduces AI hallucination, in order." />
+  <link rel="canonical" href="https://istor.fyi/how-to-stop-ai-hallucinating/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How do you stop an AI from making things up?" />
+  <meta property="og:description" content="Grounded retrieval, citations that open passages, and a verification gate that refuses when sources lack the answer." />
+  <meta property="og:url" content="https://istor.fyi/how-to-stop-ai-hallucinating/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Can you fully prevent AI hallucinations?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No system eliminates them, and any that claims to is selling confidence. What works is making errors checkable instead of invisible: ground answers in retrieved passages, attach citations to every claim, and run a verification pass that removes what the passages do not support. The goal is not a model that is never wrong; it is an answer you can audit in seconds." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does telling the model not to hallucinate work?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Barely. Instructions to only use the given sources help at the margins, but the failure mode is not disobedience, it is the model doing exactly what it was built to do: producing fluent continuations. A fluent sentence shaped like a citation can appear because it fits, not because it exists. Structure, in the form of retrieval and verification, changes what the model has to work with; instructions only change how confidently it improvises." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the fastest way to check an AI answer?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Click the citations. A real reference opens the exact passage and the passage says what the answer claimed; an invented one is a dead link, a real link to the wrong place, or a page that says something weaker. One or two clicks catch most fabrications, and a tool that makes citations hard to check has answered a question about itself in the process." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>How do you stop an AI from making things up?</h1>
+    <p class="lede">Not by asking nicely. The tools that work are structural: give the model real sources, make it point at them, and check the pointing.</p>
+
+    <div class="capsule">
+      <p>You cannot switch hallucination off, but you can make answers checkable. Ground the model in retrieved passages instead of memory, require a citation for every claim, and run a verification pass that compares each claim against the passage it cites, removing what the passages do not support. Where the sources have no answer, the system refuses. That combination converts a confident guess you must trust into an answer you can audit.</p>
+    </div>
+
+    <h2>Change what the model reads, not what it is told.</h2>
+    <p>A model answering from memory has nothing to be right about except its training data, which is why <a href="/what-is-rag/">retrieval</a> comes first in every honest fix: real passages from your documents go into the prompt, and the model answers from those instead of from memory. This removes most invention at the source, because the model no longer needs to recall what a source said; it is looking at the source. What remains is the subtler failure of saying slightly more than the passage does, and no prompt, however stern, closes that gap, which is why the next step exists.</p>
+
+    <h2>Verify after, not before.</h2>
+    <p>The second layer checks the answer after it is written. Each claim is compared against the exact passage it cites, and the claims the passage does not support are cut or rewritten; a question the sources cannot answer gets a refusal instead of a guess. This is the <a href="/why-ai-hallucinates-citations/">difference between citations that look convincing and ones that hold</a>, and it runs as code, not as a hope. Refusal deserves defending: in research work, being told your sources do not say is a useful finding, and it is the one outcome a chat-only tool cannot reliably produce because it has no sources to check against.</p>
+
+    <h2>Keep the checking cheap.</h2>
+    <p>The habit that catches everything else is clicking the citations, and a good tool makes that habit cheap by design: one click opens the passage, the passage is highlighted, and the claim sits next to the words it came from. When checking is cheap you actually do it, and the tool's trustworthiness stops depending on its tone of voice. A system that grounds, cites, verifies and refuses is the honest ceiling today; the residual errors it leaves are ones a reader can find in seconds rather than ones that hide in fluency, and that difference is what makes an answer usable in work that matters.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/why-ai-hallucinates-citations/">Why do AI chatbots invent citations?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/vs-chatgpt/">Istor and ChatGPT, compared.</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/can-local-ai-summarize-pdfs/">Can a local AI summarize PDFs?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
