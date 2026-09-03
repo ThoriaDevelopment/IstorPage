@@ -80,6 +80,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is MCP?](https://istor.fyi/what-is-mcp/): an open standard for connecting tools to models; a tool written once works with any compliant app, and local servers keep the actions on your machine.
 - [What is Ollama?](https://istor.fyi/what-is-ollama/): a free tool that runs models locally with one command; engine, download and server in one package, and the model stays on your machine.
 - [What is a local-first app?](https://istor.fyi/what-is-a-local-first-app/): an app whose data and core work stay on your machine; the network is an option you choose, and files live on your disk in formats you can open elsewhere.
+- [What is an inference engine?](https://istor.fyi/what-is-an-inference-engine/): the software that turns a model's weights into answers; it loads the file, runs the token loop and manages memory, and the same model runs at different speeds in different engines.
 
 ## Download
 

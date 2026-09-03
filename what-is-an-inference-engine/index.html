@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is an inference engine?</title>
+  <meta name="description" content="The software that turns a model's weights into answers: what an inference engine loads, computes and manages, why it decides speed, and how it sits under every local AI tool." />
+  <link rel="canonical" href="https://istor.fyi/what-is-an-inference-engine/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is an inference engine?" />
+  <meta property="og:description" content="The software that turns a model's weights into answers: what it computes, why it decides speed, and how it sits under every local AI tool." />
+  <meta property="og:url" content="https://istor.fyi/what-is-an-inference-engine/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is an inference engine the same as a model?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. The model is the file of learned weights; the engine is the program that loads those weights and generates text from them. The same model file can run in different engines, and the same engine can run many models. Confusing them is easy because tools ship both together, but the distinction matters when one update speeds everything up: that was the engine, not the model." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need to choose an inference engine?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Usually not directly. Desktop AI applications embed an engine and hide it, so picking an application picks its engine. The choice becomes visible in two places: speed, where engines differ on the same model, and settings, where options such as GPU layer offload belong to the engine rather than the application. Command-line runners are the case where you pick an engine by name." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do different engines give different speeds on the same model?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Generation is dominated by reading the model's weights from memory, so engine speed comes down to engineering details: how well its kernels use the processor, which quantization formats it reads natively, and how efficiently it places layers in fast GPU memory when one is available. Two engines with the same weights and hardware can differ by large factors on long answers." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is an inference engine?</h1>
+    <p class="lede">The software that turns a model's weights into answers, and the reason the same file runs at different speeds in different tools.</p>
+
+    <div class="capsule">
+      <p>An inference engine is the software that turns a model's weights into answers. The model file stores what the network learned; the engine loads it, runs the arithmetic that generates each token, manages memory and context, and serves the result to whatever application sits above. The same file runs faster or slower depending on the engine. This is what makes a model portable: one GGUF file, many engines, and the hardware beneath deciding the speed.</p>
+    </div>
+
+    <h2>What the engine actually does.</h2>
+    <p>Inference itself is the process of <a href="/what-is-inference/">generating an answer from a model</a>; the engine is the program that carries it out. It loads the weights from the model file, <a href="/what-is-tokenization/">converts your text into tokens</a>, runs the network's arithmetic over each step, picks the next token, and repeats until the answer is complete. Around that core loop it manages the memory budget, keeps the conversation context ordered, and exposes the whole thing through an interface an application can call. None of that changes what the model knows; it decides how well the model's knowledge gets used.</p>
+
+    <h2>Why engines decide speed.</h2>
+    <p>Generation is dominated by a single cost, streaming the model's weights from memory into the processor on every token. How well an engine does that is engineering, not mathematics: kernel code tuned to the processor, native support for <a href="/what-is-quantization/">compressed weights</a>, and smart placement of layers in <a href="/what-is-vram/">fast GPU memory</a>. This is why two tools running the identical model file can differ noticeably on <a href="/what-is-tokens-per-second/">tokens per second</a>, and why engine updates sometimes speed up every tool built on them without any model changing.</p>
+
+    <h2>The engine under your tools.</h2>
+    <p>Most local AI applications do not write their own engine; they embed one, most often <a href="/what-is-llama-cpp/">llama.cpp</a> or a runtime derived from it. That division of labor is why a <a href="/what-is-a-gguf/">GGUF file</a> works across so many different apps, and why the application you see is really a research layer above a shared running layer. When an answer feels slow, the application's settings usually reach down into engine territory, GPU offload and context size chief among them, which is why knowing the layer exists makes the knobs readable.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-inference/">What is inference?</a></li>
+        <li><a href="/what-is-llama-cpp/">What is llama.cpp?</a></li>
+        <li><a href="/what-is-a-gguf/">What is a GGUF file?</a></li>
+        <li><a href="/what-is-vram/">What is VRAM?</a></li>
+        <li><a href="/what-is-quantization/">What is quantization?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
