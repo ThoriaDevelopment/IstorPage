@@ -46,6 +46,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is an open-weight model?](https://istor.fyi/what-is-open-weight/): a model whose trained numbers are downloadable, the completeness that makes local AI a copy operation; what open weights give you and what they still do not.
 - [What is AI hallucination?](https://istor.fyi/what-is-ai-hallucination/): fluent, confident output with no basis in fact; why the same mechanism that makes models fluent makes them fabricate, and why the fixes are structural.
 - [Can a local AI read handwriting?](https://istor.fyi/can-local-ai-read-handwriting/): neat handwriting mostly yes, hurried cursive with real limits; what local OCR and vision models manage on your machine and where checking stays essential.
+- [What is fine-tuning?](https://istor.fyi/what-is-fine-tuning/): continuing a model's training to change behavior; why knowledge wants retrieval instead, and how LoRA made adaptation practical on ordinary hardware.
 
 ## Download
 

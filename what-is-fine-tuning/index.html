@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is fine-tuning?</title>
+  <meta name="description" content="Continuing a model's training on examples to change how it behaves. What it can adapt, what it cannot fix, and why a document library beats it for knowledge." />
+  <link rel="canonical" href="https://istor.fyi/what-is-fine-tuning/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is fine-tuning?" />
+  <meta property="og:description" content="Continuing a model's training on examples to change behavior. What it can adapt, what it cannot fix, and why retrieval beats it for knowledge." />
+  <meta property="og:url" content="https://istor.fyi/what-is-fine-tuning/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Should I fine-tune a model on my documents?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Usually not. Documents are knowledge, and knowledge wants retrieval: a library the model reads from at question time, which stays current and checkable. Fine-tuning bakes training text into the weights, where it cannot be cited, updated or removed, and a model tuned on a document set will often answer as if it knows things it merely memorized, with no way to verify what came out." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is fine-tuning good for?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Behavior rather than knowledge. Shifting tone, tightening output format, teaching a consistent structure of answer, or making a small model better at one recurring kind of task: those are things examples can teach. A modest set of well-chosen examples goes a long way, which is why the technique survives despite the cost and the effort of preparing data." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is LoRA?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A way to fine-tune cheaply. Instead of updating all of a model's parameters, LoRA trains a small set of added values that sit alongside them, which cuts the memory and compute the adaptation needs by a wide margin. It is why adapting open-weight models has become practical on ordinary hardware, and why communities share small adaptation files instead of full retrained models." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is fine-tuning?</h1>
+    <p class="lede">Continuing a model's training with new examples so its behavior shifts. Small word, big fork in the road: adapt the model, or give it something to read.</p>
+
+    <div class="capsule">
+      <p>Fine-tuning takes a trained model and continues its training on new examples, nudging the weights until the model's behavior matches them. It changes how a model writes, formats and responds; it does not make the model look things up. For knowledge, a document library with retrieval stays better, because it is current, checkable and can be swapped out at any time. Fine-tuning earns its place where style or format needs to be consistent.</p>
+    </div>
+
+    <h2>More training, on purpose.</h2>
+    <p>A model's weights are the residue of its training, and fine-tuning resumes that process: the model sees new examples, and the same mechanism that produced the weights in the first place adjusts them slightly to fit. The result is an <a href="/what-is-open-weight/">open-weight model</a> that behaves differently, not one that knows it should behave differently. The distinction matters because behavior learned this way is statistical and invisible; there is no file to inspect, only tendencies, which is why tuning works best for things you can demonstrate in examples rather than state in a paragraph.</p>
+
+    <h2>Knowledge is the wrong tool here.</h2>
+    <p>The most common misuse is tuning a model on your own documents, hoping it will absorb them. What actually happens is lossy compression: facts sink into the weights without their sources, immune to update and impossible to cite. That is the reverse of what research work needs. <a href="/what-is-rag/">Retrieval-augmented generation</a> keeps the knowledge outside the model, in documents that stay current, and the answer can point at the passage it came from. The division of labor is simple: behavior goes in the weights, knowledge goes in the library.</p>
+
+    <h2>Why it became practical.</h2>
+    <p>Full fine-tuning rewrites every parameter and wanted hardware few people had. Methods such as LoRA train a small adapter alongside the <a href="/what-does-7b-mean/">frozen weights</a> instead, which shrinks the compute by orders of magnitude and makes adapting a 7B model a weekend project on consumer hardware. Even so, the honest baseline for local research tools is that they need no tuning at all: <a href="/what-is-a-local-llm/">a general model</a> that reads carefully, pointed at a good library, already does the work most people imagine they would need a custom model for.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-open-weight/">What is an open-weight model?</a></li>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/what-does-7b-mean/">What does 7B mean in a model name?</a></li>
+        <li><a href="/what-is-inference/">What is inference?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
