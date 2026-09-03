@@ -33,6 +33,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is quantization?](https://istor.fyi/what-is-quantization/): storing a model's numbers in fewer bits, the compression that lets serious models run on ordinary hardware.
 - [What is tokenization?](https://istor.fyi/what-is-tokenization/): how text becomes the pieces a model reads, and why every limit is measured in tokens.
 - [What is OCR?](https://istor.fyi/what-is-ocr/): reading text out of images of pages, where it fails, and why the conversion can stay on your machine.
+- [Can a local AI translate documents?](https://istor.fyi/can-local-ai-translate-documents/): yes, translation is a core language task; what quality depends on and why the document never has to leave the disk.
 
 ## Download
 
