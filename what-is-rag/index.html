@@ -93,7 +93,7 @@
 
     <h2>The three steps.</h2>
     <p>First, retrieval. Your documents are indexed ahead of time, usually as embeddings, which are <a href="/what-is-an-embedding/">number representations of meaning</a> that let a question match passages by sense rather than by exact words. When you ask, the system finds the passages that bear on the question. Good systems use hybrid retrieval, combining that semantic match with plain keyword search, because each catches what the other misses.</p>
-    <p>Second, assembly. The retrieved passages are placed into the prompt alongside your question, so the model reads them as context. What goes in is what the answer can draw on, which is why retrieval quality bounds answer quality.</p>
+    <p>Second, assembly. The retrieved passages are placed into the prompt alongside your question, so the model reads them as context. What goes in is what the answer can draw on, which is why retrieval quality bounds answer quality. Those passages exist because the documents were <a href="/how-document-chunking-works/">cut into chunks</a> first, a step that quietly decides how much of a thought each retrieval result carries.</p>
     <p>Third, generation. The model writes an answer grounded in those passages. Done well, every claim points to the passage it came from, so the reader can check it in a click.</p>
 
     <h2>What RAG fixes, and what it does not.</h2>

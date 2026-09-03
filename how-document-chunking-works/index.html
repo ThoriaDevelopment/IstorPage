@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>How does document chunking work?</title>
+  <meta name="description" content="The step that cuts long documents into the passages retrieval can find: why chunk size matters, what good boundaries preserve, and how it stays part of a local pipeline." />
+  <link rel="canonical" href="https://istor.fyi/how-document-chunking-works/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How does document chunking work?" />
+  <meta property="og:description" content="The step that cuts long documents into the passages retrieval can find: why chunk size matters and what good boundaries preserve." />
+  <meta property="og:url" content="https://istor.fyi/how-document-chunking-works/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a good chunk size?",
+        "acceptedAnswer": { "@type": "Answer", "text": "One that holds a complete thought: long enough that a passage makes sense on its own, short enough that retrieval can be precise. A few hundred words is a common working range. The size should follow the document's own structure, so paragraphs and sections decide the boundaries rather than a fixed character count." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do bad chunk boundaries break search?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because a passage cut mid-argument retrieves badly and reads worse. If the sentence that answers your question sits in a chunk while the sentence that defines its terms sits in the previous one, a search can surface the first without the second, and the model then answers from a fragment. Clean boundaries at paragraph and section edges are the cheapest fix in all of retrieval." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does chunking happen on my own machine?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, in a local pipeline it is plain text processing: the document is already on your disk, the tool splits it into passages, embeds each one, and stores the results in a local index. Nothing is uploaded to be parsed, and the same document can be re-chunked with different settings at any time without paying for the change." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>How does document chunking work?</h1>
+    <p class="lede">The invisible step that decides what retrieval can find. Cut a document well and search feels brilliant; cut it badly and no model can save it.</p>
+
+    <div class="capsule">
+      <p>Chunking cuts a long document into the passages that a search system can find and a model can read at once. A document is indexed in pieces because questions are answered by passages, not by whole books. Each piece is embedded and stored, retrieval surfaces the pieces that match a question, and their boundaries decide whether the model sees a complete thought or a fragment. Good chunking follows the document's own structure.</p>
+    </div>
+
+    <h2>Why documents are cut at all.</h2>
+    <p>Two limits force the cut. First, <a href="/what-is-a-context-window/">a model reads only so much at once</a>, and a two-hundred-page report does not fit; retrieval has to be selective, and selective retrieval needs passages smaller than the whole. Second, precision: a whole document can only be matched as a whole, while a passage can match the exact thought you asked about. The pieces are what <a href="/what-is-an-embedding/">embeddings describe</a>, so the piece boundaries are where meaning is either kept or lost. That is why chunking, a step nobody sees, quietly decides how good the whole system feels.</p>
+
+    <h2>What good boundaries preserve.</h2>
+    <p>The naive approach splits at every thousand characters, and it shows: tables separated from their captions, definitions separated from the terms they define, a sentence that begins a thought filed under the previous one. The better habit is to cut where the document already has structure, at paragraph and section edges, and to let headings travel with their body text. A passage that makes sense read cold is a passage that can be cited cold. When the boundaries are right, the model quotes the passage cleanly; when they are wrong, it hedges, or worse, answers from a fragment with confidence.</p>
+
+    <h2>The local version.</h2>
+    <p>Chunking is plain text processing, and it happens on your machine: the document is read from disk, split into passages, embedded, and filed into <a href="/what-is-rag/">the index that retrieval searches</a>. No upload, no parsing service, no per-page fee. That locality has a quiet benefit: the settings are yours. If a collection of legal depositions needs bigger passages than a stack of abstracts, you can re-chunk and re-embed without asking anyone's permission or paying twice, which is how <a href="/is-local-rag-private/">a private research loop</a> stays tunable as well as private.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/what-is-an-embedding/">What is an embedding?</a></li>
+        <li><a href="/what-is-a-context-window/">What is a context window?</a></li>
+        <li><a href="/can-local-ai-summarize-pdfs/">Can a local AI summarize PDFs?</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
