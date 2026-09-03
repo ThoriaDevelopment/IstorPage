@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>How much RAM does a local AI need?</title>
+  <meta name="description" content="Less than most people expect: a quantized 7B model fits in about 5 gigabytes, so 16 GB of system memory is a comfortable setup. Where the numbers come from and what actually limits a machine." />
+  <link rel="canonical" href="https://istor.fyi/how-much-ram-for-local-ai/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How much RAM does a local AI need?" />
+  <meta property="og:description" content="A quantized 7B model fits in about 5 gigabytes, so 16 GB of system memory is a comfortable setup. Where the numbers come from and what actually limits a machine." />
+  <meta property="og:url" content="https://istor.fyi/how-much-ram-for-local-ai/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is 8 GB of RAM enough for a local AI?",
+        "acceptedAnswer": { "@type": "Answer", "text": "For the smaller end, yes. Quantized models in the 3B to 7B range fit in a few gigabytes and run acceptably, especially when a GPU takes part of the layers. An 8 GB machine cannot hold the larger models comfortably, and pushing it into heavy swapping makes generation crawl, so treat 8 GB as the working minimum rather than the target." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need 32 GB of RAM for local AI?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. 32 GB is not wasted, but it buys headroom rather than possibility. With 16 GB you can run quantized models up to roughly 14B parameters, hold a comfortable context, and keep a browser open at the same time. The step to 32 GB matters when you want much larger models or very long context windows, which is a preference, not a requirement." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does a bigger document library use more memory?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Some, but far less than the model. The search index and the embedding vectors for tens of thousands of pages together measure in the low gigabytes, and retrieval runs fine on the CPU. The model is the memory consumer; your library is a rounding error next to it, so collecting more documents does not force a hardware upgrade." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>How much RAM does a local AI need?</h1>
+    <p class="lede">Less than the cloud era taught you to assume. The model sets the number, and quantization has been quietly shrinking it for years.</p>
+
+    <div class="capsule">
+      <p>It depends on the model size, and the answer is gentler than most people expect. A 7B to 8B model quantized to 4 bits fits in about 5 gigabytes, so 16 gigabytes of system memory is a comfortable working setup, and 8 gigabytes handles the smaller end. The documents you index barely register. What limits most people is GPU memory, not RAM.</p>
+    </div>
+
+    <h2>The model sets the number.</h2>
+    <p>A model's appetite is roughly its parameter count times the bits you spend storing each one. That is why <a href="/what-is-quantization/">quantization</a> is the whole story here: a 7B model at full precision wants around 14 gigabytes, and the same model stored at 4 bits wants about 5, which is a machine most people already own. Add a few gigabytes for the running application and the context, and 16 GB of system memory carries the class of models that does honest research work. 8 GB carries the smaller end; 32 GB buys headroom for the big ones, and nothing about the basic loop requires it.</p>
+
+    <h2>Your library barely counts.</h2>
+    <p>The instinct from cloud tools is that more documents means more memory, because remote services meter everything. Locally the arithmetic is different. The text of a thousand PDFs is a few gigabytes at most, the <a href="/what-is-an-embedding/">embedding vectors</a> that make it searchable are smaller still, and retrieval runs on the CPU while the model does the heavy lifting. A library that would cost a monthly subscription on someone else's servers is a folder on yours, and growing it does not move the hardware requirement. The model is the consumer; the library is a rounding error.</p>
+
+    <h2>Check the GPU before the RAM.</h2>
+    <p>On most machines the binding constraint is not system memory but <a href="/does-local-ai-need-a-gpu/">GPU memory</a>, which is smaller and faster and fills first. A 4 GB card cannot hold a whole quantized model, so the tool splits the work: the layers that fit go to the GPU, the rest run on the CPU with system RAM as their workspace. That split is where RAM earns its keep, and it is also where the penalty for too little shows up. If the machine starts swapping to disk, generation slows to a crawl, which is the real sign you have crossed the line. <a href="/run-research-ai-gtx-1650/">A GTX 1650 class rig</a> with 16 GB of RAM sits comfortably on the right side of it.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/does-local-ai-need-a-gpu/">Does local AI need a GPU?</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/what-is-quantization/">What is quantization?</a></li>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/what-is-an-embedding/">What is an embedding?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
