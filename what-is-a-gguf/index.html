@@ -98,7 +98,7 @@
     <p>The format's other convenience is that <a href="/what-is-quantization/">quantization</a> is baked in at packaging time. A model is usually published as several GGUF files, one per bit depth, and the name carries the level, so a Q4 file of a 7B model weighs about 5 gigabytes while its Q8 sibling takes twice that; <a href="/what-does-q4-k-m-mean/">the full code, like Q4_K_M</a>, encodes more than just the bit depth. You choose the file that fits your memory budget rather than configuring anything, which is why <a href="/how-much-ram-for-local-ai/">the RAM question</a> is really a file-choice question.</p>
 
     <h2>Why it became the standard.</h2>
-    <p>Adoption followed simplicity. The llama.cpp ecosystem reads it natively, so every tool built on that stack, from command-line runners to desktop research apps, takes the same file. Model hosts list GGUF quantizations alongside the original weights, which gives the format a distribution network no rival managed. The practical result for a researcher is unglamorous and genuinely useful: the barrier between deciding to try a model and running it locally is one download.</p>
+    <p>Adoption followed simplicity. The <a href="/what-is-llama-cpp/">llama.cpp</a> ecosystem reads it natively, so every tool built on that stack, from command-line runners to desktop research apps, takes the same file. Model hosts list GGUF quantizations alongside the original weights, which gives the format a distribution network no rival managed. The practical result for a researcher is unglamorous and genuinely useful: the barrier between deciding to try a model and running it locally is one download.</p>
 
     <section class="page-related">
       <p>Related</p>
