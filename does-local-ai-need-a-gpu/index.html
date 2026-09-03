@@ -92,7 +92,7 @@
     </div>
 
     <h2>What the chip actually does.</h2>
-    <p>Generating text is an enormous pile of small matrix multiplications, one batch per token. A GPU does thousands of those calculations at once; a CPU does them one or a few at a time. Both get to the same numbers, which is why <a href="/what-is-a-local-llm/">the model, not the chip, decides answer quality</a>. The chip only decides how fast the tokens arrive. That is also why the difference is felt most in long answers: at a few tokens per second, a paragraph is a wait and a page is an evening.</p>
+    <p>Generating text is an enormous pile of small matrix multiplications, one batch per token. A GPU does thousands of those calculations at once; a CPU does them one or a few at a time. Both get to the same numbers, which is why <a href="/what-is-a-local-llm/">the model, not the chip, decides answer quality</a>. The chip only decides how fast the tokens arrive. That is also why the difference is felt most in long answers: at a few tokens per second, a paragraph is a wait and a page is an evening. The full diagnosis, size, memory and the fixes, sits on <a href="/why-is-local-ai-slow-on-my-laptop/">why local AI runs slow on a laptop</a>.</p>
 
     <h2>Running on CPU alone.</h2>
     <p>CPU-only local AI is real and has been for years, and it is the right fit for a surprising amount of work. Short questions, rewrites, summaries of a few paragraphs, and classification tasks all finish quickly enough that the wait is unremarkable. Tools built around this, like <a href="/vs-gpt4all/">GPT4All, which chats on any modern CPU</a>, exist precisely because most people's machines have no useful GPU. The honest limit shows up in research work, where answers run long and the loop runs them often.</p>

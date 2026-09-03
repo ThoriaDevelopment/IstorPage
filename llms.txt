@@ -56,6 +56,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What does Q4_K_M mean?](https://istor.fyi/what-does-q4-k-m-mean/): the code on a quantized model file naming its compression recipe; how to read the bits-per-weight headline, why K-series mixing protects quality, and which variant to pick.
 - [What is prompt engineering?](https://istor.fyi/what-is-prompt-engineering/): writing instructions a model follows well; the unglamorous core that works, what words control and what they do not, and where structure takes over.
 - [What is a vision language model?](https://istor.fyi/what-is-a-vision-language-model/): a language model that can also look at images; how it reads page photographs directly, what it keeps that plain OCR throws away, and why its reading still needs checking.
+- [Why is local AI slow on my laptop?](https://istor.fyi/why-is-local-ai-slow-on-my-laptop/): model size, memory bandwidth, and one-token-at-a-time generation; what actually speeds a local model up, what does nothing, and why slow never makes answers worse.
 
 ## Download
 
