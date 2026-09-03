@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is a benchmark in AI?</title>
+  <meta name="description" content="A fixed set of tasks with a scoring rule for comparing models. Why benchmark scores are useful, why they get gamed, and why none of them describe how a model handles your documents." />
+  <link rel="canonical" href="https://istor.fyi/what-is-a-benchmark/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is a benchmark in AI?" />
+  <meta property="og:description" content="A fixed set of tasks with a scoring rule for comparing models. Why scores are useful, why they get gamed, and why none of them describe your documents." />
+  <meta property="og:url" content="https://istor.fyi/what-is-a-benchmark/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What kinds of tasks do AI benchmarks test?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A range of fixed tasks with known answers: multiple-choice knowledge questions, reading comprehension over passages or long documents, math and step-by-step reasoning sets, and code generation from a description. The common shape is that the questions never change and the scoring is automatic, so any model can be run through the same test and the results compared." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do benchmark scores predict how a model performs on my documents?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Only loosely. A benchmark measures the base model on fixed public text, while work with your documents is dominated by other factors: whether the right passages were retrieved, how the prompt is structured, and whether the answer is checked against the source. Scores are a sanity check on the base model, not a prediction of any specific grounded task." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do quantized models score slightly lower on benchmarks?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Quantization rounds a model's stored numbers, and the rounding costs a small amount of measured accuracy that shows up on benchmark runs. The loss at 4 bit precision is small and for grounded question answering it is dominated by other factors, like retrieval quality, which is why the trade is usually worth making to fit the model on available hardware." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is a benchmark in AI?</h1>
+    <p class="lede">The fixed test that turns claims about model quality into numbers, and the reasons the numbers deserve only part of your trust.</p>
+
+    <div class="capsule">
+      <p>A benchmark is a fixed set of tasks with a scoring rule, used to measure how well a model performs. Benchmarks make claims about quality testable: two models run through the same questions and the scores can be compared. They are useful but blunt, since a fixed test gets gamed when everyone optimizes for it, and no single score describes how a model handles your documents.</p>
+    </div>
+
+    <h2>The same test for every model.</h2>
+    <p>The idea is ordinary in the best way. A benchmark fixes a set of questions with known answers and a rule for scoring, then any model can be run through it and the results land on one scale. That is what makes comparison possible at all, and it is why benchmarks appear wherever <a href="/what-is-a-model-card/">model cards</a> summarize quality. Some measurements happen without any test set at all, like <a href="/what-is-perplexity/">perplexity</a>, which scores next-word prediction on held-out text; the benchmarks people argue about usually mean the question-and-answer kind, scored automatically on fixed sets.</p>
+
+    <h2>What a score cannot tell you.</h2>
+    <p>A fixed public test invites two problems. First, contamination: questions that circulate widely can end up inside <a href="/what-is-training-data/">the text a model trains on</a>, so a high score can partly mean the model has seen the exam. Second, mismatch: a benchmark measures its own questions, and a model excellent at multiple-choice knowledge can still be mediocre at summarizing your papers or staying faithful to a source. The score is evidence about the base model, and <a href="/what-is-ai-hallucination/">nothing in a fluent high-scoring answer announces</a> whether the fact inside it is right.</p>
+
+    <h2>How to use them anyway.</h2>
+    <p>Benchmarks are still worth a glance, read as a floor rather than a promise. A model that scores badly across the board will not redeem itself on your machine, so the scores filter out weak candidates cheaply. Beyond that, weight the tests that resemble your work, and note that measured changes like <a href="/what-is-quantization/">the small dip from quantization</a> show up here first. The final check stays the same one: judge the model on your own documents, where the questions are yours and nothing has been optimized to pass.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-perplexity/">What is perplexity in AI?</a></li>
+        <li><a href="/what-is-a-model-card/">What is a model card?</a></li>
+        <li><a href="/what-is-quantization/">What is quantization?</a></li>
+        <li><a href="/what-is-training-data/">What is training data?</a></li>
+        <li><a href="/what-is-ai-hallucination/">What is AI hallucination?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
