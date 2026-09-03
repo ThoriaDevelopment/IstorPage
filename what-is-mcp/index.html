@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is MCP?</title>
+  <meta name="description" content="The Model Context Protocol, the open standard connecting AI models to external tools. What it does, why it matters for local AI, and what it does not fix." />
+  <link rel="canonical" href="https://istor.fyi/what-is-mcp/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is MCP?" />
+  <meta property="og:description" content="The open standard that connects AI models to external tools: what it does, why it matters locally, and what it leaves unsolved." />
+  <meta property="og:url" content="https://istor.fyi/what-is-mcp/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What does MCP stand for?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Model Context Protocol, an open standard introduced by Anthropic in late 2024. It defines how an AI application talks to an external tool server: the tool lists what it can do, the model calls those abilities when a task needs them, and the results come back into the conversation. Any app and any tool that follows the protocol can work together without custom integration." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need MCP to run local AI?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. A local AI application bundles its own tools: document search, summarization, file reading are built in. MCP adds extensibility for the cases the built-ins do not cover, letting an app connect to new tool servers without new code. It is an option for expanding what a local model can act on, not a requirement for running one." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is MCP safe to use?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It depends on the server, not the protocol. An MCP server runs on your machine with your permissions, so anything it can reach, the model can reach through it. The practical rule is the one that applies to installing any software: check who wrote the server and what it has access to before connecting it. A local setup keeps the trust question in your hands rather than a vendor's, which is an improvement only if you exercise it." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is MCP?</h1>
+    <p class="lede">The Model Context Protocol, the open standard that connects AI models to external tools, and the reason a tool written once now works with many apps.</p>
+
+    <div class="capsule">
+      <p>MCP, the Model Context Protocol, is an open standard that connects AI models to external tools: file readers, search engines, databases, anything that can be described as a service. Before it, each tool-to-model connection was custom wiring; after it, a tool written once works with any compliant app. It matters for local AI because the protocol runs on your machine, so a model can act on your files without the data leaving home.</p>
+    </div>
+
+    <h2>A port for tools.</h2>
+    <p>The problem MCP solves is wiring. Before a standard, every application that wanted to give <a href="/what-is-an-ai-agent/">an agent tools to act with</a> built the connections by hand, so a file reader written for one app was useless in another. The protocol defines the conversation instead: a tool server describes its abilities in a form any compliant app understands, and the app exposes them to the model. The comparison people reach for is a port standard, and it holds: the value is not in any one cable but in everything that becomes pluggable once the socket exists.</p>
+
+    <h2>What changes for local AI.</h2>
+    <p>The protocol is transport, not a service, so the servers it connects can run on your machine. A local model with local tool servers acts on your documents, your notes and your own services, and the data those tools touch stays where it started. This is the same architecture logic that keeps <a href="/what-is-a-local-llm/">a local model on your machine</a> and that <a href="/is-local-rag-private/">keeps local retrieval private</a>: the capability grows while the trust model stays yours. It also means the extension point is auditable, because the servers are ordinary programs you chose to install.</p>
+
+    <h2>What it does not fix.</h2>
+    <p>A protocol that gives a model tools does not make its use of them correct. A model can still call the wrong tool, misread what a tool returned, or write confident claims from a half-glanced result. Grounding stays the real work: answers built from <a href="/what-is-rag/">retrieved passages</a>, checked against their sources, refuse to say more than the tool output supports, which is the discipline behind <a href="/how-to-stop-ai-hallucinating/">stopping AI from making things up</a>. MCP widens what a model can reach; it does not vouch for what comes back.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-an-ai-agent/">What is an AI agent?</a></li>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/what-is-llama-cpp/">What is llama.cpp?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

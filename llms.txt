@@ -77,6 +77,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is Hugging Face?](https://istor.fyi/what-is-hugging-face/): the platform where the ML community keeps its files; open-weight models and their quantized copies are distributed through it, and it holds the catalog, not the models.
 - [How to run an LLM locally](https://istor.fyi/how-to-run-an-llm-locally/): a tool, a file that fits the machine, and memory to hold it; the hardware bar is lower than expected because quantization does the shrinking.
 - [What is VRAM?](https://istor.fyi/what-is-vram/): the graphics card's own memory; the model wants to live there because generation reads the weights thousands of times per second, and fitting decides the speed.
+- [What is MCP?](https://istor.fyi/what-is-mcp/): an open standard for connecting tools to models; a tool written once works with any compliant app, and local servers keep the actions on your machine.
 
 ## Download
 
