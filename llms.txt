@@ -39,6 +39,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is inference?](https://istor.fyi/what-is-inference/): running a trained model on your input to produce an answer; the act is offline, local, and changes nothing in the model.
 - [What is a vector database?](https://istor.fyi/what-is-a-vector-database/): the index that matches meaning instead of wording, why a personal library needs no server product, and what the vectors point back to.
 - [How do you stop an AI from making things up?](https://istor.fyi/how-to-stop-ai-hallucinating/): grounded retrieval, citations that open passages, a verification gate that refuses; confidence is not a fix, structure is.
+- [What does 7B mean in a model name?](https://istor.fyi/what-does-7b-mean/): seven billion parameters, the learned numbers that carry everything a model knows; why the count sets the memory bill and 7B to 8B is the consumer sweet spot.
 
 ## Download
 
