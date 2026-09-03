@@ -73,6 +73,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Why does AI forget between chats?](https://istor.fyi/why-does-ai-forget-between-chats/): no memory, only context; the window empties when the conversation ends, and product memory is stored notes pasted back in.
 - [Is local AI more private than cloud AI?](https://istor.fyi/local-ai-vs-cloud-ai/): yes, structurally; cloud privacy is a policy you trust, local privacy is architecture you can check, and the capability trade is real.
 - [What is a retrieval query?](https://istor.fyi/what-is-a-retrieval-query/): the text the search actually runs, rewritten from your question for each index; a library can only return what its query could reach.
+- [What is reranking?](https://istor.fyi/what-is-reranking/): the second pass that reorders search candidates by true relevance; the wide net casts cheaply, the reranker sorts carefully.
 
 ## Download
 
