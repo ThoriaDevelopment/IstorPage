@@ -59,6 +59,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Why is local AI slow on my laptop?](https://istor.fyi/why-is-local-ai-slow-on-my-laptop/): model size, memory bandwidth, and one-token-at-a-time generation; what actually speeds a local model up, what does nothing, and why slow never makes answers worse.
 - [What is training data?](https://istor.fyi/what-is-training-data/): the text a model learns from; why the model carries compressed tendencies rather than copies, and why knowledge wants a retrievable library instead of weights.
 - [Can a local AI read spreadsheets?](https://istor.fyi/can-local-ai-read-spreadsheets/): yes, with caveats; CSV reads as plain text, Excel needs its cells extracted first, layout rarely survives, and model arithmetic wants checking.
+- [Why does AI forget the beginning of long documents?](https://istor.fyi/why-does-ai-forget-the-beginning-of-long-documents/): one reading, uneven attention; why details near the start and middle get less weight in long inputs, and why retrieval beats a bigger window.
 
 ## Download
 

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Why does AI forget the beginning of long documents?</title>
+  <meta name="description" content="A model's attention is not uniform across a long context: the start and middle get less weight as text grows. Why it happens, what a bigger window does and does not fix." />
+  <link rel="canonical" href="https://istor.fyi/why-does-ai-forget-the-beginning-of-long-documents/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Why does AI forget the beginning of long documents?" />
+  <meta property="og:description" content="Attention is not uniform across a long context, so details near the start and middle get less weight. Why it happens and what retrieval does about it." />
+  <meta property="og:url" content="https://istor.fyi/why-does-ai-forget-the-beginning-of-long-documents/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Why does a model lose track of earlier parts of a long document?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because reading everything at once is a constraint, and attention across a very long context is not uniform. The model weights some positions more than others, and in long inputs the middle and, in some models, the beginning receive less reliable attention than the end. The detail was in the text; the model just read it less carefully than the parts nearest its answer." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does a bigger context window fix this?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Only partly. Large windows let more text in, but the attention problem does not simply vanish with size, and on local hardware a bigger window costs real memory and speed. Filling the window with everything and hoping is a weaker strategy than filling it with the right passages, which is what retrieval does on purpose." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do research tools handle long documents?",
+        "acceptedAnswer": { "@type": "Answer", "text": "By retrieval rather than bulk reading. The document is split into passages at natural boundaries, and for each question only the handful that bear on it are placed in front of the model, near where its attention is strongest. Citations then point back to the exact passages, so you can check that what the answer says is what the document says." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Why does AI forget the beginning of long documents?</h1>
+    <p class="lede">The detail was in the text. The model read all of it, but it did not read all of it equally.</p>
+
+    <div class="capsule">
+      <p>A model reads everything in its context window at once, and its attention is not uniform across that text: in very long inputs, the start and the middle get less reliable attention than the end. The details were present; they just got less weight. The fix is not a bigger window but retrieval, which places the passages that matter where the model reads best, with citations back to their source.</p>
+    </div>
+
+    <h2>Everything has to fit in one reading.</h2>
+    <p>A model has no memory between the pages of a document, only the <a href="/what-is-a-context-window/">context window</a>, the single span of text it can attend to while writing its answer. Everything the question needs must sit inside that span: the document, the question, whatever instructions apply. When a document fits comfortably, the model reads it whole and this problem never appears. When the text stretches toward the window's edge, the reading degrades quietly, and the first symptom is exactly the one people notice: facts from early pages go missing from the answer.</p>
+
+    <h2>Attention is not uniform.</h2>
+    <p>Attending to context is a weighting, not a recording. Every token gets some weight, but the weights are not equal, and in long inputs the middle of the text tends to be read least reliably, with the end strongest because it sits nearest the answer being written. This is sometimes called the lost-in-the-middle pattern, and it is a property of how attention distributes over long spans, not a bug a setting removes. It is also why a model can quote a document's conclusion accurately while <a href="/what-is-ai-hallucination/">filling an early chapter's detail with a confident guess</a>: the material was in the window, and still effectively unread.</p>
+
+    <h2>Why retrieval is the fix.</h2>
+    <p>If reading everything makes parts of it unread, read less and read it well. That is what <a href="/what-is-rag/">retrieval-augmented generation</a> does: the document is split into passages at natural boundaries, and for each question only the handful that bear on it are placed in front of the model, where attention is sharpest. The <a href="/how-document-chunking-works/">passage boundaries decide whether those pieces make sense cold</a>, and the citations let you check the answer against the exact text it came from. A question answered from a handful of well-chosen passages beats a question answered from everything, half-attended.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-context-window/">What is a context window?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/how-document-chunking-works/">How does document chunking work?</a></li>
+        <li><a href="/can-local-ai-summarize-pdfs/">Can a local AI summarize PDFs?</a></li>
+        <li><a href="/what-is-ai-hallucination/">What is AI hallucination?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
