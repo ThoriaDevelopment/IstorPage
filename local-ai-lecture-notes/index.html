@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Local AI for lecture notes</title>
+  <meta name="description" content="A semester of slides, transcripts and readings becomes one searchable library that answers with citations. What a local AI does for lecture notes, and what stays yours to learn." />
+  <link rel="canonical" href="https://istor.fyi/local-ai-lecture-notes/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Local AI for lecture notes" />
+  <meta property="og:description" content="A semester of slides and readings becomes one searchable library that answers with citations. What a local AI does for lecture notes, and what stays yours to learn." />
+  <meta property="og:url" content="https://istor.fyi/local-ai-lecture-notes/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Can a local AI summarize lecture slides?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Slides exported as PDFs, readings and typed notes are ordinary documents for a local tool: it extracts the text, adds it to a searchable library and answers questions with citations back to the page or slide a claim came from. Handwritten notes depend on how legible the handwriting is; neat pages convert well, hurried ones have real limits, and the tool will say when a page has no answer to give." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does a local tool work during the lecture itself?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The answering does, with the network off, since retrieval and inference run on your machine. That matters in lecture halls with dead wifi and in exam periods when the connection is untrusted. Importing a new document needs no network either; only web fetching does, and you choose when to do that. A laptop with no account and no signal is a complete setup." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my coursework private in a local tool?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The materials stay on your disk and the questions are answered by your own hardware, so nothing is uploaded to be processed. No telemetry, no account, and no policy to trust about retention. For group projects and unpublished thesis work, that is the difference between a tool you can use freely and one that needs a permissions conversation first." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Local AI for lecture notes</h1>
+    <p class="lede">A semester's slides, readings and notes become one searchable library that answers with citations. The studying stays yours; the losing track of things stops.</p>
+
+    <div class="capsule">
+      <p>By week ten, a course is a pile: lecture slides, printed readings, typed notes, the occasional scanned handout, spread across folders and formats. A local AI turns that pile into a library you can question. Every document is extracted and searchable at once, answers arrive with citations back to the slide or page they came from, and nothing is uploaded anywhere. What the tool cannot do is the understanding. That remains the actual assignment.</p>
+    </div>
+
+    <h2>The pile that a semester becomes.</h2>
+    <p>Lecture material arrives in whatever format the week produced: slide decks as PDFs, journal readings, your own notes, a scanned handout from the one professor who still photocopies. A local tool reads the common formats on your machine, <a href="/what-formats-can-local-ai-read/">whatever the file type is</a>, and scanned pages convert too, within the limits of <a href="/can-local-ai-read-handwriting/">how legible the handwriting is</a>. Once imported, every week's material sits beside every other week's. The question "did we cover this in week four or week eight" becomes a search instead of a memory test.</p>
+
+    <h2>Ask the semester, not the week.</h2>
+    <p>Studying one lecture at a time hides the thing exams are built on, which is how the material connects. A grounded local tool answers across the whole library at once: where the definitions disagree, which readings contradict the slides, what the professor said that the textbook omits. The answer carries citations, so you read the claimed passage rather than trusting prose, and when the library holds no answer, the tool says so instead of filling the gap. That refusal is worth more than fluency during revision, because an invented fact in your notes is a wrong fact you now believe.</p>
+
+    <h2>What stays yours.</h2>
+    <p>The tool can retrieve and summarize; it cannot understand for you. Asking "explain the difference between these two theories" and reading a cited, correct paragraph is studying, but it is not yet knowing, and a student who outsources the reading outsources the learning. Use the tool to make sure nothing in the pile is lost and nothing in your notes is unsupported. The argument you build from it, the one the exam asks for, is the part only you can make.</p>
+
+    <h2>How the loop maps to a semester.</h2>
+    <p>Import each week's material as it arrives, so week eleven is never a catch-up problem. Ask the cross-lecture questions early, not the night before the exam, because an answer that names a gap is telling you what to go read. Keep your own notes beside the answers; in Istor they live in the same window as the sources they came from. And coursework stays local: <a href="/is-local-rag-private/">nothing leaves the machine</a>, which is the difference between a tool you can point at an unpublished thesis and one that needs a permissions conversation first.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/local-ai-literature-review/">Can a local AI do a literature review?</a></li>
+        <li><a href="/local-ai-writing-projects/">Writing with sources, on a local AI.</a></li>
+        <li><a href="/can-local-ai-summarize-pdfs/">Can a local AI summarize PDFs?</a></li>
+        <li><a href="/what-formats-can-local-ai-read/">What formats can a local AI read?</a></li>
+        <li><a href="/vs-notebooklm/">Istor and NotebookLM, compared.</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
