@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is a chat template?</title>
+  <meta name="description" content="The text wrapper a model was trained to expect around a conversation. Why a model behaves strangely without it, where it lives in the model file, and how tools apply it for you." />
+  <link rel="canonical" href="https://istor.fyi/what-is-a-chat-template/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is a chat template?" />
+  <meta property="og:description" content="The text wrapper a model was trained to expect around a conversation, why it matters, and where it lives in the model file." />
+  <meta property="og:url" content="https://istor.fyi/what-is-a-chat-template/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Why does a model give bad answers without its chat template?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because it is reading text in a shape it was never tuned on. Chat models are trained on conversations wrapped in specific markers that show who said what and where each turn ends. Feed the same model raw text without that wrapper and it may continue your message instead of answering it, ramble, or ignore instructions, since none of that behavior was reinforced in the format it is seeing." }
+      },
+      {
+        "@type": "Question",
+        "name": "Where does the chat template live?",
+        "acceptedAnswer": { "@type": "Answer", "text": "In the model file itself. Formats like GGUF carry the template as metadata alongside the weights, so the file describes exactly how conversations should be wrapped for that model. This matters because templates differ between model families: one model's turn markers mean nothing to another, which is why the wrapper travels with the model rather than with the tool." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need to set the chat template myself?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No, not with a current tool. A runtime reads the template from the model's metadata and applies it as it assembles the prompt, so your system instructions and messages get wrapped correctly without any action on your side. You only encounter the concept when something is misconfigured and a model behaves oddly, and the template is the first thing to check." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is a chat template?</h1>
+    <p class="lede">The wrapper a model was trained to expect around a conversation, invisible until it goes missing.</p>
+
+    <div class="capsule">
+      <p>A chat template is the text wrapper a model was trained to expect around a conversation: markers that show where the system instructions start, where each speaker's turn begins and ends, and where the model should write its reply. Models are tuned with a particular wrapper, and reading messages in that shape is what they answer to. Tools apply it for you, which is why you never see it.</p>
+    </div>
+
+    <h2>The shape a model expects.</h2>
+    <p>A base model predicts text; making it a chat model means <a href="/what-is-fine-tuning/">tuning it on conversations</a> until questions get answers. Those conversations arrive in a specific format, with special markers between the system instructions, the user's turn, and the model's reply. The template is that format. It is why a model stops at the end of its own turn instead of writing both sides of the conversation forever, and why it treats your instructions as coming from you. The model is not reasoning about a chat window; it is continuing text in the shape it learned, and the template defines that shape.</p>
+
+    <h2>Where it travels, and where it goes wrong.</h2>
+    <p>The template belongs to the model, not to the tool, so it ships inside the model file: <a href="/what-is-a-gguf/">what a GGUF file is</a> covers how the metadata travels with the weights. That placement solves a real problem, because model families use different markers, and a runner that guesses the wrong one feeds the model text in a shape it never learned. The symptoms are characteristic: the model continues your sentence instead of replying, leaks its role markers into the answer, or ignores the system instructions entirely. When a downloaded model behaves oddly while others work, a mismatched or missing chat template is the first suspect.</p>
+
+    <h2>What you write, what the tool wraps.</h2>
+    <p>You never handle the template directly. The tool assembles the prompt it builds anyway: the <a href="/what-is-a-system-prompt/">system instructions</a> it was configured with, then your messages, then the opening of the model's turn, all wrapped in the markers the model's file specified. The wrapper is mechanical and the briefing is editorial; the first decides how the text is marked, the second decides what the text asks for. Both reach the model as one continuous input, which is why an odd behavior can come from either side and the template is worth knowing about when diagnosing which.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-gguf/">What is a GGUF file?</a></li>
+        <li><a href="/what-is-a-system-prompt/">What is a system prompt?</a></li>
+        <li><a href="/what-is-fine-tuning/">What is fine-tuning?</a></li>
+        <li><a href="/what-is-tokenization/">What is tokenization?</a></li>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
