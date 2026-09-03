@@ -49,6 +49,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is fine-tuning?](https://istor.fyi/what-is-fine-tuning/): continuing a model's training to change behavior; why knowledge wants retrieval instead, and how LoRA made adaptation practical on ordinary hardware.
 - [What is temperature in AI?](https://istor.fyi/what-is-temperature/): the setting that shapes how strictly a model sticks to its likeliest next words; low for facts, higher for drafts, and why it is not a creativity switch.
 - [What is a system prompt?](https://istor.fyi/what-is-a-system-prompt/): the standing instructions a model reads before your first message; how it shapes behavior without adding knowledge, and why structure beats wording alone.
+- [What is a model card?](https://istor.fyi/what-is-a-model-card/): the spec sheet that travels with a model; what to read first before you download, and why a card is a description with an interest rather than an audit.
 
 ## Download
 
