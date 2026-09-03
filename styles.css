@@ -975,11 +975,11 @@ a { color: inherit; }
 
 /* ── privacy band ───────────────────────────────────────────────── */
 
-/* The band's ground is real paper tooth: a marble surface the studio
-   supplied, desaturated, made seamless and baked onto #0D1A1D so the
-   tooth carries the same hue as the band's text accent. Its tone range
-   is held narrow (5 to 40) so the grain stays visible without ever
-   competing with the light text over it. */
+/* The band's ground is the studio's fabric photograph, used once and
+   unedited: one cover-sized crop at its natural aspect, never tiled or
+   stretched. A plain dark scrim sits over it purely so the light text
+   stays readable across the picture's bright patches; the photo itself
+   is untouched. */
 
 .privacy {
   padding: 0;
@@ -990,9 +990,11 @@ a { color: inherit; }
   padding: 6.5rem 1.5rem;
   text-align: center;
   background-image:
-    radial-gradient(80rem 30rem at 85% -10%, rgba(120, 200, 180, 0.16), transparent 60%),
-    url("assets/textures/marble-grain.webp");
-  background-repeat: no-repeat, repeat;
+    linear-gradient(rgba(10, 16, 18, 0.75), rgba(10, 16, 18, 0.75)),
+    url("assets/textures/fabric-texture.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   background-color: #0D1A1D;
   color: #F2F1EE;
 }
