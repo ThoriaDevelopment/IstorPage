@@ -70,6 +70,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Why does AI give different answers to the same question?](https://istor.fyi/why-does-ai-give-different-answers/): sampling; the model computes odds for each next word and rolls, and the roll is why reruns vary, by design.
 - [What is an AI agent?](https://istor.fyi/what-is-an-ai-agent/): a model in a loop; tools, standing instructions and a stopping rule turn output into action, and grounded agents cite what each step used.
 - [What is a token limit?](https://istor.fyi/what-is-a-token-limit/): the cap on what one request can read and write; everything shares the budget, which is why grounded tools select what goes in.
+- [Why does AI forget between chats?](https://istor.fyi/why-does-ai-forget-between-chats/): no memory, only context; the window empties when the conversation ends, and product memory is stored notes pasted back in.
 
 ## Download
 
