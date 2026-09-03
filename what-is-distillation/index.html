@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is model distillation?</title>
+  <meta name="description" content="Training a small model to imitate a larger one, so it inherits the teacher's behavior at a fraction of the size. How distillation works, what the student loses, and why so many local models get built this way." />
+  <link rel="canonical" href="https://istor.fyi/what-is-distillation/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is model distillation?" />
+  <meta property="og:description" content="Training a small model to imitate a larger one. How distillation works, what the student loses, and why so many local models get built this way." />
+  <meta property="og:url" content="https://istor.fyi/what-is-distillation/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How is distillation different from fine-tuning?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Fine-tuning adapts an existing model to new behavior using labeled examples, and the model keeps its size. Distillation usually builds a smaller model by training it on a large model's outputs, so the point is not a new skill but the same behavior at a lower cost in parameters and memory. The two can be combined, but they answer different problems." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does distillation make a model worse?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It narrows it. A distilled model inherits much of its teacher's style and everyday competence, but the compression costs coverage: the student tends to be less reliable on rare, specialized, or long-tail knowledge than the model it learned from. For common tasks the difference is small, which is exactly why the trade gets made." }
+      },
+      {
+        "@type": "Question",
+        "name": "Are local models distilled?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Many of the small open models people run locally are trained with distillation, since a compact model that still answers well is rarely an accident. Distillation happens at training time, before the model is packaged, and pairs naturally with quantization, which shrinks the finished file further so it fits on consumer hardware." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is model distillation?</h1>
+    <p class="lede">How a large model's behavior gets packed into a small one, and why so many of the models that run on your own hardware were built that way.</p>
+
+    <div class="capsule">
+      <p>Model distillation trains a small model to behave like a larger one: the big model generates outputs, and the small model learns to reproduce them, so it inherits much of the teacher's behavior at a fraction of the size. The student is not smarter, it is cheaper. That trade is why so many capable assistants run on models that fit in a few gigabytes of memory.</p>
+    </div>
+
+    <h2>The teacher writes, the student learns.</h2>
+    <p>Ordinary training teaches a model from collected text; <a href="/what-is-training-data/">what training data is</a> covers that raw-material side. Distillation changes the material. A strong teacher model is prompted to produce answers on a huge range of inputs, and those outputs become the small model's examples. The advantage is that the examples are already in the shape of good responses, so the student learns the form of a good answer and not only the statistics of text. The student can even train on the teacher's probability distributions, which carries information about what the teacher considered plausible, not just what it finally chose.</p>
+
+    <h2>What the student keeps, and what it loses.</h2>
+    <p>A distilled model reads like its teacher: similar tone, similar habits, similar competence on everyday questions. It does not inherit everything. Knowledge lives in the parameters, and <a href="/what-does-7b-mean/">what a smaller parameter count means</a> is a smaller place to store it, so the tail of rare and specialized knowledge thins out first. Students also tend to be narrower: they do well inside the distribution their teacher covered and drift outside it. That is why a distilled model can feel as good as a much larger one on ordinary questions and noticeably weaker at the edges.</p>
+
+    <h2>Why local AI leans on it.</h2>
+    <p>The consumer sweet spot sits in models that answer well while staying small enough to hold in modest memory, and distillation is one of the main ways such models get made. The training happens long before download, so it changes nothing at run time; the file that lands on your machine is just the finished student, and <a href="/what-is-inference/">running it</a> works the same as any other model. Size still has to fit the hardware, which is where <a href="/what-is-quantization/">quantization</a> takes over after training, and the same arithmetic explains <a href="/why-is-local-ai-slow-on-my-laptop/">why model size dominates speed</a> on a laptop.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-fine-tuning/">What is fine-tuning?</a></li>
+        <li><a href="/what-is-training-data/">What is training data?</a></li>
+        <li><a href="/what-does-7b-mean/">What does 7B mean in a model name?</a></li>
+        <li><a href="/what-is-quantization/">What is quantization?</a></li>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
