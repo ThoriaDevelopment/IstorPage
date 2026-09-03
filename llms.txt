@@ -52,6 +52,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is a model card?](https://istor.fyi/what-is-a-model-card/): the spec sheet that travels with a model; what to read first before you download, and why a card is a description with an interest rather than an audit.
 - [What is tokens per second?](https://istor.fyi/what-is-tokens-per-second/): the rate a model writes, one token at a time; the reading-speed bar that makes local AI feel instant, and why speed says nothing about correctness.
 - [Local AI for lecture notes](https://istor.fyi/local-ai-lecture-notes/): a semester's slides, readings and notes as one searchable library that answers with citations; what the tool keeps track of, and what stays yours to learn.
+- [What is semantic search?](https://istor.fyi/what-is-semantic-search/): finding passages by meaning rather than wording, the retrieval step that makes a document library answerable; approximate by nature, which is why verification follows it.
 
 ## Download
 
