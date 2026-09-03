@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Why does AI give different answers to the same question?</title>
+  <meta name="description" content="Sampling: language models pick each next word by chance, weighted by likelihood. Why answers vary between runs, why that is a feature rather than a bug, and what makes answers repeatable when it matters." />
+  <link rel="canonical" href="https://istor.fyi/why-does-ai-give-different-answers/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Why does AI give different answers to the same question?" />
+  <meta property="og:description" content="Sampling: models pick each next word by chance, weighted by likelihood. Why answers vary, why that is by design, and what makes answers repeatable." />
+  <meta property="og:url" content="https://istor.fyi/why-does-ai-give-different-answers/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Does a different answer mean the first one was wrong?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not by itself. Variation comes from the sampling step, not from the model discovering an error, and a rerun can be better or worse than the original. The way to judge an answer is to check it against sources, not to reroll until you like what appears. If the same question keeps producing contradictory answers, that is a sign the question is underspecified or the model lacks the grounding to answer it reliably." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can an AI answer be made the same every time?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Mostly, yes. Setting the sampling temperature to zero makes the model take its likeliest word at every step, which makes output nearly deterministic; a fixed random seed removes the rest of the variation. Tools that need reproducibility use these settings. The trade is that low-temperature output is plainer, and for factual research work the plainer style is usually the right one anyway." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does sampling cause AI hallucinations?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It contributes, but it is not the root cause. Even with sampling, a model can state something wrong with total confidence, because the confident wrong statement is often the likeliest continuation of fluent text. Hallucination is a structural problem: it needs grounding in retrieved sources and verification against them, and adjusting randomness alone never fixes it." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Why does AI give different answers to the same question?</h1>
+    <p class="lede">Because each answer is written by chance, in a controlled way. The randomness is a design choice, not a glitch.</p>
+
+    <div class="capsule">
+      <p>A language model does not look up an answer, it writes one word at a time, and at every step it chooses among candidate words with a weighted roll of the dice. Different rolls, different answers, even from the same question and the same model. The variation lives in that sampling step; the model itself never changes. Lowering the temperature narrows the choices and makes output nearly repeatable when reproducibility matters.</p>
+    </div>
+
+    <h2>The model computes odds, then rolls.</h2>
+    <p><a href="/what-is-inference/">Running a model</a> on your question produces, at every position, a probability for each possible next word, not a single fixed answer. Something then has to turn those odds into a choice, and that step is a deliberate roll of the dice: likely words are picked most of the time, less likely ones still get picked occasionally. This is called sampling, and the dial that controls it is <a href="/what-is-temperature/">temperature</a>, which sets how strictly the model sticks to its likeliest options. Two runs with different random rolls produce two different but equally fluent answers, which is exactly what you see when you ask the same thing twice.</p>
+
+    <h2>Why it is built that way.</h2>
+    <p>Always taking the single likeliest word produces text that is correct-sounding and dead: the same openings, the same phrasings, list answers that circle the same point. A little randomness is what makes prose read naturally and lets a model give you a second formulation when the first did not land. The engineering question is where to set the dial, not whether to have one. For factual research work the dial sits low, because variety is worth little and drift is worth something; for drafting and brainstorming it sits higher, because the second formulation is the point.</p>
+
+    <h2>What this means for trust.</h2>
+    <p>Variation is not the same as unreliability, but the two are related in one way that matters: a rerun is not a fact-check. Asking again until an answer sounds right selects for phrasing, not truth, and the honest check is the same as it ever was, comparing the claim against a source. That is why grounded research tools treat sampling as secondary: <a href="/how-to-stop-ai-hallucinating/">answers get checked against the passages they came from</a>, so it stops mattering which roll of the dice produced the wording. If you need the same output twice, low temperature gets you close; if you need an answer you can rely on, structure beats rerolling.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-temperature/">What is temperature in AI?</a></li>
+        <li><a href="/what-is-inference/">What is inference?</a></li>
+        <li><a href="/how-to-stop-ai-hallucinating/">How do you stop an AI from making things up?</a></li>
+        <li><a href="/what-is-ai-hallucination/">What is AI hallucination?</a></li>
+        <li><a href="/what-is-tokens-per-second/">What is tokens per second?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
