@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is VRAM?</title>
+  <meta name="description" content="The memory built into a graphics card, separate from system RAM, and where a local model wants to live. Why it decides generation speed, and what happens when the model does not fit." />
+  <link rel="canonical" href="https://istor.fyi/what-is-vram/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is VRAM?" />
+  <meta property="og:description" content="The graphics card's own memory: why local models want to live there, and what happens when they do not fit." />
+  <meta property="og:url" content="https://istor.fyi/what-is-vram/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is VRAM the same as RAM?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. VRAM is the memory built onto the graphics card, reserved for the work its processor does; RAM is the computer's general-purpose workspace, shared by everything. VRAM is smaller, much faster to read, and directly wired to the GPU. A machine can have 16 GB of RAM and only 4 GB of VRAM, and for local AI the smaller number is usually the binding constraint." }
+      },
+      {
+        "@type": "Question",
+        "name": "How much VRAM do I need for local AI?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Around 4 GB is the useful entry point, the GTX 1650 class, and it comfortably holds a stack of small quantized models. A model that fits in VRAM runs at full speed; one that does not is split between the GPU and the CPU, which slows generation without changing answer quality. More VRAM buys room for larger models and fewer splits." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does more VRAM make answers better?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Answer quality comes from the model itself; VRAM only decides which models fit and how fast they generate. Extra VRAM means you can run a larger model, keep more of the model off the CPU, or keep more of a long document in view at once, all of which are speed and size benefits rather than intelligence." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is VRAM?</h1>
+    <p class="lede">The graphics card's own memory, separate from system RAM, and the resource a local model is really trying to fit in.</p>
+
+    <div class="capsule">
+      <p>VRAM is the memory built into a graphics card, separate from the system's RAM, and for local AI it is where the model wants to live. It is smaller than system memory, much faster, and directly wired to the processor that runs the model's math. When a model fits in VRAM, answers come back in seconds; when it does not, the tool splits the work with your CPU and everything slows.</p>
+    </div>
+
+    <h2>A second, faster memory.</h2>
+    <p>VRAM, video random access memory, is the memory mounted on a graphics card, beside the processor it feeds. Its defining property is bandwidth: the path between the card's processor and its memory is wide and short, which is why generation speed tracks VRAM so closely. System RAM holds more but feeds the CPU through a slower path. This is why <a href="/does-local-ai-need-a-gpu/">a GPU speeds long answers</a> even when the same model technically runs on a CPU: the model's numbers stream from VRAM thousands of times per second during generation.</p>
+
+    <h2>Why the model wants to live there.</h2>
+    <p>Every token the model writes requires reading the model's weights. If those weights sit in VRAM, the GPU reads them at full speed; if they sit in system RAM, the CPU reads them at a fraction of it. This is why <a href="/what-is-quantization/">quantization</a> and VRAM are two halves of one decision: fewer bits per weight squeezes a larger model into the same 4 GB. A GTX 1650 class card holds a useful stack of quantized models, which is the whole basis of <a href="/run-research-ai-gtx-1650/">running research AI on a GTX 1650</a>.</p>
+
+    <h2>When it does not fit.</h2>
+    <p>Tools handle an oversized model by splitting it: the layers that fit go to the GPU, the rest run on the CPU with system RAM as their workspace. The answer still arrives and its quality is identical; only the speed changes, because the split adds a trip through the slower memory on every token. So the practical question is never whether a model can run but how fast, and <a href="/how-much-ram-for-local-ai/">the RAM arithmetic</a> is what decides where the split lands.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/does-local-ai-need-a-gpu/">Does local AI need a GPU?</a></li>
+        <li><a href="/how-much-ram-for-local-ai/">How much RAM does local AI need?</a></li>
+        <li><a href="/what-is-quantization/">What is quantization?</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/what-is-tokens-per-second/">What are tokens per second?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
