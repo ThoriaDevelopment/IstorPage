@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is Hugging Face?</title>
+  <meta name="description" content="The platform where the machine learning community publishes models, datasets and demos, mostly free to download. What it hosts, where local models come from, and what to check first." />
+  <link rel="canonical" href="https://istor.fyi/what-is-hugging-face/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is Hugging Face?" />
+  <meta property="og:description" content="Where the machine learning community keeps its models, datasets and demos. What it hosts, where local models come from, and what to check before downloading." />
+  <meta property="og:url" content="https://istor.fyi/what-is-hugging-face/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is Hugging Face free to use?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Browsing and downloading public models and datasets is free, which is most of what local AI needs from it. Paid plans exist for private repositories, hosted compute and team features. A person downloading quantized model files to run on their own machine spends nothing." }
+      },
+      {
+        "@type": "Question",
+        "name": "Are models on Hugging Face safe to run?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The platform scans uploads for malware and most publishers are established organizations, but openness cuts both ways and anyone can publish. The practical habits are the same as with any software source: prefer known authors, read the model card, glance at the discussion and download counts, and be more careful with executable formats than with plain weight files. Local weight files run as data; trust still matters most for the tool that loads them." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need Hugging Face to run a local model?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Many local tools ship their own model gallery or a preconfigured roster and handle the download for you, so you can run useful models without ever visiting the site. The platform is where to go when you want to choose beyond what a tool offers, compare quantizations, or read the documentation around a model before committing the disk space." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is Hugging Face?</h1>
+    <p class="lede">The platform where the machine learning community keeps its files, and where most local models start their journey to your disk.</p>
+
+    <div class="capsule">
+      <p>Hugging Face is a platform where the machine learning community keeps its files: models, datasets and demos, mostly free to download, which made it the default place to find a model. For local AI it matters doubly: open-weight models are distributed through it, and the quantized copies local tools run are listings on the same site. It is the library catalog of open AI; it holds the books and tells you what is in them.</p>
+    </div>
+
+    <h2>A catalog for open models.</h2>
+    <p>The site grew into the default home for <a href="/what-is-open-weight/">open-weight models</a>: anyone from a lab to a hobbyist can publish trained weights, a documentation page and a discussion thread, and anyone can download them. Alongside the models sit datasets, the training material others publish for reuse, and small hosted demos for trying things in a browser. The catalog function is as valuable as the storage: download counts, community versions and per-model pages give a rough map of what is current and what is abandoned.</p>
+
+    <h2>Where local models come from.</h2>
+    <p>Most files local tools run travel through it at some point. A model published there gets its <a href="/what-is-a-gguf/">GGUF conversions</a> and their quantization variants listed in the same place, so choosing between compression levels happens on one page; <a href="/what-does-q4-k-m-mean/">reading those quantization codes</a> is the practical skill that turns a listing into the right file. Desktop apps and research tools either link out to these listings or embed a gallery that downloads from them under the hood, which is why the site matters even to people who never open it.</p>
+
+    <h2>What to read before you download.</h2>
+    <p>Every model page carries a <a href="/what-is-a-model-card/">model card</a>, and it is the first thing to check: what the model was trained for, its known limits, its license. The discussion thread under a release is where problems surface early, and <a href="/what-is-a-benchmark/">reported scores</a> give a filter-level read on quality before you spend the disk space. None of this replaces trying the model on your own documents, but it does prevent the most common mistake, which is downloading a model whose license or design never fit the job.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-open-weight/">What is an open-weight model?</a></li>
+        <li><a href="/what-is-a-gguf/">What is a GGUF file?</a></li>
+        <li><a href="/what-is-a-model-card/">What is a model card?</a></li>
+        <li><a href="/what-does-q4-k-m-mean/">What does Q4_K_M mean?</a></li>
+        <li><a href="/what-is-llama-cpp/">What is llama.cpp?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
