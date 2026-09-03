@@ -75,6 +75,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What is a retrieval query?](https://istor.fyi/what-is-a-retrieval-query/): the text the search actually runs, rewritten from your question for each index; a library can only return what its query could reach.
 - [What is reranking?](https://istor.fyi/what-is-reranking/): the second pass that reorders search candidates by true relevance; the wide net casts cheaply, the reranker sorts carefully.
 - [What is Hugging Face?](https://istor.fyi/what-is-hugging-face/): the platform where the ML community keeps its files; open-weight models and their quantized copies are distributed through it, and it holds the catalog, not the models.
+- [How to run an LLM locally](https://istor.fyi/how-to-run-an-llm-locally/): a tool, a file that fits the machine, and memory to hold it; the hardware bar is lower than expected because quantization does the shrinking.
 
 ## Download
 

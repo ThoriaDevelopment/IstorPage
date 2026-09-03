@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>How to run an LLM locally</title>
+  <meta name="description" content="Running a language model on your own machine takes three decisions: a tool, a model file that fits the hardware, and memory to hold it. What each one involves, and what the first answer feels like." />
+  <link rel="canonical" href="https://istor.fyi/how-to-run-an-llm-locally/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How to run an LLM locally" />
+  <meta property="og:description" content="From nothing to a first answer on your own machine: the tool, the file, the memory, and the hardware bar you actually need to clear." />
+  <meta property="og:url" content="https://istor.fyi/how-to-run-an-llm-locally/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What software do I need to run an LLM locally?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A desktop application or runner that loads model weights and generates text, such as GPT4All or anything built on llama.cpp. Research tools such as Istor ship a preconfigured model roster so there is nothing to pick. There is no server to set up, no cloud account, and no configuration beyond installing an ordinary program; the model is a file and the tool reads it." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need a GPU to run an LLM locally?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. A CPU runs small quantized models and is comfortable for short questions, rewrites and summaries. A GPU with around 4 GB of video memory, the GTX 1650 class, turns minute-long answers into seconds, which matters most for research work where answers run long. Retrieval and search over your own documents stay cheap on a CPU either way." }
+      },
+      {
+        "@type": "Question",
+        "name": "How much space does a local model take?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The file is the whole model. A 2 to 4 billion parameter model at 4-bit precision runs about 2 to 4 GB, a 7B model at the same precision is roughly 5 GB, and each step up in parameters roughly doubles the size. Keep a little headroom above the file size for the tool's own cache and per-conversation state." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>How to run an LLM locally</h1>
+    <p class="lede">From nothing to a first answer on your own machine: the three decisions that matter, and the hardware bar you actually need to clear.</p>
+
+    <div class="capsule">
+      <p>Running an LLM locally takes three things: a tool that loads and runs models, a model file that fits your hardware, and enough memory to hold it while it works. The process is a download, not a deployment. Pick a desktop app, pick a model file sized to your machine, and the first answer is usually minutes away. The hardware bar is lower than most people expect, because quantized files shrink models dramatically.</p>
+    </div>
+
+    <h2>Three things, in order.</h2>
+    <p>First, the tool. A local model needs software that can load its weights and generate from them, and today that means a desktop application or a command-line runner rather than any deployment of your own. Second, the file. The model arrives in most cases as <a href="/what-is-a-gguf/">a GGUF file</a>, chosen for your hardware. Third, memory. The file must fit while the model runs, which makes <a href="/how-much-ram-for-local-ai/">the RAM arithmetic</a> the one calculation worth doing up front. Take those three in that order and the rest is waiting for the download to finish.</p>
+
+    <h2>Choosing the file.</h2>
+    <p>Model names hide the decision, but the decision is simple. The parameter count sets the capability tier, and <a href="/what-does-q4-k-m-mean/">the quantization code</a> sets the size, so a file's full name is really a spec sheet. Start small: a 2 to 4 billion parameter model at 4-bit precision runs on nearly any modern machine and answers real questions. Bigger files cost proportionally more memory and time, and the honest way to choose is to check <a href="/what-is-a-model-card/">the model card</a> for what the model was built for, then let your hardware pick the bit depth.</p>
+
+    <h2>The first answer.</h2>
+    <p>Speed is the honest variable. On a CPU, short answers arrive in reasonable time and long ones test patience; on even a modest GPU the difference is dramatic, and <a href="/what-is-tokens-per-second/">tokens per second</a> is the number to compare across setups. The threshold is low: <a href="/does-local-ai-need-a-gpu/">a GPU is not required</a>, though a GTX 1650 class card changes the whole experience, as covered on <a href="/run-research-ai-gtx-1650/">running research AI on a GTX 1650</a>. One habit worth forming from the first session: the model holds nothing between conversations, so anything worth keeping belongs in your notes, not in the chat.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/does-local-ai-need-a-gpu/">Does local AI need a GPU?</a></li>
+        <li><a href="/how-much-ram-for-local-ai/">How much RAM does local AI need?</a></li>
+        <li><a href="/what-is-a-gguf/">What is a GGUF file?</a></li>
+        <li><a href="/what-is-tokens-per-second/">What are tokens per second?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
