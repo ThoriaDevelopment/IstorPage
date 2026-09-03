@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is an AI agent?</title>
+  <meta name="description" content="A model arranged to plan, call tools and loop until a job is done, instead of answering in one pass. What makes an agent, what it costs, and where local fits." />
+  <link rel="canonical" href="https://istor.fyi/what-is-an-ai-agent/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is an AI agent?" />
+  <meta property="og:description" content="A model that plans, calls tools and loops until a job is done. What makes an agent, what it costs, and where it runs." />
+  <meta property="og:url" content="https://istor.fyi/what-is-an-ai-agent/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is a chatbot an agent?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not by default. A chatbot answers in one pass: your question goes in, an answer comes out, and nothing happens in between. An agent runs a loop, where its own outputs decide the next action, such as calling a search or reading a file. A chatbot becomes an agent only when the system around it lets the model trigger those steps and act on the results." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do agents make more mistakes than plain chat?",
+        "acceptedAnswer": { "@type": "Answer", "text": "They usually make different ones. Every extra step is another place to drift, and a wrong turn early in a loop shapes everything after it. Tools give the agent real facts to work with, which reduces guessing, but the deciding between steps is still the model. Grounding each step in retrievable sources and verifying what comes back is how serious agent systems keep the loop honest." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can an AI agent run locally?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. An agent is a model plus a harness, and both can sit on your machine: a local model does the reasoning, and the tools it calls can be local files, a local search index or a document library. Nothing about the loop needs a cloud server. The practical limits are the ones local AI always has, namely model size and hardware speed, not any missing piece of the agent pattern." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is an AI agent?</h1>
+    <p class="lede">The step past chat: a model that plans, uses tools, and keeps going until the job is done.</p>
+
+    <div class="capsule">
+      <p>An AI agent is a model arranged to act rather than just answer. Instead of returning one block of text, it works in a loop: it plans, calls a tool such as a search or a file reader, reads the result, and decides what to do next. The intelligence comes from the language model. The agency comes from the harness that lets its words trigger actions and feeds the results back in.</p>
+    </div>
+
+    <h2>A loop, not a single answer.</h2>
+    <p>Ordinary chat is one pass of <a href="/what-is-inference/">inference</a>: question in, answer out, done. An agent inserts a middle. After answering, the model's output can name an action, a piece of software notices, runs it, and hands the result back as more text for the model to read. The model then decides whether the job is finished or another step is needed. Each turn around the loop is still ordinary inference; what makes it agency is that the model's own words choose the next move, instead of a human typing it.</p>
+
+    <h2>What the model needs to act.</h2>
+    <p>Three things turn a model into an agent. Tools it may call, described precisely enough that the model knows when each one fits. A set of standing instructions that say what the job is and what is out of bounds, which is the work of a <a href="/what-is-a-system-prompt/">system prompt</a>. And a stopping rule, because a loop that never ends is worse than no loop at all. None of these change what the model knows; they change what its <a href="/what-is-prompt-engineering/">instructions</a> can cause to happen, which is where the engineering effort actually goes.</p>
+
+    <h2>Where agents meet your documents.</h2>
+    <p>The most useful research agents are grounded ones: at each step, the model works from <a href="/what-is-rag/">retrieved passages</a> instead of what it happens to remember, and it cites what it used. That constraint matters more as autonomy grows, because a free-running loop has more chances to <a href="/how-to-stop-ai-hallucinating/">invent confident details</a>. Running such an agent <a href="/what-is-a-local-llm/">on your own machine</a> adds a quiet benefit: the actions, the files it reads and the reasoning all stay local, so the more capable the loop becomes, the less you have to trade privacy for it.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/what-is-a-system-prompt/">What is a system prompt?</a></li>
+        <li><a href="/how-to-stop-ai-hallucinating/">How do you stop an AI from making things up?</a></li>
+        <li><a href="/what-is-prompt-engineering/">What is prompt engineering?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
