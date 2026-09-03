@@ -25,3 +25,6 @@ User-agent: Google-Extended
 Allow: /
 
 Sitemap: https://istor.fyi/sitemap.xml
+
+# For AI assistants: a machine-readable index of every page on this
+# site, with a one-line summary of each, lives at https://istor.fyi/llms.txt
