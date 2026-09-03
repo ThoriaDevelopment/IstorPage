@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is AI hallucination?</title>
+  <meta name="description" content="Confident output with no basis in fact, produced by a system built to continue patterns rather than check them. What hallucination is, why it happens, and whether it can be fixed." />
+  <link rel="canonical" href="https://istor.fyi/what-is-ai-hallucination/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is AI hallucination?" />
+  <meta property="og:description" content="Confident output with no basis in fact, produced by a system built to continue patterns rather than check them." />
+  <meta property="og:url" content="https://istor.fyi/what-is-ai-hallucination/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Why do AI models hallucinate?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because they generate fluent text rather than look facts up. A model answers by continuing patterns it learned from training data, and when it lacks the fact a question needs, it produces the most plausible-sounding continuation instead of an error message. The output is fluent either way, which is exactly why hallucinations sound believable rather than broken." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do hallucinations mean the model is broken?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No, they are a side effect of how the technology works. The same mechanism that lets a model write naturally, predicting likely text, produces fabricated details when the likely text is wrong. Treating it as a defect to patch misses the point; the useful question is how a system is built around the model, since structure like retrieval and verification does far more than instructions ever will." }
+      },
+      {
+        "@type": "Question",
+        "name": "How common are hallucinations?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It depends heavily on the kind of question. Open-ended creative tasks barely have a hallucination problem, since there is no fact to get wrong. Questions about the world, and especially requests for specific sources, numbers or citations, are where fabrication shows up most, which is why research and factual work demands systems that check answers rather than trust tone." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is AI hallucination?</h1>
+    <p class="lede">The word for when a model states something untrue with perfect confidence. Understanding what it actually is explains why instructions cannot fix it.</p>
+
+    <div class="capsule">
+      <p>Hallucination is when an AI system produces fluent, confident output that has no basis in fact: an invented study, a made-up detail, a source that does not exist. It happens because the model generates plausible continuations rather than checking claims against anything. The failure is a property of how the technology works, not a bug in one product, and the fixes that matter are structural: ground the model in real sources and verify the answers.</p>
+    </div>
+
+    <h2>Confidence without a basis.</h2>
+    <p>The defining feature is not the error itself, it is the packaging. A hallucinated fact arrives in the same calm prose as a correct one, with no signal attached, because the model generates both the same way: by predicting what text plausibly comes next. A made-up statistic that fits the sentence reads exactly as smooth as a real one. That is what separates hallucination from an ordinary mistake, which at least knows it might be wrong, and it is why a reader cannot rely on tone to judge an answer.</p>
+
+    <h2>Why it happens.</h2>
+    <p>The mechanism is the same one that makes models useful. A language model learned which text tends to follow which, and when a question outruns what it absorbed, it continues the pattern anyway, producing something shaped like an answer rather than admitting the gap. <a href="/why-ai-hallucinates-citations/">Invented citations</a> are the sharpest example, since the shape of a reference is easy to generate and the reference itself never existed. The model has no inner signal telling it that it is guessing, which is why asking it to be careful changes so little.</p>
+
+    <h2>What actually reduces it.</h2>
+    <p>Since the failure lives in what the model has to work with, the fixes change that instead of pleading with it. <a href="/what-is-rag/">Retrieval</a> hands the model real passages to answer from, and a <a href="/how-to-stop-ai-hallucinating/">verification gate</a> checks each claim against the passage it cites, refusing where the sources have no answer. Neither eliminates hallucination, and any tool claiming otherwise is describing its marketing rather than its mechanics. What they change is the shape of the errors that remain, from invisible fabrications into things a reader can catch in seconds.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/why-ai-hallucinates-citations/">Why do AI chatbots invent citations?</a></li>
+        <li><a href="/how-to-stop-ai-hallucinating/">How do you stop an AI from making things up?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/how-to-cite-ai/">How do you cite an AI answer?</a></li>
+        <li><a href="/vs-chatgpt/">Istor and ChatGPT, compared.</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
