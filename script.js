@@ -105,10 +105,15 @@
       var r = stage.getBoundingClientRect();
       var p = (window.innerHeight - r.top) / (r.height + window.innerHeight);
       p = Math.max(0, Math.min(1, p));
-      baseRY = -30 + 16 * p;
-      baseRX = 12 - 8 * p;
-      // past the midpoint the page turns over to the answer face
-      var q = (p - 0.5) / 0.22;
+      // the flip and the pose both settle at SETTLE, which sits well
+      // inside the pin range; everything past it is a hold, so the
+      // finished answer face and its citations stay readable before
+      // the section releases and the next one scrolls in
+      var settled = Math.min(p, 0.58);
+      baseRY = -30 + 16 * settled;
+      baseRX = 12 - 8 * settled;
+      // the page turns over to the answer face, done by the settle
+      var q = (settled - 0.42) / 0.16;
       flipDeg = Math.max(0, Math.min(1, q)) * 180;
       paint();
     }

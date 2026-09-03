@@ -823,8 +823,10 @@ a { color: inherit; }
 }
 
 /* scroll room for the pinned wrapper; margins on a sticky element
-   would count against its own pin range, so this is a spacer */
-.showcase-run { height: 75vh; }
+   would count against its own pin range, so this is a spacer. The
+   extra room beyond the flip is the hold: the finished answer face
+   with its citations stays pinned and readable before release */
+.showcase-run { height: 140vh; }
 
 .sheet {
   position: relative;
