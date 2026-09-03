@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is hybrid search?</title>
+  <meta name="description" content="Running keyword search and vector search together, then merging the results. Why each method fails alone, how the merge works, and why it runs fine locally." />
+  <link rel="canonical" href="https://istor.fyi/what-is-hybrid-search/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is hybrid search?" />
+  <meta property="og:description" content="Running keyword search and vector search together, then merging the results. Why each method fails alone, and how the merge works." />
+  <meta property="og:url" content="https://istor.fyi/what-is-hybrid-search/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Why not just use vector search?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because meaning-matching drifts on the exact terms. Vector search finds passages about the same topic even with different wording, but it can miss a rare identifier, a specific drug name, or an exact quote, since those live more in the characters than in the meaning. Keyword search catches them every time. A system that only embeds gives up that precision for no good reason." }
+      },
+      {
+        "@type": "Question",
+        "name": "How are the two result lists combined?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Each method returns a ranked list with incomparable scores, so the merge usually runs through a rank-based method such as reciprocal rank fusion: a passage earns credit for its position in each list, and passages that both methods rank highly float to the top. The exact fusion formula matters less than the principle that agreement between two different ways of looking is stronger evidence than either alone." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does hybrid search need a server?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Keyword search is an index lookup and vector search is a distance computation, and a personal library is small enough that both run comfortably on a laptop. Open models generate the embeddings locally, a plain database can hold the index, and nothing about the method requires anyone else's machines, which is why private retrieval setups are ordinary now." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is hybrid search?</h1>
+    <p class="lede">Two ways of matching, run together. Keyword search finds the exact words; vector search finds the meaning around them. The combination beats either one alone.</p>
+
+    <div class="capsule">
+      <p>Hybrid search runs keyword search and vector search side by side and merges their results. Keyword matching catches exact terms, names and rare identifiers that meaning-based methods can drift past; vector matching catches paraphrases and different wording that keyword matching misses entirely. Because the two fail in opposite places, their combination covers far more of what a real question can look like, and both halves run comfortably on a personal machine.</p>
+    </div>
+
+    <h2>What each method misses.</h2>
+    <p>Plain keyword search is literal. Ask it for "soil nitrogen retention" and it will not return a passage that says "nutrient holding capacity of earth", even though the passage is exactly what you wanted. <a href="/what-is-an-embedding/">Embedding-based search</a> fixes exactly that by matching meaning instead of characters. But it has the mirror-image weakness: a passage containing the one rare identifier you actually need can rank below several vague topical neighbors, because the meaning space does not care much about a single token. Each method's strength is the other's gap.</p>
+
+    <h2>Running both, merging results.</h2>
+    <p>The hybrid part is the merge. Both methods rank the library independently, and a fusion step combines the two lists into one, usually by rank position rather than raw score, since the scores come from incompatible scales. A passage that both methods rank highly is the strongest candidate, and a passage only keyword search found, or only vector search found, still gets its chance. That merged list is what feeds <a href="/what-is-rag/">retrieval-augmented generation</a>, so the model reads the passages two different kinds of matching agreed on.</p>
+
+    <h2>Why it runs locally.</h2>
+    <p>Nothing in the method demands infrastructure. Keyword search is an inverted index, vector search is comparing <a href="/what-is-a-vector-database/">stored vectors</a> by distance, and a research-sized library of thousands of documents is small enough that a plain database does both on a laptop. The embeddings come from a local model, so the whole pipeline, both searches and the fusion, completes without a network request. It is one of those techniques that sounds like a data-center feature and turns out to be arithmetic a personal machine handles easily.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/what-is-an-embedding/">What is an embedding?</a></li>
+        <li><a href="/what-is-a-vector-database/">What is a vector database?</a></li>
+        <li><a href="/how-document-chunking-works/">How does document chunking work?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
