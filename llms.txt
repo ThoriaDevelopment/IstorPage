@@ -54,6 +54,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Local AI for lecture notes](https://istor.fyi/local-ai-lecture-notes/): a semester's slides, readings and notes as one searchable library that answers with citations; what the tool keeps track of, and what stays yours to learn.
 - [What is semantic search?](https://istor.fyi/what-is-semantic-search/): finding passages by meaning rather than wording, the retrieval step that makes a document library answerable; approximate by nature, which is why verification follows it.
 - [What does Q4_K_M mean?](https://istor.fyi/what-does-q4-k-m-mean/): the code on a quantized model file naming its compression recipe; how to read the bits-per-weight headline, why K-series mixing protects quality, and which variant to pick.
+- [What is prompt engineering?](https://istor.fyi/what-is-prompt-engineering/): writing instructions a model follows well; the unglamorous core that works, what words control and what they do not, and where structure takes over.
 
 ## Download
 

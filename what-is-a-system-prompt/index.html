@@ -92,7 +92,7 @@
     </div>
 
     <h2>Instructions you never wrote.</h2>
-    <p>When you open a chat tool and type a question, the model reads more than your question. Ahead of it sits the system prompt: the tool builder's standing brief on who the model is supposed to be, how answers should look, what to refuse and what to admit. That invisible paragraph is why the same underlying model can behave as a terse coding assistant in one product and a careful research helper in another. The weights are the same; the briefing differs.</p>
+    <p>When you open a chat tool and type a question, the model reads more than your question. Ahead of it sits the system prompt: the tool builder's standing brief on who the model is supposed to be, how answers should look, what to refuse and what to admit. That invisible paragraph is why the same underlying model can behave as a terse coding assistant in one product and a careful research helper in another, and writing it well is <a href="/what-is-prompt-engineering/">prompt engineering</a> applied once instead of every session. The weights are the same; the briefing differs.</p>
 
     <h2>Where it sits, and what that does.</h2>
     <p>The system prompt occupies the front of the <a href="/what-is-a-context-window/">context window</a>, ahead of your messages and any retrieved material. Because the model reads everything as one continuous text, position carries authority: earlier instructions act as the rules the later text should be handled under. Products rely on that ordering to steer behavior, and so do grounded tools, where the system prompt tells the model what to do with the <a href="/what-is-rag/">passages retrieval supplies</a>: read them, answer from them, and refuse when they do not support a claim.</p>
