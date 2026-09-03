@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is a vector database?</title>
+  <meta name="description" content="The index that lets search match by meaning instead of exact words: what vectors are stored in one, how similarity search works, and why your own files need no cloud service." />
+  <link rel="canonical" href="https://istor.fyi/what-is-a-vector-database/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is a vector database?" />
+  <meta property="og:description" content="The index that lets search match by meaning instead of exact words, and why a local research library needs no cloud service for it." />
+  <meta property="og:url" content="https://istor.fyi/what-is-a-vector-database/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Do I need a vector database for local AI?",
+        "acceptedAnswer": { "@type": "Answer", "text": "You need the function, not the product. A personal library of documents is small enough that a local tool can keep the vectors in an ordinary file or embedded index and search it directly. Dedicated vector database servers earn their keep at scales of millions of entries; a research library of hundreds of PDFs does not need one, and running the search inside the same application keeps the whole loop on your machine." }
+      },
+      {
+        "@type": "Question",
+        "name": "How does similarity search actually work?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Every passage becomes a vector, a list of numbers whose layout reflects its meaning, so passages about similar ideas end up geometrically close. A question is turned into a vector the same way, and the search finds the stored vectors nearest to it. Closeness in that space stands in for similarity of meaning, which is how a question about drug safety finds a paper that never uses the phrase." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does a vector database store my documents?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It can, and a good local one effectively does. The vectors themselves are not readable text, so an index that stored only vectors would be useless without the passages they point back to. Local tools keep the vectors and the source text together on your disk, which is what makes citation possible: every retrieved vector points at the exact passage it was computed from." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is a vector database?</h1>
+    <p class="lede">The part of search that matches meaning instead of wording. Less a product than a function, and one your machine performs comfortably.</p>
+
+    <div class="capsule">
+      <p>A vector database stores embeddings, number representations of passages, and finds the ones closest in meaning to a query. Instead of matching exact words, it matches geometric closeness: passages about similar ideas end up near each other in the space, so a question retrieves what it means rather than what it repeats. It is the index behind semantic search, and on a personal scale it is just a file your own machine searches.</p>
+    </div>
+
+    <h2>Why meaning needs an index.</h2>
+    <p>An <a href="/what-is-an-embedding/">embedding turns a passage into numbers</a> that carry its meaning. On its own that is a description; the database is what makes it useful. It files every vector so that a question, itself turned into a vector, can find its nearest neighbors in milliseconds instead of comparing against every passage one by one. This is the second half of the hybrid search that <a href="/what-is-rag/">a retrieval loop</a> runs: keywords catch the exact terms, the vector index catches the reworded idea, and each covers what the other misses.</p>
+
+    <h2>The scale most people actually have.</h2>
+    <p>The vector databases that get written about are server products built for millions of entries and many simultaneous readers. A personal research library is not that. Tens of thousands of passages produce an index that measures in megabytes, fits on a laptop, and searches fast on a CPU with no server process at all. The honest conclusion is that you need similarity search, not necessarily a vector database product: a tool that keeps the vectors beside your documents and searches them directly gives you the same answers with one less moving part and nothing to upload.</p>
+
+    <h2>What the vectors point back to.</h2>
+    <p>Vectors alone are unreadable, a cloud of coordinates that no one can quote. What makes an index worth having is the link from each vector back to the <a href="/how-document-chunking-works/">chunk of text it was computed from</a>. That pointer is where citations come from: retrieval surfaces a vector, the vector names its passage, and the passage travels into the prompt so the answer can quote it and you can check it. A local index keeps those pointers on your disk next to the documents themselves, which is why an answer can carry a citation without your library ever leaving home.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-an-embedding/">What is an embedding?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/how-document-chunking-works/">How does document chunking work?</a></li>
+        <li><a href="/is-local-rag-private/">Is local RAG private?</a></li>
+        <li><a href="/private-pdf-chat/">What is the most private way to chat with PDFs?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
