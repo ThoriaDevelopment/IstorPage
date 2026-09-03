@@ -42,6 +42,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [What does 7B mean in a model name?](https://istor.fyi/what-does-7b-mean/): seven billion parameters, the learned numbers that carry everything a model knows; why the count sets the memory bill and 7B to 8B is the consumer sweet spot.
 - [What is a GGUF file?](https://istor.fyi/what-is-a-gguf/): the single-file format local models ship in, weights plus metadata with quantization baked in; why it became the standard for local runtimes.
 - [What is hybrid search?](https://istor.fyi/what-is-hybrid-search/): keyword search and vector search run together, each covering what the other misses; the merge that feeds retrieval, and why it runs on a laptop.
+- [How do you cite an AI answer?](https://istor.fyi/how-to-cite-ai/): credit the tool in the text, cite the recoverable sources you verified, and disclose what you asked; the principles that outlast the style guides' current rules.
 
 ## Download
 
