@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is tokens per second?</title>
+  <meta name="description" content="The speed a model generates text, measured in the pieces it reads and writes. What the number means, what moves it up and down, and why it decides whether local AI feels usable." />
+  <link rel="canonical" href="https://istor.fyi/what-is-tokens-per-second/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is tokens per second?" />
+  <meta property="og:description" content="The speed a model generates text, measured in the pieces it reads and writes. What the number means and what moves it up and down." />
+  <meta property="og:url" content="https://istor.fyi/what-is-tokens-per-second/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How fast is fast for tokens per second?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Reading speed is the useful yardstick: an average adult reads a few hundred words per minute, which is roughly five to ten tokens per second. A local model that sustains twenty or thirty tokens per second streams an answer faster than you can read it, so the wait stops feeling like a wait. Below about ten, long answers feel sluggish; below five, the tool starts to feel broken even when it is working correctly." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does tokens per second affect answer quality?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Speed and quality are separate properties. The same model, given the same input, produces the same text whether it streams quickly or slowly; the rate only changes how long you watch it arrive. What speed does change is practical reach: faster generation makes longer answers and wider document reading tolerable, while a slow setup pushes real work toward short prompts and short outputs." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does generation slow down as the answer grows?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Each new piece is computed from everything written so far, and the model has to keep attending to all of it. As the answer lengthens, that per-step bookkeeping grows, so the rate tends to drift down over a long response. Retrieval tools feel this less than you might expect, because the heavy part of their work is reading your documents, which is a separate, faster kind of computation from writing the answer out." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is tokens per second?</h1>
+    <p class="lede">The speed a model writes, measured in the pieces it thinks in. It is the number that decides whether local AI feels instant or sluggish.</p>
+
+    <div class="capsule">
+      <p>Tokens per second is the rate a model generates text, counted in <a href="/what-is-tokenization/">tokens</a>, the word pieces a model reads and writes. The measure exists because generation is one piece at a time: during <a href="/what-is-inference/">inference</a>, each piece is computed from everything before it. Faster rates make answers feel instant; slower ones make you watch an answer arrive. It is a speed number only, and it says nothing about whether the text is right.</p>
+    </div>
+
+    <h2>The rate you actually feel.</h2>
+    <p>A person reads a few hundred words per minute, which lands somewhere near five to ten tokens per second. A model sustaining twenty or thirty is streaming faster than you can read, so the answer feels immediate even though the computation is still unfolding. Below roughly ten, long answers start to drag; below five, the tool feels broken even when nothing is wrong. That reading-speed yardstick is why hardware pages obsess over this number, and why <a href="/run-research-ai-gtx-1650/">an entry-level GPU like a GTX 1650</a> can feel perfectly usable: what matters is clearing the reading bar, not competing with a datacenter.</p>
+
+    <h2>What moves the number.</h2>
+    <p>Three things dominate. Model size, because each piece requires running the whole model once, so a bigger <a href="/what-does-7b-mean/">parameter count</a> costs speed at the same hardware. Quantization, since a smaller file means less arithmetic per step; the same model at 4 bits runs quicker than at 8. And memory bandwidth, which is why a GPU's speed shows up here more than its raw compute does. As an answer grows, the rate usually drifts down, because each new piece attends to everything written so far.</p>
+
+    <h2>Speed is not quality.</h2>
+    <p>The same model with the same input produces the same text whether it streams at thirty tokens per second or three. Slow generation never makes an answer worse, and fast generation never makes it better; correctness lives elsewhere, in grounding and <a href="/how-to-stop-ai-hallucinating/">verification structure</a>. What speed really changes is which jobs feel practical: a fast setup invites long documents and full-length answers, while a slow one quietly trains you to ask smaller questions. That is also why retrieval matters locally, since reading your library is a separate and much faster computation than writing the answer out.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-inference/">What is inference?</a></li>
+        <li><a href="/what-is-tokenization/">What is tokenization?</a></li>
+        <li><a href="/what-is-quantization/">What is quantization?</a></li>
+        <li><a href="/run-research-ai-gtx-1650/">Can you run a research AI on a GTX 1650?</a></li>
+        <li><a href="/what-does-7b-mean/">What does 7B mean in a model name?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
