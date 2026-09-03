@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is training data?</title>
+  <meta name="description" content="The text a model learns from, and what happens to it afterwards. Why the model carries compressed tendencies of its examples rather than copies, and why knowledge wants a library instead." />
+  <link rel="canonical" href="https://istor.fyi/what-is-training-data/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is training data?" />
+  <meta property="og:description" content="The text a model learns from, and what it keeps afterwards. Why the model carries compressed tendencies rather than copies, and why knowledge belongs in a library." />
+  <meta property="og:url" content="https://istor.fyi/what-is-training-data/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What counts as training data?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Text of nearly every kind a model is meant to handle: web pages, books, articles, documentation, code, and curated or licensed collections mixed in for quality. The mix is deliberate, since the blend of sources shapes what the model is good at. A model card usually describes the kinds of text used, though the exact contents are rarely published in full." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does the model store the training data?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No, not as retrievable pages. Training compresses statistical patterns of the text into the weights, and what comes out is a tendency to continue text the way the examples did. Heavily repeated text can survive as near-verbatim recall, which is one reason memorization is studied, but a fact the model offers from memory carries no source, no date, and no way to check where it came from." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can training data be updated or removed?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not from weights that already exist. A shipped model is fixed, and the only way to change what it learned is more training, which alters behavior statistically rather than deleting a fact. That is why current or verifiable knowledge belongs outside the model, in documents a tool retrieves at answer time, where anything can be added, replaced or checked against its source." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is training data?</h1>
+    <p class="lede">The text a model learns from, and what becomes of it afterwards. Less is kept than most people assume, and what is kept has no sources attached.</p>
+
+    <div class="capsule">
+      <p>Training data is the text a model learns from: the examples whose statistical patterns become the model's weights. Once training ends, the data itself is gone from the process; the model carries compressed tendencies of it, not copies of the pages. That is why facts learned this way cannot be cited, updated or removed, and why research tools put knowledge in a retrievable library instead, where every claim can point back to its source.</p>
+    </div>
+
+    <h2>The examples the weights come from.</h2>
+    <p>Training a language model means showing it an enormous amount of text and adjusting its parameters so that its predictions of what comes next get better. The text is the training data: web pages, books, articles, documentation, code, and curated sets mixed in for quality. Nothing in the process stores the examples the way a database would; the result is the settled weights that <a href="/what-is-inference/">run when you ask a question</a>, and the data itself plays no further part. What the model knows, it knows as patterns absorbed from that mix.</p>
+
+    <h2>What the model keeps, and what it loses.</h2>
+    <p>What survives training is compression, not storage: the statistics of how text tends to continue. That is the mechanism behind <a href="/what-is-ai-hallucination/">confident fabrication</a>, since a model can produce the shape of a fact, a citation or a date with the same ease as a correct one, and nothing in the output announces which is which. Heavily repeated text can survive as near-verbatim recall, but even then the model cannot attach a source to what it offers, because the source was never part of what it kept. Facts with provenance are a property of documents, not of weights.</p>
+
+    <h2>Why knowledge belongs in the library instead.</h2>
+    <p>This is the practical consequence for research work. Knowledge inside weights is frozen at training time, unverifiable at answer time, and immune to correction. Knowledge in documents stays current, and retrieval hands the model exactly the passages an answer should rest on, with the source one click away. That division, behavior in the weights and knowledge in the library, is the design behind <a href="/what-is-rag/">retrieval-augmented generation</a>, and it is also what makes <a href="/how-to-stop-ai-hallucinating/">structural verification</a> possible: you can only check a claim against material the tool can actually open.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-fine-tuning/">What is fine-tuning?</a></li>
+        <li><a href="/what-is-inference/">What is inference?</a></li>
+        <li><a href="/what-is-ai-hallucination/">What is AI hallucination?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/what-is-a-model-card/">What is a model card?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
