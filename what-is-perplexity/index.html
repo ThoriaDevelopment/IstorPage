@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is perplexity in AI?</title>
+  <meta name="description" content="The standard score for how well a language model predicts text. What a lower number means, why it never says whether an answer is right, and how to read it on a model card." />
+  <link rel="canonical" href="https://istor.fyi/what-is-perplexity/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is perplexity in AI?" />
+  <meta property="og:description" content="The score for how well a language model predicts text. What a lower number means, and why it never says whether an answer is right." />
+  <meta property="og:url" content="https://istor.fyi/what-is-perplexity/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a good perplexity score?",
+        "acceptedAnswer": { "@type": "Answer", "text": "There is no absolute good number, only comparisons. The score depends on the text it was measured on and on the model's tokenizer, so two perplexity figures are only comparable when both come from the same benchmark with the same tokenizer. The useful reading is relative: a lower score under identical conditions means the model anticipates that text better." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does lower perplexity mean better answers?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not reliably. Perplexity measures how well a model predicts text, which is the ability it was trained on. Producing a correct, grounded answer is a different matter: a model can predict fluent language confidently and still state things that are wrong. Answer quality depends far more on what the model was given to read and whether the answer is checked against it." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do model cards report perplexity?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because it is an old, cheap, and comparable measurement of pretraining quality. A card reports it so you can see whether the base model learned language well and how it compares with similar models under the same benchmark. It describes the base model's prediction skill, not how the model performs on your specific documents and questions." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is perplexity in AI?</h1>
+    <p class="lede">The number that measures how surprised a model is by the text it reads, and why that says nothing about whether an answer is grounded.</p>
+
+    <div class="capsule">
+      <p>Perplexity measures how well a language model predicts text: a model that expects each next word with high confidence gets a low score, and a model that keeps getting surprised gets a high one. Lower is better. The score is computed over a fixed text, which is why it compares models under specific conditions, and why it never tells you whether a finished answer is right, only how well the model anticipates language.</p>
+    </div>
+
+    <h2>A score for next-word prediction.</h2>
+    <p>Training a language model is the process of improving exactly one skill: given the words so far, predict what comes next; <a href="/what-is-training-data/">what training data is</a> describes what that practice material is. Perplexity is the measurement of the same skill on text the model has not seen. A score of 10 roughly means the model hedges between ten options on average at each step, while a score of 500 means it is very often taken by surprise. That is the whole idea. It is cheap to compute, it does not require human judgments, and it has been the standard sanity check since long before models could hold a conversation.</p>
+
+    <h2>What the number does not measure.</h2>
+    <p>Perplexity says nothing about truth. A model can predict language beautifully and still produce <a href="/what-is-ai-hallucination/">confident fabrication</a>, because stating a plausible-sounding fact is itself a form of fluent text prediction. The score also says nothing about whether the model will stick to the documents you gave it, refuse when the evidence is missing, or show its sources; those are properties of the surrounding structure, and <a href="/how-to-stop-ai-hallucinating/">the fixes for making things up</a> are structural, not statistical. A low score tells you the model speaks well. Whether it can be trusted on a specific question is a separate question entirely.</p>
+
+    <h2>Where you will actually meet it.</h2>
+    <p>Perplexity shows up in <a href="/what-is-a-model-card/">model cards</a>, where publishers report it as evidence the base model learned language well. Bigger models generally score lower, which is one reason the count matters; <a href="/what-does-7b-mean/">what 7B means in a model name</a> covers that side. But a card's number describes the base model on the benchmark's text, with the benchmark's tokenizer, not your documents and not your questions, so treat it as a quality hint rather than a promise about the answers you will get.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-training-data/">What is training data?</a></li>
+        <li><a href="/what-is-ai-hallucination/">What is AI hallucination?</a></li>
+        <li><a href="/what-is-a-model-card/">What is a model card?</a></li>
+        <li><a href="/what-does-7b-mean/">What does 7B mean in a model name?</a></li>
+        <li><a href="/what-is-inference/">What is inference?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

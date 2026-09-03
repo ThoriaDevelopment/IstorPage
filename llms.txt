@@ -62,6 +62,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Why does AI forget the beginning of long documents?](https://istor.fyi/why-does-ai-forget-the-beginning-of-long-documents/): one reading, uneven attention; why details near the start and middle get less weight in long inputs, and why retrieval beats a bigger window.
 - [What is llama.cpp?](https://istor.fyi/what-is-llama-cpp/): the open-source engine under most local AI; how it runs GGUF models on CPUs and GPUs alike, and why it sits underneath so many tools.
 - [What is model distillation?](https://istor.fyi/what-is-distillation/): training a small model on a larger one's outputs; how the student inherits the teacher's behavior at a fraction of the size, and what it loses.
+- [What is perplexity in AI?](https://istor.fyi/what-is-perplexity/): the standard score for how well a model predicts text; lower is better, and the number never says whether an answer is right.
 
 ## Download
 
