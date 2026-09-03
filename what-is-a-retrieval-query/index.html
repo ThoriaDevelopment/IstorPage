@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is a retrieval query?</title>
+  <meta name="description" content="The text a search system actually runs against your library, rewritten from the question you asked. How queries are built, why wording matters to a machine, and what a good one earns." />
+  <link rel="canonical" href="https://istor.fyi/what-is-a-retrieval-query/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is a retrieval query?" />
+  <meta property="og:description" content="The text a search system actually runs against your library, rewritten from the question you asked. How queries are built and what a good one earns." />
+  <meta property="og:url" content="https://istor.fyi/what-is-a-retrieval-query/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is a retrieval query the same as my question?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Often not. Your question is written for a person; a retrieval query is written for an index. Tools commonly rewrite it, strip filler, add likely keywords, or produce several variants so different search methods have something each matches well. You asked one question, and the system may have run two or three queries to answer it." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why not just search my exact words?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because your words and the document's words are often different. You ask about laptop battery life; the manual says runtime per charge. Exact matching finds nothing, a miss called vocabulary mismatch. Meaning-based search narrows this, and combining keyword search with it catches the cases each alone drops. That combination is why serious retrieval rarely relies on a single query form." }
+      },
+      {
+        "@type": "Question",
+        "name": "Who writes the retrieval query?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The tool does, automatically. You see the question and the cited answer; the query construction happens between them. Good tools treat it as a designed step with the same care as the search itself, because retrieval quality gates answer quality: passages the query never reached are passages the answer cannot cite." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is a retrieval query?</h1>
+    <p class="lede">The text a search system actually runs against your library. It is rarely the question you typed.</p>
+
+    <div class="capsule">
+      <p>A retrieval query is the text a search system actually runs against your library, and it is rarely the question you typed. The original question is rewritten into forms the indexes match well: keywords for the lexical search, an embedding for the vector search, sometimes several variants to widen the net. What comes back depends on this step as much as on the index; a library can only return what its query could reach.</p>
+    </div>
+
+    <h2>The question, rewritten for the index.</h2>
+    <p>You ask in sentences; indexes match in their own currencies. <a href="/what-is-semantic-search/">Semantic search</a> compares meanings, so the query becomes a vector that stands for what you meant. Keyword search compares terms, so the query becomes the words a relevant document would plausibly contain. Most grounded tools build both from your question and run them together, sometimes adding a variant or two for good measure. The step is invisible when it works, which is exactly why it deserves attention: it sits between your question and everything the answer can draw on.</p>
+
+    <h2>Why wording matters to a machine.</h2>
+    <p>A human hears "battery life" and "runtime" as the same question. A keyword index does not, and even a meaning-based search can be pulled aside by phrasing that leans toward the wrong sense of a word. This is why query construction is engineering rather than a formality: strip the words that carry no evidence, keep the ones a source would use, and let <a href="/what-is-hybrid-search/">the two search methods cover each other's misses</a>. A well-built query is one the library could actually answer, which is a different thing from a well-built question.</p>
+
+    <h2>What a good query earns you.</h2>
+    <p>Retrieval sits at the front of every grounded answer, so its quality caps everything after it. In a <a href="/what-is-rag/">retrieval-augmented loop</a>, the model can only cite passages the query surfaced, and <a href="/how-to-stop-ai-hallucinating/">the verification pass can only check claims</a> against material that arrived. A poor query quietly produces confident answers built on the wrong passages, which is the hardest failure to notice from the outside. Tools that show their work let you see what was retrieved; that visibility is how a wrong query gets caught before it becomes a wrong answer.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-semantic-search/">What is semantic search?</a></li>
+        <li><a href="/what-is-hybrid-search/">What is hybrid search?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/how-document-chunking-works/">How does document chunking work?</a></li>
+        <li><a href="/how-to-stop-ai-hallucinating/">How do you stop an AI from making things up?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
