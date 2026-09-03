@@ -107,7 +107,7 @@
 
     <h2>How Istor clears each item.</h2>
     <p>Istor is a Windows application built around this exact list. PDFs are read from disk, their text extracted locally, and scanned pages go through the OCR engine that ships with Windows, so even a scan is read on your own hardware. Embedding and retrieval run locally, the language models are served on your GPU, and the app makes zero network requests unless you trigger a fetch yourself. The library is a SQLite file in your app-data folder, and the whole thing exports as a zip.</p>
-    <p>One consequence of the local design is worth knowing: when your sources do not contain the answer, Istor says so instead of improvising. Every claim in an answer carries a citation back to the passage it came from, so you can check it.</p>
+    <p>One consequence of the local design is worth knowing: when your sources do not contain the answer, Istor says so instead of improvising. Every claim in an answer carries a citation back to the passage it came from, so you can check it. The design behind the checklist has a name: <a href="/what-is-a-local-first-app/">what a local-first app is</a> covers the pattern these items add up to.</p>
     <p><a href="/">The rest of what Istor does is on the home page.</a></p>
 
     <section class="page-related">
