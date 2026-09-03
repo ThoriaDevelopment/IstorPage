@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is a system prompt?</title>
+  <meta name="description" content="The standing instructions a model reads before anything you type. What a system prompt does, how it differs from your messages, and why it shapes behavior more than facts." />
+  <link rel="canonical" href="https://istor.fyi/what-is-a-system-prompt/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is a system prompt?" />
+  <meta property="og:description" content="The standing instructions a model reads before anything you type. What it does, how it differs from your messages, and why it shapes behavior more than facts." />
+  <meta property="og:url" content="https://istor.fyi/what-is-a-system-prompt/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What does a system prompt do?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It sets the rules the model follows for the whole conversation: what role it plays, how it should format answers, what it should refuse, and how it should treat the material placed in front of it. The model reads it before your first message and it stays in effect for every reply, which is why products can make the same base model behave as a coder, a research assistant or a customer support agent." }
+      },
+      {
+        "@type": "Question",
+        "name": "How is a system prompt different from a normal message?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Position and authority. Your messages arrive after it and the model treats the system prompt as the standing rules for how to respond to them. A normal message asks one question; the system prompt defines how every question gets handled. Users of a product usually cannot see or change it, while their own messages are always theirs." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can a system prompt make a model stop making things up?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Partly. Instructions like cite your sources or say so when unsure can noticeably change behavior, and honest systems rely on them. But a prompt is a request the model can still fail to follow, so responsible tools pair it with structure the model cannot ignore: retrieval that supplies real passages, citations that point at them, and a verification step that checks claims against the text. Prompts shape behavior; structure makes it checkable." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is a system prompt?</h1>
+    <p class="lede">The standing instructions a model reads before anything you type. It is why the same model can arrive wearing different jobs.</p>
+
+    <div class="capsule">
+      <p>A system prompt is a set of instructions the model reads before your first message, written by whoever built the tool rather than by you. It sets the model's role, its formatting habits, its limits and its rules for the whole conversation. Your messages sit after it in the reading order, so the model treats it as the standing policy. It shapes how the model behaves; it does not add knowledge the model never had.</p>
+    </div>
+
+    <h2>Instructions you never wrote.</h2>
+    <p>When you open a chat tool and type a question, the model reads more than your question. Ahead of it sits the system prompt: the tool builder's standing brief on who the model is supposed to be, how answers should look, what to refuse and what to admit. That invisible paragraph is why the same underlying model can behave as a terse coding assistant in one product and a careful research helper in another. The weights are the same; the briefing differs.</p>
+
+    <h2>Where it sits, and what that does.</h2>
+    <p>The system prompt occupies the front of the <a href="/what-is-a-context-window/">context window</a>, ahead of your messages and any retrieved material. Because the model reads everything as one continuous text, position carries authority: earlier instructions act as the rules the later text should be handled under. Products rely on that ordering to steer behavior, and so do grounded tools, where the system prompt tells the model what to do with the <a href="/what-is-rag/">passages retrieval supplies</a>: read them, answer from them, and refuse when they do not support a claim.</p>
+
+    <h2>It shapes behavior, not knowledge.</h2>
+    <p>A system prompt can change how a model answers, but not what it knows. Telling a model to cite its sources makes it more likely to try; it does not make the model capable of checking anything, which is why prompt instructions alone leave room for <a href="/what-is-ai-hallucination/">confident fabrication</a>. Tools that need answers you can trust pair the briefing with structure: <a href="/how-to-stop-ai-hallucinating/">retrieved passages, mandatory citations and a verification pass</a> that removes what the text does not support. The prompt asks for good behavior; the structure makes bad answers findable.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-context-window/">What is a context window?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/what-is-ai-hallucination/">What is AI hallucination?</a></li>
+        <li><a href="/how-to-stop-ai-hallucinating/">How do you stop an AI from making things up?</a></li>
+        <li><a href="/what-is-temperature/">What is temperature in AI?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
