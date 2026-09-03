@@ -975,9 +975,11 @@ a { color: inherit; }
 
 /* ── privacy band ───────────────────────────────────────────────── */
 
-/* The band's ground is real paper tooth: ambientCG Paper001 (CC0),
-   cropped, desaturated and baked onto #0D1A1D with a teal-lit grain,
-   so the tooth carries the same hue as the band's text accent. */
+/* The band's ground is real paper tooth: a marble surface the studio
+   supplied, desaturated, made seamless and baked onto #0D1A1D so the
+   tooth carries the same hue as the band's text accent. Its tone range
+   is held narrow (5 to 40) so the grain stays visible without ever
+   competing with the light text over it. */
 
 .privacy {
   padding: 0;
@@ -989,7 +991,7 @@ a { color: inherit; }
   text-align: center;
   background-image:
     radial-gradient(80rem 30rem at 85% -10%, rgba(120, 200, 180, 0.16), transparent 60%),
-    url("assets/textures/paper-grain.webp");
+    url("assets/textures/marble-grain.webp");
   background-repeat: no-repeat, repeat;
   background-color: #0D1A1D;
   color: #F2F1EE;
