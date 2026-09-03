@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is inference?</title>
+  <meta name="description" content="The act of running a trained model on your input to produce an answer. How inference differs from training, what it costs, and why it runs fine on your own machine." />
+  <link rel="canonical" href="https://istor.fyi/what-is-inference/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is inference?" />
+  <meta property="og:description" content="The act of running a trained model on your input to produce an answer. How it differs from training, what it costs, and why it runs fine locally." />
+  <meta property="og:url" content="https://istor.fyi/what-is-inference/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the difference between training and inference?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Training is the expensive, one-time process of learning from enormous amounts of text; it produces the file of numbers that is the model. Inference is running that finished file on your input to produce an answer, over and over, once per question. Training happens in datacenters; inference is light enough to happen on a laptop, which is what makes local AI possible." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does inference change the model?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Inference reads the model's numbers and writes an answer; it does not edit the numbers. A model that answered you badly yesterday is identical today. Learning between conversations would require deliberate retraining, which is why a local model cannot quietly absorb your documents, and why your private files stay exactly where you put them." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can inference run without the internet?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Inference is arithmetic over a file that sits on your disk, and no network call is part of it. A local tool can generate answers, retrieve passages and cite sources with the connection off entirely. What the internet is needed for is everything around the model: downloading it in the first place, and fetching new web pages when you choose to." }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is inference?</h1>
+    <p class="lede">The word for what happens every time you ask a model anything. Training built the mind; inference is using it.</p>
+
+    <div class="capsule">
+      <p>Inference is running a trained model on your input to produce an answer. The model is a finished file of numbers; inference feeds your text through it and reads out the result, one step per generated piece. It is the difference between training, which happened once in a datacenter, and using, which happens every time you ask. Inference is light enough to run on a laptop, entirely offline.</p>
+    </div>
+
+    <h2>Training built it; inference uses it.</h2>
+    <p>Training is where the enormous cost lives: weeks of computation over oceans of text, producing the <a href="/what-is-a-local-llm/">file of numbers that is the model</a>. Inference is everything after. Your question goes in, the model's numbers run over it, and an answer comes out one piece at a time, each piece computed from the question and everything generated so far. That one-way split explains the shape of the whole industry: you will never train a model at home, and you do not need to. <a href="/what-is-quantization/">The same file, compressed</a>, runs on hardware most people already own, because using a finished model is a far cheaper act than building one.</p>
+
+    <h2>Asking changes nothing.</h2>
+    <p>Inference reads the model and writes an answer. It does not rewrite the model. Whatever you tell it, whatever you paste in, the numbers on disk are the same before and after, which is worth knowing for two reasons. It is why a conversation does not make the model better, and why it does not make it yours: a local model cannot quietly learn from your documents any more than a cloud one can. What changes between sessions is only the context you supply, like the passages a <a href="/what-is-rag/">retrieval loop</a> places in front of it. The model itself stays exactly as it was built.</p>
+
+    <h2>Why it runs on your machine.</h2>
+    <p>Inference is arithmetic, and arithmetic does not need the internet. The file sits on your disk, the computation happens on your silicon, and no part of generating an answer is a network call. This is the technical fact under all the privacy promises: a tool that runs inference locally is not holding back your data under a policy you have to trust, it is structurally unable to send it anywhere. The connection matters only for what surrounds the model, such as <a href="/research-ai-offline/">fetching pages when you choose to</a> or downloading the model itself. The answering step, the one that sees your words, works with the cable pulled out.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-local-llm/">What is a local LLM?</a></li>
+        <li><a href="/what-is-quantization/">What is quantization?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/research-ai-offline/">Can a research AI work fully offline?</a></li>
+        <li><a href="/how-much-ram-for-local-ai/">How much RAM does a local AI need?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

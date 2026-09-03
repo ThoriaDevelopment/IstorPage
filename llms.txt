@@ -36,6 +36,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Can a local AI translate documents?](https://istor.fyi/can-local-ai-translate-documents/): yes, translation is a core language task; what quality depends on and why the document never has to leave the disk.
 - [How much RAM does a local AI need?](https://istor.fyi/how-much-ram-for-local-ai/): a quantized 7B model fits in about 5 gigabytes, so 16 GB is a comfortable setup; the model is the consumer, the library barely counts.
 - [How does document chunking work?](https://istor.fyi/how-document-chunking-works/): why long documents are cut into passages before search, what good boundaries preserve, and why the step runs locally.
+- [What is inference?](https://istor.fyi/what-is-inference/): running a trained model on your input to produce an answer; the act is offline, local, and changes nothing in the model.
 
 ## Download
 
