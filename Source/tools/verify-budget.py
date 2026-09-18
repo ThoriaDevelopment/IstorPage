@@ -200,17 +200,46 @@ def main(argv: list[str]) -> int:
     else:
         rep.ok("index.html requests no stylesheet")
 
-    told = budget["document"]["index_html_gzip"]
-    if told is None:
+    # The two numbers are asserted differently on purpose, and the difference is
+    # the whole reason there are two of them:
+    #
+    #   raw  — a property of the DOCUMENT. LF-only, so identical on every
+    #          platform. Asserted exactly: any edit to the copy deck or to the
+    #          stylesheet's CODE moves it, and that is meant to be noticed.
+    #   gzip — a property of the document *and of the zlib that compressed it*.
+    #          Python does not promise byte-stable output across versions, so
+    #          this is a ceiling, not an equality.
+    #
+    # It was an equality until 2026-09-19, when the first CI run on Linux/Python
+    # 3.12.14 failed a document it had not touched: the artifact was byte-identical
+    # to the reviewed one (120 files, 3,389,782 B, asserted green in the same log),
+    # and only the compressed figure differed — 13,722 B there, 13,772 B here on
+    # Python 3.14/Windows, off the same 44,812 B of input. A gate that fails on the
+    # compressor rather than on the site teaches its reader to ignore it, so the
+    # exactness moved to the number that can actually carry it and the gzip figure
+    # kept the job only it can do: catch a document that got harder to compress.
+    told_raw = budget["document"].get("index_html_bytes")
+    told_gz = budget["document"].get("index_html_gzip_ceiling")
+    if told_raw is None:
         # Not a failure: the design plan's payload table omits the document, and
         # this plan asserts it separately (§3 Stage 9, note on check 3). Reported
         # either way so "85.4 KB" is never quoted as the whole cost of the page.
         print(f"  --    index.html {len(html):,} B, {gz:,} B gzipped  "
               f"(budget.json has no asserted value yet)")
-    elif gz != told:
-        rep.fail("document.index_html_gzip", f"{gz:,} B, budget says {told:,} B")
     else:
-        rep.ok("document.index_html_gzip", f"{gz:,} B")
+        if len(html) != told_raw:
+            rep.fail("document.index_html_bytes",
+                     f"{len(html):,} B, budget says {told_raw:,} B")
+        else:
+            rep.ok("document.index_html_bytes", f"{len(html):,} B raw")
+        if told_gz is not None:
+            if gz > told_gz:
+                rep.fail("document.index_html_gzip_ceiling",
+                         f"{gz:,} B, over the {told_gz:,} B ceiling — the document "
+                         "has become harder to compress, not merely longer")
+            else:
+                rep.ok("document.index_html_gzip_ceiling",
+                       f"{gz:,} B  (ceiling {told_gz:,} B)")
 
     # -- the invariants the manifest implies --------------------------------
     print("\n   artifact integrity")
