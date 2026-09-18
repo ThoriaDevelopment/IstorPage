@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assert that istor.fyi's artifact weighs what SITE_DESIGN_PLAN.md says it weighs.
+"""Assert that istor.fyi's artifact weighs what SITE_DESIGN_PLAN_V2.md says it weighs.
 
     python Source/tools/verify-budget.py [_site]
 
@@ -9,13 +9,13 @@ page's weight fails the build, because the only other place those numbers live i
 a table in the design plan, and a table cannot notice that it has gone stale.
 
 The numbers are not in this file. They are in `budget.json`, which is the design
-plan's Appendix B as data, so the two cannot tell different stories. Every value
-here was measured off disk on 2026-09-18 rather than transcribed, and the derived
+plan's §12.1 table as data, so the two cannot tell different stories. Every value
+here was measured off disk on 2026-09-19 rather than transcribed, and the derived
 totals are recomputed from the file sizes rather than trusted — a manifest whose
 totals are allowed to disagree with its own rows asserts nothing.
 
-    1  Byte manifest   every file in Appendix B is present at its exact size
-    2  The payload     the phone figure is 85,345 B, the retina figure 113,870 B
+    1  Byte manifest   every file in the plan's table is present at its exact size
+    2  The payload     the phone figure is 194,064 B, the retina figure 388,356 B
     3  The document    index.html carries its CSS inline; report its gzip weight
 
 It also asserts four things the manifest implies but does not state, each of which
@@ -27,7 +27,7 @@ is a real invariant of §1.1 rather than a nicety:
   of unreachable duplication that §1.1 forbids "optimising" away, because the library
   addresses its copies relatively and is not allowed to change. If someone ever does
   optimise it, this is the line that says so.
-* **The artifact is exactly 120 files**, which is what makes check 4 meaningful.
+* **The artifact is exactly 138 files**, which is what makes check 4 meaningful.
 * **The 75 library pages are present as 75 directories**, totalling 583,864 B.
 * **/styles.css is the library's**, not the new page's. This is the §1.1 collision
   that resolves in the library's favour: the new page inlines its CSS precisely so
@@ -58,7 +58,10 @@ DUPLICATED = [
 
 # The artifact's file count. Every stage above produced exactly this, and check 4
 # (verify-links.py) walks all of them, so a change here is a change to that check.
-ARTIFACT_FILES = 120
+# v1 was 120; v2 is 138. The whole +18 is the export set: v1 shipped 3 exhibits x 6
+# files (AVIF/WebP/PNG at 1x and 2x) = 18, and v2 ships 9 exhibits x 4 files (the
+# same, minus PNG) = 36. Everything else in the artifact is unchanged.
+ARTIFACT_FILES = 138
 
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 
@@ -148,10 +151,10 @@ def main(argv: list[str]) -> int:
     def sum_of(suffix: str, retina: bool) -> int:
         """Total the exports whose name ends in `suffix`, at one density.
 
-        `retina` has to be passed, not inferred: '.avif', '.webp' and '.png' are
-        all suffixes of their own '@2x' names, so filtering on the suffix alone
-        silently counts the retina set twice and reports 1,108,650 B for a
-        payload the design plan says is 702,015 B.
+        `retina` has to be passed, not inferred: '.avif' and '.webp' are both
+        suffixes of their own '@2x' names, so filtering on the suffix alone
+        silently counts the retina set twice and reports 452,142 B twice over
+        for a 1x payload the plan's table puts at 128,925 B.
         """
         return sum(v for k, v in sizes.items()
                    if k.startswith("/img/exhibit-") and k.endswith(suffix)
@@ -175,7 +178,13 @@ def main(argv: list[str]) -> int:
     payloads = {
         "phone_1x": derived["bitmaps_1x"] + derived["ground_tile"] + derived["fonts_3"],
         "retina_2x": derived["bitmaps_2x"] + derived["ground_tile"] + derived["fonts_3"],
-        "exports_all_18": sum(sum_of(f, r) for f in (".avif", ".webp", ".png")
+        # No ".png" in this tuple, and that is the v2 decision rather than an
+        # omission: PNG is gone from the shipped set. See build-site.py's
+        # EXPORT_SUFFIXES — v1's six PNGs were 523,598 B, between 3.3x and 8.0x
+        # the WebP beside each, for a format no browser released since 2020 needs.
+        # The tuple must stay in step with the artifact: a suffix nothing matches
+        # contributes 0 and would silently understate this.
+        "exports_all_36": sum(sum_of(f, r) for f in (".avif", ".webp")
                               for r in (False, True)),
     }
     for key, got in payloads.items():

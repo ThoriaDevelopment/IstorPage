@@ -83,10 +83,31 @@ ASSETS_PUBLISHED = {
     "/og-card.png":                "brand/og-card.png",
 }
 
-EXPORTS = ["exhibit-07-viewer", "exhibit-08-library-rail", "exhibit-09-settings-research"]
+# The nine exhibits the v2 page ships, in the order it uses them. Every one is a
+# measured crop of a real capture, written by make-exhibits.py — see that file
+# for the crop bounds and for why each is crop_px / 2 CSS px.
+EXPORTS = [
+    "exhibit-10-gate",
+    "exhibit-11-citations",
+    "exhibit-12-reading",
+    "exhibit-13-dispute",
+    "exhibit-14-research",
+    "exhibit-15-models",
+    "exhibit-16-library",
+    "exhibit-17-notes",
+    "exhibit-18-numbers",
+]
 # Note the leading dots: "@2x" attaches to the stem, so the retinas are
-# exhibit-07-viewer@2x.avif, not exhibit-07-viewer.@2x.avif.
-EXPORT_SUFFIXES = [".avif", ".webp", ".png", "@2x.avif", "@2x.webp", "@2x.png"]   # 18 files
+# exhibit-10-gate@2x.avif, not exhibit-10-gate.@2x.avif.
+#
+# No PNG. v1 shipped a PNG fallback and its six PNGs came to 523,598 B —
+# between 3.3x and 8.0x the WebP beside each, and 75% of the 702,015 B the whole
+# v1 export set weighed — for a format that no browser released since 2020 needs.
+# AVIF first, WebP as the <source> fallback and as the <img src>, and the 511 KB
+# that frees covers a little over half of what the six extra exhibits the v2 page
+# carries cost: 1,156,132 B of exports now against 178,417 B of them before.
+# 36 files, not 54.
+EXPORT_SUFFIXES = [".avif", ".webp", "@2x.avif", "@2x.webp"]   # 36 files
 
 # The library's non-page directories. The page directories are found by the
 # index.html test below; these three are carried whole, outside that test.

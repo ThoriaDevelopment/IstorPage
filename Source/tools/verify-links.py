@@ -57,43 +57,57 @@ NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 
 LIBRARY_PAGES = 75
 LIBRARY_STYLES_BYTES = 35522          # §1.1: /styles.css is the library's file
-ARTIFACT_FILES = 120
+ARTIFACT_FILES = 138                  # 120 + the six extra exhibits v2 carries
+                                      # (9 exhibits x 4 files = 36, was 3 x 6 = 18)
 
 # Check 8's marker. If the assembler ever globs OldVersion/ instead of copying by
 # allowlist, the previous home page ships at this path and every other check here
 # still passes. This string is the only thing standing between that and a deploy.
 HOME_MARKER = "It shows you what it saw"
 
-# Check 7. U+2192 is the ONLY rendered codepoint that no shipped subset carries:
-# Inter's 230 glyphs have no arrow, and neither Didot file does. `unicode-range`
-# chooses among files that HAVE a glyph, so declaring it would render tofu rather
-# than an arrow — the fall-through to the system stack is correct. The copy deck
-# transcribes the arrow verbatim (design plan §5), so it cannot be reworded.
-# Anything else landing here is a bug, which is why the check asserts this set
-# exactly rather than merely permitting it.
-FALLS_THROUGH = {
-    0x2192: "RIGHTWARDS ARROW — in no subset; the copy deck spells it 8 times",
-}
+# Check 7. EMPTY, and that is a v2 result rather than an omission.
+#
+# Under v1 this held U+2192 (RIGHTWARDS ARROW), which the copy deck spelled eight
+# times and which no shipped subset carried — Inter's 230 glyphs have no arrow,
+# and neither Didot file does. `unicode-range` chooses among files that HAVE a
+# glyph, so declaring it would render tofu; falling through to the system stack
+# was correct.
+#
+# v2's copy deck has no arrow, so nothing falls through and the set is empty.
+# The check still asserts it EXACTLY rather than dropping the assertion: an empty
+# allow-list that must stay empty is what catches the next unsubsetted codepoint,
+# and a check deleted for being empty would catch nothing at all.
+FALLS_THROUGH: dict[int, str] = {}
 
-# Check 6, as the design plan's §1 table states it. value is the plan's own
-# written figure, so a token edit that moves the ratio fails here.
+# Check 6. v2's §4, and every figure below was MEASURED from this stylesheet's
+# own tokens rather than transcribed from the plan — a plan's rounded figure is a
+# description of a ratio, and this is the ratio.
+#
+# Two pairs are worth reading:
+#   * --on-azure on --azure is the CTA, so it is the one ratio a visitor reads
+#     text through on every screen of the page.
+#   * text in the field is measured against --field-hi, the gradient's LIGHTEST
+#     stop. Light text on a lighter ground is the worst case; measuring it
+#     against --field-base would assert the easiest one and call it the hardest.
 CONTRAST = [
-    ("--ink", "--paper", 17.9, "§1: all text on the reading column"),
-    ("--ink-2", "--chrome", 6.4, "§1: secondary text on the rails"),
-    ("--azure", "--paper", 5.57, "§1: the accent on paper"),
-    ("#FFFFFF", "--azure", 5.57, "§1: white on an azure button"),
-    ("--azure-lift", "#0D1D20", 6.6, "§1: the accent on the dark world's edge"),
-    ("--coral-ink", "--paper", 5.56, "§1: the verdict ink on paper"),
-    ("--coral-ink", "--chrome", 5.32, "§1: the verdict ink on chrome"),
+    ("--ink", "--paper", 17.04, "§4: all text on paper"),
+    ("--ink-2", "--paper", 5.71, "§4: secondary text on paper"),
+    ("--azure", "--paper", 5.33, "§4: the accent on paper"),
+    ("--on-azure", "--azure", 5.57, "§4: the CTA's ink on the CTA's fill"),
+    ("--coral", "--paper", 5.32, "§4: the mark's artwork before it re-inks"),
+    ("--field-ink", "--field-hi", 11.58, "§4: text in the field, worst case"),
+    ("--field-ink-2", "--field-hi", 6.07, "§4: secondary text in the field"),
+    ("--azure-lift", "--field-hi", 5.19, "§4: the accent in the field, worst case"),
+    ("--cite-ink", "--cite-wash", 4.74, "§4: the citation numeral on its wash"),
+    ("--on-azure-lift", "--azure-lift-hi", 7.72, "§4: the CTA's ink, hovered"),
 ]
 
 # Asserted to FAIL, so the reasons recorded beside the tokens cannot rot into
 # descriptions of pairs that would actually have been fine.
 CONTRAST_BELOW_AA = [
-    ("#767676", "--chrome", 4.35, "the neutral ramp's floor: this is why --ink-2"),
     ("--azure-lift", "--cite-wash", 2.23, "why the citation wash keeps the light blue"),
-    ("#FFFFFF", "--azure-lift", 2.63, "why the disc follows --azure, not --azure-lift"),
-    ("--state-ready", "--paper", 2.55, "why --state-ready is a DOT and never text"),
+    ("--on-azure", "--azure-lift", 2.63, "why the chip fills with --azure, not --azure-lift"),
+    ("--state-ready", "--paper", 2.45, "why --state-ready is a DOT and never text"),
 ]
 
 AA_NORMAL = 4.5
@@ -358,10 +372,110 @@ def check_4(rep: Report, site: pathlib.Path, docs: dict[pathlib.Path, str]) -> N
 
 
 def check_5(rep: Report, page: str) -> None:
-    print("\n5  no behaviour (landing page only)")
+    """The composition gate, and the page's behaviour contract.
+
+    Order matters here: the composition assertions come FIRST, because they are
+    the ones that would have caught v1.
+
+    v1 passed 53 green assertions on a page that read as a blog post. Every one
+    of them was true — every byte accounted for, every link resolving, every
+    contrast pair measured, every heading in order — and not one of them could
+    see that the result was nine identical sections of prose with three pictures
+    in it. Green checks are not a design review.
+
+    This check cannot judge whether the page is any *good*. It can fail a page
+    that has quietly collapsed back into v1's shape, which is the failure that
+    actually happened, and it is the only assertion in this file that is about
+    the design rather than about the bytes.
+    """
+    print("\n5  composition, then behaviour (landing page only)")
     body = strip_html_comments(page)
 
-    bad = re.findall(r"\bon[a-z]+\s*=", body, re.I)
+    # ---- the composition gate (§3, §2) ------------------------------------
+    sections = re.findall(r"<section\b[^>]*>", body, re.I)
+    if len(sections) < 10:
+        rep.fail("section count", f"{len(sections)} <section> elements — §2's "
+                                  f"architecture has twelve acts, and a page that "
+                                  f"has collapsed back to a handful is v1 again")
+    else:
+        rep.ok(f"{len(sections)} sections", "§2's acts are present")
+
+    # The five compositions are C1 field-full, C2 split, C3 pair, C4 band,
+    # C5 poster. A page using one of them everywhere is a document; the whole
+    # point of §3 is that the page alternates.
+    # Scanned across every class attribute in the body, not just the ones on
+    # <section>. C2's grid has to sit on a wrapper (the section is full-bleed and
+    # the grid is inside the page's width), so a `split` that only ever appears on
+    # an inner element is still the page using C2. The assertion is "the page uses
+    # N of the five", which a document-shaped page fails either way.
+    classes = set()
+    for attr in re.findall(r"""\bclass\s*=\s*["']([^"']*)["']""", body, re.I):
+        for name in ("field", "split", "pair", "band", "poster"):
+            if re.search(rf"\b{name}\b", attr):
+                classes.add(name)
+    if len(classes) < 4:
+        rep.fail("composition variety", f"{sorted(classes)} — §3 names five "
+                                        f"compositions and the page must use at "
+                                        f"least four of them")
+    else:
+        rep.ok(f"{len(classes)} compositions in use", ", ".join(sorted(classes)))
+
+    pictures = len(re.findall(r"<picture\b", body, re.I))
+    if pictures < 9:
+        rep.fail("exhibit count", f"{pictures} <picture> elements — §6 ships nine")
+    else:
+        rep.ok(f"{pictures} exhibits", "§6's exhibit set is present")
+
+    # v1 shipped the FAQ as a plain <dl> and wrote a comment explaining that an
+    # accordion "would hide precisely the answers this audience came for". Every
+    # reference site has one. This asserts the reversal stuck.
+    if "<details" not in body:
+        rep.fail("no <details>", "§12: the FAQ is an accordion on <details>, and "
+                                 "v1's refusal to build one is what v2 reverses")
+    else:
+        rep.ok(f"{body.count('<details')} <details>",
+               "the FAQ is a real disclosure, not a list")
+
+    if not re.search(r"position\s*:\s*sticky", page):
+        rep.fail("no sticky element", "§9: the nav is sticky — v1's only nav was "
+                                      "painted inside a screenshot")
+    else:
+        rep.ok("the nav is sticky", "§9")
+
+    # §5: the display size is spent ONCE. v1 topped out at 68px and reused it;
+    # the top tier of the reference set runs 5.3-6.4x over body, the two sites
+    # that feel most web-default run 3.0-3.1x. One use is what buys the ratio.
+    display_uses = len(re.findall(r"var\(\s*--t-display\s*\)", page))
+    if display_uses != 1:
+        rep.fail("display size", f"--t-display is used {display_uses} times — §5 "
+                                 f"spends it once, on the h1")
+    else:
+        rep.ok("the display size is spent once")
+
+    # ---- the behaviour contract ------------------------------------------
+    #
+    # v2 responds to clicks on purpose — the citation chips are operable and the
+    # FAQ is a disclosure — so the v1 prohibition is gone. What replaces it is a
+    # narrower rule: the page's ONE script must stay small, inline, and incapable
+    # of being the reason anything works.
+    scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", body, re.S | re.I)
+    tags = re.findall(r"<script\b[^>]*>", body, re.I)
+    if len(tags) != 1:
+        rep.fail("script count", f"{len(tags)} <script> tags — the page carries "
+                                 f"exactly one")
+    elif re.search(r"\bsrc\s*=", tags[0], re.I):
+        rep.fail("<script src>", f"{tags[0].strip()} — the one script must be "
+                                 f"inline, or §12's payload arithmetic changes")
+    else:
+        rep.ok("exactly one <script>, inline, no src")
+
+    src = scripts[0] if scripts else ""
+
+    # Event-handler ATTRIBUTES are still forbidden: they are the shape of
+    # behaviour bolted onto markup. The script is scanned separately below, so a
+    # variable named `onScroll` is not mistaken for an attribute.
+    without_script = re.sub(r"<script\b.*?</script>", "", body, flags=re.S | re.I)
+    bad = re.findall(r"\bon[a-z]+\s*=", without_script, re.I)
     if bad:
         rep.fail("event handler attribute", ", ".join(sorted(set(bad))))
     else:
@@ -372,59 +486,51 @@ def check_5(rep: Report, page: str) -> None:
     else:
         rep.ok("no javascript: URL")
 
-    scripts = re.findall(r"<script\b[^>]*>", body, re.I)
-    if len(scripts) != 1:
-        rep.fail("script count", f"{len(scripts)} <script> tags, the amendment "
-                                 f"permits exactly one")
-    elif re.search(r"\bsrc\s*=", scripts[0], re.I):
-        rep.fail("<script src>", f"{scripts[0].strip()} — the one script must be "
-                                 f"inline, or §7's payload arithmetic changes")
-    else:
-        rep.ok("exactly one <script>, inline, no src")
-
-    # The one permitted transition, by property AND target. `transition-duration`
-    # inside the reduced-motion block is the mechanism that collapses it, not a
-    # second motion, so it is allowed there and nowhere else.
-    allowed = {("transition", "opacity 700ms ease")}
-    found: list[tuple[str, str, str]] = []
-    for sel, rule_body, inside in css_rules(page):
-        in_rm = "prefers-reduced-motion" in inside
-        for prop, value in declarations(rule_body):
-            if not prop.startswith(("transition", "animation")):
-                continue
-            if in_rm and prop in ("transition-duration", "animation-duration"):
-                continue
-            found.append((sel, prop, value))
-    extra = [f for f in found if (f[1], f[2]) not in allowed]
-    if extra:
-        for sel, prop, value in extra:
-            rep.fail("motion outside the re-ink", f"{sel} {{ {prop}: {value} }}")
-    else:
-        rep.ok(f"{len(found)} transition declaration",
-               f"{found[0][0]} {{ {found[0][1]}: {found[0][2]} }}" if found else "")
-
-    if not re.search(r"prefers-reduced-motion\s*:\s*reduce", page):
-        rep.fail("prefers-reduced-motion", "the re-ink has nothing to honour")
-    else:
-        rep.ok("prefers-reduced-motion collapses it")
-
-    # The script's own contract: it must not become behaviour, and it must not
-    # sniff the device. It reads scroll position through an IntersectionObserver.
-    script = re.search(r"<script\b[^>]*>(.*?)</script>", body, re.S | re.I)
-    src = script.group(1) if script else ""
-    for needle, why in (("addEventListener", "the amendment says it does not "
-                                            "respond to a click, key or pointer"),
-                        ("onclick", "no handler"),
-                        ("userAgent", "§8 principle 2: the lighter build stays "
-                                      "declared, never sniffed"),
-                        ("matchMedia", "device detection by another name")):
+    # Device sniffing is still forbidden — §16 declares the lighter build in
+    # media queries and nowhere else. matchMedia itself is fine; matchMedia
+    # asking about anything but the accessibility query is the same sniffing
+    # wearing a different API.
+    # The ban is on the UA string and the platform, not on measuring the
+    # viewport. `getBoundingClientRect().top < innerHeight` asks "is this element
+    # below the fold", which is a question about a position, not about a device —
+    # and any layout consequence of the answer is still CSS's. Banning innerHeight
+    # would have banned the one measurement the reveal needs while permitting the
+    # sniffing the rule exists to stop.
+    for needle in ("userAgent", "userAgentData", "navigator.platform"):
         if needle in src:
-            rep.fail(f"the script uses {needle}", why)
+            rep.fail(f"the script uses {needle}",
+                     "§16: the lighter build stays declared in media queries, "
+                     "never sniffed at run time")
+    for query in re.findall(r"""matchMedia\(\s*['"]([^'"]+)['"]""", src):
+        if "prefers-reduced-motion" not in query:
+            rep.fail("device detection in matchMedia", query)
     if "IntersectionObserver" not in src:
-        rep.fail("the script's shape", "it should read scroll position through an "
-                                       "IntersectionObserver and nothing else")
+        rep.fail("the script's shape", "it reveals panels and reads scroll "
+                                       "position through an IntersectionObserver")
     else:
-        rep.ok("the script only observes scroll position")
+        rep.ok("the script only observes and toggles")
+
+    # EVERY transition and animation must sit inside the reduced-motion guard.
+    # This is the assertion that replaces v1's "one transition, one target": the
+    # rule is no longer *how much* motion there is but that all of it is
+    # optional. A rule outside the guard runs for a visitor who asked it not to.
+    outside: list[str] = []
+    inside_count = 0
+    for sel, rule_body, inside in css_rules(page):
+        moving = [(p, v) for p, v in declarations(rule_body)
+                  if p.startswith(("transition", "animation"))]
+        if "prefers-reduced-motion" in inside:
+            inside_count += len(moving)
+        else:
+            outside += [f"{sel} {{ {p}: {v} }}" for p, v in moving]
+    if outside:
+        for o in outside:
+            rep.fail("motion outside the reduced-motion guard", o)
+    else:
+        rep.ok(f"{inside_count} motion declarations",
+               "all of them inside @media (prefers-reduced-motion: no-preference)")
+    if "prefers-reduced-motion" not in page:
+        rep.fail("prefers-reduced-motion", "there is nothing to honour")
 
 
 def check_6(rep: Report, css: str) -> None:

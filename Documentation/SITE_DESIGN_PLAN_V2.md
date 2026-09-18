@@ -1,0 +1,782 @@
+# SITE_DESIGN_PLAN_V2 — istor.fyi
+
+**Status:** specification. Supersedes `SITE_DESIGN_PLAN.md` (v1, 1,782 lines) wherever the two
+disagree, and the precedence rule that made v1 unarguable is retired with it (see §13).
+**Written:** 2026-09-19, after Thoria rejected v1: *"Our site is literally plain text with
+screenshots… we just created a blog post. How? Why? Also, how did we not add a single animation?"*
+
+**Evidence this plan is built on** — both are on disk and both are measured, not estimated:
+
+| Document | What it supplies |
+|---|---|
+| `.improvement/ref-analysis/REPORT.md` | Five reference recordings, frame-analysed. Section architecture, sampled hexes, measured geometry, motion probes, and a ranked account of what is actually doing the work. |
+| `.improvement/assets/CATALOGUE.md` | All 36 app captures catalogued, with measured window geometry, sampled app palette, a ranked shortlist, and six crops already written to `.improvement/assets/crops/`. |
+
+**Two decisions Thoria made 2026-09-19** that this plan implements and does not re-open:
+
+1. **The primary CTA is "Follow the build" → `https://github.com/ThoriaDevelopment/Istor`.** The
+   product repo is empty (`size: 0`, no releases, no tags, no files — verified against the GitHub
+   API), so there is no download to offer. The slot is designed once and swaps by one line when a
+   release exists (§10.3).
+2. **Imagery is built on the 36 captures we have**, plus an appendix of captures that would
+   improve the page and block nothing (Appendix B).
+
+---
+
+## §0 · Why v2 exists
+
+v1 did not fail at execution. Its tokens, grid and measure reproduce on the live page exactly.
+**v1 failed as a target**, and it said so itself, in three lines that between them forbid
+everything the reference genre is made of:
+
+| v1 says | The genre does |
+|---|---|
+| §8 P2: *"**Nothing on the page responds to a click.** No behavioural JavaScript, no accordion, no tab, no disclosure. Static layout was the decision."* | Sticky navs, accordions, hover states, dropdowns — in all five |
+| §8: *"One moment in the whole page… **Everything else is static.**"* | Tempo alone ships **124 `@keyframes`**; all five animate |
+| §7: *"the app ships as an image only where its **form** is the argument"* → *"**three bitmaps, not ten**"* | The product appears **4–7×** per page |
+
+Compounding it: the precedence rule (*where the two plans disagree, the design plan wins*) made
+obedience feel like correctness, and each individual decision — "one re-ink script", "no bitmap in
+the close", the 85 KB budget — was defensible alone. Nobody summed them. The markup is the receipt:
+the shipped page has **9 `<section>`s and 8 carry the bare class `m`.** One section shape, nine
+times.
+
+**And the verification was a compliance suite.** 53 assertions on bytes, links, contrast and
+accessibility, all green, on a page that reads as an essay. None of them can detect "this is not
+what we were aiming for." v2 changes what gets asserted: §12 adds a *composition* gate, not only a
+byte gate.
+
+**v2 keeps v1's substance and discards its austerity.** Kept: plain words, accuracy leads, nothing
+unverifiable, one accent across two worlds, the citation as the argument, the Greek wordmark, GFS
+Didot. Discarded: the ban on interaction, the ban on motion, and the three-bitmap ceiling.
+
+---
+
+## §1 · The thesis
+
+> **The app window sits in the deep teal field. Every time.**
+
+The genre's single most load-bearing property is not a style — it is **one dominant compositional
+idea, enforced across every section without deviation**. Tempo = a gradient field behind every
+product shot. Freebuff = black with exactly one green. Gamma = one pastel illustration language.
+The report ranks this **#10 of 15** and calls it *"what separates the sites that look designed from
+the sites that look assembled."*
+
+Tempo's version of it is measurable: field **84% viewport width**, insets 8% each side, window
+**74% vw** inside it, **≈65px CSS** padding, **28px** top radius. That is precisely the device.
+
+**We already own the field.** The og-card's ground is a *locked brand asset* — a deep teal radial,
+measured today across eleven sample points:
+
+| Sample | Hex |
+|---|---|
+| x85 y15 — brightest | `#163234` |
+| x50 y5 | `#11282B` |
+| x20 y20 | `#101F23` |
+| edges (four samples) | `#0E1E22` |
+
+So the page's dominant idea costs no invention: **the brand's own ground becomes the stage the
+product stands on.** Not a tint, not a wash — the locked asset, used structurally.
+
+Three consequences follow, and they are the whole design:
+
+1. **It gives the page a system instead of a style.** Every product moment resolves the same way,
+   so the page reads as designed rather than assembled — the exact property v1 lacked.
+2. **It makes the app window an object on a surface.** A dark app window on paper is a hole; a
+   *light* app window on teal is a lit object. The app ships both themes, so both are real product
+   material, and §3.4 makes the pairing a rule rather than a decoration.
+3. **It is honest.** The teal is already the brand's, and the themes are already the app's. Nothing
+   here is invented to look like a designed page.
+
+**The motion thesis, which is separate and equally load-bearing.** The report's #9 ranked item is
+*"the product is shown DOING something, large enough to read"* — and it is blunt about the stakes:
+*"a beautifully shadowed card containing an illegible blur is worse than no card."* #14 adds that a
+motion budget must match what the product *is*. Istor's product **is a sequence**: a grounding gate,
+then the reading, then an answer whose every claim points at a passage. We already wrote the
+sentence — *"You can watch it decide."* So the page **performs the sequence** rather than describing
+it. That is not decoration bolted onto v1; it is the argument.
+
+And it is the one open move in this genre. The report's closing note: **none of the five puts a
+video player on the product**, and Breezy's hero card — which advances through an app session —
+is the only place the product moves at all. Our hero is a **live DOM replica**, not a bitmap, so we
+can do that better than a video: the product moving on the page, with no player chrome.
+
+---
+
+## §2 · Section architecture
+
+Eleven acts, ≈11–13 viewports. The genre runs 7–16. Every headline is 3–7 words; every body
+paragraph is 2–4 lines (genre rule, no exceptions across five sites).
+
+Compositions are named **C1–C5** and defined in §3. The page alternates them deliberately — the
+report ranks alternation **#12**, and notes that Gemini Notebook, competent and entirely
+non-alternating, *"is the least memorable of the five despite having the best single element."*
+
+| # | Act | Composition | Ground | Product shown |
+|---|---|---|---|---|
+| 1 | Nav — sticky | — | paper | — |
+| 2 | **Hero** — "It shows you what it saw." | **C1** field-full | teal | DOM replica, **animated** |
+| 3 | **The gate** — "It checks what you gave it." | **C2** split, field right | paper + teal | `exhibit-10` |
+| 4 | **The passage** — "Every claim points at a passage." | **C4** band | teal | `exhibit-11`, interactive |
+| 5 | **The reading** — "You can watch it decide." | **C2** split, field left | paper + teal | `exhibit-12` |
+| 6 | **The dispute** — "It keeps the disagreements." | **C2** split, field right, portrait | paper + teal | `exhibit-13` |
+| 7 | **The machine** — "Nothing leaves your machine." | **C3** diptych | paper | `exhibit-14` + `exhibit-15` |
+| 8 | **The workspace** — "A library, notes, and the source." | three-up | paper | icons, not images |
+| 9 | **The evidence** — "The numbers it reasoned to." | band | paper | — (§9) |
+| 10 | **Questions** — accordion | two-column | paper | — |
+| 11 | **The name** — "It is not finished." | **C5** poster | teal | `exhibit-16`, occluding |
+
+### 2.1 Nav — sticky
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│  ἰστωρ.        How it answers · On your machine · Questions   [ Follow the build ] │
+└────────────────────────────────────────────────────────────────────┘
+   ↑ hairline fades in on scroll (M1)          ↑ the genre's persistent CTA
+```
+
+Four of five references are sticky; each gains a 1px hairline once scrolled. Breezy skips it and,
+the report notes, *"reads more like a brochure than an app as a result."* Height ≈68px. Links are
+anchor links into acts 4, 7 and 10 — the page's only real navigation, replacing v1's arrangement
+where the only nav was painted *inside a screenshot*.
+
+### 2.2 Hero — C1
+
+```
+╔════════════════════════════════════════════════════════════════════╗
+║  ░░░░░░░░░░░░░ deep teal field, full-bleed ░░░░░░░░░░░░░░░░░░░░░░░  ║
+║                                                                    ║
+║                 It shows you what it saw.                          ║  94px, GFS Didot, 1.06
+║                                                                    ║
+║        A local notebook that answers only from what you gave it,   ║  21px, 1 line
+║        and points at the passage behind every claim.               ║
+║                                                                    ║
+║                    [ Follow the build ]                            ║  azure pill
+║                                                                    ║
+║        ┌──────────────────────────────────────────────┐            ║
+║        │  the app window — 959px, light theme          │            ║  ← M2 plays here
+║        │  (live DOM replica; the sequence runs once)   │            ║
+║        └──────────────────────────────────────────────┘            ║
+║                     ↑ 64px field padding                           ║
+╚════════════════════════════════════════════════════════════════════╝
+```
+
+The hero **is** the product doing something, so there is no separate "product demo" section — the
+genre's usual second act is folded into the first. Headline is v1's, unchanged: it is six words,
+it is the page's own `<title>`, and it is the most distinctive sentence the brand owns.
+
+**Why a DOM replica and not a bitmap here.** It is resolution-independent at 959px (sharper than
+any capture), it weighs nothing, and — decisively — **it can move**, which is what §1's motion
+thesis requires and what no reference can do. The fidelity constraint is absolute: the replica must
+match the captures. v1 verified its geometry exactly (`180px 594px 185px` = 959px). **Any
+divergence from the captures is a bug, not a design choice.** Fallback if it cannot be made
+faithful: `Black/verifiedsource.png`.
+
+### 2.3 The gate — C2
+
+```
+   ┌────────────────────────────┐   ╔═════════════════════════╗
+   │ It checks what you          │   ║ ░ teal field ░          ║
+   │ gave it.                    │   ║  ┌───────────────────┐  ║
+   │                             │   ║  │  exhibit-10       │  ║
+   │ Before it searches          │   ║  │  the question and  │  ║
+   │ anywhere else, it reads     │   ║  │  the whole answer  │  ║
+   │ what is already in your     │   ║  └───────────────────┘  ║
+   │ library. Sources you        │   ║                         ║
+   │ imported are the only       │   ║   the "Thoughts ⌄ /     ║
+   │ ones an answer may cite.    │   ║   Drafting the answer"  ║
+   │                             │   ║   collapse tells the    ║
+   │                             │   ║   story in one glance   ║
+   └────────────────────────────┘   ╚═════════════════════════╝
+        488px on paper                    688px field, 560px window
+```
+
+### 2.4 The passage — C4 band, and the page's one interaction
+
+The citations act gets the band because it is the product's core claim, and it carries **M4, the
+witness** — the single most product-specific interaction available (§8.2). On the answer exhibit,
+focusing or hovering a citation chip marks the sentence it supports.
+
+This is v1's own "witness" idea, which v1 then forbade by its no-click rule. It is the one place on
+the page where a reader can do what the product does.
+
+### 2.5 The reading — C2, mirrored
+
+`exhibit-12` is the domain-by-domain reading log — Wikipedia, Commons, archive.org, arXiv, Crossref,
+Open Library. The catalogue calls it *"**Only capture that shows real domain-by-domain fetching**"*
+and the reference report's #9 says legibility is what creates the impression of a real product. It
+also gives the copy something v1 could only assert: the page can say *"you can watch it decide"* and
+then show it deciding.
+
+### 2.6 The dispute — C2, portrait
+
+**The section v1 never had, and the most distinctive content in the whole capture set.**
+
+`Black/Question2.png` is the **"What is Still Disputed" table** — twelve Issue/Status rows, of which
+eight read *"The term is debated"*, plus the honest admissions: the exact construction date is
+*"Only a range (150–100 BC) is known"*, the gear count *"At least 30"*, the calendar-ring holes
+*"354 or 355"*. It closes: *"the precise classification and attribution remain subjects of
+scholarly debate."*
+
+An app that **keeps its disagreements instead of smoothing them** is the most credible thing on this
+page, it is verified product behaviour, and no competitor page in the genre could copy it. It is
+also the honest counterpart to the genre's social-proof slot: it is evidence, and it is the kind of
+evidence only this product can offer.
+
+Portrait window (360×470) in the field, breaking the page's landscape rhythm deliberately — Tempo
+uses a phone-shaped mock for the same reason.
+
+### 2.7 The machine — C3 diptych
+
+The privacy claim needs **two** captures and no single one carries it: dark `settingsresearch.png`
+shows *"Web research: off"* and *"Scrape (keyless, no service) — No API keys, no third-party search
+API"*; light `settingsmodels.png` shows *"Ollama (default) — Local model server"* at
+`http://localhost:11434` and the six model roles. The catalogue is explicit: *"Together they cover
+the claim; neither alone does."* And they are one dark and one light — which the §3.4 theme rule
+makes a virtue rather than an accident.
+
+### 2.8 The workspace — three-up
+
+Genre-standard three-up (Gamma, Gemini Notebook). Icons, not images: the library, the notes pane,
+and the viewer. Reuses the **five Lucide icons already extracted** (24px viewBox, stroke 2, drawn at
+the app's own 14/16px) — no new icon work, and the provenance stays as recorded.
+
+### 2.9 The evidence, §2.10 Questions, §2.11 The name
+
+See §9 for the evidence band, §8.3 for the accordion, and §1/§6 for the close. The close merges
+v1's "the name" section (the brief: *"the name means 'one who has seen' and gets a real section"*)
+with the poster move, which is where it belongs.
+
+---
+
+## §3 · Composition system
+
+### 3.1 The grid
+
+All widths derive from one measured fact: **every capture is 1918px wide and is a 2× capture of a
+959 CSS-px window.** So:
+
+| Token | Value | Derivation |
+|---|---|---|
+| `--win` | **959px** | 1918 ÷ 2 — the app window's **native** CSS width |
+| `--field-pad` | **64px** | Tempo's measured ≈65px |
+| `--field` | **1087px** | `--win` + 2 × `--field-pad` |
+| `--page` | **1240px** | genre range 1150–1300 |
+| `--measure` | **66ch** | kept from v1; correct typography, not a style |
+| `--gutter` | `clamp(20px, 5vw, 64px)` | |
+
+**The consequence is the most useful number in this plan.** An exhibit displayed at exactly
+`crop_px ÷ 2` is **pixel-perfect at both 1× and 2× DPR, with no upscaling** — because the source is
+a 2× capture. Legibility is preserved too: at that display width the app's own 16–17px text renders
+at its true size. Every exhibit in Appendix A is sized this way. It is why v2 needs no new captures
+to look right, and why its weight lands far below the genre (§12).
+
+### 3.2 The five compositions
+
+**C1 · field-full** — full-bleed teal; heading, subhead and CTA centred; window at `--win` centred,
+64px padding inside. Used by the hero only.
+
+**C2 · split** — paper text column **488px** (≈57ch) beside an inset teal field **688px** holding a
+**560px** window. Alternates side; the side is part of the rhythm.
+
+**C3 · diptych** — paper ground; one inset teal field `--field` wide containing two windows
+side-by-side (dark + light), each ≈470px.
+
+**C4 · band** — full-bleed teal; a wide 959px window spanning it; heading above, inside the field.
+
+**C5 · poster** — full-bleed teal; the giant wordmark, with `exhibit-16` overlapping its lower third.
+
+### 3.3 Radius, shadow, hairlines
+
+The report ranks these **#1–#3 of the cheap, load-bearing signals** — and notes the shadow is
+*"the single difference between 'a screenshot pasted on a page' and 'an object sitting on a
+surface'."* All five references have it. v1 had none of the three.
+
+| Token | Value | Source |
+|---|---|---|
+| `--r-field` | **28px** | Tempo's measured field radius |
+| `--r-win` | **18px** | genre 17–22px |
+| `--r-chip` | **10px** | genre 8–12px |
+| `--r-cite` | **6px** | the app's own measured chip radius (5–6px) |
+| `--shadow` | `0 24px 60px rgba(4,10,12,.45)` | Breezy measured: ~9% darkening decaying over ≈50px CSS |
+| `--rule` | `#E4E6E9` | measured: the app's light table separator |
+| `--rule-field` | `rgba(255,255,255,.10)` | 1px hairlines separating dark from dark |
+
+**Hairlines are 1px, never heavy strokes.** Freebuff and Tempo separate black-on-black with a
+hairline plus a 4% card lift. Nothing on this page uses a border thicker than 1px except the field
+edge, which is a seam rather than a stroke.
+
+### 3.4 The theme rule
+
+> **Light-theme windows stand on teal fields. Dark-theme windows stand on paper.**
+
+Both themes are real (the app ships White as default and Black as selectable), so this invents
+nothing — and it turns a fact into a system: the window always *contrasts* its ground, so it always
+reads as an object. In the field, a 1px `--rule-field` seam separates window from ground, which is
+Tempo's measured technique. On paper the `--shadow` does the separating instead.
+
+---
+
+## §4 · Colour
+
+Anchored in measurement at both ends — the brand's locked assets, and the app's own sampled palette.
+
+| Token | Value | Where it comes from |
+|---|---|---|
+| `--paper` | `#FAFAFA` | **measured** — the app's own light rail |
+| `--card` | `#FFFFFF` | measured — the app's light modal |
+| `--ink` | `#16181B` | measured — the app's light body text |
+| `--ink-2` | `#5F646B` | secondary; ≥4.5:1 on paper |
+| `--ink-3` | `#8A8F96` | labels, captions |
+| `--azure` | **`#0066CC`** | **measured** — the app's light accent, *and* brand step 1 |
+| `--azure-lift` | **`#4DA3FF`** | brand step 2 — azure as it must appear on teal |
+| `--azure-deep` | `#0073E6` | brand step 3 |
+| `--coral` | `#C7292A` | the mark's artwork; the app's "unverified" warning |
+
+**The teal field** — the og-card's measured radial, as a CSS gradient:
+
+```css
+--field-bg: radial-gradient(130% 120% at 78% 14%,
+              #163234 0%, #11282B 34%, #0F2024 62%, #0E1E22 86%, #0C1B1E 100%);
+--field-ink: #E9EDF0;          /* text in the field */
+--field-ink-2: #9FB0B4;        /* secondary text in the field */
+```
+
+Stops are the four measured samples in their measured positions (brightest at x85 y15 → the
+gradient's origin at 78% 14%; edges `#0E1E22`; a darker `#0C1B1E` only at the outermost falloff so
+the field does not band at large sizes).
+
+**Azure is the only interactive colour — in both themes.** The catalogue confirms the app holds to
+this (*"No second accent exists in either theme"*), and the report ranks *"one accent colour used on
+under 5% of pixels"* **#4**. Azure therefore appears on: the nav pill, the hero CTA, links, the
+citation highlight, and the close's re-ink. **Nothing else, anywhere.**
+
+**Coral keeps its single job** — the mark's artwork and the "unverified" state. It is not a second
+accent and must not become one.
+
+**No invented colour.** Every value above is either a locked brand asset or sampled from the app.
+This is the discipline that makes §1's claim — *the look costs no invention* — true rather than
+rhetorical.
+
+---
+
+## §5 · Type
+
+Two faces, as v1 established, plus the wordmark subset. **Nothing changes about which faces; what
+changes is the scale.**
+
+- **Display: GFS Didot** (Latin subset). **Weight is not available — Regular only.** So emphasis is
+  carried by *size, tracking and the field*, never by weight. This is a real constraint and the
+  plan treats it as one: no bold display anywhere.
+- **Body/UI: Inter** (variable).
+- **The wordmark: `istor-wordmark.woff2`** — the Greek subset (16 codepoints). Used as live text in
+  the nav, the field headers, and the close.
+
+### 5.1 The scale, and the ratio that matters
+
+The report's #11: *"make the biggest type much bigger, and use it once."* Gemini Notebook runs 6.4×
+with its 90px size used for **exactly two words**; Gamma 5.3×, used once. **Breezy (3.1×) and
+Freebuff (3.0×) are the two that feel most web-default.** v1 topped out at 68px used repeatedly.
+
+| Token | Value | Use |
+|---|---|---|
+| `--t-label` | 13px | nav, captions, table labels |
+| `--t-sm` | 15px | figcaptions, secondary |
+| `--t-body` | **17px** | body |
+| `--t-lede` | 21px | hero subhead, section intros |
+| `--t-h3` | 26px | three-up heads |
+| `--t-h2` | **34px** | section headings (genre 25–31) |
+| `--t-display` | **`clamp(56px, 7.4vw, 94px)`** | **used exactly once — the hero** |
+
+**Display ÷ body = 94 ÷ 17 = 5.5×.** In the genre's top tier, and reached by *raising the top*, not
+by shrinking the body.
+
+### 5.2 Leading, tracking, measure
+
+| | Value | Source |
+|---|---|---|
+| Display leading | **1.06** | Breezy measured ≈1.08; the report calls tight leading part of why type "looks typeset rather than default" |
+| Body leading | **1.55** | **the app's own** answer-body leading, measured from the captures |
+| Display tracking | `-0.02em` | since weight is unavailable, tracking does that work |
+| Measure | **66ch** | kept |
+
+---
+
+## §6 · Imagery
+
+### 6.1 The exhibition rule
+
+> **Every exhibit shows the app doing the thing the section claims.**
+
+Not a decorative screenshot. The gate section shows the gate; the reading section shows it reading;
+the dispute section shows a disagreement kept. This is what makes the imagery *evidence* — and the
+report's #15 is explicit that the tell of a bad page in this genre is *"half-legible fake text"*.
+Every exhibit is a real capture of the real app on a real session, at its native resolution.
+
+### 6.2 The exhibits
+
+Full geometry in **Appendix A**. Nine exhibits, each derived from a capture in the 36, each cropped
+so its display width is exactly `crop_px ÷ 2` (§3.1).
+
+| id | Proves | Source |
+|---|---|---|
+| `exhibit-10` | it answers from what you gave it | `Black/Question1.png` |
+| `exhibit-11` | every claim points at a passage | `Black/verifiedsource.png` |
+| `exhibit-12` | you can watch it decide | `Black/FetchingPages.png` |
+| `exhibit-13` | it keeps the disagreements | `Black/Question2.png` or `viewingnote-editingsource.png` |
+| `exhibit-14` | no network, no keys | `Black/settingsresearch.png` |
+| `exhibit-15` | it runs on your machine | `White/settingsmodels.png` |
+| `exhibit-16` | the library | `Black/Sourcesfullscreenmain.png` |
+| `exhibit-17` | the notes | `White/notesfullscreenmain.png` |
+| `exhibit-18` | the precision it reasoned to | `Black/Question3.png` |
+| *hero* | the whole loop | **DOM replica** — not a bitmap |
+
+### 6.3 Four captures must not ship
+
+The catalogue flags them and this plan repeats it as a hard rule. `Black/verifiedsource1.png`,
+`White/verifiedsource.png`, `White/verifiedsource2.png` and `White/Question1.png` **all have
+expanded citation labels overprinting the answer body.** `Black/Thinking.png` and
+`White/Answering.png` are effectively blank. None of these six ships.
+
+*(The clean chip exists; the clean **expanded** chip does not — which is why §8.2's witness is built
+from the DOM replica and the clean `verifiedsource.png`, not from a capture of an expansion.)*
+
+### 6.4 Cropping, and who does it
+
+Captures are **source material**. Crop bounds come from `.improvement/assets/CATALOGUE.md` §3 and are
+measured **per file** — the catalogue's own warning is that *"the split is not constant"* (the
+composer measures 399–1443, 399–1394 and 539–1310 across three files). The three-pane captures have
+their own split (≈0–490 / 490–1410 / 1410–1918) and must not use the default.
+
+Every crop is polished: tightened to remove dead space, because *"tighter is always stronger"* — the
+rails carry no story, and the centre column is the image.
+
+### 6.5 Formats, and the bug that would have squashed every one of them
+
+Ship **AVIF + WebP**, 1× and 2×. PNG is dropped from the shipped set for v2: the genre's payloads
+are 2.12–13.80 MB largely because they ship JPEG/PNG, and AVIF over flat UI is dramatically
+smaller. The `<picture>` keeps `width`/`height` attributes so layout never shifts.
+
+> **Correction carried from v1 — root-caused 2026-09-19.** v1's `exhibit-07` rendered **594×231**
+> against a natural **941×231**: horizontally squashed to 0.631 while vertical stayed 1.0. Cause:
+> the global rule is `img, svg, picture { display: block; max-width: 100% }` and **`height: auto`
+> appears nowhere in the stylesheet except `.plate > svg`.** The `<img>` carries
+> `width="941" height="231"`, so in a 594px column the width clamped and the height attribute held.
+> Exhibits 08 (181px) and 09 (420px) fit their columns, which is why only one image was distorted —
+> and why this would have silently squashed **every wide exhibit in v2**. Fix is one declaration:
+> `height: auto` on the global rule.
+
+---
+
+## §7 · Motion
+
+**No animation library.** The report verified zero requests for GSAP, ScrollTrigger, Lenis,
+Locomotive, AOS, ScrollMagic, Framer Motion or Swiper **across all five references**. Everything
+below is CSS plus one small `IntersectionObserver`. Budget: **≤ 4 KB of JS.**
+
+The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
+Tempo-level motion on a page that does not need it *"reads as noise."*
+
+| id | Motion | Trigger | Duration | Why |
+|---|---|---|---|---|
+| **M1** | Nav hairline fades in | scroll past hero | 200ms | genre: 4 of 5 |
+| **M2** | **The hero sequence** | on load | ~4.5s, once | **the signature** — see below |
+| **M3** | Window entrance | section enters | 700ms scale .97→1, +24px→0 | Tempo's *panel* entrance, **not** a text fade |
+| **M4** | **The witness** | hover/focus a chip | 180ms | the product's own mechanism, made usable |
+| **M5** | Disputed-table rows stagger | enters | 45ms apart | the content *is* a sequence |
+| **M6** | Close: re-ink + occlusion | enters / scroll | 700ms + parallax | v1's one good moment, plus depth |
+| **M7** | Accordion open/close | click | 320ms | §8.3 |
+| **M8** | Link and button hover | hover | 160ms | genre baseline |
+
+### 7.1 M2 — the hero sequence, in detail
+
+The page's argument, performed once. Ordered exactly as the product works:
+
+1. the question bubble settles in — 200ms
+2. *"Thoughts ⌄ / Drafting the answer"* — 300ms
+3. the reading-log lines stagger in, 60ms apart — **this is the gate working**
+4. the answer's paragraphs rise, 90ms stagger
+5. **the citation chips appear last** — 40ms stagger
+
+Total ≈4.5s, then it **rests and does not loop.** A loop would read as decoration; running once
+reads as a demonstration. If the reader arrives mid-sequence, it completes rather than restarting.
+
+### 7.2 M3 — why the text does not move
+
+Every reference except Tempo reveals text with an opacity fade, and the report flags
+*"fade-and-slide-up entrances on each section"* as the generic default. Tempo is the outlier: its
+reveals are **panel entrances, not text fades.** v2 follows Tempo. **Text is static; the window
+animates.** Cheaper, more distinctive, and it puts the motion on the product rather than on the
+prose — which is §1's whole thesis.
+
+### 7.3 M6 — the close
+
+Two moves, and the second is the one the report says people skip (#13):
+
+1. The giant `ἵστωρ` **re-inks coral → azure** over 700ms on intersection. v1's single moment,
+   kept — it is the best idea in v1.
+2. **`exhibit-16` overlaps the wordmark's lower third**, with a small parallax so the wordmark
+   passes *behind* the product. Freebuff's hills pass in front of the wordmark; Tempo's planet limb
+   passes in front. Ours inverts it: **the product occludes the brand.** Which is, precisely, what
+   *"it shows you what it saw"* means.
+
+### 7.4 Reduced motion
+
+**Every item above is wrapped in `@media (prefers-reduced-motion: no-preference)`.** Under
+`reduce`, each element renders in its final state immediately, and M2 does not run — the hero shows
+the settled answer. This is not optional and it is not a fallback style; it is the same page.
+
+---
+
+## §8 · Interaction
+
+v1's Principle 2 forbade all of this. v2 requires it.
+
+### 8.1 Nav
+
+Sticky; anchor links to the passage, the machine, and the questions. Smooth scrolling honoured only
+under `no-preference`.
+
+### 8.2 The witness (M4) — the page's one interaction
+
+On `exhibit-11`, each citation chip is a real focusable control. Hover or focus → the sentence it
+supports is marked, and the chip lifts. Keyboard operable, `aria-describedby` linking chip to
+sentence.
+
+Built on the **DOM replica**, not a bitmap, because a bitmap cannot be hovered — and the captures of
+the *expanded* chip are all defective (§6.3). This is where the hero's replica earns its keep a
+second time.
+
+### 8.3 Questions — a real accordion
+
+`<details>`/`<summary>`, so it works with JavaScript off. Height transition 320ms under
+`no-preference`; chevron rotates 200ms. Questions are the honest ones, and one of them is the
+question the empty repo raises:
+
+- Does it need a GPU?
+- Does anything leave my machine?
+- Where do my notes live?
+- **Can I download it yet?** — answered plainly: not yet; the code is not published; *follow the
+  build*.
+- What does it cost?
+
+### 8.4 Focus
+
+Visible focus rings on every interactive element, `:focus-visible` only, using `--azure` on paper and
+`--azure-lift` on the field. Contrast ≥3:1 against both grounds.
+
+---
+
+## §9 · The evidence band — what replaces social proof
+
+The genre has a social-proof slot and **every reference fills it differently**: Freebuff with five
+forms at once, Gamma with a logo strip and named testimonials, Gemini with press quotes, Tempo and
+Breezy with none.
+
+**We have none, and we may not invent one.** The brief's own rule — and v1's §8 P8 — is *nothing
+unverifiable*, on a product whose selling point is that it does not overstate. There are no users to
+count, no logos to borrow, no quotes to gather.
+
+So the slot is filled with **evidence instead of endorsement**, and every number is taken from a
+capture:
+
+| Number | Claim | Source |
+|---|---|---|
+| **`0`** | accounts, API keys, or requests leaving the machine | `settingsresearch.png` — *"Scrape (keyless, no service)… No API keys, no third-party search API"* |
+| **`0.028 mm`** | the radial variation it reasoned to | `Question3.png` |
+| **`354.08`** | holes, at 99.99% credible — against an assumed 360 | `Question3.png` |
+| **`12`** | disputed claims it kept rather than resolved | `Question2.png` |
+
+This is the honest analogue of proof, and it is arguably stronger: a logo strip says *other people
+like this*; this says **here is what it did, and you can check it.** The section is named for what it
+is — *"The numbers it reasoned to."*
+
+---
+
+## §10 · Copy
+
+### 10.1 What is kept
+
+v1's copy deck is good and its voice is right: plain words, accuracy leads, nothing unverifiable,
+the product speaking as itself. **All of it survives as voice.** v1's `<title>` — *"Istor — it shows
+you what it saw"* — survives verbatim as the hero.
+
+### 10.2 What changes
+
+Headings become **3–7 words** (genre rule, no exceptions across five sites). v1's headings were
+often full sentences — *"It checks what you already gave it, before it looks anywhere else."* The
+sentence is good copy; it is not a heading. It becomes body, and the heading becomes
+*"It checks what you gave it."*
+
+Two sections are **new**, drawn from captures rather than invented:
+
+- **The dispute** — *"It keeps the disagreements."* The entire section exists because
+  `Question2.png` shows the app doing something we never wrote about.
+- **The evidence** — §9.
+
+### 10.3 The CTA slot
+
+One component, two attributes. Today:
+
+```html
+<a class="cta" href="https://github.com/ThoriaDevelopment/Istor">Follow the build</a>
+```
+
+When a release exists, only the label and href change — to `Download for Windows` and the release
+URL. The brief anticipated this (*"a swappable slot, not a hardcoded button"*, Windows-only for now),
+and the slot is built to carry it.
+
+### 10.4 A false claim v1 shipped, corrected
+
+> **v1's call-to-action read `[ Read the source ]` and its footer described GitHub as *"the product's
+> source"*. Both are false: the repository is empty** — `size: 0`, no releases, no tags, no files,
+> verified against the GitHub API on 2026-09-19.
+
+On a page whose whole argument is that it does not overstate, that is the worst possible error and
+it is corrected here as a matter of record. **Nothing on istor.fyi may claim the source is
+available until it is.** The repo's own description is real and may be quoted; its contents may not
+be described.
+
+---
+
+## §11 · What v2 keeps from v1
+
+So the reversals in §13 are not read as a rejection of everything:
+
+- The **copy deck's voice**, and the `<title>`.
+- The **66ch measure**, the two-face system, the three font files, and **GFS Didot's missing weight**
+  as a design constraint rather than a problem.
+- **The five Lucide icons**, with their provenance (Lucide's own files at 24px viewBox, stroke 2,
+  drawn at 14/16px — **not** redrawn).
+- The **ground grain** tile, the **og-card teal**, the **eye mark**, the Greek wordmark.
+- **The DOM replica's verified geometry** (`180px 594px 185px` = 959px).
+- The **75-page library carry**, the CSS-inlining that keeps `/styles.css` the library's, the
+  directory-allowlist assembler, and the byte-exact `budget.json` discipline.
+- **The close's re-ink**, which was v1's single best idea.
+
+---
+
+## §12 · Weight, and the gates
+
+### 12.1 Budget
+
+Thoria's envelope was **2–5 MB**, chosen as what the reference look costs (four of the five sit
+between 2.12 and 13.80 MB). **v2 lands below that envelope, and the reason is structural, not a
+cut.** §3.1's rule — display every exhibit at exactly `crop_px ÷ 2` — means no asset is ever
+upscaled or padded, and AVIF over flat UI is far smaller than the JPEG/PNG the reference sites ship.
+
+The table below was written as an estimate when this plan was specified. **It is now measured**, off
+the built artifact on 2026-09-19, and the file that asserts these numbers (`budget.json`) carries the
+same figures — a change to one is a change to the other, in one commit. Three of the estimates were
+low and are corrected here rather than left to disagree with the gate.
+
+| | Estimate | **Measured** |
+|---|---|---|
+| Nine exhibits, AVIF 1×+2× | ≈ 400 KB | **452 KB** |
+| Nine exhibits, WebP 1×+2× | ≈ 650 KB | **704 KB** |
+| Fonts (3 files) | ≈ 65 KB | **65 KB** |
+| Ground grain + og-card | ≈ 124 KB | **124 KB** |
+| `index.html` incl. inline CSS | ≈ 55 KB | **62 KB** |
+| **Artifact (everything shipped)** | **≈ 2.5–3.0 MB** | **3.86 MB**, 138 files |
+| **First-load transfer, desktop** (2× display, AVIF) | **≈ 550 KB** | **451 KB** |
+| **First-load transfer, phone** (1× display, AVIF) | **≈ 320 KB** | **257 KB** |
+
+The two transfer rows are what one visitor actually downloads, and they are the rows that matter:
+one density of the AVIF set, plus the three fonts, plus the ground tile, plus the document. Two
+notes on how they are counted, because the estimates did not say. **A visitor picks one density**,
+so the 1× and 2× sets are never both transferred — the estimate above them added the two together,
+which is why it read higher than either real figure. And **`og-card.png` is not in these rows**: at
+124 KB it is the largest single asset in the artifact, and the page never fetches it. It is fetched
+by social scrapers reading `og:image`, once, off-site. Folding it into a page-transfer figure would
+overstate every visitor's cost by roughly a third.
+
+Two things this buys that the envelope would not have: the brief's hard constraint — *"the site must
+stay viewable on low-spec phones"* — is met with room to spare, and it is met **by construction**
+rather than by luck, since §3.1 guarantees phone renders the app's text at its native size and never
+upscaled; and the page is **fast**, which in a genre where four of five sites take multiple megabytes
+to show a hero is itself a differentiator.
+
+**If the design wants more weight it may have it** — the envelope is not a target to hit. But v2 as
+specified does not need it, and inflating a page to match a number would be the same mistake as v1's
+85 KB, pointing the other way.
+
+### 12.2 Gate changes
+
+The build gates are re-baselined **by measurement, never transcription** — the v1 discipline holds.
+`verify-budget.py` keeps its structure and gains:
+
+| Gate | Change |
+|---|---|
+| `document.index_html_bytes` | exact, re-baselined to **62,469 B**; LF-only so platform-independent |
+| `document.index_html_gzip_ceiling` | re-baselined to **18,400 B** with headroom — **never an equality** (the 2026-09-19 toolchain lesson) |
+| `totals.phone_1x` / `retina_2x` | re-baselined over 9 exhibits: **194,064 B** / **388,356 B** |
+| `totals.exports_all_*` | **renamed `exports_all_36`** and the `.png` suffix dropped from the sum, because PNG left the shipped set |
+| `ARTIFACT_FILES` | re-baselined to **138** (the whole +18 is 9 exhibits × 4 files against 3 × 6) |
+| **`composition` (new)** | asserts the page has **≥ 10 sections, ≥ 4 distinct composition classes, ≥ 1 sticky element, ≥ 1 `<details>`, and ≤ 1 display-size element** |
+
+That last gate is the point. v1 had 53 assertions and none could see that the page was nine identical
+sections. **A composition gate is what would have caught it**, and it is the only gate here that
+asserts the *design* rather than the bytes.
+
+---
+
+## §13 · What v2 supersedes in v1, explicitly
+
+Listed so nothing is ambiguous. Each of these is a **reversal**, not an amendment.
+
+| v1 | v2 |
+|---|---|
+| §8 P2 — nothing responds to a click | Sticky nav, accordion, the witness, focus states |
+| §8 — "everything else is static" | Eight-item motion vocabulary (§7) |
+| §7 — "three bitmaps, not ten" | Nine exhibits plus an animated hero (§6) |
+| §8 "quiet everywhere, loud once" | The field is the argument; the display size is spent once, and the page is loud in the hero and the close |
+| The precedence rule (*the design plan wins*) | **Retired.** v2 is the specification; the build plan is re-derived from it and disagreement is resolved by measurement |
+| `[ Read the source ]` → an empty repo | *Follow the build* (§10.3), and §10.4's correction |
+
+---
+
+## Appendix A · The exhibit table
+
+Display width is always `crop_px ÷ 2` (§3.1) — pixel-exact at 1× and 2×, no upscaling.
+**Crop bounds must be re-measured per file** (§6.4); the values below are the catalogue's measured
+starting points, not a substitute for measuring.
+
+| id | Source | Measured crop | Display | Notes |
+|---|---|---|---|---|
+| `exhibit-10` | `Black/Question1.png` | centre pane, ≈1242×880 | 621×440 | question + full answer; the "Thoughts ⌄" collapse carries the gate story |
+| `exhibit-11` | `Black/verifiedsource.png` | `1242x900+318+88` | 621×450 | crop A; `+318+150` starts on the answer and drops the bubble |
+| `exhibit-12` | `Black/FetchingPages.png` | `1242x880+318+100` | 621×440 | crop D; the reading log |
+| `exhibit-13` | `Black/viewingnote-editingsource.png` | `720x940+500+60` | 360×470 | crop B; portrait. Three-pane split — do not use the default |
+| `exhibit-14` | `Black/settingsresearch.png` | `800x568+560+226` | 400×284 | crop C; modal pixel-for-pixel, no dimmed background |
+| `exhibit-15` | `White/settingsmodels.png` | modal bounds — **measure at build** | ≈400×300 | the modal is content-sized; measure as crop C was |
+| `exhibit-16` | `Black/Sourcesfullscreenmain.png` | `1918x620+0+44` | 959×310 | crop E; full window width, because the list is the point |
+| `exhibit-17` | `White/notesfullscreenmain.png` | `1918x620+0+44` | 959×310 | crop F; pairs with 16 as a dark/light diptych |
+| `exhibit-18` | `Black/Question3.png` | centre pane, ≈1242×880 | 621×440 | 354.08 / 0.028 mm — the rigour |
+
+Six of these already exist in `.improvement/assets/crops/` and need only tightening and re-export.
+
+## Appendix B · Captures that would improve the page, and block nothing
+
+Listed so they can be shot when convenient. **No section in this plan depends on any of them.**
+
+| Want | Why | Status |
+|---|---|---|
+| the reasoning trace **mid-stream** | M2 currently performs the sequence in the DOM; a real capture would let M5 use one | not captured |
+| an **empty result** / "no answer found" | the app's honesty is a selling point and no frame shows it | not captured |
+| the **import dialog** | "Add source" appears in many frames; the dialog never does | not captured |
+| a **larger library** | every frame shows exactly 10 sources | not captured |
+| a **narrow viewport** | every capture is 1918px; a phone composition must be designed, not cropped | not captured |
+| the citation chip **expanded, cleanly** | all three attempts have labels overprinting the body (§6.3) | defective |
+
+The brief records that `Documentation/demo-library.md` was written specifically so these could be
+re-shot with the app's own demo sources.
+
+## Appendix C · Open items
+
+1. **`White/settingsmodels.png` modal bounds** — measured at build time, per Appendix A.
+2. **The replica's fidelity audit** — every divergence from the captures is a bug (§2.2). Needs a
+   side-by-side against `Black/verifiedsource.png` before ship.
+3. **Hardware spec** — the brief records this as still unanswered (the CLI run used
+   `Qwen3.8-4B-Distill-GGUF:Q4_K_M`, 32 GPU layers, 4096 context). The FAQ's *"Does it need a GPU?"*
+   needs a real answer, and §12's `--` must not be filled with an invented one.
+4. **Whether `powercell` / `Taori` are named on istor.fyi at all** — still open per the brief.
