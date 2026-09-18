@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Istor — it shows you what it saw</title>
+<meta name="description" content="A local, private research notebook that runs entirely on your machine. Every answer carries the sources it read, and the ones it could not check.">
+<link rel="canonical" href="https://istor.fyi/">
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://istor.fyi/">
+<meta property="og:title" content="Istor — it shows you what it saw">
+<meta property="og:description" content="A local, private research notebook. Every answer carries the sources it read.">
+<meta property="og:image" content="https://istor.fyi/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/gfs-didot.woff2" as="font" type="font/woff2" crossorigin>
+<style><!--#include styles--></style>
+</head>
+<body>
+
+<!-- The five Lucide glyphs, inlined once. Every use on the page is one <use>. -->
+<svg class="sprite" aria-hidden="true" focusable="false"><!--#include icons--></svg>
+
+<main>
+
+<!-- =====================================================================
+     Movement 1 — What it is.  The hero, and the page's one bold moment.
+     The window is DOM, not a screenshot: the bubble, the answer and the
+     note titles are all real text, selectable and readable aloud.
+     ===================================================================== -->
+<section class="m m-hero" id="what-it-is">
+  <div class="prose hero-prose">
+    <h1>It shows you what it saw.</h1>
+    <p class="lede">A hundred pages to get through and one question. Istor reads the
+      documents you give it, answers from them, and shows you the passage behind every
+      claim — and it says so when it cannot.</p>
+  </div>
+
+  <div class="win">
+    <div class="win-bar">
+      <span class="win-mark">ἵστωρ<span class="mark-dot">.</span></span>
+    </div>
+
+    <div class="win-body">
+
+      <!-- The Library rail's grammar, but the rows are this page's sections. -->
+      <nav class="rail rail-l" aria-label="Sections of this page">
+        <p class="rail-head">Library</p>
+        <ul class="rail-list rail-nav">
+          <li><a href="#what-it-is" aria-current="location">What it is</a></li>
+          <li><a href="#how-it-answers">How it answers</a></li>
+          <li><a href="#where-it-stops">Where it stops</a></li>
+          <li><a href="#on-your-machine">On your machine</a></li>
+          <li><a href="#the-name">ἵστωρ</a></li>
+          <li><a href="#questions">Questions</a></li>
+        </ul>
+        <p class="rail-foot"><a href="https://github.com/ThoriaDevelopment/Istor">[ Read the source ]</a></p>
+      </nav>
+
+      <div class="pane">
+        <p class="bubble">Tell me about the cycles.</p>
+
+        <div class="answer">
+          <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
+
+          <p>The Antikythera mechanism incorporated several key astronomical cycles:</p>
+
+          <p><strong>The Metonic cycle</strong> is an astronomical period of 19 tropical years,
+            almost exactly equal to 235 synodic lunar months or 6,940 days. Named after Athenian
+            astronomer Meton, who introduced it in 432 BC, the cycle relies on the coincidence that
+            19 solar years and 235 lunar months differ by only about two hours. Ancient
+            civilisations used this relationship to align lunar calendars with the solar year by
+            adding seven intercalary leap months over every 19-year period. It forms the structural
+            foundation for the Hebrew calendar, traditional Babylonian timekeeping, and the
+            Christian calculation of Easter dates. On the Antikythera mechanism, the Metonic cycle
+            appears as a five-turn spiral dial on the upper rear plate, complete with individual
+            month names from local Greek calendars and a sub-dial tracking Panhellenic athletic
+            games like the Olympics<sup class="cite">1<span class="vh">, source 1</span></sup>.</p>
+
+          <p><strong>The Callippic cycle</strong> is a 76-year sub-dial on the upper rear dial of
+            the Antikythera mechanism<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
+
+          <p><strong>The Saros cycle</strong> is a 223-month cycle used for eclipse prediction. The
+            lower rear dial of the Antikythera mechanism tracks this 223-month Saros eclipse
+            prediction cycle with a 54-year Exeligmos sub-dial<span class="anchor" role="note"><sup class="cite is-on">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup><span class="witness"><span class="witness-src"><svg class="i i-14" aria-hidden="true"><use href="#i-save-note"/></svg>Decoding Antikythera mechanism</span><span class="witness-quote">"Hipparchus's lunar theory, replicating the Moon"</span></span></span>. Inscriptions
+            on the Saros dial specify lunar and solar eclipse predictions down to the hour, along
+            with eclipse characteristics and direction<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
+
+          <p><strong>The Exeligmos cycle</strong> is a 54-year sub-dial on the lower rear dial of
+            the Antikythera mechanism<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
+
+          <p>The mechanism's gearing incorporated a pin-and-slot mechanism that matches
+            Hipparchus's lunar theory, replicating the Moon's variable
+            velocity<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
+        </div>
+
+        <p class="answer-tools">
+          <svg class="i i-16" aria-hidden="true"><use href="#i-copy"/></svg>
+          <svg class="i i-16" aria-hidden="true"><use href="#i-save-note"/></svg>
+        </p>
+      </div>
+
+      <aside class="rail rail-r" aria-label="Notes">
+        <p class="rail-head">Notes</p>
+        <p class="rail-filter"><svg class="i i-14" aria-hidden="true"><use href="#i-search"/></svg>Filter notes…</p>
+        <ul class="rail-list rail-notes">
+          <li>ancient astronomical computer</li>
+          <li>The National Archaeological Museum in Athens</li>
+          <li>The Saros cycle</li>
+          <li>The Metonic cycle</li>
+          <li>X-ray data from the Antikythera mechanism's broken calendar ring</li>
+          <li>Fragment C of the Antikythera mechanism</li>
+          <li>Reconstruction of the missing front dial gearing of the Antikythera mechanism.</li>
+          <li>Antikythera mechanism</li>
+          <li>Antikythera wreck</li>
+          <li>Decoding Antikythera mechanism</li>
+        </ul>
+        <p class="rail-foot"><svg class="i i-14" aria-hidden="true"><use href="#i-page-plus"/></svg>New note</p>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     Movement 2 — How it answers.  The gate, in the app's own vocabulary.
+     ===================================================================== -->
+<section class="m" id="how-it-answers">
+  <div class="prose">
+    <h2>It checks what you already gave it, before it looks anywhere else.</h2>
+
+    <p>Before it answers, Istor decides whether the documents in your library already settle the
+      question. If they do, it answers from them and never goes online — which is why the tool
+      works with the network unplugged, and why it still works when the connection is there but you
+      would rather it stayed quiet.</p>
+
+    <p>The model making that decision is the small one. Istor runs two: the smaller, heavily
+      instructed model is asked the cheap question first — <i>is this already answered here?</i> —
+      so the better model can be slow, and can be right. It never goes online because nothing
+      needed to, not because something refused to.</p>
+  </div>
+
+  <figure class="band">
+    <div class="band-cols">
+      <pre class="band-col">band=Direct
+Local library already answers this
+question → skip gate + web research
+top=0.0364 → widening top_k 4 → 8
+Retrieved 6 chunks from library</pre>
+      <pre class="band-col">band=Research
+Explicit research intent detected
+→ bypass gate → 3 queries
+Read en.wikipedia.org — Antikythera Mechanism
+Read en.wikipedia.org — Antikythera Wreck
+Read nature.com
+Read arxiv.org — 2403</pre>
+    </div>
+    <figcaption>The lines are real. The side-by-side arrangement is ours: we laid two runs next to
+      each other to compare them.</figcaption>
+  </figure>
+
+  <ol class="pipe">
+    <li>decide</li>
+    <li>retrieve</li>
+    <li>answer</li>
+    <li>cite</li>
+  </ol>
+</section>
+
+<!-- =====================================================================
+     Movement 3 — The witness.  Both card states, then the reader itself.
+     ===================================================================== -->
+<section class="m">
+  <div class="prose">
+    <h2>Every claim points at a passage.</h2>
+
+    <p>Istor writes a citation into the answer, and the app resolves it to a passage in a source
+      you own or a page it actually fetched. So a number in the answer is never attached to a
+      source that isn't there. Two failures go away: it will not invent a fact, and it will not
+      tell you something does not exist because it falls outside a training cutoff.</p>
+
+    <p>There is a third case, and it is the interesting one. Sometimes the answering model writes a
+      good answer and forgets to cite as it goes. Rather than make you wait while a slower model
+      redoes the work, Istor sends the small model to fit a citation quickly, and marks what it
+      fitted: <strong>Unverified — check the source.</strong></p>
+
+    <p>That word is not a guess about whether the claim is true. It says which of the two models
+      put the number there — and it tells you to go and look, which is the whole habit this tool is
+      trying to build.</p>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <p class="card-src">Decoding Antikythera mechanism</p>
+      <blockquote class="card-quote">"Hipparchus's lunar theory, replicating the Moon"</blockquote>
+    </div>
+    <div class="card">
+      <p class="card-src">Decoding Antikythera mechanism</p>
+      <p class="card-verdict">Unverified — check the source.</p>
+    </div>
+  </div>
+
+  <figure class="exhibit">
+    <picture>
+      <source type="image/avif" srcset="/img/exhibit-07-viewer.avif 1x, /img/exhibit-07-viewer@2x.avif 2x">
+      <source type="image/webp" srcset="/img/exhibit-07-viewer.webp 1x, /img/exhibit-07-viewer@2x.webp 2x">
+      <img src="/img/exhibit-07-viewer.png" srcset="/img/exhibit-07-viewer.png 1x, /img/exhibit-07-viewer@2x.png 2x"
+           width="941" height="231"
+           alt="The Viewer, opened on Decoding Antikythera mechanism, showing that source's own text. Micro-focus X-ray computed tomography and surface imaging revealed double the readable text on the Antikythera mechanism and deciphered internal gear arrangements. The mechanism contains a 30-gear system that models solar and lunar anomalies. The rear dials form two large spirals: an upper 235-month Metonic cycle dial with a 76-year Callippic sub-dial, and a lower 223-month Saros eclipse prediction dial with a 54-year Exeligmos sub-dial. Inscriptions on the Saros dial specify lunar and solar eclipse predictions down to the hour, along with eclipse characteristics and direction. The gearing incorporates a pin-and-slot mechanism that matches Hipparchus's lunar theory, replicating the Moon's variable velocity. These technical details prove that Hellenistic engineers possessed gear technology far superior to late antique and early medieval artifacts, shifting the historical timeline for mechanical engineering by over one thousand years.">
+    </picture>
+  </figure>
+</section>
+
+<!-- =====================================================================
+     Movement 4 — You can watch it decide.  The disclosure, already open.
+     ===================================================================== -->
+<section class="m">
+  <div class="prose">
+    <h2>You can watch it decide.</h2>
+
+    <p>Open the disclosure above any answer and you can read what it did: the reasoning, then the
+      passages it pulled, each with the source it came from. It is the same evidence the answer
+      rests on, in the product's own words.</p>
+  </div>
+
+  <div class="panel">
+    <p class="panel-head"><span class="dot" aria-hidden="true"></span>Thoughts</p>
+    <p class="panel-step"><svg class="i i-14" aria-hidden="true"><use href="#i-pencil"/></svg>Drafting the answer</p>
+    <p>The user wants to know what is known about the Antikythera mechanism and what remains
+      disputed. I need to synthesize information from the provided context, distinguishing between
+      established facts and areas of ongoing debate.</p>
+    <p>Known facts from the context:</p>
+    <ul>
+      <li>Built around 150-100 BC</li>
+      <li>Discovered in 1901 off Antikythera</li>
+      <li>Contains at least 30 interlocking bronze gears in a wooden frame</li>
+      <li>Front dial: Greek zodiac, Egyptian calendar, Sun/Moon/planets</li>
+      <li>Upper rear dial: 19-year Metonic calendar + Panhellenic athletic games</li>
+      <li>Lower rear dial: 223-month Saros eclipse prediction</li>
+    </ul>
+  </div>
+</section>
+
+<!-- =====================================================================
+     Movement 5 — Where it stops.  The ring is the section's ground, and
+     its interior is where the copy sits.
+     ===================================================================== -->
+<section class="m m-stops" id="where-it-stops">
+  <div class="stops">
+    <figure class="plate">
+      <!--#include calendar-ring-->
+      <div class="plate-inner prose">
+        <h2>Where it stops.</h2>
+
+        <p>Two different things, and we keep them apart.</p>
+
+        <p><strong>Where it refuses.</strong> It does not guess. If your sources do not cover your
+          question, it says so. That refusal is the feature.</p>
+
+        <p><strong>Where it genuinely ends.</strong> It is not a frontier model and it will not
+          out-reason one. It needs sources. And local means your machine's specifications are part
+          of the deal.</p>
+      </div>
+      <figcaption>354 holes are 1.0169° apart. 355 are 1.0141°. At this size the two rings are the
+        same ring, which is why the app prints both numbers and picks neither. <strong>The
+        difference is one you cannot see from here.</strong></figcaption>
+    </figure>
+  </div>
+
+  <div class="prose">
+    <table class="disputed">
+      <caption class="vh">What is still disputed about the Antikythera mechanism</caption>
+      <thead>
+        <tr><th scope="col">Issue</th><th scope="col">Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Exact date of construction</td><td>Only a range (150–100 BC) is known</td></tr>
+        <tr><td>Exact number of gears</td><td>"At least 30" — the exact count is uncertain</td></tr>
+        <tr><td>Exact number of holes in the calendar ring</td><td>354 or 355 (354 is far more probable than 360)</td></tr>
+        <tr><td>Identity of the inventor</td><td>Archimedes or Hipparchus — both are candidates</td></tr>
+        <tr><td>Whether it qualifies as a "computer"</td><td>The term is debated</td></tr>
+      </tbody>
+    </table>
+
+    <p class="fidelity">This table is from a different conversation than the one above.</p>
+  </div>
+</section>
+
+<!-- =====================================================================
+     Movement 6 — On your machine.  The note is live prose; the settings
+     and rail crops are the product, unaltered.
+     ===================================================================== -->
+<section class="m" id="on-your-machine">
+  <div class="prose">
+    <h2>On your machine.</h2>
+
+    <p>Nothing leaves, and what you write stays yours. Those are two consequences of the section
+      above rather than two separate promises.</p>
+  </div>
+
+  <figure class="exhibit">
+    <picture>
+      <source type="image/avif" srcset="/img/exhibit-09-settings-research.avif 1x, /img/exhibit-09-settings-research@2x.avif 2x">
+      <source type="image/webp" srcset="/img/exhibit-09-settings-research.webp 1x, /img/exhibit-09-settings-research@2x.webp 2x">
+      <img src="/img/exhibit-09-settings-research.png" srcset="/img/exhibit-09-settings-research.png 1x, /img/exhibit-09-settings-research@2x.png 2x"
+           width="420" height="299"
+           alt="Settings, on the Research panel. A nav column lists Models, Research, Appearance, Data, Diagnostics and Updates. Four rows: Web research, Allow outbound network fetches, switched off; Inbox watching, Auto-import new files from ~/Istor Inbox, switched on; Depth, Pages-per-query budget, set to Dynamic; and Search backend, Where research finds web results, with a note that a SearxNG backend without a URL falls back to the keyless scrape chain. That row's value begins &ldquo;Scrape (keyless, no service&rdquo; and is cut off where the control ends. Cancel sits alone at the foot.">
+    </picture>
+    <figcaption>Settings → Research. Web research is off until you turn it on. With it on, there is
+      no account and no key to enter.</figcaption>
+  </figure>
+
+  <figure class="note">
+    <p class="note-title">The Metonic cycle</p>
+    <p>The Metonic cycle is an astronomical period of 19 tropical years, almost exactly equal to
+      235 synodic lunar months or 6,940 days. Named after Athenian astronomer Meton, who introduced
+      it in 432 BC, the cycle relies on the coincidence that 19 solar years and 235 lunar months
+      differ by only about two hours. Ancient civilisations used this relationship to align lunar
+      calendars with the solar year by adding seven intercalary leap months over every 19-year
+      period. It forms the structural foundation for the Hebrew calendar, traditional Babylonian
+      timekeeping, and the Christian calculation of Easter dates. On the Antikythera mechanism, the
+      Metonic cycle appears as a five-turn spiral dial on the upper rear plate, complete with
+      individual month names from local Greek calendars and a sub-dial tracking Panhellenic
+      athletic games like the Olympics.</p>
+    <figcaption>This is the note Istor wrote while answering the question at the top of this
+      page.</figcaption>
+  </figure>
+
+  <div class="prose">
+    <p>Two small controls sit under every answer. The second pulls it straight into a note — the
+      answer becomes a note without anyone retyping it.</p>
+  </div>
+
+  <figure class="exhibit">
+    <picture>
+      <source type="image/avif" srcset="/img/exhibit-08-library-rail.avif 1x, /img/exhibit-08-library-rail@2x.avif 2x">
+      <source type="image/webp" srcset="/img/exhibit-08-library-rail.webp 1x, /img/exhibit-08-library-rail@2x.webp 2x">
+      <img src="/img/exhibit-08-library-rail.png" srcset="/img/exhibit-08-library-rail.png 1x, /img/exhibit-08-library-rail@2x.png 2x"
+           width="181" height="471"
+           alt="The Library rail, holding ten sources: Decoding Antikythera mechanism; Antikythera wreck; Antikythera mechanism; Reconstruction of the missing front dial gearing of the Antikythera mechanism; Fragment C of the Antikythera mechanism; X-ray data from the Antikythera mechanism's broken calendar ring; The Metonic cycle; The Saros cycle; The National Archaeological Museum in Athens; ancient astronomical computer. Each row carries a green status dot, and Add source sits at the foot.">
+    </picture>
+  </figure>
+
+  <div class="prose">
+    <h3>What it needs.</h3>
+
+    <p>Istor does not ship with a model. It uses Ollama or llama.cpp, which you install yourself.
+      If you already have Ollama, Istor will suggest a small model; if you would rather run a
+      different one, you choose it in Settings. Nothing is bundled, and nothing is downloaded on
+      your behalf.</p>
+  </div>
+</section>
+
+<!-- =====================================================================
+     Movement 7 — ἵστωρ.  The word, set as writing.
+     ===================================================================== -->
+<section class="m" id="the-name">
+  <div class="prose">
+    <h2 class="greek">ἵστωρ</h2>
+
+    <p>ἵστωρ is the old Greek word for a witness — one who has seen. It comes from the root *weyd-,
+      <i>to see</i>, which is also where the Latin <i>videre</i> and the English <i>wit</i> come
+      from. A witness is not the person who knows most; it is the person who was there, and can say
+      what they saw.</p>
+
+    <p>That is the whole design of this tool. It does not know about the Antikythera mechanism. It
+      read ten documents about it, and it can show you which one said what.</p>
+  </div>
+</section>
+
+<!-- =====================================================================
+     Movement 8 — Questions.  A plain list. An accordion would hide
+     precisely the answers this audience came for.
+     ===================================================================== -->
+<section class="m" id="questions">
+  <div class="prose">
+    <h2>Questions</h2>
+
+    <dl class="qa">
+      <dt>Does anything leave my computer?</dt>
+      <dd>No. The model, the search and the reading all run on your machine. Web research is off
+        until you turn it on in Settings, and when you do turn it on there is no account and no key
+        to enter.</dd>
+
+      <dt>What hardware do I need?</dt>
+      <dd>It depends on the model you choose, which is why we do not print a number. A small model
+        runs on a modest graphics card; a larger one wants more. Because the requirement follows
+        the model, there is no single floor we could publish that would be true for everyone — so
+        we would rather say that than pick one and be wrong for half the people reading it.</dd>
+
+      <dt>Which models can it use?</dt>
+      <dd>A small model running on your own graphics card, and you choose which. Istor needs Ollama
+        or llama.cpp installed; if it finds Ollama it will suggest a model, and you can run any
+        other one instead.</dd>
+
+      <dt>Does it work with no internet at all?</dt>
+      <dd>Yes, and that is the case it is built for. If the documents in your library already
+        settle your question, Istor answers from them and never goes online. With no connection at
+        all, the library still works in full.</dd>
+
+      <dt>Is it open source?</dt>
+      <dd>The code is at <a href="https://github.com/ThoriaDevelopment/Istor">github.com/ThoriaDevelopment/Istor</a>,
+        and you can read all of it — including the parts that would be doing the phoning home, if
+        there were any. That is the point of publishing it: "no telemetry" is a claim
+        you can check rather than one you have to believe.</dd>
+
+      <dt>When does it come out?</dt>
+      <dd>Windows first, with Linux and macOS after. There is no date we are ready to put on it.
+        The code is public today and the installer is the next thing.</dd>
+
+      <dt>Who builds it?</dt>
+      <dd>Thoria builds Istor. You can find them at <a href="https://thoria.fyi">thoria.fyi</a>.</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- =====================================================================
+     The close.  The ground turns to the card's teal; the mark re-inks.
+     ===================================================================== -->
+<section class="m-close world-dark">
+  <div class="m">
+    <div class="prose">
+      <h2>Istor is not finished.</h2>
+
+      <p>There is no installer yet. The code is public today and runs on Windows; Linux and macOS
+        come after.</p>
+    </div>
+
+    <p class="cta"><a class="cta-link" href="https://github.com/ThoriaDevelopment/Istor">[ Read the source ]</a></p>
+
+    <p class="close-mark" id="close-mark">ἵστωρ<span class="mark-dot">.</span></p>
+  </div>
+
+  <div class="colophon">
+    <div class="wrap colophon-row">
+      <nav aria-label="Elsewhere">
+        <a href="https://github.com/ThoriaDevelopment/Istor">GitHub</a>
+        <a href="https://thoria.fyi">Contact</a>
+        <a href="/local-ai-vs-cloud-ai/">Guides</a>
+        <a href="https://thoria.fyi">Thoria</a>
+      </nav>
+      <p class="colophon-note"><span aria-hidden="true">·</span> Icons from Lucide, ISC</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- The page's one script, and its absence is invisible. The closing mark is
+     authored in its finished state above; this only dims it for a visitor who
+     has not scrolled to it yet, and re-inks it on arrival. If the script never
+     runs — blocked, broken, or disabled — the mark is simply already inked. -->
+<script>
+(function () {
+  var mark = document.getElementById('close-mark');
+  if (!mark || !('IntersectionObserver' in window)) return;
+  if (mark.getBoundingClientRect().top < window.innerHeight) return;
+  mark.classList.add('is-cold');
+  var io = new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        mark.classList.remove('is-cold');
+        io.disconnect();
+        return;
+      }
+    }
+  }, { threshold: 0.4 });
+  io.observe(mark);
+})();
+</script>
+
+</body>
+</html>

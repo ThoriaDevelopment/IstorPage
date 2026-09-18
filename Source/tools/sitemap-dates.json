@@ -1,0 +1,386 @@
+{
+  "_comment": "The only copy of istor.fyi's per-page lastmod dates and changefreq. Seeded 2026-09-18 from OldVersion/sitemap.xml before it was superseded by generation. There is no git history to derive these from: this repository has never been under version control, so a first commit would date every file the same day. A page in the artifact with no entry here FAILS the build rather than shipping without a lastmod. Order is the order of <url> elements in the generated sitemap.",
+  "origin": "https://istor.fyi",
+  "pages": [
+    {
+      "path": "/",
+      "lastmod": "2026-09-17",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-rag/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/local-ai-scanned-pdfs/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-local-llm/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/vs-chatgpt/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/research-ai-offline/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/local-ai-writing-projects/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/local-ai-field-research/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/local-ai-literature-review/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/vs-gpt4all/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/vs-anythingllm/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/vs-notebooklm/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/run-research-ai-gtx-1650/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/is-local-rag-private/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/private-pdf-chat/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/why-ai-hallucinates-citations/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/vs-zotero/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/does-local-ai-need-a-gpu/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-formats-can-local-ai-read/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/vs-obsidian/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/can-local-ai-summarize-pdfs/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-context-window/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-an-embedding/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-quantization/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/vs-mendeley/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-tokenization/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-ocr/",
+      "lastmod": "2026-09-02",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/can-local-ai-translate-documents/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/how-much-ram-for-local-ai/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/how-document-chunking-works/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-inference/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-vector-database/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/how-to-stop-ai-hallucinating/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-does-7b-mean/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-gguf/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-hybrid-search/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/how-to-cite-ai/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-open-weight/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-ai-hallucination/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/can-local-ai-read-handwriting/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-fine-tuning/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-temperature/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-system-prompt/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-model-card/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-tokens-per-second/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/local-ai-lecture-notes/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-semantic-search/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-does-q4-k-m-mean/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-prompt-engineering/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-vision-language-model/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/why-is-local-ai-slow-on-my-laptop/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-training-data/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/can-local-ai-read-spreadsheets/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/why-does-ai-forget-the-beginning-of-long-documents/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-llama-cpp/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-distillation/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-perplexity/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-benchmark/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-knowledge-base/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-chat-template/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/can-local-ai-write-code/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/why-does-ai-give-different-answers/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-an-ai-agent/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-token-limit/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/why-does-ai-forget-between-chats/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/local-ai-vs-cloud-ai/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-retrieval-query/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-reranking/",
+      "lastmod": "2026-09-17",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-hugging-face/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/how-to-run-an-llm-locally/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-vram/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-mcp/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-ollama/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-a-local-first-app/",
+      "lastmod": "2026-09-03",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/what-is-an-inference-engine/",
+      "lastmod": "2026-09-07",
+      "changefreq": "monthly"
+    },
+    {
+      "path": "/changelog/",
+      "lastmod": "2026-09-17",
+      "changefreq": "weekly"
+    }
+  ]
+}

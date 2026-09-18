@@ -1,0 +1,9 @@
+# LF everywhere, in the repository and in the working tree.
+#
+# This is not tidiness. verify-links.py asserts that every text file in the
+# artifact is LF-only, and the artifact is built from OldVersion/, which is
+# LF-only on disk. Git's default Windows behaviour (core.autocrlf=true) stores
+# LF but checks out CRLF, so a Windows clone would produce a CRLF artifact and
+# fail that check locally while CI, on Linux, passed it. Pinning eol here makes
+# the two agree. Binary files are detected and left alone.
+* text=auto eol=lf

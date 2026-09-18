@@ -1,0 +1,14 @@
+# Run scratch for the continuous-improvement skill: audits, council
+# verdicts, plans. Durable rules get promoted into
+# .claude/skills/continuous-improvement/SKILL.md instead.
+/.improvement/
+
+# Agent client state.
+/.freebuff/
+
+# Browser tool scratch. Playwright MCP writes its profile and traces here,
+# and screenshots taken at the repo root land beside the site's own files.
+# Both are counted by the skill's canonical "shipped weight" command, so a
+# cycle that forgets to clear them reads as a site that grew tens of MB.
+/.playwright-mcp/
+/*.png

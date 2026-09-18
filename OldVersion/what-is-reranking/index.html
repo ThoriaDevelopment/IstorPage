@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is reranking?</title>
+  <meta name="description" content="A second pass over search results, where a model reorders candidates by true relevance. Why search is fast and rough, what a reranker reads, and what better ordering buys." />
+  <link rel="canonical" href="https://istor.fyi/what-is-reranking/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is reranking?" />
+  <meta property="og:description" content="A second pass over search results, where a model reorders candidates by true relevance. What a reranker reads, and what better ordering buys." />
+  <meta property="og:url" content="https://istor.fyi/what-is-reranking/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is reranking?</h1>
+    <p class="lede">Search fast, then sort carefully. The second pass that turns a pile of candidates into a shortlist worth reading.</p>
+
+    <div class="capsule">
+      <p>Reranking is a second pass over search results, where a model reorders the candidates the first pass found. Fast search casts a wide net and ranks roughly; a reranker reads each candidate against your question and sorts by true relevance. The step costs time, so tools apply it to a shortlist, not the whole library. What it buys is precision: the best passages placed in front of the model that writes the answer.</p>
+    </div>
+
+    <h2>Search fast, sort carefully.</h2>
+    <p>Retrieval over a real library cannot afford to read everything closely, so it runs in two stages. The first, <a href="/what-is-hybrid-search/">keyword and vector search run together</a>, scans every passage cheaply and returns a broad candidate list, with ordering that is serviceable rather than fine. The second stage takes that shortlist and judges each candidate against the question directly. The division of labor is the point: the wide net guarantees the right passage is probably in the pile, and the reranker decides which pile members deserve the top spots.</p>
+
+    <h2>What a reranker actually reads.</h2>
+    <p>The first pass compares your question and each document through <a href="/what-is-an-embedding/">separate number representations</a>, which is what makes it fast: two short lists of coordinates, compared by distance. A reranker works differently. It reads the question and the candidate together, as one text, and scores how well they answer each other, catching the matches where wording differs but meaning aligns and the near-misses where topics sound alike but the answer is absent. That joint reading is why its judgment is sharper, and why it cannot be run against everything.</p>
+
+    <h2>Why the order matters.</h2>
+    <p>Only a handful of retrieved passages fit in front of the model that writes the answer, and the <a href="/what-is-a-token-limit/">token budget decides how many</a>. Reranking decides which handful. A better ordering means the most relevant material lands in the prompt and near-misses stay out, which lifts every grounded answer built on top. It does not, on its own, force faithfulness; <a href="/what-is-rag/">the retrieval loop still needs verification</a> of what the answer claims. Reranking improves the evidence the writer sees, and verification checks what the writer did with it.</p>
+
+    <h2>Where it sits in a research tool.</h2>
+    <p>A grounded answer pipeline runs retrieve, rerank, then write. Retrieval pulls maybe twenty candidates from the whole library; the reranker reads those twenty against the question and hands the top handful to the model that composes the answer. The numbers explain the design: reading a passage jointly with a question costs far more than the distance arithmetic of the first pass, so the expensive judgment is rationed to the shortlist. Every tool that claims grounded answers is making this trade somewhere, whether it names the stage or not.</p>
+
+    <h2>When the second pass earns its cost.</h2>
+    <p>Reranking pays most where the first pass is genuinely uncertain: large libraries, questions phrased differently from the documents, keyword search alone separating near-matches from the real thing. It earns little where retrieval was never in doubt, which is why small libraries with exact keyword hits see no visible change. The honest test is error-shaped, not speed-shaped: if answers occasionally cite the almost-right passage instead of the right one, the ordering stage is the part to strengthen. That failure is also what <a href="/what-is-a-retrieval-query/">query formulation</a> and <a href="/how-document-chunking-works/">chunk boundaries</a> influence from their own ends, which is why no single stage owns retrieval quality.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-hybrid-search/">What is hybrid search?</a></li>
+        <li><a href="/what-is-a-vector-database/">What is a vector database?</a></li>
+        <li><a href="/what-is-an-embedding/">What is an embedding?</a></li>
+        <li><a href="/what-is-rag/">What is retrieval-augmented generation?</a></li>
+        <li><a href="/what-is-a-token-limit/">What is a token limit?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+# Istor
+
+> Istor is a free, open research notebook for Windows that runs entirely on your own machine. Add sources, ask grounded questions, and read answers where every claim carries a citation back to the passage it came from. Retrieval, prompting and inference happen locally, so a GTX 1650 class GPU is enough hardware and nothing leaves your computer unless you trigger a web fetch yourself.
+
+The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is static, makes zero network requests at runtime, and works without JavaScript.
+
+## Pages
+
+- [Home](https://istor.fyi/): what Istor is, the four-step loop it runs on your own machine, how an answer is checked back against the passage it came from, where the tool stops, what hardware it needs, and the full FAQ.
+- [Istor and NotebookLM, compared](https://istor.fyi/vs-notebooklm/): a factual comparison for people weighing a cloud notebook against one that runs on their own machine.
+- [Istor and ChatGPT, compared](https://istor.fyi/vs-chatgpt/): a general-purpose cloud assistant with frontier-scale models, and a local research notebook where documents never leave your machine.
+- [Istor and AnythingLLM, compared](https://istor.fyi/vs-anythingllm/): two open-source tools that run AI on your own documents locally, and the different bets they make.
+- [Istor and GPT4All, compared](https://istor.fyi/vs-gpt4all/): one built to chat on any CPU, one built to ground research answers on a modest GPU.
+- [Istor and Zotero, compared](https://istor.fyi/vs-zotero/): a reference manager organizes what you have read; a grounded local notebook reads it with you. Why they complement each other.
+- [Istor and Mendeley, compared](https://istor.fyi/vs-mendeley/): the same pairing from the Elsevier side of the reference-manager world, and what each tool's trust model means for your library.
+- [Istor and Obsidian, compared](https://istor.fyi/vs-obsidian/): a plain-text knowledge base of notes you write, and a local research notebook that reads the sources themselves. Two local-first tools, different jobs.
+- [Can a local AI do a literature review?](https://istor.fyi/local-ai-literature-review/): what a grounded local tool contributes to reviewing literature, and where the line sits.
+- [Local AI for field research](https://istor.fyi/local-ai-field-research/): the whole analysis loop offline, where ethics rules forbid uploads and coverage is unreliable.
+- [Writing with sources, on a local AI](https://istor.fyi/local-ai-writing-projects/): keeping the library searchable beside the draft, with citations as you write.
+- [Can you run a research AI on a GTX 1650?](https://istor.fyi/run-research-ai-gtx-1650/): what fits on entry-level GPU hardware and how the grounding loop runs on it.
+- [Is local RAG private?](https://istor.fyi/is-local-rag-private/): what actually leaves the machine in a local retrieval loop, and the questions to ask of any tool.
+- [What is retrieval-augmented generation?](https://istor.fyi/what-is-rag/): the technique behind chat with your documents, what it fixes, what it does not, and how it runs locally.
+- [What is a local LLM?](https://istor.fyi/what-is-a-local-llm/): a language model that runs on your own hardware, what it can and cannot do, and what it takes to run one.
+- [Does local AI need a GPU?](https://istor.fyi/does-local-ai-need-a-gpu/): no, small models run on a plain CPU, just slower; what a GPU buys and where research work wants even an entry-level card.
+- [Can an AI do research with no internet?](https://istor.fyi/research-ai-offline/): what a local research AI does with the network unplugged, what it honestly cannot, and when offline is the point.
+- [What is the most private way to chat with PDFs?](https://istor.fyi/private-pdf-chat/): a checklist for private document question answering, and how Istor satisfies each item.
+- [Can a local AI read scanned PDFs?](https://istor.fyi/local-ai-scanned-pdfs/): local OCR and vision models read scans on your machine, and the limits of what photographs of pages give up.
+- [What formats can a local AI read?](https://istor.fyi/what-formats-can-local-ai-read/): the common research formats read on your machine, and why a tool's format list is also its upload list.
+- [Can a local AI summarize PDFs?](https://istor.fyi/can-local-ai-summarize-pdfs/): yes, on your machine; what makes a summary checkable, how long documents get handled, and where length limits bite.
+- [Why do AI chatbots invent citations?](https://istor.fyi/why-ai-hallucinates-citations/): why language models generate plausible-looking references, why retrieval alone does not fix it, and what a verification gate does.
+- [What is a context window?](https://istor.fyi/what-is-a-context-window/): the model's working memory, what fits inside it, and how retrieval decides what goes in.
+- [What is an embedding?](https://istor.fyi/what-is-an-embedding/): the number representation that lets search match by meaning, and why the conversion runs fine locally.
+- [What is quantization?](https://istor.fyi/what-is-quantization/): storing a model's numbers in fewer bits, the compression that lets serious models run on ordinary hardware.
+- [What is tokenization?](https://istor.fyi/what-is-tokenization/): how text becomes the pieces a model reads, and why every limit is measured in tokens.
+- [What is OCR?](https://istor.fyi/what-is-ocr/): reading text out of images of pages, where it fails, and why the conversion can stay on your machine.
+- [Can a local AI translate documents?](https://istor.fyi/can-local-ai-translate-documents/): yes, translation is a core language task; what quality depends on and why the document never has to leave the disk.
+- [How much RAM does a local AI need?](https://istor.fyi/how-much-ram-for-local-ai/): a quantized 7B model fits in about 5 gigabytes, so 16 GB is a comfortable setup; the model is the consumer, the library barely counts.
+- [How does document chunking work?](https://istor.fyi/how-document-chunking-works/): why long documents are cut into passages before search, what good boundaries preserve, and why the step runs locally.
+- [What is inference?](https://istor.fyi/what-is-inference/): running a trained model on your input to produce an answer; the act is offline, local, and changes nothing in the model.
+- [What is a vector database?](https://istor.fyi/what-is-a-vector-database/): the index that matches meaning instead of wording, why a personal library needs no server product, and what the vectors point back to.
+- [How do you stop an AI from making things up?](https://istor.fyi/how-to-stop-ai-hallucinating/): grounded retrieval, citations that open passages, a verification gate that refuses; confidence is not a fix, structure is.
+- [What does 7B mean in a model name?](https://istor.fyi/what-does-7b-mean/): seven billion parameters, the learned numbers that carry everything a model knows; why the count sets the memory bill and 7B to 8B is the consumer sweet spot.
+- [What is a GGUF file?](https://istor.fyi/what-is-a-gguf/): the single-file format local models ship in, weights plus metadata with quantization baked in; why it became the standard for local runtimes.
+- [What is hybrid search?](https://istor.fyi/what-is-hybrid-search/): keyword search and vector search run together, each covering what the other misses; the merge that feeds retrieval, and why it runs on a laptop.
+- [How do you cite an AI answer?](https://istor.fyi/how-to-cite-ai/): credit the tool in the text, cite the recoverable sources you verified, and disclose what you asked; the principles that outlast the style guides' current rules.
+- [What is an open-weight model?](https://istor.fyi/what-is-open-weight/): a model whose trained numbers are downloadable, the completeness that makes local AI a copy operation; what open weights give you and what they still do not.
+- [What is AI hallucination?](https://istor.fyi/what-is-ai-hallucination/): fluent, confident output with no basis in fact; why the same mechanism that makes models fluent makes them fabricate, and why the fixes are structural.
+- [Can a local AI read handwriting?](https://istor.fyi/can-local-ai-read-handwriting/): neat handwriting mostly yes, hurried cursive with real limits; what local OCR and vision models manage on your machine and where checking stays essential.
+- [What is fine-tuning?](https://istor.fyi/what-is-fine-tuning/): continuing a model's training to change behavior; why knowledge wants retrieval instead, and how LoRA made adaptation practical on ordinary hardware.
+- [What is temperature in AI?](https://istor.fyi/what-is-temperature/): the setting that shapes how strictly a model sticks to its likeliest next words; low for facts, higher for drafts, and why it is not a creativity switch.
+- [What is a system prompt?](https://istor.fyi/what-is-a-system-prompt/): the standing instructions a model reads before your first message; how it shapes behavior without adding knowledge, and why structure beats wording alone.
+- [What is a model card?](https://istor.fyi/what-is-a-model-card/): the spec sheet that travels with a model; what to read first before you download, and why a card is a description with an interest rather than an audit.
+- [What is tokens per second?](https://istor.fyi/what-is-tokens-per-second/): the rate a model writes, one token at a time; the reading-speed bar that makes local AI feel instant, and why speed says nothing about correctness.
+- [Local AI for lecture notes](https://istor.fyi/local-ai-lecture-notes/): a semester's slides, readings and notes as one searchable library that answers with citations; what the tool keeps track of, and what stays yours to learn.
+- [What is semantic search?](https://istor.fyi/what-is-semantic-search/): finding passages by meaning rather than wording, the retrieval step that makes a document library answerable; approximate by nature, which is why verification follows it.
+- [What does Q4_K_M mean?](https://istor.fyi/what-does-q4-k-m-mean/): the code on a quantized model file naming its compression recipe; how to read the bits-per-weight headline, why K-series mixing protects quality, and which variant to pick.
+- [What is prompt engineering?](https://istor.fyi/what-is-prompt-engineering/): writing instructions a model follows well; the unglamorous core that works, what words control and what they do not, and where structure takes over.
+- [What is a vision language model?](https://istor.fyi/what-is-a-vision-language-model/): a language model that can also look at images; how it reads page photographs directly, what it keeps that plain OCR throws away, and why its reading still needs checking.
+- [Why is local AI slow on my laptop?](https://istor.fyi/why-is-local-ai-slow-on-my-laptop/): model size, memory bandwidth, and one-token-at-a-time generation; what actually speeds a local model up, what does nothing, and why slow never makes answers worse.
+- [What is training data?](https://istor.fyi/what-is-training-data/): the text a model learns from; why the model carries compressed tendencies rather than copies, and why knowledge wants a retrievable library instead of weights.
+- [Can a local AI read spreadsheets?](https://istor.fyi/can-local-ai-read-spreadsheets/): yes, with caveats; CSV reads as plain text, Excel needs its cells extracted first, layout rarely survives, and model arithmetic wants checking.
+- [Why does AI forget the beginning of long documents?](https://istor.fyi/why-does-ai-forget-the-beginning-of-long-documents/): one reading, uneven attention; why details near the start and middle get less weight in long inputs, and why retrieval beats a bigger window.
+- [What is llama.cpp?](https://istor.fyi/what-is-llama-cpp/): the open-source engine under most local AI; how it runs GGUF models on CPUs and GPUs alike, and why it sits underneath so many tools.
+- [What is model distillation?](https://istor.fyi/what-is-distillation/): training a small model on a larger one's outputs; how the student inherits the teacher's behavior at a fraction of the size, and what it loses.
+- [What is perplexity in AI?](https://istor.fyi/what-is-perplexity/): the standard score for how well a model predicts text; lower is better, and the number never says whether an answer is right.
+- [What is a benchmark in AI?](https://istor.fyi/what-is-a-benchmark/): the fixed test that lets model quality claims be compared; useful as a filter, and still not a description of how a model handles your documents.
+- [What is a knowledge base?](https://istor.fyi/what-is-a-knowledge-base/): the organized, searchable collection behind grounded answers; why it is a property of documents rather than a product, and what retrieval needs from it.
+- [What is a chat template?](https://istor.fyi/what-is-a-chat-template/): the text wrapper a model was trained to expect around a conversation; where it travels in the model file, and what goes wrong without it.
+- [Can a local AI write code?](https://istor.fyi/can-local-ai-write-code/): yes, within limits; everyday scripts and fixes work well, hard problems want review, and proprietary code never leaves the machine.
+- [Why does AI give different answers to the same question?](https://istor.fyi/why-does-ai-give-different-answers/): sampling; the model computes odds for each next word and rolls, and the roll is why reruns vary, by design.
+- [What is an AI agent?](https://istor.fyi/what-is-an-ai-agent/): a model in a loop; tools, standing instructions and a stopping rule turn output into action, and grounded agents cite what each step used.
+- [What is a token limit?](https://istor.fyi/what-is-a-token-limit/): the cap on what one request can read and write; everything shares the budget, which is why grounded tools select what goes in.
+- [Why does AI forget between chats?](https://istor.fyi/why-does-ai-forget-between-chats/): no memory, only context; the window empties when the conversation ends, and product memory is stored notes pasted back in.
+- [Is local AI more private than cloud AI?](https://istor.fyi/local-ai-vs-cloud-ai/): yes, structurally; cloud privacy is a policy you trust, local privacy is architecture you can check, and the capability trade is real.
+- [What is a retrieval query?](https://istor.fyi/what-is-a-retrieval-query/): the text the search actually runs, rewritten from your question for each index; a library can only return what its query could reach.
+- [What is reranking?](https://istor.fyi/what-is-reranking/): the second pass that reorders search candidates by true relevance; the wide net casts cheaply, the reranker sorts carefully.
+- [What is Hugging Face?](https://istor.fyi/what-is-hugging-face/): the platform where the ML community keeps its files; open-weight models and their quantized copies are distributed through it, and it holds the catalog, not the models.
+- [How to run an LLM locally](https://istor.fyi/how-to-run-an-llm-locally/): a tool, a file that fits the machine, and memory to hold it; the hardware bar is lower than expected because quantization does the shrinking.
+- [What is VRAM?](https://istor.fyi/what-is-vram/): the graphics card's own memory; the model wants to live there because generation reads the weights thousands of times per second, and fitting decides the speed.
+- [What is MCP?](https://istor.fyi/what-is-mcp/): an open standard for connecting tools to models; a tool written once works with any compliant app, and local servers keep the actions on your machine.
+- [What is Ollama?](https://istor.fyi/what-is-ollama/): a free tool that runs models locally with one command; engine, download and server in one package, and the model stays on your machine.
+- [What is a local-first app?](https://istor.fyi/what-is-a-local-first-app/): an app whose data and core work stay on your machine; the network is an option you choose, and files live on your disk in formats you can open elsewhere.
+- [What is an inference engine?](https://istor.fyi/what-is-an-inference-engine/): the software that turns a model's weights into answers; it loads the file, runs the token loop and manages memory, and the same model runs at different speeds in different engines.
+- [Istor project log](https://istor.fyi/changelog/): what has shipped, newest first, dated from the public repository history; versioned releases are added here once they are cut.
+
+## Download
+
+Windows builds live at [github.com/ThoriaDevelopment/Istor/releases/latest](https://github.com/ThoriaDevelopment/Istor/releases/latest). The source is open under the repository's license.
+
+## Contact
+
+Thoria develops Istor. The organization is at [github.com/ThoriaDevelopment](https://github.com/ThoriaDevelopment).

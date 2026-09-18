@@ -1,0 +1,20 @@
+# The built artifact. CI rebuilds it from Source/ + Assets/ + OldVersion/ on every
+# run, so a committed copy would only ever be a stale second truth — and a stale
+# one is exactly what verify-budget.py exists to catch.
+_site/
+
+# Byte-compiled caches. They are the only files in this repository that are not
+# LF, and they are never an input to anything. Matched at any depth, not just
+# under Source/: OldVersion/tools/ keeps its own, and a stray .pyc there reached
+# the index once already.
+__pycache__/
+
+# Working scratch from the redesign: the crops made from the uncropped captures and
+# the build screenshots. Not an input to the assembler and not part of the artifact.
+.improvement/
+
+# The five screen recordings of the reference sites (260.8 MB of .mkv). They are
+# reference material for how the reference sites behave, never an input to the
+# assembler, and nothing in the build reads them. Kept on disk, out of history:
+# Tempo.mkv alone is 79.9 MB, past GitHub's 50 MB per-file warning threshold.
+References/*.mkv

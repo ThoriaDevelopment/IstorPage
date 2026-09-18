@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>What is a token limit?</title>
+  <meta name="description" content="The cap on how much text a model can read and write in one request, counted in tokens. Where the limit comes from, what happens when you hit it, and how tools work around it." />
+  <link rel="canonical" href="https://istor.fyi/what-is-a-token-limit/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="What is a token limit?" />
+  <meta property="og:description" content="The cap on how much text a model handles in one request. Where it comes from, what happens when you hit it, and how tools work around it." />
+  <meta property="og:url" content="https://istor.fyi/what-is-a-token-limit/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="/brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      } catch (_) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <header class="page-head">
+    <div class="page-head-in">
+      <a class="brand" href="/" aria-label="ἵστωρ, Istor home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+            <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+            <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+            <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+          </defs>
+          <g transform="translate(3.5 0)">
+            <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+            <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+              <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+            </g>
+            <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+            <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+            <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+          </g>
+        </svg>
+        <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+      </a>
+      <a class="btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>What is a token limit?</h1>
+    <p class="lede">The hard ceiling on how much text a model can read and write in a single request.</p>
+
+    <div class="capsule">
+      <p>A token limit is the maximum number of tokens a model can process in one request, and everything shares the budget: your question, the standing instructions, any retrieved passages, and the answer being written. The limit exists because the model reads the whole input at once, through a window fixed when the model was built. Exceeding it means truncation, a squeezed answer or a refusal, which is why grounded tools select what goes in.</p>
+    </div>
+
+    <h2>One number, many budgets.</h2>
+    <p>Every piece of text in a request is first broken into <a href="/what-is-tokenization/">tokens</a>, and all of them draw on the same account. The instructions at the front spend some, the retrieved passages spend more, your question spends some, and whatever room is left is what the answer can occupy. A request that looks short in words can be heavy in tokens once a few documents ride along with it. This is why a tool that works over your documents thinks in tokens from the start, and why the size of what it retrieves is a real design decision rather than a cosmetic one.</p>
+
+    <h2>Where the limit comes from.</h2>
+    <p>The ceiling is set by the model's architecture and its <a href="/what-is-a-context-window/">context window</a>, both fixed when training ends. A model that reads 8,000 tokens cannot read 9,000 no matter how you phrase the request; no prompt changes it, and the file of weights carries the number inside it. Bigger windows exist, but they raise memory and speed costs on the hardware that runs the model, which is why local tools often work with modest windows and lean on retrieval to choose what earns a place inside one.</p>
+
+    <h2>What happens when you hit it.</h2>
+    <p>Long documents do not fit whole, so systems that handle them <a href="/how-document-chunking-works/">cut documents into passages</a> and send only the ones that matter, which is exactly how answers over long PDFs stay inside the budget. The alternative, pushing everything in and hoping, produces the failure modes above: <a href="/why-does-ai-forget-the-beginning-of-long-documents/">uneven attention</a> near the edges, <a href="/can-local-ai-summarize-pdfs/">summaries done in sections</a>, or text that never arrives. The limit is not a flaw to defeat. It is the reason retrieval exists as a discipline, and a tool that respects it will tell you what it sent.</p>
+
+    <h2>Reading the limit on a model page.</h2>
+    <p>Listings quote the limit in several currencies, and mixing them up causes false alarms. "Context length" or "context window" is the total input capacity. "Max output tokens" is a separate, usually smaller, ceiling on the generated answer. And quoted token counts assume a particular tokenizer: the same English text lands within ten percent of each other across common tokenizers, but code, mathematics and non-English scripts can deviate much further, because those tokenize into more pieces. A practical margin to keep: assume your real text carries fifteen to twenty percent more tokens than a rough word count suggests, and leave headroom for the instructions and passages you did not count.</p>
+
+    <h2>What a grounded tool does with the budget.</h2>
+    <p>A research tool over your own documents spends the budget deliberately, and the spending order is worth knowing. Standing instructions and the output reserve come off the top. What remains is the passage budget, which sets how many retrieved chunks can ride along, which in turn caps how much of your library any single answer can see. This is the honest trade at the heart of grounding: a modest window forces selection, and selection quality, meaning <a href="/what-is-reranking/">which passages were judged worth sending</a>, becomes the real limit on answer quality. A tool that quietly overfills the budget trades failures you can see for failures you cannot, so the number deserves to be treated as a design constraint rather than a nuisance.</p>
+
+    <section class="page-related">
+      <p>Related</p>
+      <ul>
+        <li><a href="/what-is-a-context-window/">What is a context window?</a></li>
+        <li><a href="/what-is-tokenization/">What is tokenization?</a></li>
+        <li><a href="/how-document-chunking-works/">How does document chunking work?</a></li>
+        <li><a href="/why-does-ai-forget-the-beginning-of-long-documents/">Why does AI forget the beginning of long documents?</a></li>
+        <li><a href="/can-local-ai-summarize-pdfs/">Can a local AI summarize PDFs?</a></li>
+        <li><a href="/changelog/">Istor project log.</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="page-foot">
+    <div class="page-foot-in">
+      <a href="/">Home</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <span>© 2026 Thoria. No telemetry, ever.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

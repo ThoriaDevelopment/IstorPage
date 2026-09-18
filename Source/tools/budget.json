@@ -1,0 +1,65 @@
+{
+  "_comment": "Asserted byte sizes for istor.fyi's artifact. verify-budget.py fails the build when any of these moves, so a regenerated crop or re-subset font cannot quietly make the site heavier than SITE_DESIGN_PLAN.md \u00a77 says it is. Updating a number here is meant to be a deliberate two-file commit: this file and the design plan's table. Values were measured from disk on 2026-09-18, not transcribed.",
+  "totals": {
+    "_note": "The payload SITE_DESIGN_PLAN.md \u00a77 prints as 85.4 KB / 113.9 KB. The design plan's phone column is the sum of its own rounded rows; the byte-exact value is 85,345 B. Neither counts the document itself \u2014 see document_* below.",
+    "phone_1x": 85345,
+    "retina_2x": 113870,
+    "exports_all_18": 702015,
+    "components": {
+      "bitmaps_1x": 20206,
+      "bitmaps_2x": 48731,
+      "ground_tile": 451,
+      "fonts_3": 64688
+    }
+  },
+  "document": {
+    "_note": "The design plan's payload table omits the document. index.html is real weight and it arrives first, so it is asserted here rather than merely reported. Measured off the built artifact on 2026-09-18: 44,812 B raw, 13,772 B gzipped at level 9 with mtime=0. It is the compression this check fixes, not the compression a visitor receives — GitHub Pages sets that — so the number is a floor on the document's weight and a tripwire on it changing. It is a tripwire with a history: it read 20,272 B until the stylesheet's comments were stripped on the way in. Comments were 18,949 of styles.css's 34,003 bytes and they cost 6,522 B gzipped, 32% of this document, so build-site.py's inline_css() now keeps the header comment (1,556 B, the one a reader of view-source needs) and drops the rest. Thoria chose that on 2026-09-18 over shipping all of them or none. The friction stands and this number has now demonstrated it: it read 13,750 B until exhibit 09's alt text was repaired, which added 37 B raw and 22 B gzipped for a punctuation fix in one sentence. An edit to the copy deck, or to the stylesheet's CODE rather than its comments, moves this number. A comment edit no longer does.",
+    "index_html_gzip": 13772
+  },
+  "files": {
+    "/og-card.png": 123199,
+    "/fonts/inter-var.woff2": 48256,
+    "/fonts/gfs-didot.woff2": 14540,
+    "/fonts/istor-wordmark.woff2": 1892,
+    "/img/ground-grain.png": 451,
+    "/img/exhibit-07-viewer.avif": 12313,
+    "/img/exhibit-07-viewer.webp": 16486,
+    "/img/exhibit-07-viewer.png": 132111,
+    "/img/exhibit-07-viewer@2x.avif": 31209,
+    "/img/exhibit-07-viewer@2x.webp": 55810,
+    "/img/exhibit-07-viewer@2x.png": 213387,
+    "/img/exhibit-08-library-rail.avif": 3722,
+    "/img/exhibit-08-library-rail.webp": 4706,
+    "/img/exhibit-08-library-rail.png": 36438,
+    "/img/exhibit-08-library-rail@2x.avif": 8631,
+    "/img/exhibit-08-library-rail@2x.webp": 15314,
+    "/img/exhibit-08-library-rail@2x.png": 49715,
+    "/img/exhibit-09-settings-research.avif": 4171,
+    "/img/exhibit-09-settings-research.webp": 4164,
+    "/img/exhibit-09-settings-research.png": 32538,
+    "/img/exhibit-09-settings-research@2x.avif": 8891,
+    "/img/exhibit-09-settings-research@2x.webp": 13000,
+    "/img/exhibit-09-settings-research@2x.png": 59409
+  },
+  "library": {
+    "_note": "The carried library (SITE_BUILD_PLAN.md \u00a75). Pages are asserted as a count and a total, not file by file \u2014 their bytes change the moment anyone edits a summary, and 75 rows of page sizes would assert nothing worth failing over. Shared assets are exact.",
+    "page_count": 75,
+    "page_bytes": 583864,
+    "files": {
+      "/styles.css": 35522,
+      "/assets/fonts/fraunces-600.woff2": 18096,
+      "/assets/fonts/gfs-didot.woff2": 14540,
+      "/assets/fonts/inter-var.woff2": 48256,
+      "/assets/textures/fabric-texture.jpg": 1542136,
+      "/assets/textures/SOURCE.md": 3883,
+      "/robots.txt": 688,
+      "/08eaa6e8b97d4b94943057b2c49bd712.txt": 32,
+      "/brand/istor-eye.svg": 832,
+      "/brand/istor-page.svg": 1881,
+      "/brand/istor-wordmark.woff2": 1892,
+      "/brand/og-card.png": 123199,
+      "/brand/wordmark-dark.png": 12867,
+      "/brand/wordmark-light.png": 13946
+    }
+  }
+}

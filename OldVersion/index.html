@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Istor: a local-first research notebook</title>
+  <meta name="description" content="Add sources, ask grounded questions, and read cited answers. Istor is a research notebook that runs entirely on your machine." />
+  <link rel="canonical" href="https://istor.fyi/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Istor: a local-first research notebook" />
+  <meta property="og:description" content="Add sources, ask grounded questions, and read cited answers. Everything runs on your machine." />
+  <meta property="og:url" content="https://istor.fyi/" />
+  <meta property="og:image" content="https://istor.fyi/brand/og-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Istor wordmark on a dark grey fabric ground with a teal light." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://istor.fyi/brand/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="brand/istor-page.svg" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+  <link rel="preload" href="assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/fraunces-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/gfs-didot.woff2" as="font" type="font/woff2" crossorigin />
+
+  <!-- Theme before first paint: 'system' follows the OS, stored choices win.
+       Light is stamped too, so it beats a dark OS in the stylesheet. -->
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("istor.site.theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+        matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
+          try {
+            var p = localStorage.getItem("istor.site.theme") || "system";
+            if (p !== "system") return;
+            document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
+          } catch (_) {}
+        });
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://istor.fyi/#org",
+        "name": "Thoria",
+        "url": "https://istor.fyi/",
+        "sameAs": ["https://github.com/ThoriaDevelopment"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://istor.fyi/#site",
+        "url": "https://istor.fyi/",
+        "name": "Istor",
+        "publisher": { "@id": "https://istor.fyi/#org" },
+        "inLanguage": "en"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://istor.fyi/#app",
+        "name": "Istor",
+        "operatingSystem": "Windows",
+        "applicationCategory": "BusinessApplication",
+        "description": "Add sources, ask grounded questions, and read cited answers. Istor is a research notebook that runs entirely on your machine.",
+        "downloadUrl": "https://github.com/ThoriaDevelopment/Istor/releases/latest",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "publisher": { "@id": "https://istor.fyi/#org" }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://istor.fyi/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does Istor need an internet connection?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Research works fully offline. Istor only touches the network when you ask it to fetch a web source." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does asking a question send my data anywhere?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Retrieval, prompting and inference all happen on your machine. Nothing leaves it unless you trigger a fetch yourself, and the whole library exports as a zip any time." }
+          },
+          {
+            "@type": "Question",
+            "name": "What hardware does it need?",
+            "acceptedAnswer": { "@type": "Answer", "text": "A GTX 1650 class GPU runs the models comfortably. There is no cloud requirement, so the hardware you have is the hardware it uses." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I choose which model to use?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Pick your model in settings, and a swap takes effect without a restart." }
+          },
+          {
+            "@type": "Question",
+            "name": "What if my sources do not contain the answer?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Istor says so, and names what a real answer would need. It will not produce one your sources do not support." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Without JavaScript the rotator cannot rotate: the four claims stack
+       into a plain list instead, the privacy bar sits full as a finished
+       marker, and the sheet in the showcase stays on its answer face
+       instead of a blank page.
+
+       This block has to sit AFTER the stylesheet, not before it. Both the
+       sheet's turn and the claim stack are declared in styles.css too, and
+       at equal specificity the later rule wins, so a noscript block placed
+       in the head ahead of the link was silently overridden: the four
+       claims stayed absolutely positioned and three of them stayed at
+       opacity 0. Measured, not assumed: see .improvement/defects.md. -->
+  <noscript>
+    <style>
+      .rotator li {
+        position: static;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        margin-bottom: 1.25rem;
+      }
+      .rotor-dots { display: none; }
+      /* a static list has no progress to show, so the bar reads as the
+         rule that closes the claim list rather than an empty track */
+      .rotor-bar span { width: 100%; }
+      /* the turn is script-driven, so with no script there is nothing to
+         turn it: show the answer face the turn would have reached */
+      .flip { transform: rotateY(180deg); }
+    </style>
+  </noscript>
+</head>
+<body>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-head">
+    <div class="head-in">
+    <a class="brand" href="./" aria-label="ἵστωρ, Istor home">
+      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <path id="m-page" d="M20 9 H33 L44 20 V48 A7 7 0 0 1 37 55 H20 A7 7 0 0 1 13 48 V16 A7 7 0 0 1 20 9 Z"/>
+          <path id="m-fold" d="M33 9 V13 A7 7 0 0 0 40 20 H44 Z"/>
+          <path id="m-sclera" d="M18.5 28.3 Q28.5 18.8 38.5 28.3 Q28.5 37.8 18.5 28.3 Z"/>
+          <clipPath id="m-clip"><use href="#m-sclera"/></clipPath>
+        </defs>
+        <g transform="translate(3.5 0)">
+          <use href="#m-page" class="mk-paper" stroke="currentColor" stroke-width="3.6"/>
+          <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+          <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+            <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+          </g>
+          <use href="#m-sclera" class="mk-paper" stroke="currentColor" stroke-width="2.4"/>
+          <circle cx="29.9" cy="27.1" r="4.3" class="mk-iris" clip-path="url(#m-clip)"/>
+          <circle cx="30.2" cy="26.8" r="2.1" class="mk-pupil"/>
+        </g>
+      </svg>
+      <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="#grounded">Why Istor</a>
+      <a href="#loop">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">FAQ</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2.5v2.4"/><path d="M12 19.2v2.4"/><path d="M2 12h2.4"/><path d="M19.6 12H22"/><path d="M4.9 4.9l1.7 1.7"/><path d="M17.4 17.4l1.7 1.7"/><path d="M19.1 4.9l-1.7 1.7"/><path d="M6.6 17.4l-1.7 1.7"/></g></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 11 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
+      <a class="cta" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download</a>
+    </nav>
+    <nav class="head-links" aria-label="Sections">
+      <a href="#grounded">Why Istor</a>
+      <a href="#loop">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    </div>
+    <div class="read-bar" aria-hidden="true"><span></span></div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <h1>Ask your sources <span class="grad">anything</span>.</h1>
+      <p class="sub">
+        Istor is a local research notebook. It runs entirely on your
+        machine: add papers, websites and notes, ask in your own words,
+        and read answers where every claim points back to the passage
+        it came from.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download Istor</a>
+        <a class="btn btn-ghost" href="#loop">See how it works</a>
+      </div>
+      <p class="micro">Local model, local database, no telemetry. The only network traffic is the fetches you trigger.</p>
+    </section>
+
+    <section id="grounded" class="story">
+      <p class="eyebrow">Why Istor</p>
+      <h2>A research partner, not an answer machine.</h2>
+
+      <div class="story-row">
+        <div class="story-copy">
+          <svg class="story-icon" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="4" y="5" width="18" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M9 11 H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="23" cy="21" r="5.5" fill="var(--canvas)" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M20.8 21 L22.4 22.6 L25.4 19.4" fill="none" stroke="var(--witness)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>An answer you can check.</h3>
+          <p>
+            Most tools hand you a paragraph and hope you trust it. Istor
+            answers from your own sources, and every claim carries a
+            citation you can open.
+          </p>
+          <p class="story-fine">The citations in this preview work. Try them.</p>
+        </div>
+        <div class="answer-mock" role="group" aria-label="Preview of a cited answer">
+          <p class="am-tag">Example</p>
+          <p class="am-q">What did the 2019 field survey find about habitat fragmentation?</p>
+          <p class="am-a">
+            Species richness declined most sharply in
+            <button class="cite active" type="button" data-passage="0">small habitat patches</button>,
+            while core forest interiors stayed
+            <button class="cite" type="button" data-passage="1">relatively stable</button>
+            across the seven-year window.
+          </p>
+          <div class="am-passage active" data-for="0">
+            <p class="am-src">Field survey report, 2019 · page 14</p>
+            <p class="am-quote">Patches below ten hectares lost on average 31 percent of recorded species within four seasons, the steepest decline recorded in the study.</p>
+          </div>
+          <div class="am-passage" data-for="1">
+            <p class="am-src">Field survey report, 2019 · page 17</p>
+            <p class="am-quote">Interior plots beyond 500 metres from any edge showed no significant change in recorded richness between 2012 and 2019.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="story-row">
+        <div class="story-copy">
+          <svg class="story-icon" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="13" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M19.5 19.5 L27 27" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M9.5 13 Q11 9.5 13 13 Q15 16.5 16.5 13" fill="none" stroke="var(--witness)" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <h3>Search the idea, not the words.</h3>
+          <p>
+            Full-text search finds the exact phrase. Semantic search finds
+            the passage that means what you asked, even when the wording
+            is completely different.
+          </p>
+        </div>
+        <div class="search-mock" role="group" aria-label="Preview of a search result">
+          <p class="sm-query">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            transect methods for dawn bird counts
+          </p>
+          <div class="hit-mock">
+            <p class="am-src">Field notes, 2021 · page 3</p>
+            <p class="sm-quote">Counts followed fixed transects, beginning thirty minutes before sunrise.</p>
+            <p class="sm-tag">Matched the words</p>
+          </div>
+          <div class="hit-mock">
+            <p class="am-src">Field survey report, 2019 · page 9</p>
+            <p class="sm-quote">Transects were walked within one hour of sunrise, at a fixed pace, on three consecutive mornings each month.</p>
+            <p class="sm-tag">Matched the meaning</p>
+          </div>
+          <p class="sm-foot">2 passages · 3 sources · searched on this machine</p>
+        </div>
+      </div>
+
+      <div class="story-row">
+        <div class="story-copy">
+          <svg class="story-icon" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M4 24 L12 10 L18 18 L22 13 L28 24 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+            <circle cx="22" cy="8" r="2.2" fill="var(--witness)" stroke="none"/>
+          </svg>
+          <h3>It says when the sources run out.</h3>
+          <p>
+            Ask something your library cannot support and Istor does not
+            improvise. It names what it could not find and what it would
+            need, so you always know where the edge of your evidence is.
+          </p>
+        </div>
+        <div class="empty-mock" role="group" aria-label="Preview of an unanswered question">
+          <p class="am-q">Why did the survey stop at the eastern river?</p>
+          <div class="empty-body">
+            <p>Your sources do not say. Three papers mention the river, but none explains the decision.</p>
+            <p class="sm-tag">No answer offered</p>
+          </div>
+          <p class="empty-next"><span class="acc-stroke">→</span> Fetch the survey methodology from the web?</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="loop" class="loop">
+      <p class="eyebrow">The loop</p>
+      <h2>From sources to cited answers.</h2>
+      <div class="loop-grid">
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M14 6 H28 L38 16 V38 A4 4 0 0 1 24 42 H14 A4 4 0 0 1 10 38 V14 A4 4 0 0 1 14 10 Z" transform="translate(-1 -1)" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M28 5 V10 A5 5 0 0 0 33 15 H38" fill="currentColor" opacity="0.14" stroke="none"/>
+            <g stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <path d="M17 13 H25"/><path d="M17 25 H31"/><path d="M17 31 H31"/>
+            </g>
+            <circle cx="33" cy="13" r="2.4" class="acc-fill" stroke="none"/>
+          </svg>
+          <h3>Add your sources</h3>
+          <p>Drop in PDFs, websites and your own notes. Istor extracts the text and keeps the originals in a library you own.</p>
+        </article>
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M8 24 Q24 8 40 24 Q24 40 8 24 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <circle cx="25" cy="22.6" r="5.4" class="acc-fill" stroke="none"/>
+            <circle cx="25.6" cy="22" r="2.6" class="ink-fill" stroke="none"/>
+          </svg>
+          <h3>Ask grounded questions</h3>
+          <p>Ask in your own words. Istor reads the library and answers from what your sources actually say.</p>
+        </article>
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M10 28 Q8 18 16 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M10 28 Q10 34 16 36 Q13 30 16 26 Q10 28 10 28 Z" class="ink-fill" stroke="none"/>
+            <circle cx="33" cy="31" r="4.4" class="acc-fill" stroke="none"/>
+          </svg>
+          <h3>Check the citations</h3>
+          <p>Every claim carries a citation. Click one and the exact passage opens beside the answer.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="inside" class="showcase">
+      <p class="eyebrow">Inside the notebook</p>
+      <h2>One quiet room for everything.</h2>
+      <div class="scene-wrap">
+        <div class="scene" role="img" aria-label="The notebook window: a sheet carrying a source note and a citation turns over to show the answer it came from, with two citation chips beside it.">
+          <!-- One labelled illustration, not a second reading of the same
+               mock answer the hero already shows: the window's label says
+               what the section demonstrates, and the fake sheet inside is
+               decorative markup, so it stays out of the accessibility tree.
+               Verified with .improvement/axtree.py, not by reading this. -->
+          <div class="sheet" id="sheet" aria-hidden="true">
+          <div class="flip" id="flip">
+            <div class="sheet-face front">
+              <svg class="sheet-mark" viewBox="0 0 64 64" aria-hidden="true">
+                <use href="#m-page" stroke="currentColor" stroke-width="3.6" fill="var(--canvas)"/>
+                <use href="#m-fold" fill="currentColor" opacity="0.14"/>
+                <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+                  <path d="M21 16.6 H30"/><path d="M21 39.9 H37"/><path d="M21 47.3 H37"/>
+                </g>
+                <use href="#m-sclera" stroke="currentColor" stroke-width="2.4" fill="var(--canvas)"/>
+                <circle cx="29.9" cy="27.1" r="4.3" fill="var(--witness)" clip-path="url(#m-clip)"/>
+                <circle cx="30.2" cy="26.8" r="2.1" fill="var(--dot)"/>
+              </svg>
+              <div class="sheet-line w60"></div>
+              <div class="sheet-line w90"></div>
+              <div class="sheet-line w80"></div>
+              <div class="sheet-line w75"></div>
+              <div class="sheet-line w85"></div>
+              <div class="sheet-line w70"></div>
+              <div class="sheet-line w40"></div>
+            </div>
+            <div class="sheet-face back">
+              <p class="am-tag">Answer</p>
+              <p class="sheet-q">What did the field survey find about habitat fragmentation?</p>
+              <p class="sheet-a">Species richness fell most sharply in <span class="sheet-hl">small habitat patches</span>, while core forest interiors stayed <span class="sheet-hl">relatively stable</span> across the seven-year window.</p>
+              <p class="sheet-src">Field survey report, 2019 · page 14</p>
+              <p class="float-chip c1">Citation · p. 14</p>
+              <p class="float-chip c2">Citation · p. 17</p>
+            </div>
+          </div>
+        </div>
+        </div>
+        <p class="showcase-note">Your library, your model and every citation, in one window. Nothing is a tab you have to hunt for.</p>
+      </div>
+      <div class="showcase-run" aria-hidden="true"></div>
+    </section>
+
+    <section id="features" class="features">
+      <p class="eyebrow">The notebook</p>
+      <h2>Everything a research session needs.</h2>
+      <div class="loop-grid">
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M12 8 H26 L36 18 V40 H12 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M26 8 V13 A5 5 0 0 0 31 18 H36" fill="currentColor" opacity="0.14" stroke="none"/>
+            <g stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none">
+              <path d="M24 24 V32"/><path d="M20.5 28.5 L24 32 L27.5 28.5"/>
+            </g>
+            <circle cx="33" cy="26" r="2.4" class="acc-fill" stroke="none"/>
+          </svg>
+          <h3>Import anything</h3>
+          <p>PDFs, web pages and plain notes land in one library. Duplicates are detected and merged, so the library stays clean as it grows.</p>
+        </article>
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <circle cx="21" cy="21" r="10" fill="none" stroke="currentColor" stroke-width="2.4"/>
+            <path d="M28.5 28.5 L37 37" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M16.5 21 Q18.5 17.5 21 21 Q23.5 24.5 25.5 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="acc-stroke"/>
+          </svg>
+          <h3>Search two ways</h3>
+          <p>Full-text search finds the exact words. Semantic search finds the idea behind them, so a question in plain language still reaches the right passage.</p>
+        </article>
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="14" y="14" width="20" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/>
+            <g stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <path d="M20 14 V9"/><path d="M28 14 V9"/><path d="M20 39 V34"/><path d="M28 39 V34"/>
+              <path d="M14 20 H9"/><path d="M14 28 H9"/><path d="M39 20 H34"/><path d="M39 28 H34"/>
+            </g>
+            <circle cx="24" cy="24" r="2.6" class="acc-fill" stroke="none"/>
+          </svg>
+          <h3>Local models</h3>
+          <p>Pick a model from the list in settings. Swapping takes effect immediately, with no restart and nothing leaving the machine.</p>
+        </article>
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+              <path d="M10 34 Q14 30 18 34 Q22 38 26 34"/>
+              <path d="M18 24 Q22 20 26 24 Q30 28 34 24"/>
+              <path d="M26 14 Q30 10 34 14"/>
+            </g>
+            <circle cx="36" cy="35" r="2.4" class="acc-fill" stroke="none"/>
+          </svg>
+          <h3>Thinking streams</h3>
+          <p>Watch the reasoning form live while the answer streams. When a claim matters, you can see the path it took to get there.</p>
+        </article>
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M10 8 H30 L38 16 V40 H10 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <g stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <path d="M16 20 H32"/><path d="M16 27 H32"/><path d="M16 34 H26"/>
+            </g>
+            <circle cx="32" cy="34" r="2.4" class="acc-fill" stroke="none"/>
+          </svg>
+          <h3>Notes in place</h3>
+          <p>Write alongside your research. Notes live in the same library and are searchable together with everything you imported.</p>
+        </article>
+        <article>
+          <svg class="loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M10 20 H38 V40 H10 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M14 20 V14 A4 4 0 0 1 18 10 H30 A4 4 0 0 1 34 14 V20" fill="none" stroke="currentColor" stroke-width="2.4"/>
+            <path d="M18 26 H30" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" class="acc-stroke"/>
+            <circle cx="34" cy="30" r="2.4" class="acc-fill" stroke="none"/>
+          </svg>
+          <h3>Backups you own</h3>
+          <p>Export the whole library as a zip any time. One file carries your sources and notes, ready to move or restore.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="try" class="try">
+      <p class="eyebrow">Try it here</p>
+      <h2>Run the loop, right on this page.</h2>
+      <p class="try-sub">Three questions from one small sample library. Pick one and watch the loop run. It all happens in your browser; the app runs the same loop on yours.</p>
+      <div class="try-stage">
+        <div class="try-picker" role="group" aria-label="Demo questions">
+          <button class="try-q" type="button" data-demo="0" aria-pressed="true">Habitat fragmentation</button>
+          <button class="try-q" type="button" data-demo="1" aria-pressed="false">Dawn bird counts</button>
+          <button class="try-q" type="button" data-demo="2" aria-pressed="false">A question with no answer</button>
+        </div>
+        <div class="try-panel" aria-live="polite">
+          <p class="tp-q">What did the 2019 field survey find about habitat fragmentation?</p>
+          <p class="tp-step tp-static-step">read the library · 3 sources · checked every claim</p>
+          <p class="tp-a">Species richness fell most sharply in <span class="tp-hl">small habitat patches</span>, while core forest interiors stayed <span class="tp-hl">relatively stable</span> across the seven-year window.</p>
+          <div class="am-passage active">
+            <p class="am-src">Field survey report, 2019 · page 14</p>
+            <p class="am-quote">Patches below ten hectares lost on average 31 percent of recorded species within four seasons, the steepest decline recorded in the study.</p>
+          </div>
+          <p class="tp-note">A miniature of the real loop. The app runs it on your library, with your model, and cites your pages.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="uses" class="loop uses">
+      <p class="eyebrow">Who it is for</p>
+      <h2>A notebook that fits the work.</h2>
+      <div class="loop-grid uses-grid">
+        <article>
+          <svg class="uses-icon" viewBox="0 0 32 32" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="1.8">
+              <path d="M6 7.5 C9 5.8 12 5.8 15 7.5 V25 C12 23.3 9 23.3 6 25 Z"/>
+              <path d="M26 7.5 C23 5.8 20 5.8 17 7.5 V25 C20 23.3 23 23.3 26 25 Z" stroke-dasharray="0"/>
+            </g>
+            <path class="acc-fill" d="M16 8.5 C17.5 7.6 19.5 7.3 21 7.8 V23.5 C19.5 23 17.5 23.3 16 24.2 Z" opacity="0.85"/>
+          </svg>
+          <h3>Literature reviews</h3>
+          <p>Drop a semester of papers into one library and ask across all of them. Every borrowed sentence keeps the page it came from.</p>
+        </article>
+        <article>
+          <svg class="uses-icon" viewBox="0 0 32 32" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="1.8">
+              <rect x="8" y="5" width="16" height="22" rx="2.5"/>
+              <path d="M13 5.4 V8 h6 V5.4"/>
+            </g>
+            <path class="acc-stroke" d="M12.5 15.5 l3 -4.5 l3 6 l2 -3" stroke-width="1.8"/>
+          </svg>
+          <h3>Field research</h3>
+          <p>Survey notes, reports and transcripts stay in their original files. Semantic search finds the passage however you phrase the question.</p>
+        </article>
+        <article>
+          <svg class="uses-icon" viewBox="0 0 32 32" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="1.8">
+              <path d="M20.5 6.5 l5 5 L12 25 l-6.5 1.5 L7 20 Z"/>
+              <path d="M18 9 l5 5"/>
+            </g>
+            <path class="acc-fill" d="M25.5 11.5 l-5 -5 1.6 -1.6 a1.9 1.9 0 0 1 2.7 0 l2.3 2.3 a1.9 1.9 0 0 1 0 2.7 Z" opacity="0.85"/>
+          </svg>
+          <h3>Writing projects</h3>
+          <p>Draft beside your sources. Borrowed facts stay pinned to their pages, so checking a claim never means losing your place.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="privacy" class="privacy">
+      <div class="privacy-inner">
+        <p class="eyebrow">Privacy</p>
+        <h2>Your research stays yours.</h2>
+        <p class="sub">Istor runs entirely on your machine.</p>
+        <section class="rotator" tabindex="0" aria-label="What stays on your machine">
+          <ul>
+            <li class="active">
+              <h3>Local model</h3>
+              <p>Inference runs on your own hardware through open models. Nothing is sent to a server.</p>
+            </li>
+            <li>
+              <h3>Local library</h3>
+              <p>Your sources live in a SQLite database on your own disk. Back it up, copy it, carry it.</p>
+            </li>
+            <li>
+              <h3>No telemetry</h3>
+              <p>No accounts, no analytics, no usage reports. There is nothing to opt out of.</p>
+            </li>
+            <li>
+              <h3>You trigger the traffic</h3>
+              <p>The only requests Istor makes are the fetches you ask for.</p>
+            </li>
+          </ul>
+          <div class="rotor-bar" aria-hidden="true"><span></span></div>
+          <div class="rotor-dots" role="group" aria-label="Choose a claim">
+            <button class="active" type="button" aria-current="true">Local model</button>
+            <button type="button" aria-current="false">Local library</button>
+            <button type="button" aria-current="false">No telemetry</button>
+            <button type="button" aria-current="false">You trigger the traffic</button>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="faq" class="faq">
+      <div class="faq-box">
+        <h2>Questions, answered.</h2>
+        <details>
+          <summary>Does Istor need an internet connection?</summary>
+          <p>No. Research works fully offline. Istor only touches the network when you ask it to fetch a web source.</p>
+        </details>
+        <details>
+          <summary>Does asking a question send my data anywhere?</summary>
+          <p>No. Retrieval, prompting and inference all happen on your machine. Nothing leaves it unless you trigger a fetch yourself, and the whole library exports as a zip any time. If you are weighing tools on privacy, here is <a href="/is-local-rag-private/">what to check in any of them</a>.</p>
+        </details>
+        <details>
+          <summary>What hardware does it need?</summary>
+          <p>A GTX 1650 class GPU runs the models comfortably. There is no cloud requirement, so the hardware you have is the hardware it uses. The details are on <a href="/run-research-ai-gtx-1650/">can you run a research AI on a GTX 1650</a>.</p>
+        </details>
+        <details>
+          <summary>Can I choose which model to use?</summary>
+          <p>Yes. Pick your model in settings, and a swap takes effect without a restart.</p>
+        </details>
+        <details>
+          <summary>What if my sources do not contain the answer?</summary>
+          <p>Istor says so, and names what a real answer would need. It will not produce one your sources do not support.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="ending">
+      <h2 class="grad">Start your notebook.</h2>
+      <a class="btn btn-grad" href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Download Istor</a>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <span class="wordmark" lang="el">ἵστωρ<span class="cite-dot" aria-hidden="true">.</span></span>
+    <nav aria-label="Footer">
+      <a href="https://github.com/ThoriaDevelopment">GitHub</a>
+      <a href="https://github.com/ThoriaDevelopment/Istor/releases/latest">Releases</a>
+      <a href="/vs-notebooklm/">Compare</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <nav class="site-foot-pages" aria-label="Site pages">
+      <a href="/vs-anythingllm/">Istor and AnythingLLM</a>
+      <a href="/vs-gpt4all/">Istor and GPT4All</a>
+      <a href="/local-ai-literature-review/">Literature reviews</a>
+      <a href="/local-ai-field-research/">Field research</a>
+      <a href="/local-ai-writing-projects/">Writing projects</a>
+      <a href="/run-research-ai-gtx-1650/">GTX 1650</a>
+      <a href="/is-local-rag-private/">Local RAG privacy</a>
+      <a href="/what-is-rag/">What is RAG</a>
+      <a href="/what-is-a-local-llm/">What is a local LLM</a>
+      <a href="/local-ai-scanned-pdfs/">Reading scanned PDFs</a>
+      <a href="/research-ai-offline/">AI with no internet</a>
+      <a href="/vs-chatgpt/">Istor and ChatGPT</a>
+      <a href="/private-pdf-chat/">Private PDF chat</a>
+      <a href="/why-ai-hallucinates-citations/">Why AI invents citations</a>
+      <a href="/vs-zotero/">Istor and Zotero</a>
+      <a href="/does-local-ai-need-a-gpu/">GPU question</a>
+      <a href="/what-formats-can-local-ai-read/">File formats</a>
+      <a href="/vs-obsidian/">Istor and Obsidian</a>
+      <a href="/can-local-ai-summarize-pdfs/">Summarizing PDFs</a>
+      <a href="/what-is-a-context-window/">Context window</a>
+      <a href="/what-is-an-embedding/">Embeddings</a>
+      <a href="/what-is-quantization/">Quantization</a>
+      <a href="/vs-mendeley/">Istor and Mendeley</a>
+      <a href="/what-is-tokenization/">Tokenization</a>
+      <a href="/what-is-ocr/">OCR</a>
+      <a href="/can-local-ai-translate-documents/">Translation</a>
+      <a href="/how-much-ram-for-local-ai/">RAM</a>
+      <a href="/how-document-chunking-works/">Chunking</a>
+      <a href="/what-is-inference/">Inference</a>
+      <a href="/what-is-a-vector-database/">Vector database</a>
+      <a href="/how-to-stop-ai-hallucinating/">Stopping hallucinations</a>
+      <a href="/what-does-7b-mean/">7B models</a>
+      <a href="/what-is-a-gguf/">GGUF files</a>
+      <a href="/what-is-hybrid-search/">Hybrid search</a>
+      <a href="/how-to-cite-ai/">Citing AI</a>
+      <a href="/what-is-open-weight/">Open weights</a>
+      <a href="/what-is-ai-hallucination/">Hallucination</a>
+      <a href="/can-local-ai-read-handwriting/">Handwriting</a>
+      <a href="/what-is-fine-tuning/">Fine-tuning</a>
+      <a href="/what-is-temperature/">Temperature</a>
+      <a href="/what-is-a-system-prompt/">System prompts</a>
+      <a href="/what-is-a-model-card/">Model cards</a>
+      <a href="/what-is-tokens-per-second/">Tokens per second</a>
+      <a href="/local-ai-lecture-notes/">Lecture notes</a>
+      <a href="/what-is-semantic-search/">Semantic search</a>
+      <a href="/what-does-q4-k-m-mean/">Q4_K_M</a>
+      <a href="/what-is-prompt-engineering/">Prompt engineering</a>
+      <a href="/what-is-a-vision-language-model/">Vision models</a>
+      <a href="/why-is-local-ai-slow-on-my-laptop/">Slow on a laptop</a>
+      <a href="/what-is-training-data/">Training data</a>
+      <a href="/can-local-ai-read-spreadsheets/">Spreadsheets</a>
+      <a href="/why-does-ai-forget-the-beginning-of-long-documents/">Forgets beginnings</a>
+      <a href="/what-is-llama-cpp/">llama.cpp</a>
+      <a href="/what-is-distillation/">Distillation</a>
+      <a href="/what-is-perplexity/">Perplexity</a>
+      <a href="/what-is-a-benchmark/">Benchmarks</a>
+      <a href="/what-is-a-knowledge-base/">Knowledge base</a>
+      <a href="/what-is-a-chat-template/">Chat template</a>
+      <a href="/can-local-ai-write-code/">Write code</a>
+      <a href="/why-does-ai-give-different-answers/">Varying answers</a>
+      <a href="/what-is-an-ai-agent/">Agents</a>
+      <a href="/what-is-a-token-limit/">Token limits</a>
+      <a href="/why-does-ai-forget-between-chats/">Forgetting</a>
+      <a href="/local-ai-vs-cloud-ai/">Local vs cloud</a>
+      <a href="/what-is-a-retrieval-query/">Retrieval query</a>
+      <a href="/what-is-reranking/">Reranking</a>
+      <a href="/what-is-hugging-face/">Hugging Face</a>
+      <a href="/how-to-run-an-llm-locally/">Run an LLM</a>
+      <a href="/what-is-vram/">VRAM</a>
+      <a href="/what-is-mcp/">MCP</a>
+      <a href="/what-is-ollama/">Ollama</a>
+      <a href="/what-is-a-local-first-app/">Local-first</a>
+      <a href="/what-is-an-inference-engine/">Engine</a>
+    </nav>
+    <span class="foot-note">© 2026 Thoria. No telemetry, ever.</span>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1510 @@
+/* Istor: istor.fyi
+   Token-level theming: the bare :root carries the complete light world,
+   the dark world only redefines tokens, and components read tokens alone. */
+
+/* All three faces ship with the site; nothing is requested at runtime. */
+@font-face {
+  font-family: "Fraunces";
+  src: url("assets/fonts/fraunces-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("assets/fonts/inter-var.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GFS Didot";
+  src: url("assets/fonts/gfs-didot.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* grounds (light) */
+  --canvas: #FFFFFF;
+  --subtle: #FAFAFA;
+  --ink: #171717;
+  --mist: #6E6A66;
+  --hairline: #E9E4DE;
+
+  /* the witness pair (light ground) */
+  --witness: #D93A3A;
+  --dot: #D93A3A;
+
+  /* citation accent, judged on the light mock panels */
+  --cite-ink: #0E7490;
+  --cite-wash: rgba(14, 116, 144, 0.12);
+
+  /* gradient highlight, judged on white */
+  --g1: #D93A3A;
+  --g2: #CE7F14;
+  /* the grad button darkens its gradient so white text clears 4.5:1
+     on the warm end; the dark ground needs no shade */
+  --btn-shade: rgba(10, 10, 10, 0.32);
+
+  --max: 68rem;
+  --font-sans: "Inter", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  /* every entrance on the page leaves through this one curve */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-theme="dark"] {
+  /* grounds (dark) */
+  --canvas: #0A0A0A;
+  --subtle: #141414;
+  --ink: #EDEDED;
+  --mist: #A5A19B;
+  --hairline: #242424;
+
+  /* the witness pair (dark ground) */
+  --witness: #4DA3FF;
+  --dot: #4DA3FF;
+
+  /* citation accent, judged on the dark mock panels */
+  --cite-ink: #56C0EC;
+  --cite-wash: rgba(86, 192, 236, 0.16);
+
+  /* gradient highlight, judged on black */
+  --g1: #4DA3FF;
+  --g2: #3ED6C4;
+  --btn-shade: transparent;
+}
+
+/* the dark OS world, for visitors before (or without) the script;
+   an explicit light choice still wins */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* grounds (dark) */
+    --canvas: #0A0A0A;
+    --subtle: #141414;
+    --ink: #EDEDED;
+    --mist: #A5A19B;
+    --hairline: #242424;
+
+    /* the witness pair (dark ground) */
+    --witness: #4DA3FF;
+    --dot: #4DA3FF;
+
+    /* citation accent, judged on the dark mock panels */
+    --cite-ink: #56C0EC;
+    --cite-wash: rgba(86, 192, 236, 0.16);
+
+    /* gradient highlight, judged on black */
+    --g1: #4DA3FF;
+    --g2: #3ED6C4;
+    --btn-shade: transparent;
+  }
+}
+
+* { box-sizing: border-box; }
+
+/* anchored sections stop below the sticky header */
+section[id] { scroll-margin-top: 4.5rem; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-wrap: balance;
+  line-height: 1.15;
+  margin: 0;
+}
+
+p { margin: 0; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--witness);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* the skip link is invisible until a keyboard visitor reaches it */
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 20;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--ink);
+  color: var(--canvas);
+  transition: top 0.15s var(--ease-out);
+}
+
+.skip:focus-visible {
+  top: 0.75rem;
+}
+
+/* ── header ─────────────────────────────────────────────────────── */
+
+.site-head {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--canvas) 82%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* the bar's ground runs the full viewport width; only the content
+   inside is held to the page's measure */
+.head-in {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+}
+
+.brand-mark { width: 1.75rem; height: 1.75rem; color: var(--ink); }
+
+.mk-paper { fill: var(--canvas); }
+.mk-iris { fill: var(--witness); }
+.mk-pupil { fill: var(--dot); }
+
+.wordmark {
+  font-family: "GFS Didot", "Istor Wordmark", Georgia, serif;
+  font-weight: 400;
+  font-size: 1.0625rem;
+}
+
+.cite-dot { color: var(--dot); }
+
+/* the read bar: the header's bottom edge fills as the page is read,
+   the same functional-line language the privacy rotator's sweep uses */
+.read-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  pointer-events: none;
+}
+
+.read-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--witness);
+}
+
+/* the section links' second row, shown only where the main nav drops
+   them; display:none keeps it out of the accessibility tree on desktop,
+   where the main nav already carries the same four links */
+.head-links {
+  display: none;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.site-nav > a:not(.cta) {
+  font-size: 0.875rem;
+  color: var(--mist);
+  text-decoration: none;
+}
+
+.site-nav > a:not(.cta):hover { color: var(--ink); }
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--mist);
+  cursor: pointer;
+}
+
+.theme-toggle:hover { color: var(--ink); background: var(--subtle); }
+
+.icon-moon { display: none; }
+:root[data-theme="dark"] .icon-moon { display: block; }
+:root[data-theme="dark"] .icon-sun { display: none; }
+
+/* ── buttons ────────────────────────────────────────────────────── */
+
+.cta,
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.125rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.cta {
+  color: var(--canvas);
+  background: var(--ink);
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  color: var(--canvas);
+  background: var(--ink);
+}
+
+.btn-ghost {
+  padding: 0.75rem 1.125rem;
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+}
+
+.btn-ghost:hover { border-color: var(--mist); }
+
+.btn-grad {
+  padding: 0.875rem 1.75rem;
+  font-size: 1rem;
+  color: var(--canvas);
+  background:
+    linear-gradient(var(--btn-shade), var(--btn-shade)),
+    linear-gradient(120deg, var(--g1), var(--g2));
+}
+
+/* ── hero ───────────────────────────────────────────────────────── */
+
+.hero {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 6.5rem 1.5rem 7rem;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: clamp(2.75rem, 7vw, 4.75rem);
+  letter-spacing: -0.02em;
+  max-width: 16ch;
+  margin: 0 auto;
+}
+
+.grad {
+  background: linear-gradient(110deg, var(--g1), var(--g2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero .sub {
+  max-width: 56ch;
+  margin-top: 1.75rem;
+  margin-inline: auto;
+  font-size: 1.125rem;
+  color: var(--mist);
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2.25rem;
+}
+
+.hero .micro {
+  margin-top: 1.5rem;
+  font-size: 0.8125rem;
+  color: var(--mist);
+}
+
+/* ── the loop ───────────────────────────────────────────────────── */
+
+.loop,
+.privacy,
+.faq,
+.ending {
+  padding: 5.5rem 1.5rem;
+}
+
+.loop { padding-top: 2rem; }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--witness);
+}
+
+.loop h2,
+.features h2,
+.faq h2 {
+  margin-top: 0.875rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.loop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3.5rem;
+  margin-top: 3.5rem;
+}
+
+.loop-grid > article.reveal:nth-child(3n + 2) { transition-delay: 0.08s; }
+.loop-grid > article.reveal:nth-child(3n)     { transition-delay: 0.16s; }
+
+.loop-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--ink);
+}
+
+.acc-fill { fill: var(--witness); }
+.ink-fill { fill: var(--ink); }
+
+.loop-grid h3 {
+  margin-top: 1.25rem;
+  font-size: 1.1875rem;
+}
+
+.loop-grid p {
+  margin-top: 0.625rem;
+  font-size: 0.9375rem;
+  color: var(--mist);
+}
+
+/* ── why istor (feature story) ──────────────────────────────────── */
+
+.story {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 5.5rem 1.5rem;
+}
+
+.story h2 {
+  margin-top: 0.875rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.story-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 4rem;
+  align-items: center;
+  margin-top: 4.5rem;
+}
+
+.story-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--ink);
+  margin-bottom: 0.625rem;
+}
+
+.story-copy h3 {
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+}
+
+.story-copy p {
+  margin-top: 0.875rem;
+  font-size: 0.9375rem;
+  color: var(--mist);
+}
+
+.story-copy .story-fine { color: var(--witness); }
+
+.answer-mock {
+  margin-top: 0.5rem;
+  padding: 2rem 2.25rem;
+  border: 1px solid var(--hairline);
+  border-radius: 1.25rem;
+  background: var(--subtle);
+}
+
+.am-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* var(--mist), never a literal: the literal failed contrast on the
+     light sheet face (2.57:1) and dodged the token swap per theme */
+  color: var(--mist);
+}
+
+.am-q {
+  margin-top: 0.875rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  color: #F2F1EE;
+}
+
+.am-a {
+  margin-top: 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  color: #B9BDB8;
+}
+
+.cite {
+  padding: 0 0.1875em;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  font: inherit;
+  color: #56C0EC;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cite:hover,
+.cite.active { background: rgba(86, 192, 236, 0.16); }
+
+.am-passage {
+  display: none;
+  margin-top: 1.25rem;
+  padding: 1.125rem 1.375rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+/* Re-showing a passage restarts this, so swaps read as one motion
+   instead of a hard cut. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+.am-passage.active {
+  display: block;
+  animation: rise-in 0.35s var(--ease-out);
+}
+
+.am-src {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #56C0EC;
+}
+
+.am-quote {
+  margin-top: 0.5rem;
+  font-size: 0.9375rem;
+  color: #E5E3DF;
+}
+
+/* The hero example follows the theme like the search and empty mocks
+   beside it: token ground, token text. Its citation teal reads the
+   citation tokens so it stays legible on the light sheet. The demo
+   panel keeps its own dark room and the literals above. */
+.answer-mock .am-q { color: var(--ink); }
+
+.answer-mock .am-a { color: var(--mist); }
+
+.answer-mock .cite { color: var(--cite-ink); }
+
+.answer-mock .cite:hover,
+.answer-mock .cite.active { background: var(--cite-wash); }
+
+.answer-mock .am-passage {
+  border-color: var(--hairline);
+  background: var(--canvas);
+}
+
+.answer-mock .am-src { color: var(--cite-ink); }
+
+.answer-mock .am-quote { color: var(--ink); }
+
+.search-mock,
+.empty-mock {
+  margin-top: 0.5rem;
+  padding: 2rem 2.25rem;
+  border: 1px solid var(--hairline);
+  border-radius: 1.25rem;
+  background: var(--subtle);
+}
+
+.sm-query {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--canvas);
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+.sm-query svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--mist);
+  flex: none;
+}
+
+.hit-mock {
+  margin-top: 1.25rem;
+  padding: 1.125rem 1.375rem;
+  border: 1px solid var(--hairline);
+  border-radius: 0.75rem;
+  background: var(--canvas);
+}
+
+.hit-mock .am-src { display: block; }
+
+.sm-quote {
+  margin-top: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+.sm-tag {
+  margin-top: 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.sm-foot {
+  margin-top: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mist);
+}
+
+.empty-body {
+  margin-top: 1.25rem;
+  padding: 1.125rem 1.375rem;
+  border: 1px solid var(--hairline);
+  border-radius: 0.75rem;
+  background: var(--canvas);
+  font-size: 0.9375rem;
+  color: var(--mist);
+}
+
+.empty-mock .am-q { margin-top: 0; color: var(--ink); }
+
+.empty-next {
+  margin-top: 1.125rem;
+  font-size: 0.875rem;
+  color: var(--mist);
+}
+
+.empty-next .acc-stroke { margin-right: 0.375rem; font-family: var(--font-mono); }
+
+/* ── try it here (the in-page demo) ─────────────────────────────── */
+
+.try {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 5.5rem 1.5rem 3rem;
+}
+
+.try h2 {
+  margin-top: 0.875rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.try-sub {
+  margin-top: 1rem;
+  max-width: 56ch;
+  color: var(--mist);
+}
+
+.try-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin-top: 2rem;
+}
+
+.try-q {
+  padding: 0.625rem 1.125rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--canvas);
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--mist);
+  cursor: pointer;
+}
+
+.try-q:hover { border-color: var(--mist); color: var(--ink); }
+
+.try-q[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--subtle);
+  color: var(--ink);
+}
+
+/* The panel borrows the answer-mock ground: one dark room on the page. */
+.try-panel {
+  margin-top: 1.75rem;
+  padding: 2rem 2.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(60rem 24rem at 80% -20%, rgba(86, 192, 236, 0.14), transparent 65%),
+    #0D1A1D;
+  min-height: 29.75rem;
+}
+
+.tp-q {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: #F2F1EE;
+}
+
+.tp-step {
+  margin-top: 0.625rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #8FA6A3;
+}
+
+.tp-static-step { margin-top: 0.875rem; }
+
+.tp-a {
+  margin-top: 1.125rem;
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  color: #B9BDB8;
+}
+
+.tp-hl { color: #56C0EC; }
+
+.tp-note {
+  margin-top: 1.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #8FA6A3;
+}
+
+.tp-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8FA6A3;
+}
+
+.tp-refusal { margin-top: 0.75rem; font-size: 0.9375rem; line-height: 1.7; color: #B9BDB8; }
+
+.tp-offer { margin-top: 1.125rem; font-size: 0.875rem; color: #B9BDB8; }
+
+.tp-offer .acc-stroke { margin-right: 0.375rem; font-family: var(--font-mono); stroke: #56C0EC; }
+
+/* when the offer is a real button (the third demo), it reads as a
+   control: reset the browser button chrome, brighten on hover */
+.tp-offer-btn {
+  display: block;
+  padding: 0.25rem 0;
+  background: none;
+  border: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s var(--ease-out);
+}
+.tp-offer-btn:hover { color: #F2F1EE; }
+
+.tp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.tp-chip {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  color: #8FA6A3;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.tp-chip:hover { border-color: rgba(86, 192, 236, 0.5); color: #56C0EC; }
+
+.tp-chip.active {
+  border-color: rgba(86, 192, 236, 0.5);
+  background: rgba(86, 192, 236, 0.12);
+  color: #56C0EC;
+}
+
+/* Steps, answer and passages fade in as the demo runs; the classes are
+   applied from the script, so the static markup stays fully visible. */
+.tp-anim {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
+}
+
+.tp-anim.on { opacity: 1; transform: none; }
+
+/* ── the notebook grid ──────────────────────────────────────────── */
+
+/* ── the 3d page showcase ───────────────────────────────────────── */
+
+.showcase {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5.5rem;
+  text-align: center;
+}
+
+.showcase h2 {
+  margin-top: 0.875rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+/* the wrapper pins for the whole section and fills the viewport, so
+   the sheet itself rides the exact middle of the screen while it
+   turns; the note lives at the bottom edge of the same pin */
+.scene-wrap {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scene {
+  perspective: 1400px;
+  width: min(24rem, 100%);
+  margin: 0 auto;
+  aspect-ratio: 4 / 5;
+}
+
+/* scroll room for the pinned wrapper; margins on a sticky element
+   would count against its own pin range, so this is a spacer. The
+   extra room beyond the flip is the hold: the finished answer face
+   with its citations stays pinned and readable before release */
+.showcase-run { height: 140vh; }
+
+.sheet {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(8deg) rotateY(-8deg);
+  will-change: transform;
+}
+
+/* the page turns over partway through the section and shows the
+   answer face; both faces hide their backs so the swap reads clean */
+.flip {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.sheet-face {
+  position: absolute;
+  inset: 0;
+  background: var(--canvas);
+  border: 2.5px solid var(--ink);
+  border-radius: 6px 26px 6px 6px;
+  box-shadow: 22px 26px 44px rgba(0, 0, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 2.25rem 2rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.sheet-face.back {
+  transform: rotateY(180deg);
+  border-radius: 26px 6px 6px 6px;
+}
+
+.sheet-mark { width: 34%; height: auto; color: var(--ink); flex: none; }
+
+.sheet-q {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.sheet-a {
+  font-size: 0.875rem;
+  line-height: 1.8;
+  color: var(--mist);
+}
+
+.sheet-hl { color: var(--witness); }
+
+.sheet-src {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mist);
+}
+
+.sheet-line {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--hairline);
+}
+
+.sheet-line.w90 { width: 90%; }
+.sheet-line.w85 { width: 85%; }
+.sheet-line.w80 { width: 80%; }
+.sheet-line.w75 { width: 75%; }
+.sheet-line.w70 { width: 70%; }
+.sheet-line.w60 { width: 60%; }
+.sheet-line.w40 { width: 40%; }
+
+.float-chip {
+  position: absolute;
+  margin: 0;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--canvas);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.float-chip.c1 { right: -3.5rem; top: 26%; transform: translateZ(80px) rotate(4deg); }
+.float-chip.c2 { right: -2rem; bottom: 20%; transform: translateZ(56px) rotate(-3deg); }
+
+.showcase-note {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(1.5rem, 6vh, 3.5rem);
+  margin: 0 auto;
+  max-width: 44ch;
+  padding: 0 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--mist);
+}
+
+.features {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5.5rem;
+}
+
+.acc-stroke { stroke: var(--witness); }
+
+/* ── who it is for ──────────────────────────────────────────────── */
+
+.uses { padding-top: 0; }
+
+.uses-grid { margin-top: 3rem; gap: 2rem; }
+
+/* The brand law for the adopted feature patterns is explicit: no visible
+   borders anywhere, and separation comes from whitespace and the background
+   itself. The hairline that used to sit here was the one place on the site
+   that broke it, so the `--subtle` fill does the separating on its own, with
+   the rounded corner kept. The hover lift stays: the law forbids
+   colour-changing outlines, not movement. */
+.uses-grid > article {
+  padding: 2rem 1.75rem 2.25rem;
+  border-radius: 1.25rem;
+  background: var(--subtle);
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+
+.uses-grid > article:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.07);
+}
+
+.uses-icon { width: 1.75rem; height: 1.75rem; color: var(--ink); }
+
+.uses-grid h3 {
+  margin-top: 1.125rem;
+  font-size: 1.1875rem;
+}
+
+.uses-grid p {
+  margin-top: 0.625rem;
+  font-size: 0.9375rem;
+  color: var(--mist);
+}
+
+/* ── privacy band ───────────────────────────────────────────────── */
+
+/* The band's ground is the studio's fabric photograph, used once and
+   unedited: one cover-sized crop at its natural aspect, never tiled or
+   stretched. A plain dark scrim sits over it purely so the light text
+   stays readable across the picture's bright patches; the photo itself
+   is untouched.
+
+   What ships is a 2560px copy of the 5184px camera original: same frame,
+   same Adobe RGB profile, same pixels, metadata dropped. The band is 639
+   CSS px tall and never wider than 3825, behind a flat 75% scrim, so the
+   original's resolution was detail nobody could see. The transform and
+   the measured proof that the swap is invisible are in
+   assets/textures/SOURCE.md. */
+
+.privacy {
+  padding: 0;
+}
+
+.privacy-inner {
+  max-width: none;
+  padding: 6.5rem 1.5rem;
+  text-align: center;
+  background-image:
+    linear-gradient(rgba(10, 16, 18, 0.75), rgba(10, 16, 18, 0.75)),
+    url("assets/textures/fabric-texture.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-color: #0D1A1D;
+  color: #F2F1EE;
+}
+
+.privacy-inner .eyebrow { color: #56C0EC; }
+
+.privacy-inner h2 {
+  margin-top: 0.875rem;
+  font-size: clamp(1.9rem, 5vw, 3rem);
+}
+
+.privacy-inner .sub {
+  margin-top: 1rem;
+  margin-inline: auto;
+  max-width: 52ch;
+  font-size: 1.0625rem;
+  color: #B9BDB8;
+}
+
+.privacy-inner :focus-visible { outline-color: #56C0EC; }
+
+.rotator {
+  margin: 3rem auto 0;
+  max-width: 34rem;
+  text-align: left;
+}
+
+.rotator ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  position: relative;
+  min-height: 8.5rem;
+}
+
+.rotator li {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
+  pointer-events: none;
+}
+
+.rotator li.active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.rotator h3 { font-size: 1.375rem; }
+
+.rotator p {
+  margin-top: 0.5rem;
+  color: #B9BDB8;
+}
+
+.rotor-bar {
+  margin-top: 1.75rem;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.rotor-bar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: #56C0EC;
+}
+
+/* labeled pills instead of bare dots: a visitor sees the claims are
+   buttons without waiting out the sweep */
+.rotor-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  justify-content: center;
+}
+
+.rotor-dots button {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.rotor-dots button:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.rotor-dots button.active {
+  border-color: rgba(86, 192, 236, 0.5);
+  background: rgba(86, 192, 236, 0.12);
+  color: #56C0EC;
+}
+
+/* ── faq ────────────────────────────────────────────────────────── */
+
+.faq-box {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.faq-box h2 { text-align: left; margin-bottom: 2.25rem; }
+
+.faq-box details {
+  margin-top: 0;
+  border: none;
+  border-top: 1px solid var(--hairline);
+  border-radius: 0;
+  background: none;
+}
+
+.faq-box details:last-of-type { border-bottom: 1px solid var(--hairline); }
+
+.faq-box summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0.25rem;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--witness);
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-box summary:hover { color: var(--ink); }
+
+.faq-box summary::-webkit-details-marker { display: none; }
+
+.faq-box summary::after {
+  content: "+";
+  font-family: var(--font-mono);
+  color: var(--mist);
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.faq-box details[open] summary::after { content: "−"; }
+.faq-box details[open] summary { color: var(--ink); }
+
+.faq-box details > p {
+  padding: 0 0.25rem 1.5rem;
+  max-width: 62ch;
+  font-size: 0.9375rem;
+  color: var(--mist);
+}
+
+/* ── ending ─────────────────────────────────────────────────────── */
+
+.ending {
+  text-align: center;
+  padding-top: 4rem;
+  padding-bottom: 7rem;
+}
+
+.ending h2 {
+  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  letter-spacing: -0.02em;
+}
+
+.ending .btn-grad { margin-top: 2.25rem; }
+
+/* ── footer ─────────────────────────────────────────────────────── */
+
+.site-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.site-foot .wordmark { font-size: 0.9375rem; }
+
+.site-foot nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.25rem;
+  max-width: 100%;
+}
+
+.site-foot a {
+  font-size: 0.8125rem;
+  color: var(--mist);
+  text-decoration: none;
+}
+
+.site-foot a:hover { color: var(--ink); }
+
+.foot-note {
+  font-size: 0.8125rem;
+  color: var(--mist);
+}
+
+.site-foot-pages {
+  flex-basis: 100%;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.site-foot-pages a {
+  font-size: 0.75rem;
+  color: var(--mist);
+  text-decoration: none;
+}
+
+/* ── scroll reveal (classes are applied by script.js only, so the
+   page renders fully with JavaScript disabled) ─────────────────── */
+
+.enter {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+
+.enter.on {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.reveal.on {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── breathing on the mark (the only ambient motion) ───────────── */
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.72; }
+  50%      { opacity: 1; }
+}
+
+.brand-mark { animation: breathe 3.6s ease-in-out infinite; }
+
+/* ── narrow ─────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .head-in { flex-wrap: wrap; padding: 0.875rem 1.25rem 0; }
+  .site-nav { gap: 0.875rem; }
+  .site-nav > a:not(.cta) { display: none; }
+  .head-links {
+    display: flex;
+    flex-basis: 100%;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 0 0.25rem;
+    border-top: 1px solid var(--hairline);
+  }
+  .head-links a {
+    font-size: 0.8125rem;
+    color: var(--mist);
+    text-decoration: none;
+    padding: 0.375rem 0; /* a 13px label alone is under the 24px target */
+  }
+  .head-links a:hover { color: var(--ink); }
+  section[id] { scroll-margin-top: 6.5rem; }
+  .hero { padding: 4.5rem 1.25rem 5rem; }
+  .story { padding: 3.5rem 1.25rem; }
+  .story-row { grid-template-columns: 1fr; gap: 1.75rem; margin-top: 3rem; }
+  .answer-mock, .search-mock, .empty-mock { padding: 1.5rem 1.25rem; margin-top: 0; }
+  .features { padding: 2rem 1.25rem 3.5rem; }
+  .try { padding: 3.5rem 1.25rem 2.5rem; }
+  .try-panel { padding: 1.5rem 1.25rem; min-height: 0; }
+  .float-chip.c1 { right: 0; }
+  .float-chip.c2 { right: 0.5rem; }
+  .loop-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .faq-box { padding: 2.25rem 1.5rem; }
+  .site-foot { flex-direction: column; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .brand-mark { animation: none; }
+  .sheet { transform: rotateX(8deg) rotateY(-8deg) !important; }
+  /* The turn to the answer face is driven by the scroll script, and that
+     script is guarded by no-preference, so under reduced motion the flip
+     never happens on its own. Pin the finished face: the section's whole
+     point is the cited answer, and a blank sheet is not an end state. */
+  .flip { transform: rotateY(180deg); }
+  .enter {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .rotator li {
+    transition: none;
+    transform: none;
+  }
+  .rotor-bar span { transition: none; }
+  .am-passage.active { animation: none; }
+  .tp-anim {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* readers who ask for more contrast get stronger quiet text and
+   stronger lines; tokens only, so every component follows, and the
+   dark overrides mirror the theme architecture: stamped dark always,
+   unstamped dark only under a dark OS */
+@media (prefers-contrast: more) {
+  :root { --mist: #55514C; --hairline: #C9C2B8; }
+  :root[data-theme="dark"] { --mist: #C4C0B8; --hairline: #3A3A3A; }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --mist: #C4C0B8; --hairline: #3A3A3A; }
+}
+/* ── sub-pages ─────────────────────────────────────────────────
+   A minimal article scaffold for the comparison and question
+   pages. It reuses the tokens, fonts and buttons above; it adds
+   only layout: a slim header bar, a centered prose measure, and
+   a footer. No scripts run here, so everything below must hold
+   with the inline theme stamp and the media queries alone. */
+
+.page-head {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.page-head-in {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-head .brand { font-size: 1.25rem; }
+
+/* the download CTA rides in the slim header bar, so it wears the
+   compact size the nav links set the rhythm for */
+.page-head .btn-grad { padding: 0.5rem 1.1rem; font-size: 0.875rem; white-space: nowrap; }
+
+.page-home {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--mist);
+  text-decoration: none;
+  padding: 0.5rem 0;
+}
+.page-home:hover { color: var(--ink); }
+
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 4.5rem;
+}
+
+.page h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0 0 1rem;
+  color: var(--ink);
+}
+
+.page .lede {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--mist);
+  margin: 0 0 2.5rem;
+}
+
+/* the capsule: a short answer lifted whole, placed before the detail */
+.capsule {
+  border-left: 3px solid var(--cite-ink);
+  background: var(--subtle);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 0.75rem 0.75rem 0;
+  margin: 0 0 2.75rem;
+}
+.capsule p { margin: 0; color: var(--ink); line-height: 1.65; }
+
+.page h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.25;
+  margin: 2.75rem 0 0.9rem;
+  color: var(--ink);
+}
+
+.page h3 {
+  font-size: 1.0625rem;
+  margin: 2rem 0 0.5rem;
+  color: var(--ink);
+}
+
+.page p, .page li {
+  line-height: 1.7;
+  color: var(--ink);
+  margin: 0 0 1rem;
+}
+
+.page ul, .page ol { padding-left: 1.25rem; margin: 0 0 1.25rem; }
+.page li { margin-bottom: 0.4rem; }
+
+.page a { color: var(--cite-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.page a:hover { text-decoration-thickness: 2px; }
+
+/* the side-by-side table on the comparison page; the wrap keeps a
+   320px viewport from being pushed sideways by the min-content width */
+.table-wrap { overflow-x: auto; }
+.page table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0 2rem;
+  font-size: 0.9375rem;
+}
+.page th, .page td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.page th {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mist);
+  font-weight: 400;
+}
+.page td:first-child { color: var(--mist); width: 30%; }
+
+.page-foot {
+  border-top: 1px solid var(--hairline);
+}
+.page-foot-in {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: var(--mist);
+}
+.page-foot-in a { color: var(--mist); text-decoration: none; padding: 0.25rem 0; }
+.page-foot-in a:hover { color: var(--ink); }
+
+/* related questions close each page, so the cluster links itself */
+.page-related {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline);
+}
+.page-related p {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin-bottom: 0.75rem;
+}
+.page-related ul { list-style: none; padding: 0; margin: 0; }
+.page-related li { margin-bottom: 0.5rem; }
+
+@media (max-width: 720px) {
+  .page-head-in, .page-foot-in { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .page { padding: 2.5rem 1.25rem 3.5rem; }
+}
