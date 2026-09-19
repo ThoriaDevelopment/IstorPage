@@ -27,7 +27,7 @@ is a real invariant of §1.1 rather than a nicety:
   of unreachable duplication that §1.1 forbids "optimising" away, because the library
   addresses its copies relatively and is not allowed to change. If someone ever does
   optimise it, this is the line that says so.
-* **The artifact is exactly 138 files**, which is what makes check 4 meaningful.
+* **The artifact is exactly 154 files**, which is what makes check 4 meaningful.
 * **The 75 library pages are present as 75 directories**, totalling 583,864 B.
 * **/styles.css is the library's**, not the new page's. This is the §1.1 collision
   that resolves in the library's favour: the new page inlines its CSS precisely so
@@ -58,10 +58,11 @@ DUPLICATED = [
 
 # The artifact's file count. Every stage above produced exactly this, and check 4
 # (verify-links.py) walks all of them, so a change here is a change to that check.
-# v1 was 120; v2 is 138. The whole +18 is the export set: v1 shipped 3 exhibits x 6
-# files (AVIF/WebP/PNG at 1x and 2x) = 18, and v2 ships 9 exhibits x 4 files (the
-# same, minus PNG) = 36. Everything else in the artifact is unchanged.
-ARTIFACT_FILES = 138
+# v1 was 120; v2 is 154. The first +18 was the export set: v1 shipped 3 exhibits x
+# 6 files (AVIF/WebP/PNG at 1x and 2x) = 18, and v2 ships 9 exhibits x 4 files (the
+# same, minus PNG) = 36. The second, on 2026-09-19, is the phone crops: four more
+# crops x 4 files = 16, which took the set to 52. Everything else is unchanged.
+ARTIFACT_FILES = 154
 
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 
@@ -184,8 +185,11 @@ def main(argv: list[str]) -> int:
         # the WebP beside each, for a format no browser released since 2020 needs.
         # The tuple must stay in step with the artifact: a suffix nothing matches
         # contributes 0 and would silently understate this.
-        "exports_all_36": sum(sum_of(f, r) for f in (".avif", ".webp")
-                              for r in (False, True)),
+        # Renamed from exports_all_36 on 2026-09-19, when the four phone crops
+        # took the set from 36 files to 52. The number in the name was the only
+        # thing keeping it honest and it stopped being true, so the name went.
+        "exports_all": sum(sum_of(f, r) for f in (".avif", ".webp")
+                           for r in (False, True)),
     }
     for key, got in payloads.items():
         want = tot[key]

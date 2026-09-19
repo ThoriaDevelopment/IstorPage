@@ -57,7 +57,7 @@ NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 
 LIBRARY_PAGES = 75
 LIBRARY_STYLES_BYTES = 35522          # §1.1: /styles.css is the library's file
-ARTIFACT_FILES = 138                  # 120 + the six extra exhibits v2 carries
+ARTIFACT_FILES = 154                  # 138 + the four phone crops' 16 files
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18)
 
 # Check 8's marker. If the assembler ever globs OldVersion/ instead of copying by

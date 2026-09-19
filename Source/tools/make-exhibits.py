@@ -13,6 +13,38 @@ Outputs, per exhibit, into Assets/Exports/:
     <name>.avif  <name>.webp          at 1x  (crop / 2)
     <name>@2x.avif  <name>@2x.webp    at 2x  (crop at native capture size)
 
+And, for the exhibits listed in PHONE, a second art-directed crop:
+    <name>-phone.avif  <name>-phone@2x.avif   (and the webp pair)
+
+WHY A PHONE CROP EXISTS AT ALL. The rule above — crop / 2 rendered at the
+measured width — holds the app's text at its native size only when the browser
+has that much room. On a 390px viewport the exhibit frame is 285 CSS px, so a
+1200px crop (600 CSS px of app UI) renders at 0.475 and the app's 16px text
+arrives at 7.6px: measured on 2026-09-19, and the reason the exhibits were the
+one place the page failed the legibility the report ranks as load-bearing. A
+600px-wide crop of the same window is 300 CSS px, which is what a common phone's
+frame actually is, so it renders at 0.85 to 1.0 — near native or better — and the
+text becomes readable instead of a grey smear.
+
+What gets one, and what deliberately does not:
+  * The four answer-bearing exhibits, cropped to the pane. Their claim lives in
+the answer's own prose, which is exactly what the crop keeps.
+  * exhibit-13 does NOT: it is a two-column disputed-claims table whose columns
+together span the whole 860px crop. Any crop narrow enough to be legible on a
+phone cuts either the claim or the status it is disputed against, which is the
+exhibit's entire content. It stays at 0.66.
+  * exhibits 14 and 15 do NOT: their crops are already 800 and 793px (0.71), and
+their claim spans the full width of the settings panel — a row's label on the
+left, its toggle or value on the right. Cropping to one column would cut the
+value off the claim.
+  * exhibits 16 and 17 do NOT: they are full-window overviews of a 1918px window
+whose claim is the LAYOUT (sources left, notes right, the answer between), so a
+larger scale would destroy the only thing they show.
+
+Each phone rect is a sub-rect of its own desktop crop rather than a new
+measurement against the source capture, so it inherits that crop's bounds and
+cannot drift from them.
+
 Generators run locally and their outputs are committed; CI never regenerates
 artwork. Run from the repo root:  python Source/tools/make-exhibits.py
 """
@@ -52,6 +84,19 @@ EXHIBITS = [
      "354.08 holes at 68 percent; radial variation 0.028 mm"),
 ]
 
+# Phone rects, as WxH+X+Y inside the exhibit's own desktop crop. 600px wide for
+# the four answers, which is 300 CSS px on the page, chosen because 300 is
+# measured as the exhibit frame's own width on a 390-400px viewport (the common
+# phone), so the crop fills the frame instead of floating inside it. The y offset
+# is 0 for all four: the whole answer column is the subject, and its height is
+# the crop's.
+PHONE = {
+    "exhibit-10-gate": "600x884+540+0",
+    "exhibit-11-citations": "600x876+540+0",
+    "exhibit-12-reading": "600x928+540+0",
+    "exhibit-18-numbers": "600x956+540+0",
+}
+
 AVIF_Q = "60"
 WEBP_Q = "82"
 PNG_Q = "92"
@@ -63,10 +108,40 @@ def run(*args):
         raise SystemExit(f"failed: {' '.join(str(a) for a in args)}\n{r.stderr.strip()}")
 
 
+def emit(tmp: Path, base: str, w: int, h: int) -> int:
+    """Write one crop as four files, and return the bytes they add up to.
+
+    The `!` is load-bearing. Without it, ImageMagick treats the geometry as
+    a bounding BOX to fit inside, not an exact size: exhibit-17's crop is
+    1918x1015, so a box of 959x507 fits at min(959/1918, 507/1015) = 0.4995
+    and comes out 958 wide. The markup's width/height are read off the file,
+    so a one-pixel shortfall there would be a one-pixel aspect error in the
+    document. Force the size; the odd height is inherent (1015 is odd) and
+    costs half a pixel of vertical scale across a 480px-tall exhibit.
+    """
+    total = 0
+    for suffix, geom, fmt, q in [
+        ("@2x", f"{w}x{h}!", "avif", AVIF_Q),
+        ("@2x", f"{w}x{h}!", "webp", WEBP_Q),
+        ("", f"{w // 2}x{h // 2}!", "avif", AVIF_Q),
+        ("", f"{w // 2}x{h // 2}!", "webp", WEBP_Q),
+    ]:
+        dest = OUT / f"{base}{suffix}.{fmt}"
+        run("magick", str(tmp), "-resize", geom, "-quality", q, str(dest))
+        total += dest.stat().st_size
+    return total
+
+
+def size_of_image(path: Path) -> tuple[int, int]:
+    out = subprocess.run(["magick", "identify", "-format", "%w %h", str(path)],
+                         capture_output=True, text=True).stdout.split()
+    return int(out[0]), int(out[1])
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     total = 0
-    print(f"{'exhibit':24} {'2x (px)':>12} {'css':>10} {'bytes':>10}")
+    print(f"{'exhibit':24} {'2x (px)':>12} {'css':>10} {'bytes':>10}  {'phone':>16}")
     for name, src, crop, _note in EXHIBITS:
         path = SHOTS / src
         if not path.exists():
@@ -74,34 +149,29 @@ def main():
 
         tmp = OUT / f".{name}.tmp.png"
         run("magick", path, "-crop", crop, "+repage", str(tmp))
+        w, h = size_of_image(tmp)
 
-        w, h = (int(v) for v in subprocess.run(
-            ["magick", "identify", "-format", "%w %h", str(tmp)],
-            capture_output=True, text=True).stdout.split())
+        bytes_here = emit(tmp, name, w, h)
 
-        # 2x: the crop at its native capture size. 1x: exactly half.
-        #
-        # The `!` is load-bearing. Without it, ImageMagick treats the geometry as
-        # a bounding BOX to fit inside, not an exact size: exhibit-17's crop is
-        # 1918x1015, so a box of 959x507 fits at min(959/1918, 507/1015) = 0.4995
-        # and comes out 958 wide. The markup's width/height are read off the file,
-        # so a one-pixel shortfall there would be a one-pixel aspect error in the
-        # document. Force the size; the odd height is inherent (1015 is odd) and
-        # costs half a pixel of vertical scale across a 480px-tall exhibit.
-        for suffix, geom, fmt, q in [
-            ("@2x", f"{w}x{h}!", "avif", AVIF_Q),
-            ("@2x", f"{w}x{h}!", "webp", WEBP_Q),
-            ("", f"{w // 2}x{h // 2}!", "avif", AVIF_Q),
-            ("", f"{w // 2}x{h // 2}!", "webp", WEBP_Q),
-        ]:
-            dest = OUT / f"{name}{suffix}.{fmt}"
-            run("magick", str(tmp), "-resize", geom, "-quality", q, str(dest))
-            total += dest.stat().st_size
+        phone = ""
+        if name in PHONE:
+            # Cropped out of the desktop crop, not the capture, so the two can
+            # never disagree about where the window is.
+            ptmp = OUT / f".{name}-phone.tmp.png"
+            run("magick", str(tmp), "-crop", PHONE[name], "+repage", str(ptmp))
+            pw, ph = size_of_image(ptmp)
+            phone_bytes = emit(ptmp, f"{name}-phone", pw, ph)
+            phone = f"{pw // 2}x{ph // 2} {phone_bytes:>8,} B"
+            bytes_here += phone_bytes
+            ptmp.unlink()
 
-        print(f"{name:24} {w:>5}x{h:<6} {w // 2:>5}x{h // 2:<4} {total:>10,}")
+        total += bytes_here
+        print(f"{name:24} {w:>5}x{h:<6} {w // 2:>5}x{h // 2:<4} {bytes_here:>10,}  {phone:>16}")
         tmp.unlink()
 
-    print(f"\n{len(EXHIBITS)} exhibits x4 files = {len(EXHIBITS) * 4} files, {total:,} B")
+    files = (len(EXHIBITS) + len(PHONE)) * 4
+    print(f"\n{len(EXHIBITS)} exhibits plus {len(PHONE)} phone crops, x4 files = {files} files")
+    print(f"{total:,} B over both sets")
 
 
 if __name__ == "__main__":

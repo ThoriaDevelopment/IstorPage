@@ -88,14 +88,18 @@ ASSETS_PUBLISHED = {
 # for the crop bounds and for why each is crop_px / 2 CSS px.
 EXPORTS = [
     "exhibit-10-gate",
+    "exhibit-10-gate-phone",
     "exhibit-11-citations",
+    "exhibit-11-citations-phone",
     "exhibit-12-reading",
+    "exhibit-12-reading-phone",
     "exhibit-13-dispute",
     "exhibit-14-research",
     "exhibit-15-models",
     "exhibit-16-library",
     "exhibit-17-notes",
     "exhibit-18-numbers",
+    "exhibit-18-numbers-phone",
 ]
 # Note the leading dots: "@2x" attaches to the stem, so the retinas are
 # exhibit-10-gate@2x.avif, not exhibit-10-gate.@2x.avif.
@@ -106,8 +110,15 @@ EXPORTS = [
 # AVIF first, WebP as the <source> fallback and as the <img src>, and the 511 KB
 # that frees covers a little over half of what the six extra exhibits the v2 page
 # carries cost: 1,156,132 B of exports now against 178,417 B of them before.
-# 36 files, not 54.
-EXPORT_SUFFIXES = [".avif", ".webp", "@2x.avif", "@2x.webp"]   # 36 files
+# 40 files, not 54.
+#
+# The four phone crops ride the same suffix loop, so their names are stems here
+# rather than a second mechanism: "exhibit-10-gate-phone" + "@2x.avif" is the
+# file make-exhibits.py writes. They are separate stems, not extra suffixes,
+# because a phone crop is a different CROP, not a different encoding of the same
+# one -- which is also why the markup reaches for them with a media query instead
+# of srcset. See PHONE in make-exhibits.py for which exhibits get one and why.
+EXPORT_SUFFIXES = [".avif", ".webp", "@2x.avif", "@2x.webp"]   # 52 files over 13 stems
 
 # The library's non-page directories. The page directories are found by the
 # index.html test below; these three are carried whole, outside that test.
