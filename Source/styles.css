@@ -986,34 +986,54 @@ h3 {
 
 .plate { position: relative; padding-block: 32px 20px; }
 .plate > svg { display: block; width: 118%; max-width: none; height: auto; margin-inline: -9%; }
-/* The clearance above the copy is MEASURED, and it is proportional on purpose.
+/* The clearance above the copy is MEASURED, twice over, and both times what it
+   has to clear is geometry rather than taste.
 
-   150px was a fixed number against a proportional drawing, and that is a
-   collision waiting for a viewport to happen on. At 1440 the svg is 1463px
-   wide and its `355` label ends 167px below the svg's top edge, so the label's
-   box ran from 160px to 199px while the copy started at 150px: 28.1 x 57.8px of
-   overlap on the heading, measured in the DOM. Nothing about it was visible at
-   the width it was built at and it grew with every wider window.
+   The first is the marker. `150px` was a fixed number held against a drawing
+   that scales with the viewport, so the ring's `355` label ran into the heading
+   by 28.1 x 57.8px at 1440, and by more on every wider window, because both
+   quantities grew in opposite directions: the label with the plate, the
+   clearance not at all. It is the kind of defect that is invisible at the width
+   it was built at.
 
-   The two terms are the two things being cleared, and neither is a taste call:
+   The second only appeared once the holes were drawn in an ink a visitor can
+   actually see (see `make-calendar-ring.py`: at `--rule` the holes measured
+   1.20:1 on `--paper`, which is a drawing most screens do not show). The 355
+   holes are one dashed circle, so they are an ARC, and an arc's apex is at 12
+   o'clock, which is directly above the middle of a copy block centred in the
+   plate. Where the copy used to sit, three of the act's own lines had holes
+   behind their glyphs. The fix is not to shrink the drawing and not to move the
+   marker: it is to put the copy where the drawing is not, which means inside
+   the ring, under the arc's apex.
 
-     13.5%   where the label's box lands, as a share of the plate's own width.
-             The svg is 118% of the plate and the label ends at 0.1141 of the
-             svg's width (viewBox y 68 of 594, from the label's 13px line box
-             centred on y 61), so 1.18 x 0.1141 = 0.1347 of the plate's width.
-             A percentage padding on an absolutely positioned child resolves
-             against the containing block's width, which is the plate's, so
-             this term tracks the drawing exactly at every viewport.
-     56px    the plate's own 32px top padding, which the inner's `inset: 0`
-             spans because it is measured from the padding box, plus 24px of
-             actual air between the label's box and the heading's box. The 24
-             is the one number here that is a judgement: two line boxes stacked
-             closer than that read as one crowded block even when the glyphs
-             themselves have not touched.
+   So the padding has to clear whichever of two things is lower, and both scale
+   with the same basis the drawing does. A percentage padding on an absolutely
+   positioned child resolves against its containing block's width, which is the
+   plate's, and the svg is 118% of that, so a percentage here tracks the drawing
+   exactly at every viewport:
 
-   Under 1080px neither term applies: that breakpoint sets this element and the
-   svg to `position: static`, so the copy sits above the arc in flow and there
-   is no label to clear. */
+     the marker   the `355` hole's disc ends at viewBox y 101.4 of the 440 the
+                  plate is drawn in, so 101.4 x 1.18 / 594 = 20.1% of the
+                  plate's width.
+     the arc      the holes cross the copy's own 430px column at the column's
+                  edges, which is the deepest the arc reaches inside it, and it
+                  does so at 24% of the plate's width. That figure is chosen to
+                  hold across the range rather than measured at one width: the
+                  bound runs 23 to 25% over a plate of 1001 to 1240px, and those
+                  are every width the overlay is used at.
+
+   `+ 56px` is then the plate's own 32px top padding, which `inset: 0` spans
+   because it is measured from the padding box, plus 24px of real air. The 24 is
+   the one judgement in the number: two things closer than that read as crowded
+   even when their pixels have not touched.
+
+   Both terms were re-derived from the live DOM rather than from this comment,
+   at 1081 to 1920px, by measuring the copy's line boxes against the arc the
+   generator's own arithmetic predicts.
+
+   Under 1080px none of it applies: that breakpoint sets this element and the
+   svg to `position: static`, so the copy sits above the arc in flow, where
+   there is nothing to clear. */
 .plate-inner {
   position: absolute;
   inset: 0;
@@ -1022,7 +1042,7 @@ h3 {
   justify-content: flex-start;
   max-width: 430px;
   margin-inline: auto;
-  padding-block-start: calc(13.5% + 56px);
+  padding-block-start: calc(24% + 56px);
   text-align: center;
 }
 .plate-inner > * { margin-block: 0; }

@@ -14,6 +14,14 @@ stops", so the ring's interior holds the section's copy instead of 500px of
 nothing, and the only loud thing in it is its single piece of information: the
 three hundred and fifty-fifth hole.
 
+Two inks, and the split is between what the figure asserts and what it frames.
+The rim circles are `--rule`, the page's hairline, and they stay a whisper: they
+are the plate's edge and nothing depends on them. The 355 holes are `--ink-3`,
+because they are the subject and because at `--rule` they measured 1.20:1
+against the page's `--paper` — invisible on a normal screen, while every caption
+in the act talks about them. Two tokens, both already in the palette, so this
+costs no new colour.
+
 354 and 355 holes are 1.0141 degrees apart end to end, so the two rings are
 visually identical — the disagreement that overturned a hundred years of work is
 a difference the eye cannot settle. That is the caption, and it is why this is a
@@ -62,13 +70,16 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VB_W} {VB_H}"
   </g>
 
   <!-- 355 holes in one dashed circle rather than 355 elements. pathLength is not
-       used, so the dash arithmetic is literal and cannot drift between renderers. -->
+       used, so the dash arithmetic is literal and cannot drift between renderers.
+       --ink-3 because the holes are the subject, not the frame: at --rule they
+       measured 1.20:1 on --paper. Why, in full, is in make-calendar-ring.py. -->
   <circle cx="{CX:g}" cy="{CY:g}" r="{R_HOLES:g}" fill="none"
-          stroke="var(--rule)" stroke-width="{DOT:g}" stroke-linecap="round"
+          stroke="var(--ink-3)" stroke-width="{DOT:g}" stroke-linecap="round"
           stroke-dasharray="0.02 {GAP:.6f}"
           transform="rotate({THETA:.4f} {CX:g} {CY:g})"/>
 
-  <!-- the hole in question, and the only ink in the figure that is not --rule -->
+  <!-- The hole in question: the figure's only --azure, and the one thing in it that
+       is a claim rather than a measure. -->
   <circle cx="{mx:.4f}" cy="{my:.4f}" r="{DOT / 2:.2f}" fill="var(--azure)"/>
   <path d="M{t1[0]:.3f} {t1[1]:.3f} L{t2[0]:.3f} {t2[1]:.3f}"
         stroke="var(--azure)" stroke-width="1" fill="none"/>
