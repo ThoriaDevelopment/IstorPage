@@ -759,7 +759,7 @@
   // whole trick: the page is authored in its finished state, so a visitor whose
   // script is blocked, broken or disabled sees the finished page rather than a
   // column of invisible sections. It also means the observer is never needed for
-  // correctness — only for the animation.
+  // correctness, only for the animation.
   var reveals = document.querySelectorAll('.reveal');
   if (reveals.length && !reduced) {
     var io = new IntersectionObserver(function (entries) {

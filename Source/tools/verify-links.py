@@ -610,6 +610,23 @@ def check_7(rep: Report, page: str, css: str) -> None:
                  " appears in visitor-facing text; use a comma, colon or full stop")
     else:
         rep.ok("visible copy has no em or en dash")
+
+    # The stricter form, and it is only available now that the page ships without
+    # its html comments. Visible text was the RULE; the whole document is the
+    # measurement. It is worth having because four dashes used to survive in the
+    # inlined stylesheet's header comment and one in the inline script: none of
+    # them reaches a visitor, and every one of them makes an auditor scanning the
+    # artifact for dashes stop and re-derive why it is allowed. A rule that needs
+    # an exception explained is weaker than one that does not.
+    somewhere = sorted({c for c in page if c in "—–"})
+    if somewhere:
+        rep.fail("em or en dash anywhere in the document",
+                 ", ".join(repr(c) for c in somewhere) +
+                 " — the landing page ships no comment that needs one")
+    else:
+        rep.ok("no em or en dash anywhere in the document",
+               "comments and the inline script included")
+
     seen = sorted({ord(c) for c in rendered if ord(c) > 127})
     out_of_range = [c for c in seen if c not in declared and c not in FALLS_THROUGH]
 

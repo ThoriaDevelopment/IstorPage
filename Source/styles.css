@@ -1,5 +1,5 @@
 /* ===========================================================================
-   istor.fyi — the landing page's stylesheet.  v2.
+   istor.fyi, the landing page's stylesheet.  v2.
 
    This file is NOT published as a stylesheet. `build-site.py` inlines it into
    the `<head>` of `index.html`. That is how the `/styles.css` collision
@@ -7,7 +7,7 @@
    (SITE_BUILD_PLAN.md §1.1): the library keeps the path it has always had, and
    the landing page removes its only render-blocking request.
 
-   THIS HEADER IS THE ONLY COMMENT THAT SHIPS — `inline_css()` keeps it and
+   THIS HEADER IS THE ONLY COMMENT THAT SHIPS. `inline_css()` keeps it and
    strips the rest. So the notes below are free in Source/ and cost nothing in
    the document that arrives first. A rule below that looks unjustified is
    justified here. Edit it here.
@@ -16,7 +16,7 @@
    include source gets spliced in and trips build-site.py's guard on its own
    output. Prose, not a marker.
 
-   Root-absolute URLs (`/fonts/…`) are correct — the inlining document sits at
+   Root-absolute URLs (`/fonts/…`) are correct: the inlining document sits at
    the site root. Every colour is a token; no hex literal appears outside the
    token blocks below, and verify-links.py checks that against this file
    post-strip.
@@ -29,7 +29,7 @@
    that: eleven acts, five named compositions, nine exhibits, eight motions.
 
    The single load-bearing idea is §1's: THE APP WINDOW SITS IN THE DEEP TEAL
-   FIELD, EVERY TIME. That field is not invented — it is the og-card's locked
+   FIELD, EVERY TIME. That field is not invented. It is the og-card's locked
    ground (#163234 → #0E1E22), measured across eleven sample points, doing
    structurally what Tempo's gradient does behind its app windows. It gives the
    page one dominant idea enforced everywhere instead of a style applied

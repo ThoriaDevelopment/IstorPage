@@ -254,6 +254,70 @@ def inline_css(text: str) -> str:
     return header.rstrip() + "\n" + rest
 
 
+_HTML_COMMENT = re.compile(r"<!--.*?-->", re.S)
+
+
+def inline_markup(text: str) -> str:
+    """The page as it ships: with NO html comment left in it.
+
+    This is the stylesheet's own rule, applied to the file it was never applied
+    to. `inline_css` below strips the CSS comments because they were 55% of that
+    file and cost 7,192 B gzipped, and its docstring says the reasoning "is worth
+    keeping and not worth posting." The markup kept posting it: 21 comments,
+    7,768 B, 18.3% of the document, **2,348 B gzipped**, which is 12% of what a
+    visitor downloads before anything renders. Same reasoning, same answer.
+
+    Nothing is lost. Every one of those comments stays in `Source/index.html`,
+    one file away, where the person editing it reads it. And the page does not
+    lose its explanation, because the inlined stylesheet's header comment ships
+    and is exactly that: it says why a page with a token system and a type scale
+    has no stylesheet link, which is the one thing view-source actually raises.
+
+    Three things this must not do, and the last two are asserted rather than
+    trusted:
+
+      * It must not eat an include marker. It runs after the marker guard, and
+        it asserts there is no comment of any kind left, so a marker that
+        somehow survived splicing fails the build loudly instead of vanishing.
+      * It must not change the page. Comments are not rendered, and the
+        whitespace collapsing below is whitespace HTML collapses anyway, so the
+        check is the same shape as `inline_css`'s: with comments and ALL
+        whitespace removed from both versions, the two must be identical. That
+        proves nothing but comments and whitespace was touched, which a byte
+        count cannot.
+      * It must not touch `<!--` inside the inline script. There is none: the
+        script uses `//` comments. A regex cannot know that, so the contract
+        check above is what catches it if one is ever added.
+    """
+    before = _markup_text(text)
+    text = _HTML_COMMENT.sub("", text)
+    # Remove the whitespace-only lines the comments leave behind, then collapse
+    # the blank runs. Without this the page still weighs 40 KB raw.
+    text = "\n".join(line.rstrip() for line in text.split("\n"))
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    if "<!--" in text:
+        raise BuildError(
+            "markup comment stripping left a `<!--` in the page — an include "
+            "marker survived splicing, or a comment spans one"
+        )
+    if _markup_text(text) != before:
+        raise BuildError(
+            "markup comment stripping changed the page, not just its comments "
+            "and whitespace — the shipped document is no longer the source's"
+        )
+    return text
+
+
+def _markup_text(text: str) -> str:
+    """A page reduced to what the two versions of it must agree on.
+
+    Comments out, then every whitespace character out, including the ones
+    inside attributes: the comparison is deliberately blind to formatting, so
+    the only difference it can see is a difference in content.
+    """
+    return re.sub(r"\s+", "", _HTML_COMMENT.sub("", text))
+
+
 def splice_includes() -> None:
     """Step 4. Read Source/index.html, splice, write _site/index.html.
 
@@ -336,7 +400,7 @@ def splice_includes() -> None:
             "       losing it here means losing the guard against publishing the\n"
             "       previous home page."
         )
-    write_text_lf(page, text)
+    write_text_lf(page, inline_markup(text))
 
 
 # --------------------------------------------------------------------------
