@@ -142,11 +142,33 @@ is one command each rather than 75 hand edits:
 `verify-links.py` asserts the second one's output as a walk through all 75 articles, so a page that
 never got its pair fails the gate rather than shipping as a dead end.
 
+`python -m http.server` serves every page except one. It answers a missing path with its own error
+page, and the host answers with `/404.html`, so that page has to be reached the same way it is in
+production: serve `_site/` with a handler that falls back to `/404.html` and a 404 status. Visiting
+`/404.html` directly is not the same test, because the page reads `location.pathname` to guess what
+the reader wanted, and through the fallback that path is a real missing address rather than the
+file's own name.
+
 Both halves of the site carry a print block and honour `prefers-contrast: more`, and both promises
 are asserted rather than trusted: `verify-links.py` requires the blocks to exist, computes every ink
 the print token world declares against white paper, and fails if any of them is under AA. That check
 exists because the failure it guards against is invisible on screen: a reader whose system is dark
 used to print near-white text onto white paper, 13 of 46 text elements on one article.
+
+The not-found page is the page for a reader who is already lost, and it is the only hand-authored page
+the assembler does not touch, so it has two rules of its own. `build-site.py` strips the comments out
+of its style and script blocks on the way into the artifact, because copied pages post their
+reasoning where assembled ones do not: written out, that page's comments were 4.6 KB of its 10.2 KB.
+And `verify-links.py` reads the artifact rather than the tool, asserting that the strip ran, that the
+page's search is a form the browser can submit with no script at all, that a link into the library
+follows it, and that its dark token world holds the library's own values. That last one is a promise
+between two files, and it needs asserting precisely because the page owns a stylesheet instead of
+sharing the library's. It also carries the print world and the `prefers-contrast: more` values the
+other two halves carry, which is the same check applied to a third stylesheet, and the order of those
+two blocks is load-bearing: a reader can ask for both, the two pick different quiet inks, and paper
+has to be declared last so that it wins. `/404.html` is in the contrast audit's page set as well: a
+page's worth of ink on a stylesheet of its own is the other way a template goes unmeasured, not by
+being large but by being separate.
 
 CI runs the same three checks and fails on any of them, and they are not only about links and bytes:
 the directory tells its reader that `/` focuses the find field and the arrow keys walk the matches,

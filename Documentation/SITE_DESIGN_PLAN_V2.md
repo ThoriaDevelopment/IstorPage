@@ -834,7 +834,7 @@ previous figure byte-for-byte, which is the check that the method is the same on
 | Fonts (3 files) | ≈ 65 KB | **63 KB** |
 | Ground grain + og-card | ≈ 124 KB | **121 KB** |
 | `index.html` incl. inline CSS | ≈ 55 KB | **72 KB** |
-| **Artifact (everything shipped)** | **≈ 2.5–3.0 MB** | **4.12 MiB**, 156 files |
+| **Artifact (everything shipped)** | **≈ 2.5–3.0 MB** | **4.17 MiB**, 156 files |
 | **First screen** (document, 3 fonts, ground tile) | — | **135 KB** |
 | **The whole page read, desktop** (AVIF 2×) | **≈ 550 KB** | **451 KB** |
 | **The whole page read, phone** (AVIF 1×, with the phone crops) | **≈ 320 KB** | **217 KB** |
@@ -888,6 +888,45 @@ The build gates are re-baselined **by measurement, never transcription** — the
 That last gate is the point. v1 had 53 assertions and none could see that the page was nine identical
 sections. **A composition gate is what would have caught it**, and it is the only gate here that
 asserts the *design* rather than the bytes.
+
+**The artifact total is a report and no longer a stale one.** 4.12 MiB was written before the
+article navigation and the directory's find control landed, and nothing asserted it, which is how a
+measured figure goes out of date without anybody seeing it: the artifact row is checked as a file
+count, because page bytes move whenever anyone edits a sentence. It reads 4.17 MiB now, which is the
+current artifact as measured, and it includes the not-found page's growth below.
+
+`/404.html` is the one page the assembler does not touch, so it is the one page that had no rule of
+its own, and two are written for it here. `build-site.py` strips the comments out of its `<style>`
+and `<script>` blocks on the way into the artifact, with the same contract the inliner holds: no
+comment left in the shipped page, and the page before and after equal with comments and all
+whitespace removed. It was posting its own reasoning, 4.6 KB of the file's 10.2 KB. And
+`verify-links.py` gains its 11th check, four assertions over the artifact: the strip ran; the page's
+search is a plain form, with an action, a method and a field named `q`, because it has to reach
+`/library/?q=` on a browser whose script never ran; a link into the library follows that form so the
+page has a way on with no script at all; and its dark token world holds **the library's own values**,
+role for role. That last assertion is between two files rather than inside one, and it needs to be,
+because the page owns a stylesheet instead of sharing the library's, which is exactly how two token
+blocks drift apart. Every one of those four was shown failing before it was trusted, including the
+first version of the token check, which read one block of the two and reported a clean bill of health
+for a world whose other copy had drifted.
+
+The page is also in the contrast audit's default set now, so the artifact's six templates are all
+measured instead of five. A page's worth of ink on a stylesheet of its own is the other way a template
+goes unmeasured: not large, just separate. It is clean in all four states at 1440px, and its dark
+states report **one** of the page's own media rules, which is the block being reached rather than
+merely existing.
+
+**A dark world on a page obliges it to answer a printer**, which is §3.6's rule meeting this page's
+new one, and it cost an ordering bug to learn. The page now carries the library's print world and the
+library's `prefers-contrast: more` values, and check 10 reads all three stylesheets instead of two
+(57 assertions now, and the text-token vocabulary grew by `--ink-2` and `--azure` so the page's own
+ink names are checked against white paper rather than skipped for having different names). The bug:
+more contrast and paper pick different quiet inks, #C4C0B8 and #33322F, and a reader can be both, so
+the later block wins where the two media match. Declared print-first, more contrast would have taken
+it, printing a light grey on white at 2.2:1. The library has paper last for that reason and the page
+now does too. It is verified the way this repository verifies a cascade: every conditional block is
+unwrapped into the live page in file order, and with the dark world, more contrast and print all
+active at once the computed ink is `#000000` on `#FFFFFF`.
 
 **One audit is deliberately not a gate.** `Source/tools/audit-contrast.py` measures every text
 element against WCAG AA, in both themes, by rendering each page in a sized iframe and walking it in

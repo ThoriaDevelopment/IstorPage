@@ -167,11 +167,14 @@ CHROME_CANDIDATES = [
 ]
 
 # One page per template the site actually ships, which is the point: the landing
-# page, the generated directory, a carried article, and the two sub-page shapes.
-# The directory is here because it was the page nothing had ever measured, and it
-# is the one with 75 entries whose titles sit within half a step of the bar.
+# page, the generated directory, a carried article, the two sub-page shapes, and
+# the not-found page. The directory is here because it was the page nothing had
+# ever measured, and it is the one with 75 entries whose titles sit within half a
+# step of the bar. The 404 is here because it carries a page's worth of ink (a
+# heading, a box of links, a form and a button) on a stylesheet of its own, which
+# is the other way a template goes unmeasured: not large, just separate.
 DEFAULT_PAGES = ["/", "/library/", "/what-is-a-local-llm/", "/changelog/",
-                 "/vs-chatgpt/"]
+                 "/vs-chatgpt/", "/404.html"]
 
 
 def find_chrome() -> str:

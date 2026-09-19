@@ -73,6 +73,12 @@ _spec.loader.exec_module(make_library_index)
 # inlines it into index.html, and the /styles.css path belongs to the library.
 # The last three are generator output, committed (Stage 0's rule) — CI checks
 # them with make-favicons.py --check rather than regenerating them.
+
+# Of those, the ones that ship with their comments stripped. They need their own
+# pass because they are copied rather than assembled: every other page's
+# reasoning is removed by the inliner, and these have no inliner to run.
+LEANED = {"404.html"}
+
 AUTHORED = [
     "404.html",
     "robots.txt",
@@ -211,6 +217,25 @@ def clean() -> None:
 
 def copy_authored() -> None:
     for name in AUTHORED:
+        if name in LEANED:
+            source = (SOURCE / name).read_text(encoding="utf-8")
+            shipped = lean_page(source)
+            # The two clauses `inline_css` is held to, for the same reason: the
+            # shipped page must carry no comment at all, and it must be the
+            # source's markup with comments and whitespace removed and nothing
+            # else changed. A byte count cannot tell those apart.
+            if _ANY_COMMENT.search(shipped):
+                raise BuildError(
+                    f"{name}: comment stripping left a comment in the shipped "
+                    "page — its style and script blocks must carry none"
+                )
+            if _lean(source) != _lean(shipped):
+                raise BuildError(
+                    f"{name}: stripping changed the page, not just its comments "
+                    "and whitespace — the shipped page is no longer the source's"
+                )
+            write_text_lf(SITE / name, shipped)
+            continue
         copy_file(SOURCE / name, SITE / name)
 
 
@@ -280,6 +305,34 @@ def inline_css(text: str) -> str:
 
 
 _HTML_COMMENT = re.compile(r"<!--.*?-->", re.S)
+
+# A hand-authored page's own two comment channels, which `inline_markup` cannot
+# reach: it runs on the assembled landing page and knows about html comments and
+# `//`. The 404 is copied rather than assembled, so it is processed here instead.
+_STYLE_BODY = re.compile(r"(<style[^>]*>)(.*?)(</style>)", re.S)
+_SCRIPT_BODY = re.compile(r"(<script[^>]*>)(.*?)(</script>)", re.S)
+
+
+def lean_page(text: str) -> str:
+    """A copied page as it ships: no comment left inside its style or script.
+
+    `404.html` is the one page that is not assembled, so it was the one page
+    still posting its reasoning. Its comments are worth keeping where the next
+    editor reads them and not worth sending with a page that exists for a
+    mistyped address: written out in full they were 4.6 KB of the file's 10.2 KB.
+
+    Only block comments go, and only inside those two elements. That keeps the
+    transform blind to `//`, which a page's script is free to use for a URL, and
+    the build's own assertion (the page before and the page after must be equal
+    with comments and ALL whitespace removed) is what proves nothing else moved.
+    """
+    def lean(match: re.Match) -> str:
+        body = _ANY_COMMENT.sub("", match.group(2))
+        body = "\n".join(line.rstrip() for line in body.split("\n"))
+        body = re.sub(r"\n{2,}", "\n", body).lstrip("\n")
+        return match.group(1) + body + match.group(3)
+
+    return _SCRIPT_BODY.sub(lean, _STYLE_BODY.sub(lean, text))
 
 
 def inline_markup(text: str) -> str:

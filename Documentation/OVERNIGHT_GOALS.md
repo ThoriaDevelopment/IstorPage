@@ -6,3 +6,4 @@ Each non-comment line is one independent goal. The runner cycles through them in
 - Audit every visitor-facing string in the published artifact with the humanizer rules and remove any visible em or en dash without changing product evidence.
 - Review the mobile and compact desktop compositions for a meaningful usability improvement, then verify reduced motion, links, contrast, and budget.
 - Critique the last change against the reference genre and simplify or revert anything that adds noise instead of clarity.
+- Walk every visitor-facing page with scripting switched off and make sure each one still works, then fix the ones that do not.

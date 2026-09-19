@@ -905,7 +905,8 @@ def media_block(css: str, query: str) -> str:
     return css[m.end():i - 1]
 
 
-def check_10(rep: Report, page_css: str, library_css: str) -> None:
+def check_10(rep: Report, page_css: str, library_css: str,
+             notfound_css: str = "") -> None:
     """The two promises a stylesheet makes to a reader nobody sees.
 
     A reader prints the page, and a reader asks their system for more contrast.
@@ -918,7 +919,8 @@ def check_10(rep: Report, page_css: str, library_css: str) -> None:
     """
     print("\n10  the reader's own settings")
 
-    for label, css in (("landing page", page_css), ("library", library_css)):
+    for label, css in (("landing page", page_css), ("library", library_css),
+                       ("not-found page", notfound_css)):
         got = media_block(css, r"print")
         if not got:
             rep.fail(f"{label} print block",
@@ -944,13 +946,14 @@ def check_10(rep: Report, page_css: str, library_css: str) -> None:
     # are a component's internals rather than the paper's ink: `.win`'s `--rule`
     # is #E4E6E9 in both themes, so counting it here reported a 1.25:1 rule.
     printed = ""
-    for css in (page_css, library_css):
+    for css in (page_css, library_css, notfound_css):
         block = media_block(css, r"print")
         m = re.search(r":root[^{]*\{([^}]*)\}", block)
         printed += (m.group(1) if m else "")
     inks = re.findall(r"(--[a-z0-9-]+)\s*:\s*(#[0-9A-Fa-f]{6})\s*;", printed)
     text_tokens = {t for t, _v in inks if t in
-                   ("--ink", "--mist", "--cite-ink", "--field-ink", "--field-ink-2")}
+                   ("--ink", "--ink-2", "--mist", "--cite-ink", "--azure",
+                    "--field-ink", "--field-ink-2")}
     rule_tokens = {t for t, _v in inks if t in ("--hairline", "--rule", "--field-rule")}
     worst_text, worst_rule = 21.0, 21.0
     for token, value in inks:
@@ -972,6 +975,123 @@ def check_10(rep: Report, page_css: str, library_css: str) -> None:
                      f"a rule token is {worst_rule:.2f}:1 on white paper, under 3")
         else:
             rep.ok("every printed rule is visible", f"worst {worst_rule:.2f}:1")
+
+
+# The three selectors that mean "the dark world" in these two files. Named
+# exactly, because a looser match reads the wrong blocks: the library's print
+# block declares a light world under a selector LIST that contains
+# `:root[data-theme="dark"]`, and counting that reported black ink as a dark
+# token the first time this was written.
+DARK_SELECTORS = (
+    ':root[data-theme="dark"]',
+    ':root:not([data-theme])',
+    ':root:not([data-theme="light"])',
+)
+
+
+def dark_world(css: str) -> dict[str, set[str]]:
+    """Every value a stylesheet gives each token in a dark world block.
+
+    A SET of values, not one value, and that is the whole point: both files say
+    the same thing twice, once under the media query that covers a reader with no
+    script and once under the attribute the head stamp writes, and a check that
+    read one block only would report a clean bill of health for a world where the
+    other had drifted. The first version of this did exactly that, and the
+    negative test that caught it is why the docstring names it.
+    """
+    out: dict[str, set[str]] = {}
+    for selector, body in re.findall(r"([^{}@]*?)\{([^{}]*)\}", css):
+        if " ".join(selector.split()) not in DARK_SELECTORS:
+            continue
+        for token, value in re.findall(
+                r"(--[a-z0-9-]+)\s*:\s*(#[0-9A-Fa-f]{6})\s*;", body):
+            out.setdefault(token, set()).add(value.lower())
+    return out
+
+
+def check_11(rep: Report, site: pathlib.Path, library_css: str) -> None:
+    """The not-found page, whose reader is the one visitor who is already lost.
+
+    The page used to answer a missing address with one link home, while 75 of the
+    site's 76 pages are in the library. Three promises are asserted here and none
+    of them can be read off a screenshot:
+
+    * **It ships no comment.** It is the artifact's only hand-authored page that
+      the assembler does not touch, so it was the only page still posting the
+      reasoning behind its own markup: 4.6 KB of it. build-site.py strips it on
+      the way in, and this reads the artifact rather than the tool, because a
+      strip that ran on the wrong file would look exactly like one that worked.
+    * **Its search needs no script.** The form's own action and method have to
+      reach /library/?q=, which is a path the directory has read since it grew
+      the find control. A page that only searched itself when its script ran
+      would be a 404 that helps nobody, on the browsers where help is least.
+    * **A lost reader still has somewhere to go with no script at all**, after
+      the form, so no suggestion has to have appeared for the page to work.
+
+    And one promise between two files: the dark world here is the library's dark
+    world. They are separate stylesheets on purpose (this page is one screen and
+    inlining the library's 48 KB for it would be the wrong kind of
+    consistency), which is exactly how two token blocks drift apart.
+    """
+    print("\n11  the page for a missing address")
+    path = site / "404.html"
+    if not path.is_file():
+        rep.fail("/404.html", "missing from the artifact")
+        return
+    page = path.read_text(encoding="utf-8")
+
+    if "/*" in page or "<!--" in page:
+        rep.fail("/404.html carries a comment",
+                 "the only hand-authored page the assembler does not touch, so "
+                 "its reasoning ships unless build-site.py strips it")
+    else:
+        rep.ok("/404.html ships with no comment in it")
+
+    open_tag = re.search(r"<form[^>]*>", page)
+    form = page[open_tag.start():(page.find("</form>", open_tag.start())
+                                  if open_tag else 0)] if open_tag else ""
+    missing = []
+    if not re.search(r'action\s*=\s*"/library/"', form, re.I):
+        missing.append('action="/library/"')
+    if not re.search(r'method\s*=\s*"get"', form, re.I):
+        missing.append('method="get"')
+    if not re.search(r'name\s*=\s*"q"', form, re.I):
+        missing.append('an input named "q"')
+    if missing:
+        rep.fail("the not-found page's search",
+                 "no " + ", no ".join(missing) + ". Without all three a reader "
+                 "whose script did not run types a query and lands nowhere")
+    else:
+        rep.ok("its search reaches the directory with no script")
+
+    after = page[page.find("</form>"):] if "</form>" in page else page
+    if re.search(r'href="/library/"', after):
+        rep.ok("a link into the library follows the search", "no script needed")
+    else:
+        rep.fail("the way on from a missing address",
+                 "nothing after the form links to /library/, so the only path out "
+                 "of the page assumes its script ran")
+
+    style = re.search(r"<style\b[^>]*>(.*?)</style>", page, re.S | re.I)
+    mine = dark_world(style.group(1) if style else "")
+    roles = {"--paper": "--canvas", "--field": "--subtle", "--ink": "--ink",
+             "--ink-2": "--mist", "--rule": "--hairline", "--azure": "--cite-ink"}
+    theirs = dark_world(library_css)
+    drifted = []
+    for token, their_token in roles.items():
+        declared, installed = mine.get(token, set()), theirs.get(their_token, set())
+        if declared and installed and declared - installed:
+            drifted.append(f"{token} {sorted(declared)} against the library's "
+                           f"{their_token} {sorted(installed)}")
+    if not mine:
+        rep.fail("the not-found page's dark world",
+                 "no dark tokens at all, so a dark reader gets a white page")
+    elif drifted:
+        rep.fail("the not-found page's dark world",
+                 "drifted from the library's: " + "; ".join(drifted))
+    else:
+        rep.ok("its dark world is the library's",
+               f"{len(roles)} roles, same values")
 
 
 def main(argv: list[str]) -> int:
@@ -1010,7 +1130,11 @@ def main(argv: list[str]) -> int:
     check_7(rep, page, css)
     check_8(rep, page)
     check_9(rep, site, docs)
-    check_10(rep, css, (site / "styles.css").read_text(encoding="utf-8"))
+    library_css = (site / "styles.css").read_text(encoding="utf-8")
+    notfound = re.search(r"<style\b[^>]*>(.*?)</style>",
+                         (site / "404.html").read_text(encoding="utf-8"), re.S | re.I)
+    check_10(rep, css, library_css, notfound.group(1) if notfound else "")
+    check_11(rep, site, library_css)
     check_newlines(rep, site)
 
     print()
@@ -1020,7 +1144,7 @@ def main(argv: list[str]) -> int:
         for f in rep.failures:
             print(f"  {f}", file=sys.stderr)
         return 1
-    print(f"links ok - {rep.checks} assertions, Stage 9 checks 4-10")
+    print(f"links ok - {rep.checks} assertions, Stage 9 checks 4-11")
     return 0
 
 
