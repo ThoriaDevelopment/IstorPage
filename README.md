@@ -133,6 +133,15 @@ The timer is the reliable mode. Freebuff does not currently expose a documented 
     python Source/tools/verify-copy.py     # the humanizer pass, and the release-claim rule
     python -m http.server --directory _site 8080
 
+Two generators write into the carried library, and both are idempotent and checkable, so a new page
+is one command each rather than 75 hand edits:
+
+    python Source/tools/make-library-index.py --check   # the directory at /library/, from the pages
+    python Source/tools/add-article-nav.py --check      # each article's previous/next pair
+
+`verify-links.py` asserts the second one's output as a walk through all 75 articles, so a page that
+never got its pair fails the gate rather than shipping as a dead end.
+
 CI runs the same three checks and fails on any of them. `Source/tools/budget.json` asserts the
 artifact's byte sizes exactly. When a number moves because the page changed, re-baseline it **by
 measurement**, in the same commit as the change that moved it, and never by transcribing a figure

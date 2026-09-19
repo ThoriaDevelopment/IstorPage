@@ -44,11 +44,22 @@ Standard library only — no `pip install` in CI.
 from __future__ import annotations
 
 import html as htmllib
+import importlib.util
 import pathlib
 import re
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+
+# The library index generator, loaded the same way build-site.py loads it: a
+# hyphenated filename cannot be imported by name. The continue-reading walk is
+# asserted against the same GROUPS rule that built the directory, so the two
+# cannot disagree about where an article's neighbours are.
+_spec = importlib.util.spec_from_file_location(
+    "make_library_index", HERE / "make-library-index.py")
+assert _spec and _spec.loader
+make_library_index = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(make_library_index)
 
 # ---------------------------------------------------------------- expectations
 # A library page is a directory at the artifact root holding an index.html.
@@ -66,7 +77,7 @@ LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
-LIBRARY_STYLES_BYTES = 41922
+LIBRARY_STYLES_BYTES = 43557
 ARTIFACT_FILES = 156                  # 138 + the four phone crops' 16 files + the library index
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
 
@@ -721,6 +732,50 @@ def check_9(rep: Report, site: pathlib.Path,
             rep.fail("self-canonical", f"and {len(lost) - 10} more")
     else:
         rep.ok(f"{len(pages)} self-canonicals intact")
+
+    # The continue-reading pair, asserted as a WALK rather than sampled.
+    #
+    # Every carried article ends with a next and a previous link, written into it
+    # by add-article-nav.py from the index generator's own grouping. Checking one
+    # page's pair would pass while the chain had a hole in it, and a chain with a
+    # hole is worse than no chain: a reader follows it and stops in the middle of
+    # a library that claims seventy-five pages. So the walk is followed from the
+    # one page that has no previous, and it has to reach every carried page
+    # exactly once; then the same walk is followed backwards from the end. Two
+    # directions because a broken prev is invisible to a next-only walk.
+    step: dict[str, tuple[str | None, str | None]] = {}
+    for d in pages:
+        text = docs.get(d / "index.html", "")
+
+        def href(rel: str, text: str = text) -> str | None:
+            m = re.search(r'<a[^>]+href="/([^"/]+)/"[^>]*rel="%s"' % rel, text)
+            return m.group(1) if m else None
+
+        step[d.name] = (href("next"), href("prev"))
+
+    starts = sorted(s for s, (_n, prev) in step.items() if prev is None)
+    forward, cur = [], (starts[0] if len(starts) == 1 else None)
+    while cur and cur not in forward:
+        forward.append(cur)
+        cur = step.get(cur, (None, None))[0]
+    backward, cur = [], (forward[-1] if forward else None)
+    while cur and cur not in backward:
+        backward.append(cur)
+        cur = step.get(cur, (None, None))[1]
+
+    if (len(starts) != 1 or sorted(forward) != sorted(step)
+            or sorted(backward) != sorted(step) or forward != backward[::-1]):
+        rep.fail("the continue-reading walk",
+                 f"{len(starts)} page(s) start the walk (one should), forwards "
+                 f"reached {len(forward)} of {len(step)}, backwards reached "
+                 f"{len(backward)}. Run Source/tools/add-article-nav.py.")
+    else:
+        crossing = sum(1 for i in range(1, len(forward))
+                       if make_library_index.group_of(forward[i]) !=
+                       make_library_index.group_of(forward[i - 1]))
+        rep.ok(f"one walk through {len(forward)} articles",
+               f"every page reached exactly once, both ways, {crossing} group "
+               f"crossings")
 
     dash_pages = []
     for path, text in docs.items():

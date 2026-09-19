@@ -1490,6 +1490,45 @@ a { color: inherit; }
 .page a { color: var(--cite-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 .page a:hover { text-decoration-thickness: 2px; }
 
+/* ── continue reading ──────────────────────────────────────────
+   The pair at the foot of every carried page, written by
+   tools/add-article-nav.py from the index generator's own grouping. It uses the
+   library's own tokens: --hairline for the rule that separates it from the
+   article, --mist for the small line that says which group the neighbour is in,
+   and the page's link colour for the title, because the title is a link. Two
+   classes and a .page prefix, for the same reason the index's rules now carry
+   one: `.page a` and `.page p, .page li` are one class plus a type, and a single
+   class loses to them. Every rule in this block was checked in a browser rather
+   than reasoned about, which is the lesson the index taught the hard way. */
+.page .page-next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2.5rem;
+  justify-content: space-between;
+  margin: 3.5rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline);
+}
+.page .page-next-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 24rem;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  line-height: 1.3;
+}
+/* The next page sits on the right, the way a reader's thumb expects it. On one
+   link the pair collapses to whichever side has something in it. */
+.page .page-next-link.is-next { margin-left: auto; text-align: right; align-items: flex-end; }
+.page .page-next-where {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
 /* the side-by-side table on the comparison page; the wrap keeps a
    320px viewport from being pushed sideways by the min-content width */
 .table-wrap { overflow-x: auto; }

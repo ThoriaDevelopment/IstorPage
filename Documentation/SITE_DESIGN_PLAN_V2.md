@@ -334,6 +334,32 @@ own hover: 5.36:1 and 5.14:1 on the light grounds, 7.70:1 and 7.17:1 on the dark
 browser rather than argued: a click on a machine set to dark stores `light`, and the next library
 page arrives light.
 
+### 3.6 Continue reading
+
+Seventy-five articles, a generated directory, and until now nothing joining one article to the next:
+a reader who arrived at "What is a local LLM?" from a search result finished it and met a footer of
+six site-wide links. The library is the site's substance and every page in it was a dead end, which
+is the one navigational thing every documentation library a reader has used gets right.
+
+Every carried page now ends with a **previous** and a **next** neighbour, written by
+`Source/tools/add-article-nav.py`, which imports `make-library-index.py`'s own `GROUPS` rule: the
+walk a reader can take **is** the order the directory shows, and a page added tomorrow joins it by
+matching a slug prefix like every other page. The walk is continuous across groups, and the small
+uppercase line above each title names the group the neighbour is in, so crossing from the vocabulary
+pages into the how-it-works pages is announced rather than silent. Two links at most; the first and
+last page of the walk carry one each.
+
+The pair is **written into `OldVersion/`, not injected by the build**, because `copy_library` is
+documented as zero rewrites and that is worth keeping: the library is carried, not re-rendered, so
+what a reader gets is the file a reviewer read. `rel="next"` and `rel="prev"` carry the same
+relationship to a machine that the two links carry to an eye.
+
+It costs **~431 B per page, 32,328 B across the library**, and it is asserted as a **walk** rather
+than sampled: `verify-links.py` follows the links from the one page with no previous, requires that
+they reach all 75 exactly once, and then follows them backwards from the end, because a broken
+`prev` is invisible to a next-only check. Removing one pair makes that assertion fail with the
+instruction to re-run the tool. That assertion is 1 of the 44 the link gate now carries.
+
 ---
 
 ## §4 · Colour
