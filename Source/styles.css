@@ -729,6 +729,25 @@ h3 {
 .field .cta:hover, .poster .cta:hover { background: var(--azure-lift-hi); }
 .nav .cta { margin-inline-start: 8px; }
 
+/* The progress line is a quiet orientation cue, not a second navigation system.
+   It lives under the sticky nav so the page's long, evidence-led shape stays
+   legible without adding a floating widget. */
+.reading-progress {
+  position: absolute;
+  inset: auto 0 -1px;
+  height: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.reading-progress > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--azure);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
 /* ---------------------------------------------------------------------------
    10 · The hero.  C1, and the only place the display size is spent.
    --------------------------------------------------------------------------- */
@@ -737,6 +756,30 @@ h3 {
 .hero h1 { max-width: 16ch; }
 .hero .lede { max-width: 52ch; margin-block-start: 22px; }
 .hero .cta { margin-block-start: 32px; }
+.scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-block-start: 24px;
+  color: var(--field-ink-2);
+  font-size: var(--t-sm);
+  text-decoration: none;
+}
+.scroll-cue:hover { color: var(--field-ink); }
+.scroll-cue span {
+  width: 8px;
+  height: 8px;
+  border-inline-end: 1px solid currentColor;
+  border-block-end: 1px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+@media (min-width: 1081px) {
+  .hero .scroll-cue {
+    display: inline-flex;
+    visibility: visible;
+    opacity: 1;
+  }
+}
 .hero .win {
   width: min(var(--win-lg), 100%);
   margin-block-start: 64px;
@@ -761,6 +804,65 @@ h3 {
   color: var(--ink);
 }
 .evidence dd { margin: 12px 0 0; font-size: var(--t-sm); color: var(--ink-2); text-wrap: pretty; }
+
+/* A small piece of data sculpture gives the evidence section a focal point.
+   It turns the disputed count into a relationship the reader can see, without
+   pretending that a visual estimate is a new measurement. */
+.confidence-ruler {
+  max-width: 760px;
+  margin: 56px auto 0;
+  padding: 24px 0 0;
+  border-block-start: 1px solid var(--rule);
+}
+.ruler-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: var(--t-sm);
+}
+.ruler-head strong { font-weight: 600; }
+.ruler-head span { color: var(--ink-3); white-space: nowrap; }
+.ruler-track {
+  position: relative;
+  height: 12px;
+  margin-block-start: 20px;
+  border-radius: var(--r-pill);
+  background: var(--rule);
+}
+.ruler-fill {
+  display: block;
+  width: 15%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--azure);
+}
+.ruler-point {
+  position: absolute;
+  top: 50%;
+  left: 15%;
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--paper);
+  border-radius: 50%;
+  background: var(--azure);
+  box-shadow: 0 0 0 1px var(--azure);
+  transform: translate(-50%, -50%);
+}
+.ruler-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-block-start: 10px;
+  color: var(--ink-2);
+  font-family: var(--serif);
+  font-size: 22px;
+}
+.confidence-ruler figcaption {
+  max-width: 52ch;
+  margin-block-start: 16px;
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+  text-wrap: pretty;
+}
 
 /* ---------------------------------------------------------------------------
    12 · The questions.  A real accordion, on <details>.
@@ -884,6 +986,34 @@ h3 {
 
 .plate { position: relative; padding-block: 32px 20px; }
 .plate > svg { display: block; width: 118%; max-width: none; height: auto; margin-inline: -9%; }
+/* The clearance above the copy is MEASURED, and it is proportional on purpose.
+
+   150px was a fixed number against a proportional drawing, and that is a
+   collision waiting for a viewport to happen on. At 1440 the svg is 1463px
+   wide and its `355` label ends 167px below the svg's top edge, so the label's
+   box ran from 160px to 199px while the copy started at 150px: 28.1 x 57.8px of
+   overlap on the heading, measured in the DOM. Nothing about it was visible at
+   the width it was built at and it grew with every wider window.
+
+   The two terms are the two things being cleared, and neither is a taste call:
+
+     13.5%   where the label's box lands, as a share of the plate's own width.
+             The svg is 118% of the plate and the label ends at 0.1141 of the
+             svg's width (viewBox y 68 of 594, from the label's 13px line box
+             centred on y 61), so 1.18 x 0.1141 = 0.1347 of the plate's width.
+             A percentage padding on an absolutely positioned child resolves
+             against the containing block's width, which is the plate's, so
+             this term tracks the drawing exactly at every viewport.
+     56px    the plate's own 32px top padding, which the inner's `inset: 0`
+             spans because it is measured from the padding box, plus 24px of
+             actual air between the label's box and the heading's box. The 24
+             is the one number here that is a judgement: two line boxes stacked
+             closer than that read as one crowded block even when the glyphs
+             themselves have not touched.
+
+   Under 1080px neither term applies: that breakpoint sets this element and the
+   svg to `position: static`, so the copy sits above the arc in flow and there
+   is no label to clear. */
 .plate-inner {
   position: absolute;
   inset: 0;
@@ -892,7 +1022,7 @@ h3 {
   justify-content: flex-start;
   max-width: 430px;
   margin-inline: auto;
-  padding-block-start: 150px;
+  padding-block-start: calc(13.5% + 56px);
   text-align: center;
 }
 .plate-inner > * { margin-block: 0; }
@@ -970,6 +1100,10 @@ h3 {
   .witness { transition: opacity 180ms var(--ease), visibility 180ms; }
   .qa summary::after { transition: transform 200ms var(--ease); }
   .poster-mark { transition: color 700ms var(--ease); }
+  .reading-progress > span { transition: transform 120ms linear; }
+  .scroll-cue { transition: color 160ms var(--ease); }
+  .scroll-cue span { transition: transform 160ms var(--ease); }
+  .scroll-cue:hover span { transform: translateY(1px) rotate(45deg); }
 
   /* M2 · The hero sequence, performed once, in the order the product works:
      question -> thinking -> answer -> citations. It RESTS; it does not loop.
@@ -1010,6 +1144,24 @@ h3 {
   .reveal.is-cold .exhibit img {
     opacity: 0;
     transform: translateY(24px) scale(0.97);
+  }
+
+  /* The evidence ruler draws its estimate after the numbers arrive. The
+     authored state remains complete when motion is unavailable. */
+  .confidence-ruler .ruler-fill {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 700ms var(--ease);
+  }
+  .confidence-ruler .ruler-point {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+    transition: opacity 280ms var(--ease), transform 700ms var(--ease);
+  }
+  .confidence-ruler:not(.is-cold) .ruler-fill { transform: scaleX(1); }
+  .confidence-ruler:not(.is-cold) .ruler-point {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 
   /* M5 · The numbers. The content genuinely is a sequence, so a stagger is
@@ -1089,6 +1241,9 @@ h3 {
 
   .evidence { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; }
   .evidence dt { font-size: 38px; }
+  .confidence-ruler { margin-block-start: 40px; }
+  .ruler-head { display: block; }
+  .ruler-head span { display: block; margin-block-start: 6px; }
 
   /* C3 stops being a pair. Two windows at their natural 400px would shrink to
      ~150px each and take their text with them — the same legibility failure the
@@ -1114,6 +1269,20 @@ h3 {
   .plate figcaption { margin-block-start: 16px; }
 
   .nav-links { display: none; }
+
+  /* Keep the reference-style section nav on compact desktop widths. The
+     content columns still stack here, but the header has enough room for a
+     quieter, useful wayfinding row. Phones keep the single-action header. */
+  @media (min-width: 900px) {
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      margin-inline-start: auto;
+      font-size: 13px;
+    }
+    .nav .wrap { gap: 16px; }
+    .nav .cta { margin-inline-start: 0; padding-inline: 14px; }
+  }
 
   .poster { padding-block-start: 80px; }
   .poster .win { width: 92%; margin-block-start: -32px; }

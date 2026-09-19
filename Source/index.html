@@ -41,6 +41,7 @@
       <a href="#questions">Questions</a>
     </div>
     <a class="cta" href="https://github.com/ThoriaDevelopment/Istor">Follow the build</a>
+    <span class="reading-progress" aria-hidden="true"><span></span></span>
   </div>
 </nav>
 
@@ -62,6 +63,7 @@
       documents you give it, answers from them, and shows you the passage behind every
       claim, and it says so when it cannot.</p>
     <a class="cta" href="https://github.com/ThoriaDevelopment/Istor">Follow the build</a>
+    <a class="scroll-cue" href="#the-evidence"><span aria-hidden="true"></span>See the evidence</a>
 
     <div class="win">
       <div class="win-bar">
@@ -465,6 +467,19 @@
       </div>
     </dl>
 
+    <figure class="confidence-ruler reveal">
+      <div class="ruler-head">
+        <strong>One answer, two live possibilities.</strong>
+        <span>354 to 355 holes</span>
+      </div>
+      <div class="ruler-track" role="img" aria-label="The app's fitted estimate of 354.08 sits close to 354, while 355 remains possible.">
+        <span class="ruler-fill"></span>
+        <span class="ruler-point" aria-hidden="true"></span>
+      </div>
+      <div class="ruler-labels" aria-hidden="true"><span>354</span><span>355</span></div>
+      <figcaption>The app reports 354.08 at 68 percent confidence. It keeps 355 visible instead of rounding uncertainty away.</figcaption>
+    </figure>
+
     <div class="reveal" style="margin-block-start: 56px">
       <figure class="exhibit" style="width: min(600px, 100%); margin-inline: auto">
         <picture>
@@ -494,7 +509,7 @@
     <h2 style="margin-block-end: 32px">Questions</h2>
 
     <div class="qa">
-      <details>
+      <details name="questions" open>
         <summary>Does anything leave my computer?</summary>
         <div class="qa-body">
           <p>No. The model, the search and the reading all run on your machine. Web research is off
@@ -503,7 +518,7 @@
         </div>
       </details>
 
-      <details>
+      <details name="questions">
         <summary>What hardware do I need?</summary>
         <div class="qa-body">
           <p>It depends on the model you choose, which is why we do not print a number. A small model
@@ -513,7 +528,7 @@
         </div>
       </details>
 
-      <details>
+      <details name="questions">
         <summary>Which models can it use?</summary>
         <div class="qa-body">
           <p>A small model running on your own graphics card, and you choose which. Istor needs
@@ -522,7 +537,7 @@
         </div>
       </details>
 
-      <details>
+      <details name="questions">
         <summary>Does it work with no internet at all?</summary>
         <div class="qa-body">
           <p>Yes, and that is the case it is built for. If the documents in your library already
@@ -531,7 +546,7 @@
         </div>
       </details>
 
-      <details>
+      <details name="questions">
         <summary>Is it open source?</summary>
         <div class="qa-body">
           <p>Not yet. The repository is public and empty. It is where the code lands, and it has
@@ -542,7 +557,7 @@
         </div>
       </details>
 
-      <details>
+      <details name="questions">
         <summary>When does it come out?</summary>
         <div class="qa-body">
           <p>Windows first, with Linux and macOS after. There is no date we are ready to put on it.
@@ -550,7 +565,7 @@
         </div>
       </details>
 
-      <details>
+      <details name="questions">
         <summary>Who builds it?</summary>
         <div class="qa-body">
           <p>Thoria builds Istor. You can find them at <a href="https://thoria.fyi">thoria.fyi</a>.</p>
@@ -657,8 +672,14 @@
   // M1 · the nav's hairline.
   var nav = document.getElementById('nav');
   if (nav) {
+    var progress = nav.querySelector('.reading-progress > span');
     var onScroll = function () {
       nav.classList.toggle('is-stuck', window.scrollY > 8);
+      if (progress) {
+        var pageHeight = document.documentElement.scrollHeight - window.innerHeight;
+        var ratio = pageHeight > 0 ? Math.min(1, window.scrollY / pageHeight) : 0;
+        progress.style.transform = 'scaleX(' + ratio + ')';
+      }
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });

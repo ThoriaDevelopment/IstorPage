@@ -148,13 +148,21 @@ def strip_html_comments(text: str) -> str:
 
 
 def rendered_text(page: str) -> str:
-    """The page with its comments gone — what a font could actually be asked for.
+    """The page with its comments gone, what a font could actually be asked for.
 
     Comments are stripped and the `<style>` block is KEPT, because CSS reaches
     the screen through `content:` as surely as markup does: the `.pipe` arrows
     on this page exist only as `content: "→"`. Check 7 counts those.
     """
     return strip_css_comments(strip_html_comments(page))
+
+
+def visible_text(page: str) -> str:
+    """Return visitor-facing HTML text, excluding code, styles and comments."""
+    text = re.sub(r"<script\b.*?</script>", "", page, flags=re.S | re.I)
+    text = re.sub(r"<style\b.*?</style>", "", text, flags=re.S | re.I)
+    text = strip_html_comments(text)
+    return re.sub(r"<[^>]+>", " ", text)
 
 
 # ------------------------------------------------------------------ css parsing
@@ -595,6 +603,13 @@ def check_7(rep: Report, page: str, css: str) -> None:
     print("\n7  codepoints")
     declared = declared_codepoints(css)
     rendered = rendered_text(page)
+    visible = visible_text(page)
+    punctuation = sorted({c for c in visible if c in "—–"})
+    if punctuation:
+        rep.fail("visible dash punctuation", ", ".join(repr(c) for c in punctuation) +
+                 " appears in visitor-facing text; use a comma, colon or full stop")
+    else:
+        rep.ok("visible copy has no em or en dash")
     seen = sorted({ord(c) for c in rendered if ord(c) > 127})
     out_of_range = [c for c in seen if c not in declared and c not in FALLS_THROUGH]
 
@@ -672,6 +687,22 @@ def check_9(rep: Report, site: pathlib.Path,
             rep.fail("self-canonical", f"and {len(lost) - 10} more")
     else:
         rep.ok(f"{len(pages)} self-canonicals intact")
+
+    dash_pages = []
+    for path, text in docs.items():
+        if path.suffix.lower() not in (".html", ".htm"):
+            continue
+        punctuation = sorted({c for c in visible_text(text) if c in "—–"})
+        if punctuation:
+            dash_pages.append(f"/{path.relative_to(site).as_posix()}: " +
+                              ", ".join(repr(c) for c in punctuation))
+    if dash_pages:
+        for item in dash_pages[:10]:
+            rep.fail("visible dash punctuation", item)
+        if len(dash_pages) > 10:
+            rep.fail("visible dash punctuation", f"and {len(dash_pages) - 10} more pages")
+    else:
+        rep.ok("all published HTML copy has no em or en dash")
 
     for brand in ("brand/istor-page.svg", "brand/og-card.png"):
         if (site / brand).is_file():
