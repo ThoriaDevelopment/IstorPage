@@ -149,6 +149,18 @@ production: serve `_site/` with a handler that falls back to `/404.html` and a 4
 the reader wanted, and through the fallback that path is a real missing address rather than the
 file's own name.
 
+`verify-links.py` also holds the landing page's **rhythm**, which is the one assertion in it about the
+design rather than about the bytes. The plan's §2 claims the page alternates its compositions
+deliberately, and the report ranks alternation #12, so the gate reads the built markup and asserts the
+two things that make the claim true: the acts that pair text with a field keep alternating the side
+the field sits on (four of them, right/left/right/left), and no more than five consecutive acts share
+one ground. It prints the ground sequence on every run — `DPPPPPDPPPPD`, runs of five and four, four
+changes, which is more ground changes than four of the five references manage. Both halves fail
+correctly when broken: taking the dark band off act 7 reports `10 acts in a row on one ground`, and
+un-mirroring one split reports `sides [0, 0, 0, 1]`. It exists because the drift it now catches had
+already happened: §2 said "Eleven acts" and listed ten while the page shipped twelve, and nothing
+noticed, because the gate counted sections against a floor of ten.
+
 Both halves of the site carry a print block and honour `prefers-contrast: more`, and both promises
 are asserted rather than trusted: `verify-links.py` requires the blocks to exist, computes every ink
 the print token world declares against white paper, and fails if any of them is under AA. That check

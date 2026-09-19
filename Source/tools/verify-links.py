@@ -428,13 +428,75 @@ def check_5(rep: Report, page: str) -> None:
     body = strip_html_comments(page)
 
     # ---- the composition gate (§3, §2) ------------------------------------
-    sections = re.findall(r"<section\b[^>]*>", body, re.I)
-    if len(sections) < 10:
-        rep.fail("section count", f"{len(sections)} <section> elements — §2's "
-                                  f"architecture has twelve acts, and a page that "
-                                  f"has collapsed back to a handful is v1 again")
+    acts = re.split(r"(?=<section\b)", body, flags=re.I)[1:]
+    if len(acts) != 12:
+        rep.fail("section count", f"{len(acts)} <section> elements — §2's architecture "
+                                  f"has twelve acts, and a page that has collapsed back "
+                                  f"to a handful is v1 again. An act added or removed is "
+                                  f"§2's table's edit to make, in the same commit, which "
+                                  f"is why this is exact rather than a floor")
     else:
-        rep.ok(f"{len(sections)} sections", "§2's acts are present")
+        rep.ok("12 sections", "§2's acts are present")
+
+    # ---- the rhythm gate (§2, report #12) ---------------------------------
+    # §2 opens by claiming the page alternates its compositions deliberately, and
+    # the report ranks alternation #12 — its example is Gemini Notebook, called the
+    # least memorable of the five "despite having the best single element".
+    #
+    # Nothing measured that claim until this block. What it cost is worth stating:
+    # the gate counted sections while §2's table listed ten acts under a prose line
+    # that said eleven, and the page had twelve. Every assertion was green and the
+    # one document that describes the design described a different page. A claim
+    # about a reader is not a claim about markup, but these two are read off the
+    # built markup and are what makes the claim true:
+    #
+    #   * **The paired acts alternate side.** That is C2's entire contribution. Two
+    #     in a row on the same side is the zig-zag collapsing into a column.
+    #   * **No more than five consecutive acts share one ground.** The page measures
+    #     D P P P P P D P P P P D — runs of five and four. The report's rule is
+    #     "every third changes the ground or accent", and five is where this page
+    #     lands, so five is the number asserted: the failure is a SIXTH paper act in
+    #     a row, which is the run length the page's own evidence says reads as a
+    #     list. Asserting three would fail a page that already works.
+    ground, flips = [], []
+    for chunk in acts:
+        tag = re.search(r"<section\b[^>]*>", chunk, re.I)
+        attr = ""
+        if tag:
+            cls = re.search(r"""\bclass\s*=\s*["']([^"']*)["']""", tag.group(0), re.I)
+            attr = cls.group(1) if cls else ""
+        ground.append("D" if re.search(r"\b(field|poster)\b", attr) else "P")
+        if re.search(r"""\bclass\s*=\s*["'][^"']*\bsplit\b[^"']*["']""", chunk, re.I):
+            flips.append(bool(re.search(
+                r"""\bclass\s*=\s*["'][^"']*\bsplit\b[^"']*\bis-flip\b""", chunk, re.I)))
+    sequence = "".join(ground)
+
+    runs, cur = [], 1
+    for i in range(1, len(ground)):
+        if ground[i] == ground[i - 1]:
+            cur += 1
+        else:
+            runs.append(cur)
+            cur = 1
+    runs.append(cur)
+    longest = max(runs)
+    if longest > 5:
+        rep.fail("ground rhythm", f"{longest} acts in a row on one ground ({sequence}) — "
+                                   f"§2's page has never run longer than five, and a "
+                                   f"longer run is the page reading as a list")
+    else:
+        rep.ok("ground rhythm", f"{sequence} — longest run {longest}, alternates "
+                                 f"{len(runs) - 1} times")
+
+    same_side = [i for i in range(1, len(flips)) if flips[i] == flips[i - 1]]
+    if len(flips) < 4 or same_side:
+        rep.fail("C2 alternates side", f"{len(flips)} paired acts, sides "
+                                       f"{[int(f) for f in flips]}"
+                                       + (f", same side at {same_side}" if same_side else "")
+                                       + " — §3's C2 is a zig-zag or it is a column")
+    else:
+        rep.ok("C2 alternates side", f"{len(flips)} paired acts, sides "
+                                     f"{[int(f) for f in flips]}")
 
     # The five compositions are C1 field-full, C2 split, C3 pair, C4 band,
     # C5 poster. A page using one of them everywhere is a document; the whole

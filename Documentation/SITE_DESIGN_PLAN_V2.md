@@ -105,26 +105,61 @@ can do that better than a video: the product moving on the page, with no player 
 
 ## §2 · Section architecture
 
-Eleven acts, ≈11–13 viewports. The genre runs 7–16. Every headline is 3–7 words; every body
-paragraph is 2–4 lines (genre rule, no exceptions across five sites).
+**Twelve acts in `<main>`**, ≈14 viewports, plus the sticky nav. The genre runs 7–16. Every headline is
+3–7 words; every body paragraph is 2–4 lines (genre rule, no exceptions across five sites).
 
 Compositions are named **C1–C5** and defined in §3. The page alternates them deliberately — the
 report ranks alternation **#12**, and notes that Gemini Notebook, competent and entirely
 non-alternating, *"is the least memorable of the five despite having the best single element."*
 
+This table is **measured from the built page, and `verify-links.py` now asserts it.** It said
+"Eleven acts" and enumerated ten while the page shipped twelve, and nothing noticed: the gate counted
+sections against a floor of ten, so the one document describing the design described a different
+page and every assertion stayed green. The rhythm it describes is asserted too — the grounds below
+are the sequence `DPPPPPDPPPPD`, whose longest run is five, and the paired acts must keep alternating
+the side the field sits on.
+
 | # | Act | Composition | Ground | Product shown |
 |---|---|---|---|---|
-| 1 | Nav — sticky | — | paper | — |
-| 2 | **Hero** — "It shows you what it saw." | **C1** field-full | teal | DOM replica, **animated** |
-| 3 | **The gate** — "It checks what you gave it." | **C2** split, field right | paper + teal | `exhibit-10` |
-| 4 | **The passage** — "Every claim points at a passage." | **C4** band | teal | `exhibit-11`, interactive |
-| 5 | **The reading** — "You can watch it decide." | **C2** split, field left | paper + teal | `exhibit-12` |
-| 6 | **The dispute** — "It keeps the disagreements." | **C2** split, field right, portrait | paper + teal | `exhibit-13` |
-| 7 | **The machine** — "Nothing leaves your machine." | **C3** diptych | paper | `exhibit-14` + `exhibit-15` |
-| 8 | **The workspace** — "A library, notes, and the source." | three-up | paper | icons, not images |
-| 9 | **The evidence** — "The numbers it reasoned to." | band | paper | — (§9) |
+| — | Nav — sticky | — | paper | — |
+| 1 | **Hero** — "It shows you what it saw." | **C1** field-full | teal | DOM replica, **animated** |
+| 2 | **The gate** — "It checks what you already gave it." | **C2** split, field right | paper + teal | `exhibit-10` |
+| 3 | **The passage** — "Every claim points at a passage." | **C2** split, field left | paper + teal | `exhibit-11`, interactive |
+| 4 | **The reading** — "You can watch it decide." | **C2** split, field right | paper + teal | `exhibit-12` |
+| 5 | **The dispute** — "It marks what nobody knows yet." | **C2** split, field left | paper + teal | `exhibit-13` |
+| 6 | **The machine** — "On your machine." | **C3** diptych | paper | `exhibit-14` + `exhibit-15` |
+| 7 | **The workspace** — "The library is the interface." | **C4** band | teal | `exhibit-16` + `exhibit-17` |
+| 8 | **The stop** — "Where it stops." | band, full-bleed | paper | the ring plate, generated |
+| 9 | **The evidence** — "What it did, and how well." | band | paper | `exhibit-18` (`exhibit-18-numbers`) |
 | 10 | **Questions** — accordion | two-column | paper | — |
-| 11 | **The name** — "It is not finished." | **C5** poster | teal | `exhibit-16`, occluding |
+| 11 | **The name** — the word ἵστωρ, at display size | **C5**, tight | paper | — |
+| 12 | **The close** — "Istor is not finished." | **C5** poster | teal | the wordmark, occluding |
+
+Four of the twelve are C2, and they are acts 2–5: field right, left, right, left. That is the
+zig-zag the report's #12 is about, and it is why the four paired acts are the page's first half.
+The second half has no field to flip, and carries its rhythm with the measure instead — the band at
+act 7, the full bleed at act 8, the ring's line-art against two screenshots. The grounds change four
+times, which is more than four of the five references manage: Breezy is one flat blue throughout,
+Tempo is black throughout, Freebuff is black with photographic bookends, and Gemini Notebook is white
+throughout and is called the least memorable of the five for it.
+
+### 2.0 Read the table, not the subsections, where they disagree
+
+§2.1 to §2.11 below were written against the pre-rebuild act order and have NOT been re-verified
+against the built page; the table above has, and `verify-links.py` asserts it. Named here so the
+drift is a checklist rather than a trap. Each line was measured, and each is a subsection that now
+describes a different act:
+
+  * their act NUMBERS are one behind from §2.3 onward, because the ring act ("Where it stops.") was
+    added and nothing renumbered the prose;
+  * **§2.4 "The passage — C4 band"** – the built act 3 is **C2**, split, field left. The band in this
+    page is act 7;
+  * **§2.6 "The dispute — C2, portrait"** – the built act 5 is C2, split, field left, and its
+    headline is "It marks what nobody knows yet." The portrait window the subsection describes is on
+    the hero's replica, not here;
+  * **§2.8 "The workspace — three-up"** – the built act 7 is **C4**, the `field band`, teal. The
+    three-up with icons is not on the page;
+  * and there is no subsection at all for act 8, the ring.
 
 ### 2.1 Nav — sticky
 
@@ -137,8 +172,10 @@ non-alternating, *"is the least memorable of the five despite having the best si
 
 Four of five references are sticky; each gains a 1px hairline once scrolled. Breezy skips it and,
 the report notes, *"reads more like a brochure than an app as a result."* Height ≈68px. Links are
-anchor links into acts 4, 7 and 10 — the page's only real navigation, replacing v1's arrangement
-where the only nav was painted *inside a screenshot*.
+anchor links into the built acts 2, 6 and 10 — "How it answers", "On your machine" and "Questions" —
+the page's only real navigation, replacing v1's arrangement where the only nav was painted *inside a
+screenshot*. (This said "acts 4, 7 and 10" until the numbers were measured; the anchors themselves
+have not moved, only the numbering around them.)
 
 ### 2.2 Hero — C1
 
