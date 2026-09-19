@@ -1621,6 +1621,68 @@ a { color: inherit; }
    summaries below, so the field reads as part of the list rather than as a
    widget from somewhere else. The placeholder takes the same ink, and its
    opacity is set because Firefox dims a placeholder by default. */
+/* ── the index's two ways through itself ─────────────────────────
+   Seventy-five entries in seven groups, and the first group holds forty of them:
+   a reader who wants one of the later groups has to scroll past all of it. So the
+   page offers two moves a directory of this size needs and neither of them is a
+   new control. The jump row is a row of fragments, static markup with static
+   links, which is also why it needs no script to work; the group heading is
+   sticky inside its own section, so while a reader scrolls forty entries the name
+   of the group they are in stays at the top of the screen and leaves when the
+   group does. Neither is a rule about the reader's query: the script hides the
+   jump row while a filter is live, because a link to a group the filter has just
+   emptied is not navigation.
+
+   The chip boundary is --mist, not a hairline, for the reason the find field's
+   boundary is: WCAG's non-text rule asks 3:1 of a control's edge and this
+   stylesheet's hairlines are deliberately barely there.
+
+   The sticky heading carries its own ground, which is what makes it readable over
+   the entries sliding beneath it, and --canvas is that ground in both worlds. */
+.page-index .index-jump { margin: 0 0 2.5rem; }
+.page-index .index-jump[hidden] { display: none; }
+.page-index .index-jump p {
+  margin: 0 0 0.55rem;
+  color: var(--mist);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.page-index .index-jump ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.55rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.page-index .index-jump a {
+  display: inline-block;
+  padding: 0.32rem 0.65rem;
+  border: 1px solid var(--mist);
+  border-radius: 0.45rem;
+  color: var(--cite-ink);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.page-index .index-group h2 {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 1.5rem 0 0.7rem;
+  background: var(--canvas);
+  /* The rule is what makes the pinned heading read as a bar rather than as a
+     glitch. With an opaque ground and no edge, an entry scrolling under it is
+     cut through the middle of a line of text, which looks like a rendering
+     fault: the first version was screenshot rather than reasoned about, and that
+     is what it looked like. A hairline at the lower edge draws the boundary the
+     eye needs, and it is the same device the reference sites use to separate
+     black from black. */
+  border-bottom: 1px solid var(--hairline);
+}
+
 .page-index .index-find { margin: 0 0 2.5rem; }
 .page-index .index-find[hidden], .index-group[hidden] { display: none; }
 .page-index .index-find label {
@@ -1737,7 +1799,8 @@ a { color: inherit; }
   /* A sheet of paper cannot be typed into, so the directory's field does not print:
      the entry list, the headings and their counts are the whole of what a printed
      directory is for. The hint goes with it, since it describes a keystroke. */
-  .index-find { display: none; }
+  .index-find,
+  .index-jump { display: none; }
 
   /* A link whose only life was to be clicked has to say where it went. Internal
      links are left alone, and that is this site's own argument: seventy internal

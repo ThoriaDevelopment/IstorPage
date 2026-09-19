@@ -173,7 +173,11 @@ being large but by being separate.
 CI runs the same three checks and fails on any of them, and they are not only about links and bytes:
 the directory tells its reader that `/` focuses the find field and the arrow keys walk the matches,
 which is a promise about behaviour, so `verify-links.py` requires those three key names to appear in
-the page's own script. Break the walk and it fails with the sentence naming the unkept promise.
+the page's own script. Break the walk and it fails with the sentence naming the unkept promise. The
+directory's own 12th check does the same for its map: the jump row must name exactly the groups its
+headings name, it must be authored visible (it is the row a reader with no script gets), the pinned
+group heading must declare a ground, and the row must not print. Four claims, three of them across
+two files or in no file at all, and each was shown failing before it was trusted.
 `Source/tools/budget.json` asserts the artifact's byte sizes exactly. When a number moves because the
 page changed, re-baseline it **by measurement**, in the same commit as the change that moved it, and
 never by transcribing a figure from another document.

@@ -77,7 +77,7 @@ LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
-LIBRARY_STYLES_BYTES = 48415
+LIBRARY_STYLES_BYTES = 50980
 ARTIFACT_FILES = 156                  # 138 + the four phone crops' 16 files + the library index
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
 
@@ -1094,6 +1094,72 @@ def check_11(rep: Report, site: pathlib.Path, library_css: str) -> None:
                f"{len(roles)} roles, same values")
 
 
+def check_12(rep: Report, site: pathlib.Path, library_css: str) -> None:
+    """The directory's two ways between its seventy-five entries.
+
+    Forty of them are one group, so the page offers a jump row and a heading that
+    pins while its own group is on screen. Three of those four claims are in two
+    different files and one of them cannot be seen at all:
+
+    * The jump row names every group its own headings name, and nothing else. The
+      two lists are built from one another by the generator, which is exactly the
+      kind of coupling that survives a refactor in one of them and not the other.
+    * The row is authored VISIBLE. It is static markup with static links, so a
+      reader whose script never ran still gets a way between groups, and the way
+      this fails is somebody adding `hidden` beside the find field's own.
+    * The pinned heading declares a ground. A sticky heading with a transparent
+      background is unreadable the moment an entry scrolls under it, and nothing
+      about the source says so: the declaration is the whole promise.
+    * The row does not print. It is navigation for a screen, and the library's
+      print block is where a page's furniture is already listed.
+    """
+    print("\n12  the directory's ways between its groups")
+    page = site / "library" / "index.html"
+    if not page.is_file():
+        rep.fail("/library/index.html", "missing from the artifact")
+        return
+    html = page.read_text(encoding="utf-8")
+
+    ids = set(re.findall(r'<section class="index-group" id="([^"]+)"', html))
+    nav = re.search(r'(<nav class="index-jump"[^>]*>)(.*?)</nav>', html, re.S)
+    hrefs = set(re.findall(r'href="#([^"]+)"', nav.group(2))) if nav else set()
+    if not nav:
+        rep.fail("the directory's jump row",
+                 "no nav.index-jump in the page — forty entries in one group and "
+                 "no way past them but the scroll wheel")
+    elif "hidden" in nav.group(1):
+        rep.fail("the directory's jump row",
+                 "authored hidden, so a reader without script cannot use it: it is "
+                 "links, and the script only ever hides it")
+    elif hrefs == ids and hrefs:
+        rep.ok(f"its jump row names all {len(ids)} groups", "and no others")
+    else:
+        rep.fail("the directory's jump row",
+                 f"jumps to {sorted(hrefs - ids)} which are not groups, and misses "
+                 f"{sorted(ids - hrefs)}")
+
+    sticky = re.search(r"\.page-index \.index-group h2 \{(.*?)\}", library_css, re.S)
+    body = sticky.group(1) if sticky else ""
+    if not re.search(r"position:\s*sticky", body):
+        rep.fail("the directory's pinned heading",
+                 "no sticky group heading: while a reader scrolls forty entries "
+                 "nothing on screen says which group they are in")
+    elif not re.search(r"background:\s*var\(--canvas\)", body):
+        rep.fail("the directory's pinned heading",
+                 "sticky with no ground of its own, so the entries scroll through "
+                 "the heading instead of under it")
+    else:
+        rep.ok("its group heading pins over its own group", "on an opaque ground")
+
+    printed = media_block(library_css, r"print")
+    if re.search(r"\.index-jump\s*[,{]|,\s*\n\s*\.index-jump", printed):
+        rep.ok("the jump row does not print")
+    else:
+        rep.fail("the directory's print block",
+                 ".index-jump is not listed as furniture, so a sheet of paper "
+                 "carries a row of fragment links")
+
+
 def main(argv: list[str]) -> int:
     # The Windows console is cp1252 by default, and this file's output is full of
     # section signs and em dashes. Reconfigure rather than strip them: the
@@ -1135,6 +1201,7 @@ def main(argv: list[str]) -> int:
                          (site / "404.html").read_text(encoding="utf-8"), re.S | re.I)
     check_10(rep, css, library_css, notfound.group(1) if notfound else "")
     check_11(rep, site, library_css)
+    check_12(rep, site, library_css)
     check_newlines(rep, site)
 
     print()
@@ -1144,7 +1211,7 @@ def main(argv: list[str]) -> int:
         for f in rep.failures:
             print(f"  {f}", file=sys.stderr)
         return 1
-    print(f"links ok - {rep.checks} assertions, Stage 9 checks 4-11")
+    print(f"links ok - {rep.checks} assertions, Stage 9 checks 4-12")
     return 0
 
 

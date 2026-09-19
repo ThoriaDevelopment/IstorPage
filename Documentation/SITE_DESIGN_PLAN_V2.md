@@ -402,7 +402,7 @@ It costs **~431 B per page, 32,328 B across the library**, and it is asserted as
 than sampled: `verify-links.py` follows the links from the one page with no previous, requires that
 they reach all 75 exactly once, and then follows them backwards from the end, because a broken
 `prev` is invisible to a next-only check. Removing one pair makes that assertion fail with the
-instruction to re-run the tool. That assertion is 1 of the 51 the link gate now carries.
+instruction to re-run the tool. That assertion is 1 of the 60 the link gate now carries.
 
 ### 3.8 The directory answers the keyboard
 
@@ -439,6 +439,37 @@ walk in a copy of the artifact fails with `the hint promises ArrowUp and the scr
 it`, which is the sentence the check exists to print.
 
 ---
+
+### 3.9 The directory carries its own map
+
+Seventy-five entries in seven groups, and **forty of them are one group**. A reader who wants
+*Compared with other tools* scrolls past all of it, and a reader scrolling through it has nothing on
+screen that says which group they are still in. Two moves fix both, and neither is a new control.
+
+The **jump row** is seven fragments, one per group, under the find field. It is static markup with
+static links, so it works with no script at all, which matters here because everything else about the
+page's navigation is scripted: the row is what a reader whose script never ran gets instead. The
+script hides it while a query is live, because a link to a group the filter has just emptied is not
+navigation, and the row's order is by group size descending, so the group a reader is most likely to
+want to leave is the first chip.
+
+The **group heading pins** to the top of the viewport while its own group is on screen. Sticky, not
+fixed: it leaves when its group does, so the heading on screen is always the group the reader is
+actually in. It carries an opaque ground and a hairline at its lower edge, and both are the
+measurement rather than the decoration: with a transparent ground the entries scroll through the
+heading, and with an opaque ground and no edge the entry underneath is cut through the middle of a
+line, which reads as a rendering fault rather than as a bar. The first version had the ground and no
+edge, and it took a screenshot of an entry sliding under it to say so. The 1px rule is the same
+device the reference sites use to separate black from black.
+
+Both are asserted by name in the link gate's 12th check, four assertions over two files, because
+three of the four claims cannot be seen by reading one of them: the row names **every group its own
+headings name and nothing else** (the two lists are built from one another by the generator, which is
+exactly the coupling that survives a refactor in one of them); the row is **authored visible**, since
+it is the no-script path and the way that fails is somebody adding `hidden` beside the find field's;
+the pinned heading **declares a ground**; and the row is **listed as furniture in the print block**,
+because a sheet of paper cannot use a fragment link. All four were shown failing before they were
+trusted.
 
 ## §4 · Colour
 

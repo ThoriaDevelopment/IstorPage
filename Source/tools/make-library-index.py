@@ -153,6 +153,7 @@ FIND_SCRIPT = r"""  <script>
 
     var groups = [].slice.call(document.querySelectorAll('.index-group'));
     var items = [].slice.call(document.querySelectorAll('.index-list li'));
+    var jump = document.querySelector('.index-jump');
     var total = items.length;
 
     items.forEach(function (li) {
@@ -163,6 +164,11 @@ FIND_SCRIPT = r"""  <script>
       var query = field.value.trim();
       var words = query.toLowerCase().split(/\s+/).filter(Boolean);
       var shown = 0;
+
+      /* The jump row is navigation for browsing, and a filtered list is not a list
+         anybody is browsing. Leaving it up would also offer links to groups the
+         query has just hidden. */
+      if (jump) jump.hidden = !!query;
 
       items.forEach(function (li) {
         var hit = words.every(function (word) {
@@ -281,6 +287,11 @@ FIND_SCRIPT = r"""  <script>
   </script>"""
 
 
+def anchor(heading: str) -> str:
+    """A group heading as a fragment. The jump row needs somewhere to jump to."""
+    return re.sub(r"[^a-z0-9]+", "-", heading.lower()).strip("-")
+
+
 def build() -> str:
     slugs = library_slugs()
     if not slugs:
@@ -355,27 +366,52 @@ def build() -> str:
         "    </form>",
     ]
 
+    sections: list[str] = []
+    present: list[tuple[str, int]] = []
     for heading, _prefixes, blurb in GROUPS:
         items = grouped[heading]
         if not items:
             continue
         items.sort(key=lambda row: row[1].lower())
-        out += [
+        present.append((heading, len(items)))
+        sections += [
             "",
-            '    <section class="index-group">',
+            f'    <section class="index-group" id="{anchor(heading)}">',
             f"      <h2>{html.escape(heading)} ({len(items)})</h2>",
             f'      <p class="index-blurb">{html.escape(blurb)}</p>',
             '      <ul class="index-list">',
         ]
         for slug, title, summary in items:
-            out += [
+            sections += [
                 f'        <li><a href="/{slug}/">{html.escape(title)}</a>'
                 f'<span class="index-desc">{html.escape(summary)}</span></li>',
             ]
-        out += [
+        sections += [
             "      </ul>",
             "    </section>",
         ]
+
+    # The jump row, for the reader who is not searching anything in particular.
+    # It is static markup with static links, so it works with no script, and the
+    # script hides it when a query is live: a row of "jump to this group" links is
+    # navigation for browsing a list, and a filtered list is not one. Long first,
+    # because the largest group is the one a reader most needs to leave.
+    out += [
+        "",
+        '    <nav class="index-jump" aria-label="Jump to a group">',
+        "      <p>Jump to</p>",
+        "      <ul>",
+    ]
+    for heading, count in sorted(present, key=lambda row: -row[1]):
+        out += [
+            f'        <li><a href="#{anchor(heading)}">{html.escape(heading)}</a></li>',
+        ]
+    out += [
+        "      </ul>",
+        "    </nav>",
+    ]
+
+    out += sections
 
     out += [
         "  </main>",
