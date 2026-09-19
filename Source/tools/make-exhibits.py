@@ -49,7 +49,7 @@ EXHIBITS = [
     ("exhibit-17-notes", "White/notesfullscreenmain.png", "1918x1015+0+0",
      "the full notes window, light"),
     ("exhibit-18-numbers", "Black/Question3.png", "1200x956+359+44",
-     "354.08 holes at 99.99%; radial variation 0.028 mm"),
+     "354.08 holes at 68 percent; radial variation 0.028 mm"),
 ]
 
 AVIF_Q = "60"

@@ -584,7 +584,7 @@ capture:
 |---|---|---|
 | **`0`** | accounts, API keys, or requests leaving the machine | `settingsresearch.png` — *"Scrape (keyless, no service)… No API keys, no third-party search API"* |
 | **`0.028 mm`** | the radial variation it reasoned to | `Question3.png` |
-| **`354.08`** | holes, at 99.99% credible — against an assumed 360 | `Question3.png` |
+| **`354.08`** | holes, at 68% credible, against the previously assumed 365 | `Question3.png` |
 | **`12`** | disputed claims it kept rather than resolved | `Question2.png` |
 
 This is the honest analogue of proof, and it is arguably stronger: a logo strip says *other people

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Istor — it shows you what it saw</title>
+<title>Istor: it shows you what it saw</title>
 <meta name="description" content="A local, private research notebook that runs entirely on your machine. Every answer carries the sources it read, and the ones it could not check.">
 <link rel="canonical" href="https://istor.fyi/">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://istor.fyi/">
-<meta property="og:title" content="Istor — it shows you what it saw">
+<meta property="og:title" content="Istor: it shows you what it saw">
 <meta property="og:description" content="A local, private research notebook. Every answer carries the sources it read.">
 <meta property="og:image" content="https://istor.fyi/og-card.png">
 <meta property="og:image:width" content="1200">
@@ -60,7 +60,7 @@
     <h1>It shows you what it saw.</h1>
     <p class="lede">A hundred pages to get through and one question. Istor reads the
       documents you give it, answers from them, and shows you the passage behind every
-      claim — and it says so when it cannot.</p>
+      claim, and it says so when it cannot.</p>
     <a class="cta" href="https://github.com/ThoriaDevelopment/Istor">Follow the build</a>
 
     <div class="win">
@@ -165,12 +165,12 @@
       <h2>It checks what you already gave it, before it looks anywhere else.</h2>
 
       <p>Before it answers, Istor decides whether the documents in your library already settle the
-        question. If they do, it answers from them and never goes online — which is why the tool
+        question. If they do, it answers from them and never goes online, which is why the tool
         works with the network unplugged, and why it still works when the connection is there but you
         would rather it stayed quiet.</p>
 
       <p>The model making that decision is the small one. Istor runs two: the smaller, heavily
-        instructed model is asked the cheap question first — <i>is this already answered here?</i> —
+        instructed model is asked the cheap question first (<i>is this already answered here?</i>),
         so the better model can be slow, and can be right.</p>
     </div>
 
@@ -181,11 +181,10 @@
           <source type="image/webp" srcset="/img/exhibit-10-gate.webp 1x, /img/exhibit-10-gate@2x.webp 2x">
           <img src="/img/exhibit-10-gate.webp" srcset="/img/exhibit-10-gate.webp 1x, /img/exhibit-10-gate@2x.webp 2x"
                width="600" height="442" loading="lazy" decoding="async"
-               alt="An Istor answer. The question “Tell me about the cycles” sits in a bubble at the top right. Under it, above the answer, is the disclosure line the app writes before it answers: band equals Direct, local library already answers this question, skip gate and web research. Then the answer itself, opening on the Metonic cycle, with small numbered citation chips set into the running text.">
+               alt="An Istor answer in the dark theme. The question “How did the Antikythera mechanism predict eclipses?” sits in a bubble at the top right. Under it the Thoughts disclosure is open, showing the app drafting its reply and the reasoning it drew on. Then the answer itself, opening on the 223-month Saros cycle, with small numbered citation chips set into the running text.">
         </picture>
-        <figcaption>The line above the answer is the gate's own decision, printed where you can read
-          it. <code>band=Direct</code> is the app saying it found this in your library and did not go
-          looking elsewhere.</figcaption>
+        <figcaption>Ten sources on this machine, and the app's own working above the answer. The
+          disclosure is where you can read what it drew on before it wrote anything.</figcaption>
       </figure>
     </div>
   </div>
@@ -209,10 +208,14 @@
       <p>There is a third case, and it is the interesting one. Sometimes the answering model writes a
         good answer and forgets to cite as it goes. Rather than make you wait while a slower model
         redoes the work, Istor sends the small model to fit a citation quickly, and marks what it
-        fitted: <strong>Unverified — check the source.</strong></p>
+        fitted: <strong>Unverified, check the source.</strong></p>
+      <!-- The app prints this label with an em dash between its halves
+           (Istor, src/components/CitedAnswer.tsx). The site prints a comma:
+           no em dash appears anywhere a visitor can see. Same words, same
+           meaning, still quoted rather than paraphrased. -->
 
       <p>That word is not a guess about whether the claim is true. It says which of the two models
-        put the number there — and it tells you to go and look, which is the whole habit this tool is
+        put the number there, and it tells you to go and look, which is the whole habit this tool is
         trying to build.</p>
     </div>
 
@@ -223,10 +226,10 @@
           <source type="image/webp" srcset="/img/exhibit-11-citations.webp 1x, /img/exhibit-11-citations@2x.webp 2x">
           <img src="/img/exhibit-11-citations.webp" srcset="/img/exhibit-11-citations.webp 1x, /img/exhibit-11-citations@2x.webp 2x"
                width="600" height="438" loading="lazy" decoding="async"
-               alt="The same answer, scrolled to a paragraph citing a verified source. The citation chip sits raised in the text, and the source it resolves to — Decoding Antikythera mechanism — is listed in the Library rail at the left with a green status dot.">
+               alt="The same answer, scrolled to a paragraph citing a verified source. The citation chip sits raised in the text, and the source it resolves to, Decoding Antikythera mechanism, is listed in the Library rail at the left with a green status dot.">
         </picture>
         <figcaption>Hover or tab to the citation chips in the window at the top of this page. The
-          card that opens is the passage behind the claim — the same thing you get by clicking a chip
+          card that opens is the passage behind the claim, the same thing you get by clicking a chip
           in the app.</figcaption>
       </figure>
     </div>
@@ -247,7 +250,7 @@
         passages it pulled, each with the source it came from. It is the same evidence the answer
         rests on, in the product's own words.</p>
 
-      <p>When the gate sends it out to the web, you watch that happen too — domain by domain, as
+      <p>When the gate sends it out to the web, you watch that happen too, domain by domain, as
         each page is fetched and read.</p>
     </div>
 
@@ -258,10 +261,11 @@
           <source type="image/webp" srcset="/img/exhibit-12-reading.webp 1x, /img/exhibit-12-reading@2x.webp 2x">
           <img src="/img/exhibit-12-reading.webp" srcset="/img/exhibit-12-reading.webp 1x, /img/exhibit-12-reading@2x.webp 2x"
                width="600" height="464" loading="lazy" decoding="async"
-               alt="Istor mid-research. A reading log lists the pages as they are fetched, naming each domain — en.wikipedia.org for the Antikythera mechanism and the wreck, nature.com, arxiv.org — with the reasoning step above it naming the band as Research because explicit research intent was detected.">
+               alt="Istor mid-research in the dark theme, reading the web. A log names each page as it comes back, with a tick beside it: en.wikipedia.org on the Antikythera mechanism, en.wikipedia.org on the wreck, nature.com, and arxiv.org on an improved calendar-ring hole count. Each entry carries the opening of the page the app actually fetched.">
         </picture>
-        <figcaption>Research rather than Direct: the gate decided your library would not settle this
-          one, so it went out and read. Every domain it opened is named here.</figcaption>
+        <figcaption>The gate sent this one to the web rather than answering from the library, so you
+          watch it read, page by page. Every domain it opened is named, and the first lines of each
+          page are printed under it.</figcaption>
       </figure>
     </div>
   </div>
@@ -275,7 +279,7 @@
 <section class="act">
   <div class="wrap split is-flip">
     <div class="body">
-      <h2>Where it stops is part of the answer.</h2>
+      <h2>It marks what nobody knows yet.</h2>
 
       <p>Ask Istor something genuinely unsettled and it will not tidy it up for you. The number of
         holes in the Antikythera mechanism's calendar ring has been argued over for a century; the
@@ -285,9 +289,6 @@
       <p>That is the same discipline as the citation mark, pointed at a different problem. One says
         <i>here is which model put this number here</i>. The other says <i>here is what nobody
         knows yet</i>.</p>
-
-      <p>It is not a frontier model and it will not out-reason one. It needs sources. And local
-        means your machine's specifications are part of the deal.</p>
     </div>
 
     <div class="field reveal">
@@ -297,10 +298,10 @@
           <source type="image/webp" srcset="/img/exhibit-13-dispute.webp 1x, /img/exhibit-13-dispute@2x.webp 2x">
           <img src="/img/exhibit-13-dispute.webp" srcset="/img/exhibit-13-dispute.webp 1x, /img/exhibit-13-dispute@2x.webp 2x"
                width="430" height="480" loading="lazy" decoding="async"
-               alt="A table of what is still disputed about the Antikythera mechanism, with an Issue column and a Status column. The date of construction is known only as a range, 150 to 100 BC. The gear count is “at least 30” and the exact count is uncertain. The number of holes in the calendar ring is 354 or 355, with 354 far more probable than 360. The inventor is either Archimedes or Hipparchus. Whether it qualifies as a computer is a debated term.">
+               alt="A table of what is still disputed about the Antikythera mechanism, with an Issue column, a Status column and twelve rows. The date of construction is known only as a range, 150 to 100 BC. The gear count is “at least 30” and the exact count is uncertain. The number of holes in the calendar ring is 354 or 355, with 354 far more probable than 360. The inventor is either Archimedes or Hipparchus. The remaining eight rows ask whether the device qualifies as a computer, a calculator, a clock, a calendar, a planetary calculator, a solar calendar, a lunar calendar or a solar lunar calendar, and every one of them is marked as a debated term.">
         </picture>
-        <figcaption>Five rows, and the app declines to resolve any of them. The hole count is the row
-          the next section is about.</figcaption>
+        <figcaption>Twelve rows, each printed with a status rather than a settled answer. The hole
+          count is the row the next section is about.</figcaption>
       </figure>
     </div>
   </div>
@@ -317,7 +318,7 @@
       <h2>On your machine.</h2>
 
       <p>Nothing leaves, and what you write stays yours. Those are two consequences of the section
-        above rather than two separate promises — and both are settings you can open and read.</p>
+        above rather than two separate promises, and both are settings you can open and read.</p>
     </div>
 
     <div class="field is-inset reveal" style="margin-block-start: 40px">
@@ -338,13 +339,13 @@
             <source type="image/webp" srcset="/img/exhibit-15-models.webp 1x, /img/exhibit-15-models@2x.webp 2x">
             <img src="/img/exhibit-15-models.webp" srcset="/img/exhibit-15-models.webp 1x, /img/exhibit-15-models@2x.webp 2x"
                  width="396" height="230" loading="lazy" decoding="async"
-                 alt="Settings, on the Models panel, in the light theme. The model server is set to a local address on port 11434 — the default port for Ollama — with a note that Istor does not ship with a model and uses a server you install yourself.">
+                 alt="Settings, on the Models panel, in the light theme. The backend is a local model server, chosen between Ollama and llama.cpp, and the server URL points at localhost on port 11434. A row below reports nine models already installed on it, and a second row picks which one handles the fast work of summarizing, routing and rewriting.">
           </picture>
         </figure>
       </div>
 
       <p class="pair-caption">Left: web research is off until you turn it on, and there is no account
-        and no key to enter. Right: the model is one you install and point at — Istor does not ship
+        and no key to enter. Right: the model is one you install and point at. Istor does not ship
         with one. Both panels are the app, unaltered, at the size it draws them.</p>
     </div>
   </div>
@@ -377,10 +378,10 @@
         <source type="image/webp" srcset="/img/exhibit-16-library.webp 1x, /img/exhibit-16-library@2x.webp 2x">
         <img src="/img/exhibit-16-library.webp" srcset="/img/exhibit-16-library.webp 1x, /img/exhibit-16-library@2x.webp 2x"
              width="959" height="508" loading="lazy" decoding="async"
-             alt="The full Istor window in the dark theme. The Library rail on the left lists ten sources, each with a status dot, under a filter field and an Add source control. The centre holds the answer with its citation chips. The Notes rail on the right lists the notes Istor wrote while answering, under its own filter.">
+             alt="The Library rail in full view, in the dark theme and at the size the app draws it. Ten sources are listed under a filter field, each with a status dot at its right, and an Add source control sits at the foot of the rail.">
       </picture>
-      <figcaption>The whole window, at the size it runs. Ten sources, one question, ten notes — and
-        nothing in it that came from anywhere but this machine.</figcaption>
+      <figcaption>The library in full view, at the size it runs. Ten sources, every one of them a
+        document on this machine.</figcaption>
     </figure>
 
     <figure class="exhibit">
@@ -389,10 +390,10 @@
         <source type="image/webp" srcset="/img/exhibit-17-notes.webp 1x, /img/exhibit-17-notes@2x.webp 2x">
         <img src="/img/exhibit-17-notes.webp" srcset="/img/exhibit-17-notes.webp 1x, /img/exhibit-17-notes@2x.webp 2x"
              width="959" height="507" loading="lazy" decoding="async"
-             alt="The same window in the light theme, with a note open across the centre. The note is the Metonic cycle, expanded to full text, with the source it came from named above it. The Library and Notes rails sit either side in the same order as the dark theme.">
+             alt="The Notes rail in full view, in the light theme and at the size the app draws it. Ten notes are listed under a filter field, each named after one of the ten sources, with a New note control at the foot of the rail.">
       </picture>
-      <figcaption>Notes are the output that outlives the question. This one is the note Istor wrote
-        while answering the question at the top of this page.</figcaption>
+      <figcaption>Ten notes, one for each source it read. Notes are the output that outlives the
+        question.</figcaption>
     </figure>
   </div>
 </section>
@@ -445,13 +446,13 @@
     <dl class="evidence reveal" style="margin-block-start: 48px">
       <div>
         <dt>354.08</dt>
-        <dd>holes in the calendar ring, as fitted from the X-ray data — not a whole number, because
+        <dd>holes in the calendar ring, as fitted from the X-ray data, not a whole number, because
           the ring is not one.</dd>
       </div>
       <div>
-        <dt>99.99%</dt>
-        <dd>how well that count fits. The app prints the confidence beside the number rather than
-          rounding it into certainty.</dd>
+        <dt>68%</dt>
+        <dd>how much confidence the app attaches to that count. It prints the figure it reached, and
+          68 percent is not certainty.</dd>
       </div>
       <div>
         <dt>0.028 mm</dt>
@@ -471,9 +472,9 @@
           <source type="image/webp" srcset="/img/exhibit-18-numbers.webp 1x, /img/exhibit-18-numbers@2x.webp 2x">
           <img src="/img/exhibit-18-numbers.webp" srcset="/img/exhibit-18-numbers.webp 1x, /img/exhibit-18-numbers@2x.webp 2x"
                width="600" height="478" loading="lazy" decoding="async"
-               alt="Istor answering the calendar-ring question. The answer reports a fitted hole count of 354.08 at 99.99 per cent confidence, a radial variation of 0.028 millimetres, and explains that the count is fractional because the holes are not evenly spaced — with citation chips resolving each figure to the X-ray paper it came from.">
+               alt="Istor answering the question “How many holes did the calendar ring have?” in the dark theme, with a Thoughts disclosure above the answer showing the app drafting its reply. The answer says the ring held either 354 or 355 holes rather than the previously assumed 365, reports a 68 percent credible estimate of 354.08 holes from high-resolution X-ray measurements, and notes a radial variation of only 0.028 millimetres between holes.">
         </picture>
-        <figcaption>The capture those four figures come from. It is answering a question about the
+        <figcaption>The capture behind the first three figures. It is answering a question about the
           same ring the arc above is drawn from.</figcaption>
       </figure>
     </div>
@@ -507,7 +508,7 @@
         <div class="qa-body">
           <p>It depends on the model you choose, which is why we do not print a number. A small model
             runs on a modest graphics card; a larger one wants more. Because the requirement follows
-            the model, there is no single floor we could publish that would be true for everyone — so
+            the model, there is no single floor we could publish that would be true for everyone, so
             we would rather say that than pick one and be wrong for half the people reading it.</p>
         </div>
       </details>
@@ -533,7 +534,7 @@
       <details>
         <summary>Is it open source?</summary>
         <div class="qa-body">
-          <p>Not yet. The repository is public and empty — it is where the code lands, and it has
+          <p>Not yet. The repository is public and empty. It is where the code lands, and it has
             not landed. What we can tell you today is what is on this page: the app is local, it
             makes no outbound requests unless you switch web research on, and every claim it makes
             is traceable to a document you gave it. When there is code to read, this page will say
@@ -567,7 +568,7 @@
     <div class="body" style="max-width: var(--measure)">
       <h2 class="greek">ἵστωρ</h2>
 
-      <p>ἵστωρ is the old Greek word for a witness — one who has seen. It comes from the root
+      <p>ἵστωρ is the old Greek word for a witness, one who has seen. It comes from the root
         *weyd-, <i>to see</i>, which is also where the Latin <i>videre</i> and the English
         <i>wit</i> come from. A witness is not the person who knows most; it is the person who was
         there, and can say what they saw.</p>
@@ -602,7 +603,7 @@
           <div class="answer">
             <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
             <p>The Antikythera mechanism incorporated several key astronomical cycles, the first of
-              which is the Metonic cycle — nineteen tropical years, almost exactly 235 lunar
+              which is the Metonic cycle, nineteen tropical years, almost exactly 235 lunar
               months<sup class="cite">1<span class="vh">, source 1</span></sup>.</p>
           </div>
         </div>
