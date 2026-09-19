@@ -548,10 +548,15 @@ the reason a near-black window can stand on a near-black ground and still read a
 theme of each capture is whatever the app was in when it was taken, and the page does not recolour
 evidence to fit a rule, so the pairing is a fact about the captures rather than a specification.
 
-What must hold is that **every window has exactly one separator**: `.field .exhibit img` carries the
-seam and the field shadow, and `.exhibit img` outside a field carries `--shadow-paper`. No gate
-asserts that pair yet, and it is the next check this section owes, because "one separator each" is
-exactly the kind of rule that a later edit breaks in one place and leaves correct in the other eight.
+What must hold is that **every window carries the separator its ground calls for**, and that is now
+measured rather than assumed. `audit-contrast.py` walks every window on every page, finds the ground by
+walking the cascade for the first opaque background — not by looking for `.field`, which is the mistake
+this section made — and compares the computed border and shadow against the tokens. Measured on the
+built page: **11 windows, 10 on a dark ground and 1 on paper, 0 failures.** Two mutations are shown
+failing: taking the seam off `.field .exhibit img` reports **8** windows without one, and giving the
+paper window a seam reports **1**. The ground is found by luminance rather than by class for a reason:
+a new dark band whose window never got a seam has to fail here rather than ship, which is exactly what
+the old rule would have allowed.
 
 ### 3.5 The library's theme control
 

@@ -657,6 +657,122 @@ TAP_PROBE = r"""
 })()
 """
 
+SEAM_PROBE = r"""
+(async () => {
+  /* The separator rule, measured instead of read off the stylesheet.
+
+     As §3.4 now states it: a window on a DARK ground is separated by a 1px seam
+     in --field-rule plus --shadow-field; a window on a LIGHT ground by
+     --shadow-paper alone. Two decisions make this a measurement rather than a
+     restatement:
+
+       * the expected values are read from the tokens, so a token edit cannot
+         leave this check behind;
+       * the ground is found by WALKING THE CASCADE for the first opaque
+         background, not by looking for a class name. A new dark band whose window
+         never got a seam is exactly the failure this exists for, and a check that
+         looked for `.field` would not see it -- which is the mistake the old
+         version of §3.4 made, and why it claimed a rule the page does not follow.
+
+     Line art is out of scope by construction: the ring's plate has no fill, so it
+     is not a window on a ground, and nothing about it should be asserted here. */
+
+  const inner = s => {
+    const t = String(s), a = t.indexOf('('), b = t.indexOf(')');
+    return a < 0 ? '' : t.slice(a + 1, b < 0 ? t.length : b);
+  };
+  const nums = s => inner(s).split(/[^0-9.]+/).filter(Boolean).map(Number);
+  const px = s => (String(s).match(/[0-9.]+px/g) || []).map(v => parseFloat(v));
+  const trim0 = a => { const b = a.slice(); while (b.length && !b[0]) b.shift();
+                       while (b.length && !b[b.length - 1]) b.pop(); return b; };
+  const lum = c => {
+    const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92
+                                                  : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]);
+  };
+  const key = a => a.map(n => Math.round(n * 100) / 100).join(',');
+
+  const ground = el => {
+    let n = el.parentElement;
+    while (n && n !== d.documentElement) {
+      const c = nums(getComputedStyle(n).backgroundColor);
+      if (c.length >= 3 && (c.length < 4 || c[3] > 0.5)) {
+        return { sel: n.tagName.toLowerCase() + (n.className ? '.' + String(
+          n.className.baseVal !== undefined ? n.className.baseVal : n.className
+        ).split(' ')[0] : ''), c: c, lum: lum(c) };
+      }
+      n = n.parentElement;
+    }
+    return { sel: 'body', c: [250, 249, 246], lum: 1 };
+  };
+
+  const targets = [...d.querySelectorAll('main .exhibit > picture > img, main .win')];
+  /* A page with no windows is not a page that failed: it is a page this question
+     does not apply to, and the answer is to say so. Returning BEFORE the tokens
+     are read is the whole difference -- the library's stylesheet declares none of
+     these three tokens, and the first version of this pass reported every one of
+     the 75 carried pages as a failure that had "measured nothing". A check that
+     fails on the pages it does not apply to is a check that gets switched off. */
+  if (!targets.length) {
+    return { seam: true, width: Math.round(w.innerWidth), windows: 0, onDark: 0,
+             onPaper: 0, fails: [] };
+  }
+
+  const T = n => getComputedStyle(d.documentElement).getPropertyValue(n).trim();
+  const seamColor = key(nums(T('--field-rule')));
+  const fieldShadow = { c: key(nums(T('--shadow-field')).slice(0, 3)), px: px(T('--shadow-field')) };
+  const paperShadow = { c: key(nums(T('--shadow-paper')).slice(0, 3)), px: px(T('--shadow-paper')) };
+  if (!seamColor || !fieldShadow.c || !paperShadow.c) {
+    return { error: 'this page HAS windows and its stylesheet does not resolve the '
+                    + 'separator tokens (--field-rule ' + seamColor + ', --shadow-field '
+                    + fieldShadow.c + ', --shadow-paper ' + paperShadow.c
+                    + '), so their separators were not measured' };
+  }
+  const fails = [], rows = [];
+  for (const el of targets) {
+    const cs = getComputedStyle(el);
+    const g = ground(el);
+    const dark = g.lum < 0.15;
+    const bw = parseFloat(cs.borderTopWidth) || 0;
+    const bcolor = key(nums(cs.borderTopColor));
+    const sh = cs.boxShadow === 'none' ? null : cs.boxShadow;
+    const scolor = sh ? key(nums(sh).slice(0, 3)) : '';
+    const spx = sh ? trim0(px(sh)) : [];
+    const want = dark ? fieldShadow : paperShadow;
+    const why = [];
+    if (dark && (bw !== 1 || bcolor !== seamColor)) {
+      why.push('no seam: border is ' + cs.borderTopWidth + ' ' + cs.borderTopColor +
+               ', expected 1px ' + T('--field-rule'));
+    }
+    if (!dark && bw !== 0) {
+      why.push('a seam on paper: ' + cs.borderTopWidth + ' ' + cs.borderTopColor +
+               ', expected none');
+    }
+    if (scolor !== want.c) {
+      why.push('shadow is ' + (scolor || 'none') + ', expected ' + want.c +
+               (dark ? ' (--shadow-field)' : ' (--shadow-paper)'));
+    } else if (sh && trim0(want.px).join() !== spx.join()) {
+      why.push('shadow geometry is ' + spx.join(' ') + ', expected ' + trim0(want.px).join(' '));
+    }
+    const row = { sel: (el.tagName.toLowerCase() + '.' + String(
+      el.className && el.className.baseVal !== undefined ? el.className.baseVal
+      : el.className || '').split(' ').slice(0, 2).join('.')).replace(/\.$/, ''),
+      ground: g.sel, groundLum: Math.round(g.lum * 1000) / 1000, dark: dark,
+      border: cs.borderTopWidth + ' ' + cs.borderTopColor, shadow: scolor || 'none' };
+    rows.push(row);
+    if (why.length) fails.push(Object.assign({ why: why.join('; ') }, row));
+  }
+  return {
+    seam: true,
+    width: Math.round(w.innerWidth),
+    windows: rows.length,
+    onDark: rows.filter(r => r.dark).length,
+    onPaper: rows.filter(r => !r.dark).length,
+    fails: fails
+  };
+})()
+"""
+
 HARNESS = """<!doctype html>
 <html><head><meta charset="utf-8"><title>audit</title>
 <style>html,body{{margin:0;padding:0}}iframe{{border:0;display:block}}</style>
@@ -1119,6 +1235,18 @@ def run_tap_pass(chrome, site, tmp, page, width, height, settle):
                      None, probe=TAP_PROBE)
 
 
+def run_seam_pass(chrome, site, tmp, page, width, height, settle):
+    """One render, asking only whether each window has the right separator.
+
+    Its own pass for the same reason target size has one: the answer is a fact
+    about the ground a window stands on, which is decided by layout and the
+    cascade rather than by the colour scheme. One render per page is enough, and it
+    keeps the finding on its own line instead of buried in a contrast verdict.
+    """
+    return run_state(chrome, site, tmp, page, width, height, settle, None, False,
+                     None, probe=SEAM_PROBE)
+
+
 def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
               media=None, scripts=True, probe=None):
     """One theme and one media state, one render: probe the cascade, then sample
@@ -1245,7 +1373,8 @@ def media_states(contrast_more, os_dark, as_authored):
 
 
 def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
-               contrast_more=True, os_dark=True, scriptless=True, tap_widths=True):
+               contrast_more=True, os_dark=True, scriptless=True, tap_widths=True,
+               seam=True):
     """Every theme and media state this page can be delivered in, as a list.
 
     The first pass forces nothing, so a page with no theme control is audited in
@@ -1272,6 +1401,8 @@ def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
     if scriptless:
         states.append(run_state(chrome, site, tmp, page, width, height, settle,
                                 None, False, None, scripts=False))
+    if seam:
+        states.append(run_seam_pass(chrome, site, tmp, page, width, height, settle))
     for tap_width in ([width, PHONE_WIDTH] if tap_widths and width != PHONE_WIDTH
                       else [width] if tap_widths else []):
         states.append(run_tap_pass(chrome, site, tmp, page, tap_width, height, settle))
@@ -1310,6 +1441,9 @@ def main(argv):
                     help="skip the emulated dark-OS pass on the unstamped theme")
     ap.add_argument("--no-tap", action="store_true",
                     help="skip the WCAG 2.5.8 target-size pass")
+    ap.add_argument("--no-seam", action="store_true",
+                    help="skip the pass that asks whether every window carries the "
+                         "separator its ground calls for")
     ap.add_argument("--no-scriptless", action="store_true",
                     help="skip the pass that serves each page with its scripts "
                          "removed, for the reader whose script never ran")
@@ -1322,7 +1456,7 @@ def main(argv):
     chrome = find_chrome()
     pages = [page_path(p) for p in a.pages]
 
-    findings, failures, tap_fails = [], 0, 0
+    findings, failures, tap_fails, seam_fails = [], 0, 0, 0
     with tempfile.TemporaryDirectory(prefix="istor-audit-") as tmp:
         for page in pages:
             r = audit_page(chrome, a.site, tmp, page, a.width, a.height, a.settle,
@@ -1330,7 +1464,8 @@ def main(argv):
                            contrast_more=not a.no_contrast_more,
                            os_dark=not a.no_os_dark,
                            scriptless=not a.no_scriptless,
-                           tap_widths=not a.no_tap)
+                           tap_widths=not a.no_tap,
+                           seam=not a.no_seam)
             if r.get("error"):
                 print("  FAIL  %s  %s" % (page, r["error"]))
                 failures += 1
@@ -1345,7 +1480,31 @@ def main(argv):
                               % (u["sel"], u["reason"], u["text"]))
                 if s.get("error"):
                     print("  FAIL  %s state %d  %s" % (page, index, s["error"]))
-                    failures += 1
+                    # Counted against the pass it belongs to rather than against
+                    # contrast: a separator pass that measured nothing is not five
+                    # text elements below AA, and the final line reports both.
+                    if s.get("seam"):
+                        seam_fails += 1
+                    else:
+                        failures += 1
+                    continue
+                if s.get("seam"):
+                    # §3.4's separator rule, measured at every width this page is
+                    # drawn at. Reported per page rather than per state: a window's
+                    # ground does not change with the colour scheme, and a pass that
+                    # claimed to check it twice would only be checking twice.
+                    seam_fails += len(s["fails"])
+                    print("  %s  %-42s %3d windows  %2d on a dark ground  "
+                          "%2d on paper  %d FAIL"
+                          % ("ok  " if not s["fails"] else "FAIL",
+                             "%s separators@%dpx" % (page, s["width"]), s["windows"],
+                             s["onDark"], s["onPaper"], len(s["fails"])))
+                    for f in s["fails"]:
+                        print("          %s on %s (luminance %.3f)  %s\n              %s"
+                              % (f["sel"], f["ground"], f["groundLum"], f["why"], f["border"]))
+                    findings.append({"page": page, "seam": True, "width": s["width"],
+                                     "windows": s["windows"], "onDark": s["onDark"],
+                                     "onPaper": s["onPaper"], "fails": s["fails"]})
                     continue
                 if s.get("tap"):
                     # WCAG 2.5.8 at AA, measured rather than assumed. The two
@@ -1457,6 +1616,13 @@ def main(argv):
     kinds = sorted({media_label(f["media"]) for f in emulated})
     note = ("%d of them emulated (%s)" % (len(emulated), ", ".join(kinds))
             if emulated else "no media state emulated")
+    seam = [f for f in findings if f.get("seam")]
+    if seam:
+        print("\n%d separator passes: %d windows, %d standing on a dark ground and "
+              "%d on paper"
+              % (len(seam), sum(f["windows"] for f in seam),
+                 sum(f["onDark"] for f in seam), sum(f["onPaper"] for f in seam)))
+
     tap = [f for f in findings if f.get("tap")]
     if tap:
         print("\n%d target-size passes: %d controls, %d under %dpx, %d excused as "
@@ -1471,11 +1637,14 @@ def main(argv):
              ", plus %d scriptless pass%s"
              % (len(scriptless), "es" if len(scriptless) != 1 else "")
              if scriptless else ""))
-    if failures or tap_fails:
-        print("FAILED - %d below AA, %d targets under %dpx with neither exception"
-              % (failures, tap_fails, TAP_MIN))
+    if failures or tap_fails or seam_fails:
+        print("FAILED - %d below AA, %d targets under %dpx with neither exception, "
+              "%d windows without the separator their ground calls for"
+              % (failures, tap_fails, TAP_MIN, seam_fails))
         return 1
     print("contrast ok - nothing below AA where the ground could be measured")
+    if seam:
+        print("separators ok - every window carries the separator its ground calls for")
     if tap:
         print("targets ok - every control reaches %dpx, or is excused" % TAP_MIN)
     return 0

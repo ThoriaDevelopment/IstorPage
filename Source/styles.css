@@ -177,22 +177,15 @@
   --rule:      rgb(255 255 255 / 0.16);
 }
 
-/* The light theme's counterpart, for a replica standing on paper (§3.4). The
-   rule: LIGHT-THEME WINDOWS ON TEAL FIELDS, DARK-THEME WINDOWS ON PAPER. Both
-   themes are real product material, so this invents nothing — and it makes the
-   window always contrast its ground, so it always reads as an object. */
-.win.is-light {
-  --chrome:    #FAFAFA;
-  --paper:     #FDFEFF;
-  --pane-lift: #F1F4F8;
-  --fill:      rgb(22 24 27 / 0.055);
-  --fill-card: #FFFFFF;
-  --ink:       #16181B;
-  --ink-2:     #5F646B;
-  --ink-3:     #8A8F96;
-  --azure:     #0066CC;
-  --rule:      #E4E6E9;
-}
+/* A light replica's token block lived here as `.win.is-light`, and it was DEAD:
+   no element in the source, the artifact or either script ever carried that class,
+   while `@media print` remapped `.win` itself with the same ten values. Two places
+   holding one rule, only one of them reachable, is the defect §3.4 exists to catch
+   (the same class of bug as a token table that agrees with itself and not with the
+   page), so the unreachable copy is gone. The print block below is the one owner;
+   a replica on a light ground ON SCREEN would need these values again, and until it
+   has one, a light window is a state this page does not have. What makes a window
+   read as an object is its separator, not its theme (§3.4). */
 
 /* ---------------------------------------------------------------------------
    2 · Faces.
