@@ -272,7 +272,8 @@ def main(argv: list[str]) -> int:
     excused: list[tuple[str, str, str]] = []
     offenses: list[tuple[str, str, str, str]] = []
     for path in pages:
-        rel = path.relative_to(site).parent.as_posix() or "index"
+        rel = path.relative_to(site).parent.as_posix()
+        rel = "index" if rel == "." else rel
         for group, text, line in scan(visible_lines(path)):
             keep = ALLOWED.get((group, text))
             if keep and rel == keep[0]:
