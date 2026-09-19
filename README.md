@@ -108,6 +108,23 @@ Two standing rules for the copy, from Thoria: **every string a visitor can read 
 `humanizer` skill**, and **no em or en dashes in the site's own text**. The dashes inside the app
 captures are the product's own punctuation and are left alone.
 
+## Unattended improvement runner
+
+`Source/tools/background-runner.py` can start a fresh external coding-agent process for each rotating goal. It keeps one lock file, records stdout and stderr in `.improvement/BACKGROUND_RUNNER.log`, stops on failure by default, and never grants git permissions by itself.
+
+Set the agent command once, then start it from the repository root:
+
+    set ISTOR_AGENT_COMMAND=claude -p {prompt}
+    python Source/tools/background-runner.py --forever --interval 30
+
+Use `--cycles N` for a bounded run. Edit `Documentation/OVERNIGHT_GOALS.md` to change the goals. The runner is deliberately an adapter around the local agent CLI, because the repository cannot know which account, MCP connections or permissions the host has configured. Freebuff's current CLI is interactive only and does not expose a documented headless or print mode, so this runner cannot start a new Freebuff Desktop turn by itself. A real Freebuff bridge must be implemented in the Freebuff host or against an official Freebuff headless or SDK interface.
+
+For a desktop-only fallback, `Source/tools/freebuff-continue.py` can focus the Freebuff window, click a configured relative chat-box position, paste `Please Continue`, and press Enter on a timer. It also accepts a cue file or cue command from an external sound detector. This helper uses Windows APIs only, so it does not need PyAutoGUI, but it must be calibrated with the chat box coordinates and should be tested with `--max-sends 1` first:
+
+    python Source/tools/freebuff-continue.py --chat-x 0.50 --chat-y 0.90 --interval 300 --max-sends 1
+
+The timer is the reliable mode. Freebuff does not currently expose a documented sound event or public Desktop control API, so the helper cannot safely identify Freebuff's sound cue by itself.
+
 ## Building it
 
     python Source/tools/build-site.py      # Source/ + Assets/ + OldVersion/ -> _site/
