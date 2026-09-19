@@ -1,10 +1,10 @@
 {
-  "_comment": "The only copy of istor.fyi's per-page lastmod dates and changefreq. Seeded 2026-09-18 from OldVersion/sitemap.xml before it was superseded by generation. There is no git history to derive these from: this repository has never been under version control, so a first commit would date every file the same day. A page in the artifact with no entry here FAILS the build rather than shipping without a lastmod. Order is the order of <url> elements in the generated sitemap.",
+  "_comment": "The only copy of istor.fyi's per-page lastmod dates and changefreq. Seeded 2026-09-18 from OldVersion/sitemap.xml before it was superseded by generation. There is no git history to derive these from: this repository has never been under version control, so a first commit would date every file the same day. A page in the artifact with no entry here FAILS the build rather than shipping without a lastmod. Order is the order of <url> elements in the generated sitemap. THE RULE FOR MOVING A DATE, because a lastmod that moves on every commit is a signal a crawler learns to ignore: a date moves when what the page SAYS changes, not when the template it is rendered through does. On 2026-09-19 every one of the 75 library pages gained a header control and a footer link, and no date moved for that; the eight pages whose copy was corrected, the home page, and this log did move, because their words are different.",
   "origin": "https://istor.fyi",
   "pages": [
     {
       "path": "/",
-      "lastmod": "2026-09-17",
+      "lastmod": "2026-09-19",
       "changefreq": "monthly"
     },
     {
@@ -24,12 +24,12 @@
     },
     {
       "path": "/what-is-a-local-llm/",
-      "lastmod": "2026-09-03",
+      "lastmod": "2026-09-19",
       "changefreq": "monthly"
     },
     {
       "path": "/vs-chatgpt/",
-      "lastmod": "2026-09-02",
+      "lastmod": "2026-09-19",
       "changefreq": "monthly"
     },
     {
@@ -54,17 +54,17 @@
     },
     {
       "path": "/vs-gpt4all/",
-      "lastmod": "2026-09-02",
+      "lastmod": "2026-09-19",
       "changefreq": "monthly"
     },
     {
       "path": "/vs-anythingllm/",
-      "lastmod": "2026-09-02",
+      "lastmod": "2026-09-19",
       "changefreq": "monthly"
     },
     {
       "path": "/vs-notebooklm/",
-      "lastmod": "2026-09-02",
+      "lastmod": "2026-09-19",
       "changefreq": "monthly"
     },
     {
@@ -89,7 +89,7 @@
     },
     {
       "path": "/vs-zotero/",
-      "lastmod": "2026-09-02",
+      "lastmod": "2026-09-19",
       "changefreq": "monthly"
     },
     {
@@ -104,7 +104,7 @@
     },
     {
       "path": "/vs-obsidian/",
-      "lastmod": "2026-09-02",
+      "lastmod": "2026-09-19",
       "changefreq": "monthly"
     },
     {
@@ -129,7 +129,7 @@
     },
     {
       "path": "/vs-mendeley/",
-      "lastmod": "2026-09-02",
+      "lastmod": "2026-09-19",
       "changefreq": "monthly"
     },
     {
@@ -384,7 +384,7 @@
     },
     {
       "path": "/changelog/",
-      "lastmod": "2026-09-17",
+      "lastmod": "2026-09-19",
       "changefreq": "weekly"
     }
   ]
