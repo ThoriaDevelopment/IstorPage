@@ -717,23 +717,74 @@
 
 <!-- The page's one script, and its absence is invisible.
 
-     Three jobs, no dependencies, and every one of them degrades to the
+     Four jobs, no dependencies, and every one of them degrades to the
      finished state if it never runs:
 
-       * the nav's hairline (M1) — without it the nav has no rule, which is
-         what it looks like at the top of the page anyway;
+       * the nav's hairline and its progress line (M1) — without them the nav
+         has no rule and no orientation cue, which is what the top of the page
+         looks like anyway;
        * the panel entrances (M3, M5) — the elements are authored visible, and
          this only dims them for a visitor who has not scrolled there yet;
        * the citation witness (M4) — CSS already opens it on hover and on
          focus-within, so the button is an addition for touch, not the
-         mechanism.
+         mechanism;
+       * the close's parallax (M6, second half) — the wordmark and the window
+         are authored where they belong, and this only displaces them while the
+         close is on screen.
 
      It deliberately does NOT gate anything behind `no-preference` in JS: the
      CSS media query handles reduced motion, and duplicating that check here
-     would be a second source of truth for one decision. -->
+     would be a second source of truth for one decision.
+
+     THE AUTHORED-VISIBLE TRICK, which is load-bearing for more than this file.
+     `is-cold` is added by the script at run time and removed on arrival, so the
+     page is authored in its FINISHED state and the hidden state is the one that
+     has to be switched on. A visitor whose script is blocked, broken or
+     disabled therefore sees the finished page rather than a column of invisible
+     sections, and the observers are never needed for correctness, only for the
+     animation. The same holds for the two entrance transitions and the parallax.
+
+     THE PARALLAX, and why it is anchored where it is. The plan asks for it —
+     "the wordmark passes behind the product, with a small parallax" — and it is
+     what turns the poster from a wordmark with a window sitting on it into two
+     layers at different distances. The report's #13 is that the layering is the
+     move everyone skips.
+
+     The displacement is ZERO when the close's centre crosses the centre of the
+     viewport, and it grows to 14px on the wordmark and 7px on the window in
+     opposite directions at the ends of that transit. So the two layers separate
+     as the reader scrolls and the composition they were designed in is the one
+     in the middle of it. Anchoring to the element's top edge instead would leave
+     the mark permanently offset from that composition, and the reader would
+     never see it.
+
+     NO INTERSECTIONOBSERVER, and that is a decision worth recording, because the
+     first version had one to stop the work when the close left the screen. It was
+     unnecessary and it was dangerous. Unnecessary, because the displacement only
+     changes while the close is on screen anyway: it is clamped at both ends, so
+     off-screen it is pinned and the writes stop on their own. Dangerous, because
+     a feature whose only trigger is an observer callback is a feature that
+     silently does nothing wherever that callback does not arrive, and the page
+     would have shipped with a parallax that worked for its author and for nobody
+     who mattered. What is left is one rect read per scroll and, usually, no write
+     at all: the last value is cached and only a change is applied.
+
+     It also runs inside the nav's ONE scroll listener rather than adding a
+     second, so the eleven acts above it cost nothing.
+
+     This note is not in the script as a `//` comment because the plan's budget
+     is 4 KB of JS and comments inside `<script>` ship. Notes in the markup do
+     not: `inline_markup()` in build-site.py strips them on the way in, exactly
+     as `inline_css()` strips the stylesheet's. The reasoning is worth keeping
+     and not worth posting, and this is where it is kept. -->
 <script>
 (function () {
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // M6's parallax is written below, after the observer that decides whether the
+  // close is on screen. It hangs off this variable so the page keeps ONE scroll
+  // listener rather than two: the nav's, which already runs on every scroll.
+  var paintPoster = null;
 
   // M1 · the nav's hairline.
   var nav = document.getElementById('nav');
@@ -746,6 +797,7 @@
         var ratio = pageHeight > 0 ? Math.min(1, window.scrollY / pageHeight) : 0;
         progress.style.transform = 'scaleX(' + ratio + ')';
       }
+      if (paintPoster) paintPoster();
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -753,13 +805,7 @@
 
   if (!('IntersectionObserver' in window)) return;
 
-  // M3 / M5 · panel entrances.
-  //
-  // `is-cold` is added HERE, at run time, and removed on arrival. That is the
-  // whole trick: the page is authored in its finished state, so a visitor whose
-  // script is blocked, broken or disabled sees the finished page rather than a
-  // column of invisible sections. It also means the observer is never needed for
-  // correctness, only for the animation.
+  // M3 / M5 · panel entrances. See the note above the script for `is-cold`.
   var reveals = document.querySelectorAll('.reveal');
   if (reveals.length && !reduced) {
     var io = new IntersectionObserver(function (entries) {
@@ -789,8 +835,7 @@
     });
   }
 
-  // M6 · the close's re-ink. Authored inked; this only dims it for a visitor
-  // who has not reached it.
+  // M6 · the close's re-ink. Authored inked; this only dims it below the fold.
   var mark = document.getElementById('close-mark');
   if (mark && !reduced && mark.getBoundingClientRect().top >= window.innerHeight) {
     mark.classList.add('is-cold');
@@ -804,6 +849,26 @@
       }
     }, { threshold: 0.4 });
     mo.observe(mark);
+  }
+
+  // M6, the second half: the close's parallax. See the note above the script.
+  var poster = document.querySelector('.poster');
+  var posterWin = poster && poster.querySelector('.win');
+  if (poster && posterWin && mark && !reduced) {
+    var lastMark = null, lastWin = null;
+    paintPoster = function () {
+      var box = poster.getBoundingClientRect();
+      var fromCentre = (box.top + box.height / 2) - window.innerHeight / 2;
+      var t = Math.max(-0.5, Math.min(0.5, fromCentre / window.innerHeight));
+      // The wordmark is the LAYER BEHIND, so it moves slower than the scroll,
+      // and the window is in front, so it moves faster. The sign is the whole
+      // effect: get it the wrong way round and the wordmark reads as the thing
+      // in front, which is the opposite of what this page is saying.
+      var mv = (t * -28).toFixed(1), wv = (t * 14).toFixed(1);
+      if (mv !== lastMark) { mark.style.transform = 'translate3d(0,' + mv + 'px,0)'; lastMark = mv; }
+      if (wv !== lastWin) { posterWin.style.transform = 'translate3d(0,' + wv + 'px,0)'; lastWin = wv; }
+    };
+    paintPoster();
   }
 })();
 </script>
