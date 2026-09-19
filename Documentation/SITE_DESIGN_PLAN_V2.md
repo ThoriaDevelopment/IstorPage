@@ -315,6 +315,25 @@ nothing — and it turns a fact into a system: the window always *contrasts* its
 reads as an object. In the field, a 1px `--rule-field` seam separates window from ground, which is
 Tempo's measured technique. On paper the `--shadow` does the separating instead.
 
+### 3.5 The library's theme control
+
+The 75 carried pages follow the reader's operating system and have done since they were built, and
+`styles.css` has carried `.theme-toggle`, `.icon-sun` and `.icon-moon` rules the whole time. What
+was missing was anything that *writes* a choice, so the explicit preference the stylesheet already
+has a rule for ("an explicit light choice still wins over the media query") was unreachable. The
+header now carries that control, and it writes the same `istor.site.theme` key the inline stamp
+reads before first paint, so a choice survives the next page and never flashes.
+
+It is one shared `/theme.js` rather than a script in each page, and the button is 143 B of markup
+plus 44 B of script tag: **187 B per page, 14,025 B across the library**, asserted exactly. The
+button is authored `hidden` and revealed by the script, so a reader whose scripting is blocked gets
+the page they always had instead of a control that cannot act. Its two icons are Lucide's sun and
+crescent carried as CSS masks rather than as inline SVG, because the same two glyphs written into 75
+headers would be 24 KB for 16px of drawing. Contrast is measured on both grounds at the button's
+own hover: 5.36:1 and 5.14:1 on the light grounds, 7.70:1 and 7.17:1 on the dark ones. Verified in a
+browser rather than argued: a click on a machine set to dark stores `light`, and the next library
+page arrives light.
+
 ---
 
 ## §4 · Colour
@@ -711,7 +730,7 @@ previous figure byte-for-byte, which is the check that the method is the same on
 | Fonts (3 files) | ≈ 65 KB | **63 KB** |
 | Ground grain + og-card | ≈ 124 KB | **121 KB** |
 | `index.html` incl. inline CSS | ≈ 55 KB | **72 KB** |
-| **Artifact (everything shipped)** | **≈ 2.5–3.0 MB** | **4.10 MiB**, 155 files |
+| **Artifact (everything shipped)** | **≈ 2.5–3.0 MB** | **4.12 MiB**, 156 files |
 | **First screen** (document, 3 fonts, ground tile) | — | **135 KB** |
 | **The whole page read, desktop** (AVIF 2×) | **≈ 550 KB** | **451 KB** |
 | **The whole page read, phone** (AVIF 1×, with the phone crops) | **≈ 320 KB** | **217 KB** |
@@ -721,7 +740,7 @@ because four wide exhibits now carry a second, art-directed crop instead of none
 while **what a phone downloads falls, 257 KB to 217 KB**, which is the whole point of the change and
 would be invisible in an inventory row alone. `index.html` is 10 KB heavier than the table's old
 figure, spent across the acts rather than in one place, and `budget.json`'s own note itemises every
-step of it. The artifact row gains the 27,094 B library index and its 155th file. The estimate column
+step of it. The artifact row gains the 27,281 B library index and its 155th file, plus the library's shared theme control, `/theme.js` at 3,924 B, which is the 156th and the only file added to this count without adding a page. The estimate column
 is left as it was written, so the gap between the estimate and the measurement stays legible: this
 page is heavier than the plan guessed in the exhibit sets and much heavier in the document, and it is
 still under Thoria's 2–5 MB envelope, with a first screen of 135 KB.

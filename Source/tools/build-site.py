@@ -132,7 +132,11 @@ EXPORT_SUFFIXES = [".avif", ".webp", "@2x.avif", "@2x.webp"]   # 52 files over 1
 # The library's non-page directories. The page directories are found by the
 # index.html test below; these three are carried whole, outside that test.
 LIBRARY_TREES = ["assets", "brand"]
-LIBRARY_FILES = ["styles.css"]
+# styles.css and theme.js are shared by every library page, so they sit at the
+# site root rather than being duplicated into each page directory. theme.js is
+# the theme control: one file, because 75 copies of the same 1.4 KB would be
+# 105 KB of duplicated bytes and a fix would be 75 edits.
+LIBRARY_FILES = ["styles.css", "theme.js"]
 LIBRARY_ROOT_FILES = ["robots.txt", "08eaa6e8b97d4b94943057b2c49bd712.txt"]
 
 # The three splice sites in Source/index.html. `kind` is only for the error

@@ -85,6 +85,11 @@ DESC = re.compile(r'<meta name="description" content="(.*?)"\s*/>', re.S)
 HEAD = re.compile(r"<header class=\"page-head\">.*?</header>", re.S)
 FOOT = re.compile(r"<footer class=\"page-foot\">.*?</footer>", re.S)
 THEME_SCRIPT = re.compile(r"<script>\s*\(function \(\) \{.*?</script>", re.S)
+# The library's one deferred script: the theme control's behaviour. The index
+# lifts it rather than naming the file a second time, for the same reason it
+# lifts the header — the button the header supplies is inert without this file,
+# and a lift that cannot find it raises instead of shipping that button dead.
+THEME_JS = re.compile(r'<script src="/theme\.js" defer></script>')
 
 
 class MissingCopy(Exception):
@@ -139,6 +144,7 @@ def build() -> str:
     head = _lift(HEAD, sample, "header")
     foot = _lift(FOOT, sample, "footer")
     theme = _lift(THEME_SCRIPT, sample, "theme guard")
+    theme_js = _lift(THEME_JS, sample, "theme control script")
     # ...minus the link back to this page, which is the one link that cannot be
     # on it. Written as a removal rather than as an omission so the rest of the
     # footer stays byte-for-byte the library's.
@@ -174,6 +180,7 @@ def build() -> str:
         "",
         "  " + theme,
         '  <link rel="stylesheet" href="/styles.css" />',
+        "  " + theme_js,
         "</head>",
         "<body>",
         "",

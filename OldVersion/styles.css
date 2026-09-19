@@ -59,6 +59,17 @@
 
   /* every entrance on the page leaves through this one curve */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* The theme control's two icons, in Lucide's own 24-box geometry (the
+     sun's disc and eight rays, the crescent), carried as masks rather
+     than as inline SVG. A library page is 75 files that already
+     duplicate an inline theme stamp; the same two icons written into
+     each header would be 24 KB of repeated markup for 16px of drawing,
+     and the button itself is 140 B per page. So the artwork ships once,
+     here, and the button tints it with currentColor. Black strokes are
+     opaque, which is all a mask reads. */
+  --i-sun: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41'/%3E%3C/svg%3E");
+  --i-moon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401'/%3E%3C/svg%3E");
 }
 
 :root[data-theme="dark"] {
@@ -256,13 +267,44 @@ a { color: inherit; }
   background: none;
   color: var(--mist);
   cursor: pointer;
+  /* the header is space-between, so this rides to the right beside the
+     CTA instead of leaving a gap in the middle of the row */
+  margin-left: auto;
 }
 
 .theme-toggle:hover { color: var(--ink); background: var(--subtle); }
 
-.icon-moon { display: none; }
-:root[data-theme="dark"] .icon-moon { display: block; }
-:root[data-theme="dark"] .icon-sun { display: none; }
+/* The global `:focus-visible` rule squares an element's corners to 2px, which
+   is right for a text link and wrong for a round control: the outline follows
+   the element's radius, so on this button the site's focus ring would arrive
+   as a rounded square around a circle. Same ring, the button's own shape. */
+.theme-toggle:focus-visible { border-radius: 999px; }
+
+/* The icon is the state: a sun while the page is light, a crescent while
+   it is dark. The disc's colour is measured on both grounds it has to sit
+   on, at the button's own hover: #6E6A66 on --canvas is 5.36:1 and on
+   --subtle 5.14:1, #A5A19B on the dark --canvas is 7.70:1 and on --subtle
+   7.17:1. All four clear the 3:1 floor for a graphic, with room over it. */
+.theme-toggle::before {
+  content: "";
+  width: 1rem;
+  height: 1rem;
+  background: currentColor;
+  -webkit-mask: var(--i-sun) center / 1rem 1rem no-repeat;
+  mask: var(--i-sun) center / 1rem 1rem no-repeat;
+}
+
+:root[data-theme="dark"] .theme-toggle::before {
+  -webkit-mask-image: var(--i-moon);
+  mask-image: var(--i-moon);
+}
+
+/* The toggle is authored `hidden` and revealed by theme.js, because a
+   control that cannot act is worse than no control. That only holds if the
+   attribute outranks the `display` above it, since a `display` declaration
+   beats the user agent's rule — the same guard the landing page's window
+   carries. */
+.page-head [hidden] { display: none; }
 
 /* ── buttons ────────────────────────────────────────────────────── */
 
@@ -1354,8 +1396,12 @@ a { color: inherit; }
    A minimal article scaffold for the comparison and question
    pages. It reuses the tokens, fonts and buttons above; it adds
    only layout: a slim header bar, a centered prose measure, and
-   a footer. No scripts run here, so everything below must hold
-   with the inline theme stamp and the media queries alone. */
+   a footer. Each page carries just two scripts: the inline theme
+   stamp in its head, which runs before first paint, and theme.js,
+   which only ever reveals and operates the header's theme control.
+   Everything in this section has to hold with the stamp and the
+   media queries alone, because theme.js is deferred and the prose
+   it surrounds must never depend on it. */
 
 .page-head {
   border-bottom: 1px solid var(--hairline);

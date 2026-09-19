@@ -63,9 +63,12 @@ NOT_AN_ARTICLE = {"library"}
 LIBRARY_TOC = NOT_A_PAGE | NOT_AN_ARTICLE
 
 LIBRARY_PAGES = 75
-LIBRARY_STYLES_BYTES = 36191          # §1.1: /styles.css is the library's file
-ARTIFACT_FILES = 155                  # 138 + the four phone crops' 16 files + the library index
-                                      # (9 exhibits x 4 files = 36, was 3 x 6 = 18)
+# §1.1: /styles.css is the library's file. This number is also in budget.json, and
+# the duplication is deliberate: the two tools read the same artifact by different
+# routes, so a size that only one of them knows about is itself the finding.
+LIBRARY_STYLES_BYTES = 39119
+ARTIFACT_FILES = 156                  # 138 + the four phone crops' 16 files + the library index
+                                      # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
 
 # Check 8's marker. If the assembler ever globs OldVersion/ instead of copying by
 # allowlist, the previous home page ships at this path and every other check here

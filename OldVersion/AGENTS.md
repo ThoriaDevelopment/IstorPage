@@ -41,6 +41,14 @@ edit at least once:
   byte-identically, inside `@media (prefers-color-scheme: dark)` under
   `:root:not([data-theme="light"])`. The duplicate exists so the page paints
   correctly before JavaScript runs. Update both or the pre-JS flash regresses.
+- **MUST: the library's theme control stays optional.** `theme.js` is the only
+  script the library shares. It reveals and operates `.theme-toggle` in the
+  header and writes `istor.site.theme`, the key each page's inline head stamp
+  reads before first paint. The button is authored `hidden` in the markup and
+  must stay that way: with scripting off the reader gets the page they had,
+  never a control that cannot act. The `.page-head [hidden]` guard in
+  `styles.css` is what makes the attribute outrank the button's own `display`.
+  One file for 75 pages, because a fix here should be a one-file fix.
 - **MUST NOT touch `08eaa6e8b97d4b94943057b2c49bd712.txt`.** It is the IndexNow
   key. It stays at the root, named exactly that, holding exactly that string,
   or IndexNow submissions stop verifying.

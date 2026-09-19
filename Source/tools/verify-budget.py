@@ -62,8 +62,11 @@ DUPLICATED = [
 # v1 was 120; v2 is 154. The first +18 was the export set: v1 shipped 3 exhibits x
 # 6 files (AVIF/WebP/PNG at 1x and 2x) = 18, and v2 ships 9 exhibits x 4 files (the
 # same, minus PNG) = 36. The second, on 2026-09-19, is the phone crops: four more
-# crops x 4 files = 16, which took the set to 52. Everything else is unchanged.
-ARTIFACT_FILES = 155                  # + the generated library index
+# crops x 4 files = 16, which took the set to 52. The third, same night, is
+# /theme.js: the library's theme control is one shared file rather than a script
+# copied into each of the 75 pages, which is the only shape that keeps a fix to
+# it a one-file edit.
+ARTIFACT_FILES = 156                  # + the generated library index
 
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 # The library index lives at /library/ and is a page, but it is not one of the 75
