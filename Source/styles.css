@@ -549,6 +549,25 @@ h3 {
   white-space: nowrap;
 }
 
+/* The hero's rail is the one place where the replica doubles as the page's own
+   table of contents, and it was being drawn in a colour no rail in the app has.
+   `.field a` was painting all seven rows --azure-lift; measured against
+   exhibit-16, the app's rows are grey and the row you are on carries a filled
+   pill. So the rows take the app's grey and "which section am I in" is answered
+   in the app's own selection grammar rather than in a colour of the page's own.
+   The pill's radius is --r-cite, the same token the rail's own filter uses. */
+.rail-nav { margin-inline: -8px; }
+.rail-nav li { padding: 0; }
+.rail-nav a {
+  display: block;
+  padding: 5px 8px;
+  border-radius: var(--r-cite);
+  color: var(--ink-2);
+  text-decoration: none;
+}
+.rail-nav a:hover { color: var(--ink); }
+.rail-nav a[aria-current] { background: var(--fill); color: var(--ink); }
+
 .rail-foot {
   display: flex;
   align-items: center;

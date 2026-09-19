@@ -731,6 +731,16 @@
          invisible, while a stale half-second of teal behind paper leaves
          near-white nav text on a near-white ground. So it recomputes whenever
          the layout can have changed, and never on scroll alone;
+
+       * which section the reader is in (M1c), for the hero rail. That rail is
+         the app's Library rail drawn with this page's own sections as its rows,
+         which makes it the one place where the replica doubles as a table of
+         contents. It carried `aria-current` on its first row and nothing ever
+         moved it, so for the whole page below the hero it told a screen reader
+         the reader was somewhere they were not. A stale current-location is a
+         worse signal than no current-location. The section offsets are cached
+         with the hero's, on the same resize and pageshow, so the per-scroll cost
+         is arithmetic and the page still has exactly one scroll listener;
        * the panel entrances (M3, M5) — the elements are authored visible, and
          this only dims them for a visitor who has not scrolled there yet;
        * the citation witness (M4) — CSS already opens it on hover and on
@@ -799,19 +809,40 @@
   if (nav) {
     var progress = nav.querySelector('.reading-progress > span');
 
-    // M1b · is the nav still inside C1's field? See the note above the script.
+    // M1b and M1c. See the note above the script for both.
     var hero = document.querySelector('.field.hero');
-    var heroBottom = 0;
-    var measureHero = function () {
+    var rail = document.querySelector('.rail-nav');
+    var heroBottom = 0, railLinks = [], railTops = [], railCurrent = null;
+    var measure = function () {
       if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
+      railLinks = [];
+      railTops = [];
+      if (!rail) return;
+      rail.querySelectorAll('a').forEach(function (a) {
+        var t = document.getElementById(a.getAttribute('href').slice(1));
+        if (!t) return;
+        railLinks.push(a);
+        railTops.push(t.getBoundingClientRect().top + window.scrollY);
+      });
     };
-    measureHero();
+    measure();
 
     var onScroll = function () {
       nav.classList.toggle('is-stuck', window.scrollY > 8);
       if (hero) {
         nav.classList.toggle('over-field', window.scrollY + nav.offsetHeight < heroBottom);
       }
+
+      // Only the row that changes is written to, so a scroll costs one compare
+      // loop and at most two attribute writes rather than seven.
+      var line = window.scrollY + window.innerHeight * 0.34, next = null;
+      for (var i = 0; i < railTops.length && railTops[i] <= line; i++) next = railLinks[i];
+      if (next !== railCurrent) {
+        if (railCurrent) railCurrent.removeAttribute('aria-current');
+        if (next) next.setAttribute('aria-current', 'location');
+        railCurrent = next;
+      }
+
       if (progress) {
         var pageHeight = document.documentElement.scrollHeight - window.innerHeight;
         var ratio = pageHeight > 0 ? Math.min(1, window.scrollY / pageHeight) : 0;
@@ -821,7 +852,7 @@
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', function () { measureHero(); onScroll(); });
+    window.addEventListener('resize', function () { measure(); onScroll(); });
     window.addEventListener('pageshow', onScroll);
   }
 
