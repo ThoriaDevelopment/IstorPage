@@ -870,17 +870,32 @@ walked and how many elements it could not measure: a clean result that covered s
 long page is not a clean result.
 
 **It audits the states a render never shows, too.** §3.6 promises `prefers-contrast: more` on both
-halves, and until 2026-09-19 only the *existence* of those blocks was asserted, which is a claim
-about the source rather than about the page. Chrome's command line has no switch for the feature, so
-the audit emulates it the way a browser resolves one, in the cascade: the framed page is asked for
-its own `@media` rules, the ones matching the requested state are unwrapped, and their inner rules
-are appended where they would have landed. Nothing is invented in the tool and no colour is written
-down there, which makes the failure mode the honest one: **every emulated state prints how many of
-the page's own rules it found**, because zero rules is a page that does not style the state, not a
-state that passed. Which is measurable now: all five states of the landing page, both theme passes
-of `/library/` and of `/vs-chatgpt/`, and the same again at 390px, are clean under AA, and none of
-them was clean by accident, since a copy of the artifact with a bad contrast block reports **61**
-failures under the emulated state and zero without it.
+halves, and §3.4's theme architecture promises a dark world to a reader whose machine is dark and
+who has stored no choice. Until 2026-09-19 only the *existence* of those rules was asserted, which is
+a claim about the source rather than about the page, and for the dark one it was worse than that:
+headless Chrome reports a light OS, so `:root:not([data-theme="light"])` had never been rendered by
+anything. Chrome's command line has no switch for either feature, so the audit emulates them where a
+browser resolves them, which is **two** places: the framed page's own matching `@media` rules are
+unwrapped and appended where they would have landed, and the copy this run serves carries a
+`matchMedia` patch installed before the page's first script. The second one is not a refinement. The
+theme stamp asks `matchMedia('(prefers-color-scheme: dark)')` in the head and writes `data-theme`
+from the answer, and an attribute outranks every media rule, so the first version emulated the
+scheme in the cascade alone, matched the rule, injected it, and measured the LIGHT tokens: a clean
+`ok` about a state it had never entered. The patch's own failure is the same lesson twice over, since
+it threw on its first run (a Python string ate its backslashes) and the run said `ok` again, so now
+a state whose patch did not install is an **error**, not a pass.
+
+Nothing is invented in the tool and no colour is written down there, which makes the failure mode
+the honest one: **every emulated state prints how many of the page's own rules it found**, because
+zero rules is a page that does not style the state, not a state that passed. The landing page is
+audited in three states and the library in four, at 1440 and at 390, and all of them are clean under
+AA, and none of them was clean by accident: a copy of the artifact with a bad contrast block reports
+**61** failures under the emulated state and zero without it. Two of those states are the ones no
+render had ever covered, and both now confirm what the stylesheet says rather than what it promises:
+a dark machine with no stored choice gets the dark world (`--canvas` #0A0A0A, `--mist` #A5A19B), and
+a stored light choice still wins on that same machine. The landing page reports **zero** rules for a
+dark machine, which is also true of it: it ships one world and has no dark theme at all, which §3.4
+and the print block both say in passing and nothing has ever questioned.
 
 Turning the feature on immediately found three numbers that were wrong in the stylesheet that
 promises it. `Source/styles.css` recorded `--ink-2` going to 9.8:1 and `--ink-3` to 8.4:1 under

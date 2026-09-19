@@ -63,20 +63,47 @@ printed beside every ratio, so a wide spread reads as a wide spread instead of
 hiding behind one number. A ground that is a photograph or a mask is still not
 measured, and is still counted rather than guessed.
 
-WHAT IT EMULATES. Chrome's command line has no switch for `prefers-contrast`, so
-the audit fakes the media feature where a browser resolves one: in the cascade. The
-framed page is asked for its own `@media` rules, the ones whose condition matches
-the requested state are unwrapped, and their inner rules are appended as one plain
-stylesheet at the end of the head, which is where they would have landed anyway.
+WHAT IT EMULATES, AND IN TWO PLACES. Chrome's command line has no switch for these
+features, so the audit fakes them where a browser resolves them, which turns out to
+be two places and not one.
+
+  * **The cascade.** The framed page is asked for its own `@media` rules, the ones
+    whose condition matches the requested state are unwrapped, and their inner
+    rules are appended as one plain stylesheet at the end of the head, which is
+    where they would have landed anyway.
+  * **`matchMedia`.** The server that feeds the iframe injects a patch into the
+    head of every page it serves while a state is being emulated, and it has to,
+    because a media feature is not only a CSS feature. This site's theme stamp runs
+    in the page's head, asks `matchMedia('(prefers-color-scheme: dark)')` and writes
+    `data-theme` from the answer, and an attribute outranks every media rule: the
+    first version emulated the scheme in the cascade only, matched the rule,
+    injected it, and then measured the LIGHT tokens because the stamp had already
+    decided. Everything outside the emulated features is answered by the real
+    browser, and a compound query keeps its real half, so `dark and (min-width:
+    900px)` matches a 1440px window and does not match a 3000px one.
+
 Nothing is invented here, no colour is written down in this file, and the tool is
 asserting the stylesheet's own promise back at it rather than restating it. Which
 makes the failure mode the honest one: a page that does not style the state comes
 back with **zero rules**, and the report prints that count on every emulated state,
-because zero rules is a gap and not a pass. Its two stated limits: every other
-condition in a compound rule is the browser's to answer and it answers for the
-machine as it really is, so `prefers-contrast: more and prefers-color-scheme: dark`
-correctly does not apply to a stamped dark theme on a light machine; and a media
-rule nested inside a `@supports` would not be reached by the walk.
+because zero rules is a gap and not a pass. The patch sets a marker, and a run that
+asked for a state it could not install is reported as an ERROR rather than as a
+clean page: the first version of the patch threw inside its own IIFE (a Python
+string was eating its backslashes), `matchMedia` stayed the browser's, and the
+report said `ok` about a dark-OS state it had never entered. The other stated limit:
+a media rule nested inside a `@supports` would not be reached by the walk.
+
+WHAT STATES THAT MEANS, and why the list is not arbitrary. The landing page ships
+one world and is audited in it, plus the two emulated states it can be asked for.
+A library page ships four, and all four are rendered: as authored by a reader who
+has never touched the theme control (which on a light machine is light), that same
+reader on a dark machine with no stored choice, a reader who has stored a choice,
+and each of those under `prefers-contrast: more`. The dark-OS state is the one this
+tool spent its whole life assuming: headless Chrome reports a light OS, so the
+`:root:not([data-theme="light"])` half of the library's theme was asserted from the
+source and never rendered, which is exactly the claim this file exists not to make.
+Two facts it now measures rather than repeats: a dark machine with no stored choice
+gets the dark world, and a stored light choice still wins on that same machine.
 
 WHAT IT SETTLES FIRST. `is-cold` is this site's name for not-yet-revealed, and the
 revealing observers answer a real visitor's scrolling rather than a programmatic
@@ -387,6 +414,7 @@ PROBE = r"""
     /* How many of the page's own media rules the harness unwrapped to emulate
        the requested state. Zero means the page does not style that state. */
     mediaRules: w.__auditMediaRules || 0,
+    mediaPatch: w.__auditMediaPatch || "",
     checked: one.checked,
     viewports: one.viewports,
     viewportHeight: w.innerHeight,
@@ -415,52 +443,49 @@ if (THEME) {{ try {{ localStorage.setItem('istor.site.theme', THEME); }} catch (
 var SCROLL = parseInt((new URLSearchParams(location.search).get('scroll') || '0'), 10);
 
 /* THE MEDIA STATE IS EMULATED HERE, and that is a choice worth stating. Chrome's
-   command line has no switch for prefers-contrast, and the honest place to fake a
-   media feature is the same place a browser resolves one: in the cascade. So the
-   framed page is asked for its own @media rules, the ones whose condition matches
-   the requested state are unwrapped, and their inner rules are appended as one
-   plain stylesheet at the end of the head, which is where they would have landed.
-   Nothing is invented; no colour is written down here. Which means the failure
-   mode is the honest one: a page that does not style this state comes back with
-   zero rules, and zero rules is REPORTED rather than read as a pass. */
+   command line has no switch for these features, and the honest place to fake one
+   is the same place a browser resolves one: in the cascade. So the framed page is
+   asked for its own @media rules, the ones whose condition matches the requested
+   state are unwrapped, and their inner rules are appended as one plain stylesheet
+   at the end of the head, which is where they would have landed. Nothing is
+   invented; no colour is written down here. Which means the failure mode is the
+   honest one: a page that does not style this state comes back with zero rules,
+   and zero rules is REPORTED rather than read as a pass.
+
+   THE ANSWER TO "DOES THIS CONDITION MATCH" COMES FROM THE PATCHED matchMedia, and
+   not from a parser here. That is the whole trick, and it took a wrong version to
+   find: the library's theme stamp runs in the page's head and writes `data-theme`
+   from `matchMedia('(prefers-color-scheme: dark)')`, which outranks every media
+   rule in the stylesheet. Emulating the feature in the cascade alone therefore
+   emulated nothing at all on the one page that has a dark OS world to test: the
+   run matched the rule, injected it, and measured the LIGHT tokens, because the
+   stamp had already decided. The server that feeds this iframe now injects a
+   matchMedia patch before the page's first script (see MEDIA_PATCH), so the CSS
+   and the script see one world. */
 var MEDIA = {media};
-function mediaMatches(cond, w, want) {{
-  var parts = String(cond || '').split(/\\s+and\\s+/i), ok = true;
-  for (var i = 0; i < parts.length; i++) {{
-    var p = parts[i].trim();
-    if (!p) continue;
-    if (/prefers-contrast/i.test(p)) {{
-      /* "(prefers-contrast: more)", "(prefers-contrast: less)", and the bare
-         "(prefers-contrast)", which asks for more. */
-      var asked = !/:/.test(p) ? 'more'
-                 : p.slice(p.indexOf(':') + 1).replace(/[^a-z-]/gi, '').toLowerCase();
-      ok = ok && asked === want;
-    }} else {{
-      /* Every other condition is the browser's to answer, and it answers for the
-         machine as it really is: this harness emulates contrast and nothing
-         else. That is why a rule written as "contrast and dark OS" does not
-         apply to a stamped dark theme on a light machine, which is correct and
-         is also the reason the library carries a plain [data-theme="dark"] copy
-         of the same tokens. */
-      ok = ok && w.matchMedia(p).matches;
-    }}
-  }}
-  return ok;
+var EMULATED = [];
+for (var k in MEDIA) if (MEDIA.hasOwnProperty(k)) EMULATED.push(k);
+function mediaMatches(cond, w) {{
+  var q = String(cond || '').trim();
+  return w.matchMedia(q || 'all').matches;
 }}
 function emulateMedia(d, w, want) {{
   var n = 0, sheets = d.styleSheets;
+  var named = new RegExp('(' + EMULATED.join('|') + ')', 'i');
   var walk = function (rules) {{
     for (var i = 0; i < rules.length; i++) {{
       var r = rules[i];
       if (r.type !== 4) continue;                 /* 4 is CSSRule.MEDIA_RULE */
-      /* Only a rule that NAMES the emulated feature is touched. A width query
+      /* Only a rule that NAMES an emulated feature is touched. A width query
          matches at this width anyway, so unwrapping one would inject a second
          copy of rules that already apply, and the count reported beside every
          emulated state would then be a count of nothing in particular. */
       var cond = String(r.conditionText || '');
-      if (/prefers-contrast/i.test(cond) && mediaMatches(cond, w, want)) {{
+      if (EMULATED.length && named.test(cond) && mediaMatches(cond, w)) {{
         var st = d.createElement('style');
-        st.setAttribute('data-audit-media', 'prefers-contrast:' + want);
+        var label = [];
+        for (var k in want) if (want.hasOwnProperty(k)) label.push(k + ':' + want[k]);
+        st.setAttribute('data-audit-media', label.join(' '));
         st.textContent = [].map.call(r.cssRules, function (x) {{ return x.cssText; }}).join('\\n');
         d.head.appendChild(st);
         n += 1;
@@ -488,7 +513,7 @@ f.addEventListener('load', async function () {{
     if (!d || !d.body || !d.body.childElementCount) throw new Error('iframe is empty: ' + f.src);
     /* Injected BEFORE the settle, so anything the page transitions between the
        two palettes has finished by the time anything is measured. */
-    if (MEDIA) w.__auditMediaRules = emulateMedia(d, w, MEDIA);
+    if (EMULATED.length) w.__auditMediaRules = emulateMedia(d, w, MEDIA);
     await new Promise(function (r) {{ setTimeout(r, {settle}); }});
     if (SCROLL) {{
       w.scrollTo({{ top: SCROLL, behavior: 'instant' }});
@@ -505,6 +530,71 @@ setTimeout(function () {{ if (out.textContent === 'PENDING') out.textContent = '
 </script>
 </body></html>
 """
+
+
+# What the server injects into the head of every page it serves while a media
+# state is being emulated. It exists because `prefers-color-scheme` is not only a
+# CSS feature: this site's theme stamp reads it through `matchMedia` and writes
+# `data-theme` before first paint, and an attribute beats any media rule. Patch
+# the API and the page's own decision agrees with the stylesheet's; skip it and
+# the audit measures the light world while reporting that it matched the dark
+# rule, which is the quietest way a tool can lie.
+#
+# Only queries that NAME an emulated feature are answered here. Everything else
+# goes to the real `matchMedia`, and a compound query keeps its real half: the
+# emulated parts are removed, the rest is asked of the browser, and the two are
+# combined. A bare `(prefers-contrast)` asks for more, which is that feature's
+# own shorthand and the only one of these with a bare form.
+# Written as a RAW string on purpose. It is JavaScript full of backslashes inside
+# a template that is also formatted, and the first version was not raw: `\\(` in
+# a normal Python string arrives in the browser as `\(`, which a JS *string*
+# literal reads as a bare `(`, so the regex became a different regex with the
+# wrong groups. It threw, the exception killed the whole IIFE before the
+# assignment, `matchMedia` stayed the browser's, and the audit reported a
+# dark-OS run that had measured a light page with `0 media rules`. Nothing was
+# wrong with the finding; the run had not happened. Hence the marker below, which
+# run_state insists on seeing: a state that was not emulated is an ERROR here, not
+# a state that passed.
+MEDIA_PATCH = r"""<script>
+(function () {{
+  var EMU = {media}, keys = [], k;
+  for (k in EMU) if (EMU.hasOwnProperty(k)) keys.push(k);
+  if (!keys.length || !window.matchMedia) return;
+  var real = window.matchMedia.bind(window);
+  var NAMED = new RegExp('^\\(\\s*(' + keys.join('|') + ')\\s*(?::\\s*([^)]+?)\\s*)?\\)$', 'i');
+  window.matchMedia = function (query) {{
+    var q = String(query == null ? '' : query);
+    var parts = q.split(/\s+and\s+/i), keep = [], emulated = false, ok = true;
+    for (var i = 0; i < parts.length; i++) {{
+      var p = parts[i].trim(), m = NAMED.exec(p);
+      if (m) {{
+        emulated = true;
+        if ((m[2] || 'more').trim().toLowerCase() !== EMU[m[1].toLowerCase()]) ok = false;
+      }} else if (p) {{
+        keep.push(p);
+      }}
+    }}
+    if (!emulated) return real(q);
+    var rest = keep.length ? real(keep.join(' and ')) : {{ matches: true }};
+    var noop = function () {{}};
+    return {{ matches: ok && rest.matches, media: q, onchange: null,
+             addListener: noop, removeListener: noop,
+             addEventListener: noop, removeEventListener: noop,
+             dispatchEvent: function () {{ return false; }} }};
+  }};
+  window.__auditMediaPatch = keys.join(',');
+}})();
+</script>
+"""
+
+
+def inject_patch(html, patch):
+    """Put the media patch at the top of `<head>`, which is before anything the
+    page runs on its own. A document with no head gets it prepended."""
+    m = re.search(r"<head[^>]*>", html, re.I)
+    if not m:
+        return patch + html
+    return html[:m.end()] + patch + html[m.end():]
 
 
 # The pixel sampler. A ground that carries a gradient cannot be composited from
@@ -655,14 +745,48 @@ function ratio(a, b) {{
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     """`_site/` for everything, except our harnesses and screenshots, which live
-    in a temp dir. Nothing of ours may write into the artifact."""
+    in a temp dir. Nothing of ours may write into the artifact.
+
+    When a media state is being emulated, the served HTML carries MEDIA_PATCH at
+    the top of its head. The artifact on disk is untouched: what changes is the
+    copy this run is looking at, which is the only way to change what the page's
+    own scripts read out of `matchMedia`."""
 
     harness = ""
     sampler = ""
     shots: dict = {}
+    patch = ""
+    patch_scope = ""
 
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=kw.pop("directory"), **kw)
+
+    def do_GET(self):
+        patch = type(self).patch
+        path = self.translate_path(self.path)
+        # A directory is served as its index.html, and that resolution happens in
+        # send_head, which is one frame too late for us: asking for `/library/`
+        # arrived here as a directory and went out unpatched, which is exactly the
+        # shape of bug that looks like "the emulation does nothing".
+        if os.path.isdir(path):
+            path = os.path.join(path, "index.html")
+        # Both sides absolute: `--site` may arrive relative, and the directory the
+        # server was built with is not necessarily the one `abspath` was given.
+        scope = type(self).patch_scope
+        inside = bool(scope) and os.path.abspath(path).startswith(scope)
+        if not patch or not inside or not path.lower().endswith((".html", ".htm")):
+            return super().do_GET()
+        try:
+            with open(path, "rb") as fh:
+                body = fh.read().decode("utf-8", "replace")
+        except OSError:
+            return super().do_GET()
+        data = inject_patch(body, patch).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
 
     def translate_path(self, path):
         p = urllib.parse.urlsplit(path).path
@@ -722,19 +846,35 @@ def screenshot(chrome, profile, url, width, height, out):
     return out if os.path.exists(out) else None
 
 
+def media_label(media):
+    """`{"prefers-color-scheme": "dark", "prefers-contrast": "more"}` reads as
+    `os-dark+contrast-more`, sorted so the label is stable."""
+    if not media:
+        return ""
+    short = {"prefers-contrast": "contrast", "prefers-color-scheme": "os",
+             "prefers-reduced-motion": "motion"}
+    return "+".join("%s-%s" % (short.get(k, k.replace("prefers-", "")), v)
+                    for k, v in sorted(media.items()))
+
+
 def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
               media=None):
     """One theme and one media state, one render: probe the cascade, then sample
     the pixels of the SAME render. The theme is forced by the harness before the
     page is parsed, and the media state by unwrapping the page's own media rules
-    before anything is measured."""
+    before anything is measured. `media` is a map of feature to emulated value,
+    or None for the state the machine is actually in."""
     profile = os.path.join(tmp, "profile")
-    tag = "-".join(x for x in (theme or "asis", media or "") if x)
+    tag = "-".join(x for x in (theme or "asis", media_label(media)) if x)
     write(os.path.join(tmp, "audit-%s.html" % tag),
           HARNESS.format(w=width, h=height, url=page, expr=json.dumps(PROBE),
                          settle=settle, theme=json.dumps(theme or ""),
-                         media=json.dumps(media or "")))
+                         media=json.dumps(media or {})))
     Handler.harness = os.path.join(tmp, "audit-%s.html" % tag)
+    # The patch rides on the page the iframe loads, not on the harness, so it can
+    # only touch files under the site it was pointed at.
+    Handler.patch = MEDIA_PATCH.format(media=json.dumps(media or {})) if media else ""
+    Handler.patch_scope = os.path.abspath(site) + os.sep
     srv = http.server.ThreadingHTTPServer(
         ("127.0.0.1", 0), lambda *a, **kw: Handler(*a, directory=site, **kw))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -746,6 +886,13 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
         v = doc["value"]
         v["media"] = media
         v["mediaRules"] = v.get("mediaRules") or 0
+        # The patched matchMedia is what decides BOTH halves of this: whether the
+        # page's own scripts pick a world, and whether the emulation finds any rule
+        # to unwrap. If it did not install, this state was not audited at all, and
+        # saying "ok" about it would be the tool's worst possible answer.
+        if media and v.get("mediaPatch") != ",".join(sorted(media)):
+            v["error"] = ("the matchMedia patch did not install (%r), so the %s state "
+                          "was NOT emulated" % (v.get("mediaPatch"), media_label(media)))
         if not pixels or not v.get("gradient"):
             v["onPixels"] = []
             return v
@@ -768,7 +915,7 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
         write(os.path.join(tmp, "shot-%s.html" % tag),
               HARNESS.format(w=width, h=vh, url=page, expr=json.dumps("null"),
                              settle=settle, theme=json.dumps(theme or ""),
-                             media=json.dumps(media or "")))
+                             media=json.dumps(media or {})))
         Handler.harness = os.path.join(tmp, "shot-%s.html" % tag)
         # The image index is the POSITION in the shot list, not the viewport
         # number: the list only holds the viewports that had gradient text in
@@ -807,28 +954,53 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
         srv.shutdown()
 
 
+def media_states(contrast_more, os_dark, as_authored):
+    """The media states worth rendering for one theme pass.
+
+    `prefers-color-scheme` is emulated ONLY for the pass that forces no theme,
+    and deliberately: the library's rule for a dark OS is written as
+    `:root:not([data-theme="light"])`, so a stored choice outranks the machine and
+    a dark-OS run against a stamped theme would measure a world the reader does
+    not get. `contrast_more` is orthogonal and applies to both, because the stamp
+    and the contrast world are independent decisions."""
+    out = []
+    if contrast_more:
+        out.append({"prefers-contrast": "more"})
+    if os_dark and as_authored:
+        out.append({"prefers-color-scheme": "dark"})
+        if contrast_more:
+            out.append({"prefers-color-scheme": "dark", "prefers-contrast": "more"})
+    return out
+
+
 def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
-               contrast_more=True):
-    """Both themes of one page. The first pass forces nothing, so a page with no
-    theme control is audited in the state it actually ships in. With
-    contrast_more, each pass is repeated under an emulated prefers-contrast: more,
-    so what the stylesheets promise a reader who asks for it is measured rather
-    than assumed."""
+               contrast_more=True, os_dark=True):
+    """Every theme and media state this page can be delivered in, as a list.
+
+    The first pass forces nothing, so a page with no theme control is audited in
+    the state it actually ships in, and a page with one is audited in the state a
+    reader who has never touched that control arrives to. Each of those passes is
+    then repeated under the emulated media states from media_states(): what the
+    stylesheets promise a reader who asks for more contrast, and, for the unstamped
+    pass, what a reader on a dark machine is given with no stored choice at all.
+    Both were asserted before they were measured, and the second one is the state
+    no render on this machine had ever covered, because headless Chrome reports a
+    light OS."""
     first = run_state(chrome, site, tmp, page, width, height, settle, None, pixels)
     if first.get("error"):
         return first
-    out = {"first": first, "firstMore": None, "second": None, "secondMore": None}
-    if contrast_more:
-        out["firstMore"] = run_state(chrome, site, tmp, page, width, height, settle,
-                                     None, pixels, "more")
+    states = [first]
+    for media in media_states(contrast_more, os_dark, True):
+        states.append(run_state(chrome, site, tmp, page, width, height, settle,
+                                None, pixels, media))
     if (first.get("themeControl") or {}).get("found"):
         other = "dark" if first.get("state") != "dark" else "light"
-        out["second"] = run_state(chrome, site, tmp, page, width, height, settle,
-                                  other, pixels)
-        if contrast_more:
-            out["secondMore"] = run_state(chrome, site, tmp, page, width, height,
-                                          settle, other, pixels, "more")
-    return out
+        states.append(run_state(chrome, site, tmp, page, width, height, settle,
+                                other, pixels))
+        for media in media_states(contrast_more, os_dark, False):
+            states.append(run_state(chrome, site, tmp, page, width, height, settle,
+                                    other, pixels, media))
+    return {"states": states}
 
 
 def main(argv):
@@ -852,6 +1024,8 @@ def main(argv):
                     help="skip the screenshot pass; gradient grounds stay unmeasured")
     ap.add_argument("--no-contrast-more", action="store_true",
                     help="skip the emulated prefers-contrast: more pass")
+    ap.add_argument("--no-os-dark", action="store_true",
+                    help="skip the emulated dark-OS pass on the unstamped theme")
     ap.add_argument("--json", default=None, help="write the findings here")
     a = ap.parse_args(argv[1:])
 
@@ -866,14 +1040,14 @@ def main(argv):
         for page in pages:
             r = audit_page(chrome, a.site, tmp, page, a.width, a.height, a.settle,
                            pixels=not a.no_pixels,
-                           contrast_more=not a.no_contrast_more)
+                           contrast_more=not a.no_contrast_more,
+                           os_dark=not a.no_os_dark)
             if r.get("error"):
                 print("  FAIL  %s  %s" % (page, r["error"]))
                 failures += 1
                 findings.append({"page": page, "error": r["error"]})
                 continue
-            for state in ("first", "firstMore", "second", "secondMore"):
-                s = r.get(state)
+            for index, s in enumerate(r["states"]):
                 if not s:
                     continue
                 if s.get("unpixelled"):
@@ -881,12 +1055,12 @@ def main(argv):
                         print("  --    not sampled  %s  %s  %r"
                               % (u["sel"], u["reason"], u["text"]))
                 if s.get("error"):
-                    print("  FAIL  %s %s  %s" % (page, state, s["error"]))
+                    print("  FAIL  %s state %d  %s" % (page, index, s["error"]))
                     failures += 1
                     continue
                 label = "%s %s" % (page, s.get("state") or "single-theme")
                 if s.get("media"):
-                    label += " +" + s["media"]
+                    label += " +" + media_label(s["media"])
                 n_grad = len(s["gradient"])
                 on_pixels = [g for g in s.get("onPixels", []) if g.get("sampled")]
                 unpixelled = n_grad - len(on_pixels)
@@ -914,7 +1088,7 @@ def main(argv):
                     if not ctl.get("flipped"):
                         ctl_note += " NOT FLIPPED"
                         failures += 1
-                elif state == "first":
+                elif index == 0:
                     ctl_note = "  no theme control"
                 print("  %s  %-42s %3d elements  %2d views  %2d flat-fail  "
                       "%3d on pixels  %2d unmeasured  %2d replica  %d below AA%s"
@@ -946,7 +1120,11 @@ def main(argv):
 
     states = [f for f in findings if "checked" in f]
     emulated = [f for f in states if f.get("media")]
-    note = ("%d of them under emulated prefers-contrast: more" % len(emulated)
+    # Name the emulated states rather than counting them: "3 of them emulated" is
+    # not a report anybody can act on, and a run that silently dropped one because
+    # a page has no theme control would look identical to one that did not.
+    kinds = sorted({media_label(f["media"]) for f in emulated})
+    note = ("%d of them emulated (%s)" % (len(emulated), ", ".join(kinds))
             if emulated else "no media state emulated")
     print("\n%d page-states audited at %dpx, %s" % (len(states), a.width, note))
     if failures:

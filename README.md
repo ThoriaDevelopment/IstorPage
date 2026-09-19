@@ -166,13 +166,18 @@ Entrance states are settled before anything is measured, and the page's clock is
 than waited out, so the numbers describe the page a visitor ends up with rather than one frame of its
 animation.
 
-It also audits the states a stylesheet promises but a normal render never shows. Both halves of the
-site honour `prefers-contrast: more`, and Chrome's command line has no switch for it, so the audit
-emulates the media feature where a browser resolves one: in the cascade. The framed page is asked
-for its own `@media` rules, the ones matching the requested state are unwrapped, and their inner
-rules are appended where they would have landed. Every emulated state prints **how many of the
-page's own rules it found**, because zero is a page that does not style the state and not a state
-that passed. `--no-contrast-more` skips that pass, and `--no-pixels` skips the screenshot pass.
+It also audits the states a stylesheet promises but a normal render never shows: `prefers-contrast:
+more` on both halves, and `prefers-color-scheme: dark` for the library, which is the state a reader
+on a dark machine gets when they have never touched the theme control. Chrome's command line has no
+switch for either, so the audit emulates them where a browser resolves them, which is two places.
+The cascade: the framed page's own matching `@media` rules are unwrapped and appended where they
+would have landed. And `matchMedia`: the copy this run serves carries a patch installed before the
+page's first script, because the theme stamp asks that API and writes `data-theme`, and an attribute
+outranks every media rule. Emulating only the CSS was the first version, and it reported a clean
+dark-OS page that it had measured in light. Every emulated state prints **how many of the page's own
+rules it found**, and a state whose patch did not install is an error rather than a pass, because
+zero rules is a page that does not style the state and not a state that passed. `--no-contrast-more`
+and `--no-os-dark` skip those passes, and `--no-pixels` skips the screenshot pass.
 
 The emulation is shown failing rather than trusted: a copy of the artifact with a deliberately bad
 `@media (prefers-contrast: more)` block passes clean in its base state and reports 61 failures under
