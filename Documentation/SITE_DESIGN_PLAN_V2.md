@@ -637,6 +637,24 @@ it is corrected here as a matter of record. **Nothing on istor.fyi may claim the
 available until it is.** The repo's own description is real and may be quoted; its contents may not
 be described.
 
+That rule was written about one page and obeyed on one page. Audited across the whole artifact on
+2026-09-19, the landing page was honest ("There is no installer yet, and the repository is public
+and empty") while the 75 carried library pages offered a **Download** pointing at a releases page
+GitHub reports as empty, eight comparison pages called Istor **open source** and **MIT licensed**,
+and four comparison tables wrote **"Free, open source"** in Istor's Price cell. `llms.txt`, the
+surface written for machine readers, repeated both claims. None of it was a decision; it was a rule
+that lived in prose and was applied to whichever page somebody happened to open.
+
+The rule is now check 11 of `verify-copy.py`, and it runs in CI beside the byte and link gates. It
+reads the built artifact, not the sources: an openness term in the same sentence as the product's
+name, an offer to download it, a link to a releases page, and — because a comparison table's cell
+inherits its subject from the column header rather than from any sentence — each table's cells
+paired with their own column. Both halves carry a positive control, and the table control plants a
+false claim in the Istor column beside a true one about another product, so a detector that merely
+finds an openness word in a table fails it. When the check was first run it failed on four tables
+and a markdown link target (`istor.fyi` four words from "the open-source engine" in a sentence
+about llama.cpp), which is what a first honest run of a new check should look like.
+
 ---
 
 ## §11 · What v2 keeps from v1

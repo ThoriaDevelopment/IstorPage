@@ -77,9 +77,9 @@
     "/img/ground-grain.png": 451
   },
   "library": {
-    "_note": "The carried library (SITE_BUILD_PLAN.md §5). Pages are asserted as a count and a total, not file by file — their bytes change the moment anyone edits a summary, and 75 rows of page sizes would assert nothing worth failing over. Shared assets are exact.",
+    "_note": "The carried library (SITE_BUILD_PLAN.md §5). Pages are asserted as a count and a total, not file by file — their bytes change the moment anyone edits a summary, and 75 rows of page sizes would assert nothing worth failing over. Shared assets are exact. RE-BASELINE, 2026-09-19 (the release claims come off the library). 583,864 B to 582,169 B, a FALL of 1,695 B, and it is worth saying why a fall was re-baselined rather than celebrated as a win: the total is a tripwire on the artifact, not a score, and a page that gets shorter by deleting a false claim is not leaner, it is just different. What moved is eight comparison pages' copy, under the rule stated in SITE_DESIGN_PLAN_V2.md §10.4 that nothing on this site may claim the source is available until it is. The landing page had obeyed it and the library had not: eight pages called Istor open source and MIT licensed, several tables wrote \"Free, open source\" in its Price cell, and every one of the 75 offered a \"Download\" whose link pointed at a releases page GitHub reports as empty. The net is a loss because the honest sentences are shorter than the claims they replace, which is the usual direction when a sentence stops promising something. This note is the only record of the delta that the assertion cannot see on its own: page_count is unchanged at 75, and it should be, because no page was added or removed — the fix was to what the pages say.",
     "page_count": 75,
-    "page_bytes": 583864,
+    "page_bytes": 582169,
     "files": {
       "/styles.css": 35522,
       "/assets/fonts/fraunces-600.woff2": 18096,

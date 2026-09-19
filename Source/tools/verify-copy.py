@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assert that nothing a visitor can read was written by a chatbot — Stage 9's check 10.
+"""Assert that nothing a visitor can read is machine-written or untrue — Stage 9's checks 10 and 11.
 
     python Source/tools/verify-copy.py [_site]
 
@@ -17,8 +17,10 @@ whichever pages somebody happened to open, which is a different and much weaker
 claim than "every page". This closes it.
 
     10  No published page's VISIBLE text contains a high-confidence AI tell.
+    11  No published page offers Istor for download, calls it open source, or
+        links a releases page, while there is no release.
 
-Three decisions worth knowing about, because each is a place this check could
+Four decisions worth knowing about, because each is a place these checks could
 have gone wrong:
 
 * **Only the high-confidence vocabularies are encoded.** The skill also names
@@ -36,6 +38,14 @@ have gone wrong:
   and the excused count is printed.** A phrase can be a tell in one sentence and
   the right word in another. Every entry below is a deliberate keep, and the
   total is reported on every run so the list cannot grow without being seen.
+* **Check 11 is the design plan's own rule, made executable.** §10.4 says
+  "Nothing on istor.fyi may claim the source is available until it is". In prose,
+  that rule had been obeyed on the landing page only: when this check was added,
+  75 library pages still offered a "Download" and eight comparison pages called
+  Istor open source and MIT licensed, while the landing page's own FAQ said "Not
+  yet. The repository is public and empty." A rule that lives only in prose is
+  applied to whichever page somebody happens to open, so both halves of it are
+  assertions now.
 
 Standard library only — no `pip install` in CI.
 """
@@ -122,6 +132,44 @@ ALLOWED: dict[tuple[str, str], tuple[str, str]] = {
         "not the \"more than just a tool, it is\" device the skill names",
     ),
 }
+
+# ------------------------------------------------- check 11: the release claims
+# §10.4, executable. Deliberately narrow: an openness term in the same SENTENCE
+# as the product's own name, an offer to download it, or a link to a releases
+# page. Every competitor comparison on this site names other open-source tools
+# in good faith, and a check that read those as lies would be turned off within
+# a week. The sentence is the unit because the openness word and the name often
+# share a line in a comparison while belonging to different subjects.
+OPENNESS = re.compile(r"\bopen[-\s]?sourc\w*|\bMIT\b|\bGPLv?[23]?\b|\bApache-2\.0\b", re.I)
+ISTOR = re.compile(r"\bistor\b", re.I)
+# "downloading it" is about a model file, and this copy uses that phrasing a
+# dozen times, so the offer has to name the product or the product's installer
+# rather than lean on a pronoun.
+OFFER = re.compile(r"\b(?:download|get|install|try)\s+(?:istor|the app|the installer)\b"
+                   r"|\bistor'?s? (?:download|installer)\b", re.I)
+RELEASES = re.compile(r"releases/(?:latest|tag)", re.I)
+SENTENCE = re.compile(r"(?<=[.!?])\s+")
+# A URL is not a claim. llms.txt is markdown, so every one of its links carries
+# the domain in its target, and "the open-source engine" sat four words away from
+# "istor.fyi" in a sentence about llama.cpp. Strip the targets, keep the link
+# text, which is what a reader sees.
+URLISH = re.compile(r"\]\([^)]*\)|https?://\S+|\bwww\.\S+")
+# Published plain-text surfaces. llms.txt is written for machine readers, so a
+# stale claim there travels further than one on a page nobody opens.
+TEXT_SURFACES = ("llms.txt",)
+CLAIM_CONTROL_PROSE = (
+    "Istor is open source and MIT licensed, so download Istor today. "
+    "Istor's code is under the GPL."
+)
+CLAIM_CONTROL_MIN = 3
+# The table control is the sharper one: it puts a false claim in the Istor column
+# and a TRUE one about a different product in the next column, so a detector that
+# merely finds an openness word near a table name fails it. Only the paired cell
+# may fire.
+CLAIM_CONTROL_TABLE = """<table>
+  <thead><tr><th scope="col"></th><th scope="col">Istor</th><th scope="col">Other tool</th></tr></thead>
+  <tbody><tr><td>License</td><td>MIT, open source</td><td>Apache-2.0</td></tr></tbody>
+</table>"""
 
 # The positive control. Every one of these must fire, or the detector is broken
 # and this tool's silence means nothing.
@@ -240,6 +288,104 @@ def control(rep: Report) -> None:
                         f"nothing")
 
 
+class Tables(HTMLParser):
+    """A comparison table's data cells, each paired with its column header.
+
+    A cell inherits its subject from the header two rows above it, so no sentence
+    contains both the name and the claim: the header says "Istor" and the cell
+    says "MIT, open source". That is the exact shape of the defect this check
+    exists for, and it is invisible to a prose scan, so tables are read
+    structurally instead. Assumes one header row of <th> cells, which is what
+    every comparison table on this site uses.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.tables = 0
+        self.headers: list[str] = []
+        self.row: list[str] = []
+        self.cell: list[str] = []
+        self.in_cell = False
+        self.header_cell = False
+        self.claims: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag == "table":
+            self.tables += 1
+            self.headers = []
+        elif self.tables and tag == "tr":
+            self.row = []
+        elif self.tables and tag in ("td", "th"):
+            self.in_cell, self.header_cell, self.cell = True, tag == "th", []
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "table" and self.tables:
+            self.tables -= 1
+        elif self.tables and tag in ("td", "th") and self.in_cell:
+            text = " ".join("".join(self.cell).split())
+            self.in_cell = False
+            if self.header_cell:
+                self.headers.append(text)
+                return
+            i = len(self.row)
+            self.row.append(text)
+            subject = self.headers[i] if i < len(self.headers) else ""
+            if ISTOR.search(subject) and OPENNESS.search(text):
+                self.claims.append(f'{subject} column: "{text}"')
+
+    def handle_data(self, data: str) -> None:
+        if self.in_cell:
+            self.cell.append(data)
+
+
+def claim_hits(text: str) -> list[tuple[str, str]]:
+    """Every (kind, the sentence) in one document's PROSE that breaks §10.4.
+
+    Lines are split before sentences, because a table's rows have no full stop in
+    them: sentence-splitting the whole document glued a comparison table's header
+    cell to a cell six rows later and reported a sentence nobody wrote.
+    """
+    hits: list[tuple[str, str]] = []
+    for line in URLISH.sub(" ", text).splitlines():
+        for raw in SENTENCE.split(line):
+            s = " ".join(raw.split())
+            if not s:
+                continue
+            if ISTOR.search(s) and OPENNESS.search(s):
+                hits.append(("calls Istor open source", s))
+            if OFFER.search(s):
+                hits.append(("offers a download", s))
+    return hits
+
+
+def table_claims(html: str) -> list[str]:
+    """Every openness claim sitting in the Istor column of a comparison table."""
+    p = Tables()
+    p.feed(html)
+    p.close()
+    return p.claims
+
+
+def claim_control(rep: Report) -> None:
+    """Same doctrine as the tell detector: fail on purpose before trusting silence."""
+    prose = claim_hits(CLAIM_CONTROL_PROSE)
+    label = "the release-claim detector fires on copy that breaks the rule"
+    if len(prose) >= CLAIM_CONTROL_MIN:
+        rep.ok(label, f"positive control: {len(prose)} prose claims")
+    else:
+        rep.fail(label, f"positive control produced only {len(prose)} claims, so a "
+                        f"clean result below would mean nothing")
+
+    table = table_claims(CLAIM_CONTROL_TABLE)
+    label = "the table reader attributes a cell to its column, not to the page"
+    if len(table) == 1:
+        rep.ok(label, "positive control: the Istor cell fired, the neighbour did not")
+    else:
+        rep.fail(label, f"positive control produced {len(table)} table claims, "
+                        f"expected exactly one — the Istor column fired or the "
+                        f"next column did, and either way this reads cells wrongly")
+
+
 def main(argv: list[str]) -> int:
     # The Windows console is cp1252 by default, and the excerpts this file prints
     # are quoted published prose, which contains curly quotes and the like.
@@ -269,12 +415,16 @@ def main(argv: list[str]) -> int:
         rep.fail("pages scanned", f"only {len(pages)} pages, expected at least "
                                   f"{PAGES_EXPECTED} — a scan of nothing finds nothing")
 
+    # Parsed once and shared: check 11 reads the same visible text, and the two
+    # checks must never disagree about what a page says.
+    parsed = {p: visible_lines(p) for p in pages}
+
     excused: list[tuple[str, str, str]] = []
     offenses: list[tuple[str, str, str, str]] = []
     for path in pages:
         rel = path.relative_to(site).parent.as_posix()
         rel = "index" if rel == "." else rel
-        for group, text, line in scan(visible_lines(path)):
+        for group, text, line in scan(parsed[path]):
             keep = ALLOWED.get((group, text))
             if keep and rel == keep[0]:
                 excused.append((group, text, rel))
@@ -301,13 +451,45 @@ def main(argv: list[str]) -> int:
                                    f"it excuse a future hit ({why})")
 
     print()
+    print("11  the release claims  (SITE_DESIGN_PLAN_V2.md \u00a710.4)")
+    claim_control(rep)
+
+    surfaces: list[tuple[pathlib.Path, str]] = []
+    for path in pages:
+        rel = path.relative_to(site).as_posix()
+        surfaces.append((path, "/" + (rel[: -len("index.html")]
+                                       if rel.endswith("index.html") else rel)))
+    for name in TEXT_SURFACES:
+        p = site / name
+        if p.is_file():
+            surfaces.append((p, "/" + name))
+
+    claims: list[tuple[str, str, str]] = []
+    for path, where in surfaces:
+        raw = path.read_text(encoding="utf-8", errors="replace")
+        text = "\n".join(parsed[path]) if path in parsed else raw
+        for kind, sentence in claim_hits(text):
+            claims.append((kind, sentence, where))
+        for cell in table_claims(raw):
+            claims.append(("calls Istor open source in a table", cell, where))
+        for m in RELEASES.finditer(raw):
+            claims.append(("links a releases page", m.group(0), where))
+
+    for kind, sentence, where in claims:
+        rep.fail(f"{kind} on {where}",
+                 sentence if len(sentence) <= 160 else sentence[:157] + "...")
+    if not claims:
+        rep.ok("no release claims in any published text",
+               f"{len(surfaces)} pages and text surfaces")
+
+    print()
     if rep.failures:
         print(f"FAILED - {len(rep.failures)} of {rep.checks} assertions",
               file=sys.stderr)
         for f in rep.failures:
             print(f"  {f}", file=sys.stderr)
         return 1
-    print(f"copy ok - {rep.checks} assertions, Stage 9 check 10")
+    print(f"copy ok - {rep.checks} assertions, Stage 9 checks 10 and 11")
     return 0
 
 

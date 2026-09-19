@@ -1,6 +1,6 @@
 # Istor
 
-> Istor is a free, open research notebook for Windows that runs entirely on your own machine. Add sources, ask grounded questions, and read answers where every claim carries a citation back to the passage it came from. Retrieval, prompting and inference happen locally, so a GTX 1650 class GPU is enough hardware and nothing leaves your computer unless you trigger a web fetch yourself.
+> Istor is a free research notebook for Windows that runs entirely on your own machine. Add sources, ask grounded questions, and read answers where every claim carries a citation back to the passage it came from. Retrieval, prompting and inference happen locally, so a GTX 1650 class GPU is enough hardware and nothing leaves your computer unless you trigger a web fetch yourself.
 
 The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is static, makes zero network requests at runtime, and works without JavaScript.
 
@@ -9,7 +9,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 - [Home](https://istor.fyi/): what Istor is, the four-step loop it runs on your own machine, how an answer is checked back against the passage it came from, where the tool stops, what hardware it needs, and the full FAQ.
 - [Istor and NotebookLM, compared](https://istor.fyi/vs-notebooklm/): a factual comparison for people weighing a cloud notebook against one that runs on their own machine.
 - [Istor and ChatGPT, compared](https://istor.fyi/vs-chatgpt/): a general-purpose cloud assistant with frontier-scale models, and a local research notebook where documents never leave your machine.
-- [Istor and AnythingLLM, compared](https://istor.fyi/vs-anythingllm/): two open-source tools that run AI on your own documents locally, and the different bets they make.
+- [Istor and AnythingLLM, compared](https://istor.fyi/vs-anythingllm/): two tools that run AI on your own documents locally, and the different bets they make.
 - [Istor and GPT4All, compared](https://istor.fyi/vs-gpt4all/): one built to chat on any CPU, one built to ground research answers on a modest GPU.
 - [Istor and Zotero, compared](https://istor.fyi/vs-zotero/): a reference manager organizes what you have read; a grounded local notebook reads it with you. Why they complement each other.
 - [Istor and Mendeley, compared](https://istor.fyi/vs-mendeley/): the same pairing from the Elsevier side of the reference-manager world, and what each tool's trust model means for your library.
@@ -85,7 +85,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 
 ## Download
 
-Windows builds live at [github.com/ThoriaDevelopment/Istor/releases/latest](https://github.com/ThoriaDevelopment/Istor/releases/latest). The source is open under the repository's license.
+There is no build to download yet. The repository at [github.com/ThoriaDevelopment/Istor](https://github.com/ThoriaDevelopment/Istor) is public and empty: it is where the code lands, and it has not landed. What exists today is the app shown on the home page, running on Windows.
 
 ## Contact
 
