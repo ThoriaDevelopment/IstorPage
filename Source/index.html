@@ -94,7 +94,23 @@
                single exchange it has always been. The second one is the
                refusal on purpose: "it says so when it cannot" is the claim the
                rest of this page has to take on trust, and this is the one
-               place a visitor can watch it happen. -->
+               place a visitor can watch it happen.
+
+               THE OTHER TWO ANSWERS ARE DISCLOSURES, and that is what the
+               audit's scriptless pass found: the refusal is the page's claim
+               demonstrated, and it sat behind a click that only script could
+               answer, so a reader whose script never ran was told the claim and
+               could not watch it happen. Each reserved answer is authored
+               inside its own <details> with the question as the summary, which
+               is reachable with no script at all and needs no second copy of
+               the prose. M10 does the takeover: each answer is moved out of its
+               shell into the pane and the shell is hidden, so the chips behave
+               exactly as they did and no node exists twice. It sets `hidden` as
+               it moves, because a disclosure a reader had already opened would
+               otherwise arrive in the pane open, and the pane shows one exchange
+               at a time. Without script the answers are reachable rather than
+               hidden: the authoring leaves them visible, the closed shell keeps
+               them out of the way, and that line is what takes over from it. -->
           <div class="ask" role="group" aria-label="Ask the same library another question" hidden>
             <button type="button" class="ask-chip" aria-pressed="true" data-answer="ans-cycles">Tell me about the cycles.</button>
             <button type="button" class="ask-chip" aria-pressed="false" data-answer="ans-who">Who made it?</button>
@@ -141,7 +157,9 @@
               velocity<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
           </div>
 
-          <div class="answer" id="ans-who" hidden>
+          <details class="hero-more" data-hero-more>
+            <summary>Who made it?</summary>
+          <div class="answer" id="ans-who">
             <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
 
             <p>Your library does not settle that. The ten sources describe the gearing, the dials and
@@ -151,8 +169,11 @@
             <p>So it stays open here, and I will not close it by guessing. Ask me to look outside
               the library and I will, and I will say which pages I read.</p>
           </div>
+          </details>
 
-          <div class="answer" id="ans-inscriptions" hidden>
+          <details class="hero-more" data-hero-more>
+            <summary>What do the inscriptions say?</summary>
+          <div class="answer" id="ans-inscriptions">
             <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
 
             <p>The inscriptions are the mechanism's own manual, cut into the plates rather than
@@ -172,6 +193,7 @@
               Read together the plates say the machine was meant to be read: the front dial shows
               where the sun and moon are, and the back is where the mechanism explains itself.</p>
           </div>
+          </details>
 
           <p class="answer-tools">
             <svg class="i i-16" aria-hidden="true"><use href="#i-copy"/></svg>
@@ -965,6 +987,16 @@
       answers.forEach(function (a) { a.hidden = a.id !== chip.getAttribute('data-answer'); });
       if (bubble) bubble.textContent = chip.textContent;
     };
+    // M10 · see the note on the disclosures in the hero's markup.
+    document.querySelectorAll('.hero [data-hero-more]').forEach(function (box) {
+      var body = box.querySelector('.answer');
+      if (body) {
+        body.hidden = true;
+        box.parentNode.insertBefore(body, box.nextSibling);
+      }
+      box.hidden = true;
+    });
+
     chips.forEach(function (c) {
       c.addEventListener('click', function () { show(c); });
     });

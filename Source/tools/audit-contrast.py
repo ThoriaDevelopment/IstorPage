@@ -478,20 +478,40 @@ NOSCRIPT_PROBE = r"""
      whose text is in a child is not listed: the child is. */
   const invisible = [];
   let elements = 0;
+  const name = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') +
+    (el.className && typeof el.className === 'string'
+      ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '');
+  /* One line per closed disclosure, not one per paragraph inside it. A reader
+     opening it gets the whole answer, so the finding is the disclosure, and a
+     list that reports its twelve paragraphs as twelve findings is a list nobody
+     reads to the end. */
+  const collapsed = new Set();
   for (const el of d.body.querySelectorAll('*')) {
     const own = [].slice.call(el.childNodes)
       .filter(n => n.nodeType === 3).map(n => n.nodeValue).join('').replace(/\s+/g, ' ').trim();
     if (!own) continue;
     elements++;
+    /* A closed disclosure is NOT the same finding as a hidden one: the prose is
+       one click away with no script at all. Chrome also does not run the
+       entrance animations of an element it is not rendering, so without this
+       branch the hero's reserved answers reported `opacity: 0` — their own
+       from-state — which reads as content behind script rather than content
+       behind a summary. The summary itself is the visible half of the pair. */
+    const box = el.tagName === 'SUMMARY' ? null : el.closest('details:not([open])');
+    if (box) {
+      if (collapsed.has(box)) continue;
+      collapsed.add(box);
+      const sum = box.querySelector('summary');
+      invisible.push({
+        sel: name(box),
+        why: 'a closed <details>, reachable in one click',
+        text: (sum ? sum.textContent.trim() + ': ' : '') + own.slice(0, 120),
+      });
+      continue;
+    }
     const why = reason(el);
     if (!why) continue;
-    invisible.push({
-      sel: el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') +
-           (el.className && typeof el.className === 'string'
-             ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : ''),
-      why: why,
-      text: own.slice(0, 120),
-    });
+    invisible.push({sel: name(el), why: why, text: own.slice(0, 120)});
   }
   return {
     scripts: false,

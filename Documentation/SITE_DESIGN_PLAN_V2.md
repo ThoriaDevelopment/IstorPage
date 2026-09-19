@@ -1010,13 +1010,22 @@ reader whose script never ran is given: Chrome's own switch would disable the ha
 harness is how anything gets measured. Its probe asks a different question, so it reports on its own
 line: characters painted, links, controls, and every element present but invisible with the reason
 and its first line. This site leans on script for its optional parts, and "optional" is a claim.
-Across the six templates the answer is that nothing is behind script. The invisible inventory is the
-hero's three alternate answers and its reserved answer block, all inside elements carrying `hidden`,
-the witness tooltip's two spans, the directory's find control, and the 404's suggestions, and the
-pages work without every one of them: a scriptless reader of the directory gets 89 links and all
-seventy-five entries, a scriptless reader of the 404 gets a form that reaches `/library/?q=`, and a
-carried article hides nothing at all. Nothing was changed to make that true; it had been designed
-that way and never measured. Two instrument traps are recorded in the tool, and both reported the
+Across the six templates the inventory is short and every line in it is an affordance the page works
+without: the hero's three ask chips, the witness tooltip's two spans, the directory's find control, and
+the 404's suggestions. A scriptless reader of the directory gets 89 links and all seventy-five
+entries, of the 404 a form that reaches `/library/?q=`, and a carried article hides nothing at all.
+
+**It also found one thing that was not fine, and the fix is §3.6's own rule applied to the hero.** The
+inventory distinguishes a closed disclosure from hidden content, because the two are different
+findings: a page can hide prose from a reader without script, or it can put the prose one click away.
+The hero's two reserved answers were hidden, and one of them is the refusal that demonstrates the
+claim the rest of the page asks to be taken on trust. So each is authored inside a `<details>` whose
+summary is the question the chip would have carried, and M10 moves the answer out of its shell and
+hides the shell once a chip can answer for it. One copy of the prose, the same interaction as before,
+and a reader whose script never ran can now watch the refusal happen. It costs **1,054 B of document
+and 344 B of script**, both re-baselined by measurement, and the first version of it spent another
+450 B shipping `/* */` prose inside the script before the reasoning moved up into the markup comment
+where this repository keeps it, which is also what took the document back under its gzip ceiling. Two instrument traps are recorded in the tool, and both reported the
 opposite of the truth: the probe ran against the harness's own document until it stopped shadowing
 the `d` and `w` the harness passes in (0 characters, 0 links), and it called the hero's opening
 after 1.8 seconds of animation invisible until it finished every animation before asking which

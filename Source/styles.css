@@ -661,6 +661,36 @@ h3 {
 }
 .pane [hidden] { display: none; }
 
+/* The hero's reserved answers travel as disclosures, and this is the whole of
+   their no-script life. The audit's scriptless pass is what found the gap: the
+   refusal demonstrates the claim the rest of the page takes on trust, and it sat
+   behind a click only script could answer, so a reader whose script never ran was
+   told the claim and could not watch it happen. The summary is the question the
+   chip would have carried, so the reader meets the same three questions either
+   way, and it is styled with the chip's own inks and radius rather than a
+   disclosure triangle of its own: --ink-2 on the pane's lightest stop is the
+   5.70:1 pair the chips are asserted at.
+
+   The `details` shell is hidden by the script once it has moved the answer into
+   the pane, and `.hero-more [hidden]` is not redundant with `.pane [hidden]`
+   above: the shell is a sibling of the pane's children rather than a child of
+   `.pane`, and a `display` on the shell is exactly how a hidden control ships. */
+.hero-more { margin: 14px 24px 0; }
+.hero-more[hidden] { display: none; }
+.hero-more > summary {
+  display: inline-block;
+  padding: 7px 11px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-cite);
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+.hero-more > summary:hover { color: var(--ink); border-color: var(--ink-3); }
+.hero-more > summary::marker { color: var(--ink-3); }
+.hero-more .answer { margin-block-start: 14px; }
+
 /* The citation mark. A LIGHT surface in both themes — that is what the captures
    show, and it has to be, because the numeral sits on the wash: --azure-lift on
    --cite-wash is 2.2:1 and white on --azure-lift is 2.6:1, both of which fail. */

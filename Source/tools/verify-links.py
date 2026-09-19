@@ -472,6 +472,27 @@ def check_5(rep: Report, page: str) -> None:
         rep.ok(f"{body.count('<details')} <details>",
                "the FAQ is a real disclosure, not a list")
 
+    # And the hero's two reserved answers are among them, which is a claim about a
+    # reader rather than about markup: the refusal demonstrates the promise the
+    # rest of the page asks to be taken on trust, and it used to sit behind a
+    # click that only script could answer. The audit's scriptless pass found that;
+    # this keeps it found. Checked by walking the disclosure blocks rather than by
+    # looking for the ids anywhere on the page, because the ids are also what the
+    # chips point at once the script has moved the answers into the pane.
+    reserved = ("ans-who", "ans-inscriptions")
+    opened = set()
+    for block in re.findall(r'<details class="hero-more"[^>]*>(.*?)</details>', page, re.S):
+        for name in reserved:
+            if f'id="{name}"' in block:
+                opened.add(name)
+    if opened == set(reserved):
+        rep.ok("the hero's reserved answers are disclosures",
+               "reachable with no script")
+    else:
+        rep.fail("the hero's reserved answers",
+                 f"{sorted(set(reserved) - opened)} are not inside a `details.hero-more`, "
+                 "so the refusal a reader is told to trust is unreachable with no script")
+
     if not re.search(r"position\s*:\s*sticky", page):
         rep.fail("no sticky element", "§9: the nav is sticky — v1's only nav was "
                                       "painted inside a screenshot")
