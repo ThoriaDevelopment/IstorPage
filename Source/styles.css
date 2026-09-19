@@ -111,6 +111,9 @@
   --field:     696px;   /* --win-sm + 2 x --field-pad                  */
   --measure:   66ch;
   --gutter:    clamp(20px, 5vw, 40px);
+  /* One nav height, used twice: the bar's own height, and how far the hero's
+     field is pulled up under it. Two numbers that must agree can only be one. */
+  --nav-h:     68px;
 
   /* radius — four tokens, not one. The genre runs 12-22px containers. */
   --r-field: 28px;   /* Tempo's measured field radius                   */
@@ -691,7 +694,7 @@ h3 {
   position: sticky;
   top: 0;
   z-index: 10;
-  height: 68px;
+  height: var(--nav-h);
   display: flex;
   align-items: center;
   background: color-mix(in srgb, var(--paper) 88%, transparent);
@@ -699,6 +702,24 @@ h3 {
   border-block-end: 1px solid transparent;
 }
 .nav.is-stuck { border-block-end-color: var(--rule); }
+
+/* While the nav is inside the hero's field it owns no surface: the deep teal
+   runs to the first pixel and the bar floats in it, which is what C1 means by
+   full-bleed. The paper surface, the blur and the hairline all arrive together
+   once the field has scrolled past, and none of them is missed before that
+   because the field is already a ground. A visitor without script gets the
+   paper surface throughout, which is the safe way to be wrong. */
+.nav.over-field {
+  background: transparent;
+  backdrop-filter: none;
+  border-block-end-color: transparent;
+}
+.nav.over-field .nav-mark { color: var(--field-ink); }
+.nav.over-field .nav-links a { color: var(--field-ink-2); }
+.nav.over-field .nav-links a:hover { color: var(--field-ink); }
+.nav.over-field .cta { background: var(--azure-lift); color: var(--on-azure-lift); }
+.nav.over-field .cta:hover { background: var(--azure-lift-hi); }
+.nav.over-field .reading-progress > span { background: var(--azure-lift); }
 .nav .wrap { display: flex; align-items: center; gap: 32px; width: min(var(--page), 100% - var(--gutter) * 2); }
 .nav-mark {
   font-family: var(--serif);
@@ -751,7 +772,14 @@ h3 {
 /* ---------------------------------------------------------------------------
    10 · The hero.  C1, and the only place the display size is spent.
    --------------------------------------------------------------------------- */
-.hero { padding-block: 72px 96px; }
+.hero {
+  /* C1 is full-bleed, and full-bleed starts at the first pixel: the field runs
+     under the sticky nav instead of beginning below it, so the page opens on
+     the ground itself rather than on a strip of paper. The nav's height is
+     added back as padding so the heading still clears the bar. */
+  margin-block-start: calc(-1 * var(--nav-h));
+  padding-block: calc(var(--nav-h) + 72px) 96px;
+}
 .hero .wrap { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .hero h1 { max-width: 16ch; }
 .hero .lede { max-width: 52ch; margin-block-start: 22px; }
@@ -1285,7 +1313,9 @@ h3 {
   :root { --t-display: clamp(44px, 9vw, 62px); --field-pad: 28px; }
 
   .act { padding-block: 64px; }
-  .hero { padding-block: 48px 64px; }
+  /* the nav's height is a constant, not a desktop concession, so it is added
+     back here too: the field still runs under the bar at every width */
+  .hero { padding-block: calc(var(--nav-h) + 40px) 64px; }
 
   /* C2 collapses to one column: the field goes under its text. */
   .split,

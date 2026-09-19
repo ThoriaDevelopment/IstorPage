@@ -720,9 +720,17 @@
      Four jobs, no dependencies, and every one of them degrades to the
      finished state if it never runs:
 
-       * the nav's hairline and its progress line (M1) — without them the nav
-         has no rule and no orientation cue, which is what the top of the page
-         looks like anyway;
+       * the nav's hairline, its progress line, and whether it is still inside
+         the hero's field (M1) — without them the nav has no rule, no
+         orientation cue, and a paper surface, which is what the top of the
+         page looks like anyway. C1 is full-bleed, so the field runs up under
+         the bar and the bar floats in it with no surface of its own; that is
+         decided here rather than in CSS because the field's height is a
+         function of the viewport. Measured rather than assumed, because the
+         failure is asymmetric: a stale half-second of paper behind teal is
+         invisible, while a stale half-second of teal behind paper leaves
+         near-white nav text on a near-white ground. So it recomputes whenever
+         the layout can have changed, and never on scroll alone;
        * the panel entrances (M3, M5) — the elements are authored visible, and
          this only dims them for a visitor who has not scrolled there yet;
        * the citation witness (M4) — CSS already opens it on hover and on
@@ -790,8 +798,20 @@
   var nav = document.getElementById('nav');
   if (nav) {
     var progress = nav.querySelector('.reading-progress > span');
+
+    // M1b · is the nav still inside C1's field? See the note above the script.
+    var hero = document.querySelector('.field.hero');
+    var heroBottom = 0;
+    var measureHero = function () {
+      if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
+    };
+    measureHero();
+
     var onScroll = function () {
       nav.classList.toggle('is-stuck', window.scrollY > 8);
+      if (hero) {
+        nav.classList.toggle('over-field', window.scrollY + nav.offsetHeight < heroBottom);
+      }
       if (progress) {
         var pageHeight = document.documentElement.scrollHeight - window.innerHeight;
         var ratio = pageHeight > 0 ? Math.min(1, window.scrollY / pageHeight) : 0;
@@ -801,6 +821,8 @@
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', function () { measureHero(); onScroll(); });
+    window.addEventListener('pageshow', onScroll);
   }
 
   if (!('IntersectionObserver' in window)) return;
