@@ -771,7 +771,7 @@ The build gates are re-baselined **by measurement, never transcription** — the
 
 | Gate | Change |
 |---|---|
-| `document.index_html_bytes` | exact, re-baselined to **62,469 B**; LF-only so platform-independent; **73,315 B** on 2026-09-19 after a night of work on the page, each step itemised in `budget.json`'s own note |
+| `document.index_html_bytes` | exact, re-baselined to **62,469 B**; LF-only so platform-independent; **73,449 B** on 2026-09-19 after a night of work on the page, each step itemised in `budget.json`'s own note |
 | `document.index_html_gzip_ceiling` | re-baselined to **18,400 B** with headroom — **never an equality** (the 2026-09-19 toolchain lesson); **20,480 B** after the reading list, at a round KiB rather than another 2.1% margin, so it stops being edited on every commit that touches the document |
 | `document.inline_js_bytes` **(new)** | exact, and it exists because §7 carried a 4 KB JS budget that nothing measured: the page shipped 5,599 B, of which 1,250 B was `//` prose arriving with every document and being parsed as script. Figure is now **5,010 B** |
 | `totals.phone_1x` / `retina_2x` | re-baselined over 9 exhibits: **194,064 B** / **388,356 B**, and again on 2026-09-19 over 9 exhibits **plus 4 phone crops** at **237,991 B** / **500,885 B** — the inventory grows while what a device *downloads* shrinks, because those four exhibits now serve a narrower crop below 430px |
@@ -789,13 +789,18 @@ asserts the *design* rather than the bytes.
 element against WCAG AA, in both themes, by rendering each page in a sized iframe and walking it in
 viewport-sized steps. It needs Chrome, and CI installs nothing, so running it there is not possible
 without breaking the property that makes the gates trustworthy. It is a local tool with a non-zero
-exit, run by hand after any change to a colour token, a ground or a face. Its first real run found
+exit, run by hand after any change to a colour token, a ground or a face. Its first run found
 exactly one failure in 166 elements, the confidence ruler's scale label at **3.12:1** where 15px
 needs 4.5, and the bug was the token block rather than the rule: `--ink-3` was labelled "labels and
 captions" while it is the app's own label grey, a fine graphic at that ratio and the wrong colour
-for a sentence. Elements standing on a gradient or a photograph are reported and not judged, which
-is why the tool's output prints how many viewports it walked and how many elements it could not
-measure: a clean result that covered seven elements of a long page is not a clean result.
+for a sentence. The pixel sampler added the same night found two more that no flat-ground reading can
+see, because both are type meeting the drawing: the closing paragraph's secondary ink measured
+**4.31:1** against the horizon's halo at phone width, where the halo is lighter than the field's own
+brightest stop, and the closing wordmark's pre-reveal coral measured **2.45:1** on the field's
+lightest stop. Both were fixed in the ink, not in the tool. Grounds that are photographs, masks or
+the app's own screenshots are reported as unmeasured, and every run prints how many viewports it
+walked and how many elements it could not measure: a clean result that covered seven elements of a
+long page is not a clean result.
 
 ---
 

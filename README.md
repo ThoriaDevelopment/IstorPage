@@ -144,9 +144,13 @@ One tool is deliberately **not** in that list, because CI installs nothing and t
 
 Run it by hand after touching a colour token, a ground or a face. It renders each page in a sized
 iframe, walks it in viewport-sized steps, prints every element below AA with its measured colours,
-and exits non-zero if it finds one. Elements standing on a gradient or a photograph are listed but
-not judged, because a ratio there would bearithmetic on one sample of a wash and would read as a pass. See the tool's docstring for the two wrong ways to find an element's ground, both of which
-returned confident numbers and are the reason the file looks the way it does.
+and exits non-zero if it finds one. Grounds come from the rendered pixels: a gradient is measured
+from the pixels just outside each line of text, and a ground whose luminance varies too widely to be
+a wash (a photograph, a mask, the app's own screenshots) is reported unmeasured rather than judged.
+Entrance states are settled before anything is measured, so the numbers describe the page a visitor
+reads rather than one frame of its animation. See the tool's docstring for the wrong ways to find an
+element's ground and for the two ways the pixel sampler itself lied first: every one of them returned
+a confident number instead of an error, which is why the file is as long as it is.
 
 ## What is not published
 

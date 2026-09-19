@@ -68,6 +68,7 @@
   --azure-lift: #4DA3FF;  /* the same blue as it must appear on teal   */
   --azure-deep: #0073E6;  /* the lightness midpoint of the two above   */
   --coral:      #C7292A;  /* the mark's artwork, and "unverified" only */
+  --coral-lift: #D9524B;  /* the same red as it must appear on the field */
 
   /* Text ON a fill. Named by what they sit on rather than by what they are,
      because two more whites in a token block is how a token block stops
@@ -789,6 +790,17 @@ h3 {
 .nav.over-field .cta { background: var(--azure-lift); color: var(--on-azure-lift); }
 .nav.over-field .cta:hover { background: var(--azure-lift-hi); }
 .nav.over-field .reading-progress > span { background: var(--azure-lift); }
+
+/* The accent has two values and each has a ground. --azure is the light-ground
+   blue; --azure-lift is documented as "the same blue as it must appear on teal"
+   and this state already switches the CTA to it. The dot after the wordmark and
+   the links inside the close were still wearing the light-ground blue on the
+   dark field, at 2.95:1 where a link needs 4.5 and 2.5:1 for the dot. Both were
+   found by the contrast audit, not by eye: at a glance a blue is a blue. */
+.nav.over-field .mark-dot,
+.field .mark-dot,
+.poster .mark-dot,
+.poster a { color: var(--azure-lift); }
 .nav .wrap { display: flex; align-items: center; gap: 32px; width: min(var(--page), 100% - var(--gutter) * 2); }
 .nav-mark {
   font-family: var(--serif);
@@ -1091,8 +1103,14 @@ h3 {
   color: var(--azure-lift);
 }
 /* Authored in its finished state. This only dims it for a visitor who has not
-   scrolled here yet; if the script never runs, the mark is simply already inked. */
-.poster-mark.is-cold { color: var(--coral); }
+   scrolled here yet; if the script never runs, the mark is simply already inked.
+
+   The cold ink is the artwork red AS IT MUST APPEAR ON THE FIELD rather than the
+   red itself. Measured: --coral on the field's lightest stop is 2.45:1 and this
+   mark is the largest text on the page, so the one state a visitor is most
+   likely to notice was the one below the bar. --coral-lift is 3.41:1 there and
+   4.41:1 on the field's darkest stop, and it is still unmistakably the red. */
+.poster-mark.is-cold { color: var(--coral-lift); }
 .poster .win {
   position: relative;
   z-index: 2;
@@ -1102,7 +1120,15 @@ h3 {
   border: 1px solid var(--field-rule);
 }
 .poster .body { position: relative; z-index: 2; max-width: var(--measure); margin: 64px auto 0; text-align: center; }
-.poster .body p { color: var(--field-ink-2); }
+/* Primary ink, not secondary, and the reason is a measurement rather than a
+   preference. The horizon is a child of the wordmark, and its halo rises from the
+   arc's apex, which at phone widths reaches into the first line of this
+   paragraph: the pixel audit sampled the ground under it at luminance 0.058,
+   lighter than the field's own brightest stop (0.033), and measured --field-ink-2
+   at 4.31:1 where 4.5 is the bar. Against that same glow --field-ink is 8.2:1, and
+   10.4:1 against the field alone. A flat-ground audit could not see this: the
+   declared pairs both pass, and what the visitor meets is the illustration. */
+.poster .body p { color: var(--field-ink); }
 .poster .cta { margin-block-start: 28px; }
 
 /* ---------------------------------------------------------------------------
