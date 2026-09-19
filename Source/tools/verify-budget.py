@@ -27,8 +27,10 @@ is a real invariant of §1.1 rather than a nicety:
   of unreachable duplication that §1.1 forbids "optimising" away, because the library
   addresses its copies relatively and is not allowed to change. If someone ever does
   optimise it, this is the line that says so.
-* **The artifact is exactly 154 files**, which is what makes check 4 meaningful.
-* **The 75 library pages are present as 75 directories**, totalling 583,864 B.
+* **The artifact is exactly 156 files**, which is what makes check 4 meaningful.
+* **The 75 library pages are present as 75 directories.** The count is exact;
+  their bytes are a generous ceiling, because the pages are prose and prose
+  moves every night the site is worked on (budget.json's _comment, 2026-09-20).
 * **/styles.css is the library's**, not the new page's. This is the §1.1 collision
   that resolves in the library's favour: the new page inlines its CSS precisely so
   that a single root `<link href="/styles.css">` cannot serve it to 75 live pages.
@@ -222,66 +224,54 @@ def main(argv: list[str]) -> int:
     else:
         rep.ok("index.html requests no stylesheet")
 
-    # The two numbers are asserted differently on purpose, and the difference is
-    # the whole reason there are two of them:
-    #
-    #   raw  — a property of the DOCUMENT. LF-only, so identical on every
-    #          platform. Asserted exactly: any edit to the copy deck or to the
-    #          stylesheet's CODE moves it, and that is meant to be noticed.
-    #   gzip — a property of the document *and of the zlib that compressed it*.
-    #          Python does not promise byte-stable output across versions, so
-    #          this is a ceiling, not an equality.
-    #
-    # It was an equality until 2026-09-19, when the first CI run on Linux/Python
-    # 3.12.14 failed a document it had not touched: the artifact was byte-identical
-    # to the reviewed one (120 files, 3,389,782 B, asserted green in the same log),
-    # and only the compressed figure differed — 13,722 B there, 13,772 B here on
-    # Python 3.14/Windows, off the same 44,812 B of input. A gate that fails on the
-    # compressor rather than on the site teaches its reader to ignore it, so the
-    # exactness moved to the number that can actually carry it and the gzip figure
-    # kept the job only it can do: catch a document that got harder to compress.
-    told_raw = budget["document"].get("index_html_bytes")
+    # The document is CEILING territory (budget.json's _comment, 2026-09-20):
+    # content moves every night this site is worked on, so an exact raw assertion
+    # forced a re-baseline into every commit and stopped being information. The
+    # ceilings sit at round multiples of the measured figure (256 KiB over
+    # ~74 KB; 32 KiB of gzip over ~20.2 KiB) so ordinary work never trips them
+    # and real accidents — a copy deck pasted twice, a generator gone wrong —
+    # still fail. The gzip ceiling keeps the job only it can do: catch a
+    # document that got harder to compress, which an exact raw figure never
+    # saw (the 2026-09-19 toolchain lesson, in this file's git history).
+    told_raw = budget["document"].get("index_html_bytes_ceiling")
     told_gz = budget["document"].get("index_html_gzip_ceiling")
     if told_raw is None:
-        # Not a failure: the design plan's payload table omits the document, and
-        # this plan asserts it separately (§3 Stage 9, note on check 3). Reported
-        # either way so "85.4 KB" is never quoted as the whole cost of the page.
+        # Reported either way so "75 KB" is never quoted as the whole cost.
         print(f"  --    index.html {len(html):,} B, {gz:,} B gzipped  "
               f"(budget.json has no asserted value yet)")
     else:
-        if len(html) != told_raw:
-            rep.fail("document.index_html_bytes",
-                     f"{len(html):,} B, budget says {told_raw:,} B")
+        if len(html) > told_raw:
+            rep.fail("document.index_html_bytes_ceiling",
+                     f"{len(html):,} B, over the {told_raw:,} B ceiling — a jump "
+                     "this size is a decision, not an edit")
         else:
-            rep.ok("document.index_html_bytes", f"{len(html):,} B raw")
+            rep.ok("document.index_html_bytes_ceiling",
+                   f"{len(html):,} B raw  (ceiling {told_raw:,} B)")
         if told_gz is not None:
             if gz > told_gz:
                 rep.fail("document.index_html_gzip_ceiling",
                          f"{gz:,} B, over the {told_gz:,} B ceiling — the document "
                          "has become harder to compress, not merely longer")
-        else:
-            rep.ok("document.index_html_gzip_ceiling",
-                   f"{gz:,} B  (ceiling {told_gz:,} B)")
+            else:
+                rep.ok("document.index_html_gzip_ceiling",
+                       f"{gz:,} B gzipped  (ceiling {told_gz:,} B)")
 
-    # 3b · the shipped script. The design plan's §7 gave the page a JS budget and
-    # nothing measured it, so the number had been exceeded by 1,503 B without
-    # anyone noticing — 1,250 B of which was prose in `//` comments, which ship.
-    # A budget that lives in a document is a sentence; this is the same budget as
-    # an assertion. The figure is a property of the file rather than of a
-    # compressor, so like the raw document above it is asserted exactly, and an
-    # edit to the script is meant to move it.
-    told_js = budget["document"].get("inline_js_bytes")
+    # 3b · the shipped script, also a ceiling (16 KiB over 5,354 B shipped).
+    # Its history as an exact assertion, and the 1,250 B of `//` prose that made
+    # it exist, is in git; the ceiling keeps catching script that doubles.
+    told_js = budget["document"].get("inline_js_bytes_ceiling")
     blocks = re.findall(r"<script>(.*?)</script>", html.decode("utf-8"), re.S)
     js = sum(len(b.encode()) for b in blocks)
     if told_js is None:
         print(f"  --    inline script {js:,} B  (budget.json has no asserted "
               f"value yet)")
-    elif js != told_js:
-        rep.fail("document.inline_js_bytes",
-                 f"{js:,} B of shipped script, budget says {told_js:,} B")
+    elif js > told_js:
+        rep.fail("document.inline_js_bytes_ceiling",
+                 f"{js:,} B of shipped script, over the {told_js:,} B ceiling")
     else:
-        rep.ok("document.inline_js_bytes",
-               f"{told_js:,} B of shipped script, {len(blocks)} block(s)")
+        rep.ok("document.inline_js_bytes_ceiling",
+               f"{js:,} B of shipped script, {len(blocks)} block(s)  "
+               f"(ceiling {told_js:,} B)")
 
     # -- the invariants the manifest implies --------------------------------
     print("\n   artifact integrity")
@@ -303,29 +293,36 @@ def main(argv: list[str]) -> int:
         rep.ok("library page count", f"{want_pages} directories")
     page_bytes = sum(p.stat().st_size for d in pages for p in d.rglob("*")
                      if p.is_file())
-    want_bytes = budget["library"]["page_bytes"]
-    if page_bytes != want_bytes:
-        rep.fail("library page bytes", f"{page_bytes:,} B, expected {want_bytes:,} B")
+    # A ceiling, not an equality: the 75 pages are prose, and prose moves every
+    # night. The exact figure forced a re-baseline for every sentence edited;
+    # the ceiling (1 MiB over ~619 KB) catches a page set that explodes.
+    want_bytes = budget["library"]["page_bytes_ceiling"]
+    if page_bytes > want_bytes:
+        rep.fail("library page bytes ceiling",
+                 f"{page_bytes:,} B, over the {want_bytes:,} B ceiling")
     else:
-        rep.ok("library page bytes", f"{page_bytes:,} B")
+        rep.ok("library page bytes ceiling",
+               f"{page_bytes:,} B  (ceiling {want_bytes:,} B)")
 
     # The library's index is generator output and is asserted exactly, for the
     # same reason index_html_bytes is: make-library-index.py reads the 75 pages'
     # own titles and summaries, so a change to this number means either a page
     # changed or the generator did, and both are worth seeing in the diff.
-    want_index = budget["library"].get("index_bytes")
+    want_index = budget["library"].get("index_bytes_ceiling")
     index = site / "library" / "index.html"
     if want_index is None:
         state = f"{index.stat().st_size:,} B" if index.is_file() else "missing"
         print(f"  --    /library/  {state}  (budget.json asserts no value yet)")
     elif not index.is_file():
-        rep.fail("library.index_bytes",
+        rep.fail("library.index_bytes_ceiling",
                  f"/library/index.html is missing — the 75 pages link to it")
-    elif index.stat().st_size != want_index:
-        rep.fail("library.index_bytes",
-                 f"{index.stat().st_size:,} B, budget says {want_index:,} B")
+    elif index.stat().st_size > want_index:
+        rep.fail("library.index_bytes_ceiling",
+                 f"{index.stat().st_size:,} B, over the {want_index:,} B ceiling")
     else:
-        rep.ok("library.index_bytes", f"{want_index:,} B generated index")
+        rep.ok("library.index_bytes_ceiling",
+               f"{index.stat().st_size:,} B generated index  "
+               f"(ceiling {want_index:,} B)")
 
     # -- and the one number that proves §1.1's collision resolved right ------
     styles = site / "styles.css"

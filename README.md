@@ -204,9 +204,14 @@ directory's own 12th check does the same for its map: the jump row must name exa
 headings name, it must be authored visible (it is the row a reader with no script gets), the pinned
 group heading must declare a ground, and the row must not print. Four claims, three of them across
 two files or in no file at all, and each was shown failing before it was trusted.
-`Source/tools/budget.json` asserts the artifact's byte sizes exactly. When a number moves because the
-page changed, re-baseline it **by measurement**, in the same commit as the change that moved it, and
-never by transcribing a figure from another document.
+`Source/tools/budget.json` asserts the artifact's bytes in **two tiers**. Tier 1, exact: the per-file
+asset manifest and the artifact file count, which catch mechanical accidents (a regenerated crop, a
+stray screenshot in `_site/`, a file the build stopped emitting). Tier 2, ceilings: the document's
+raw bytes, its gzip weight, its shipped script, the library's total and the generated index, all at
+round multiples of the measured figure, because content moves every time the site is worked on and
+an exact assertion on content turns every commit into a re-baseline. Work under a ceiling ships
+without touching `budget.json`; work over one moves the ceiling **by measurement**, in the same
+commit as the change that moved it, never by transcribing a figure from another document.
 
 One tool is deliberately **not** in that list, because CI installs nothing and this needs Chrome:
 
