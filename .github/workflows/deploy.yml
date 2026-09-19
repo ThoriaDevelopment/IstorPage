@@ -33,6 +33,9 @@ jobs:
       - name: Assert that every link resolves
         run: python Source/tools/verify-links.py _site
 
+      - name: Assert that no visible copy carries an AI tell
+        run: python Source/tools/verify-copy.py _site
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
