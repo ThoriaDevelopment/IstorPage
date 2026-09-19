@@ -63,9 +63,14 @@ DUPLICATED = [
 # 6 files (AVIF/WebP/PNG at 1x and 2x) = 18, and v2 ships 9 exhibits x 4 files (the
 # same, minus PNG) = 36. The second, on 2026-09-19, is the phone crops: four more
 # crops x 4 files = 16, which took the set to 52. Everything else is unchanged.
-ARTIFACT_FILES = 154
+ARTIFACT_FILES = 155                  # + the generated library index
 
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
+# The library index lives at /library/ and is a page, but it is not one of the 75
+# carried articles: it is generated FROM them. Counted here as a directory of
+# bytes only under `files`, where its own size is asserted.
+NOT_AN_ARTICLE = {"library"}
+LIBRARY_TOC = NOT_A_PAGE | NOT_AN_ARTICLE
 
 
 class Report:
@@ -287,7 +292,7 @@ def main(argv: list[str]) -> int:
 
     pages = sorted(d for d in site.iterdir()
                    if d.is_dir() and (d / "index.html").exists()
-                   and d.name not in NOT_A_PAGE)
+                   and d.name not in LIBRARY_TOC)
     want_pages = budget["library"]["page_count"]
     if len(pages) != want_pages:
         rep.fail("library page count", f"{len(pages)}, expected {want_pages}")
@@ -300,6 +305,24 @@ def main(argv: list[str]) -> int:
         rep.fail("library page bytes", f"{page_bytes:,} B, expected {want_bytes:,} B")
     else:
         rep.ok("library page bytes", f"{page_bytes:,} B")
+
+    # The library's index is generator output and is asserted exactly, for the
+    # same reason index_html_bytes is: make-library-index.py reads the 75 pages'
+    # own titles and summaries, so a change to this number means either a page
+    # changed or the generator did, and both are worth seeing in the diff.
+    want_index = budget["library"].get("index_bytes")
+    index = site / "library" / "index.html"
+    if want_index is None:
+        state = f"{index.stat().st_size:,} B" if index.is_file() else "missing"
+        print(f"  --    /library/  {state}  (budget.json asserts no value yet)")
+    elif not index.is_file():
+        rep.fail("library.index_bytes",
+                 f"/library/index.html is missing — the 75 pages link to it")
+    elif index.stat().st_size != want_index:
+        rep.fail("library.index_bytes",
+                 f"{index.stat().st_size:,} B, budget says {want_index:,} B")
+    else:
+        rep.ok("library.index_bytes", f"{want_index:,} B generated index")
 
     # -- and the one number that proves §1.1's collision resolved right ------
     styles = site / "styles.css"

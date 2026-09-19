@@ -695,16 +695,36 @@ the built artifact on 2026-09-19, and the file that asserts these numbers (`budg
 same figures — a change to one is a change to the other, in one commit. Three of the estimates were
 low and are corrected here rather than left to disagree with the gate.
 
+Re-measured 2026-09-19 after the phone crops, the library index and a night of work on the page.
+The method, because a weight table whose method is not written down cannot be re-checked: **the
+exhibit rows are the sum of the files themselves**; **the whole-page rows add the document, the three
+fonts and the ground tile to one density of AVIF**, where a phone takes the art-directed phone crop
+for the four wide exhibits in place of the wide one, which is what the `<picture>` elements say it
+does; **the first-screen row** is the document, the fonts and the ground tile only, because every
+exhibit is `loading="lazy"` and the first one sits below the fold. The desktop row reproduces the
+previous figure byte-for-byte, which is the check that the method is the same one that produced it.
+
 | | Estimate | **Measured** |
 |---|---|---|
-| Nine exhibits, AVIF 1×+2× | ≈ 400 KB | **452 KB** |
-| Nine exhibits, WebP 1×+2× | ≈ 650 KB | **704 KB** |
-| Fonts (3 files) | ≈ 65 KB | **65 KB** |
-| Ground grain + og-card | ≈ 124 KB | **124 KB** |
-| `index.html` incl. inline CSS | ≈ 55 KB | **62 KB** |
-| **Artifact (everything shipped)** | **≈ 2.5–3.0 MB** | **3.86 MB**, 138 files |
-| **First-load transfer, desktop** (2× display, AVIF) | **≈ 550 KB** | **451 KB** |
-| **First-load transfer, phone** (1× display, AVIF) | **≈ 320 KB** | **257 KB** |
+| Nine exhibits, AVIF 1×+2× | ≈ 400 KB | **594 KB** |
+| Nine exhibits, WebP 1×+2× | ≈ 650 KB | **922 KB** |
+| Fonts (3 files) | ≈ 65 KB | **63 KB** |
+| Ground grain + og-card | ≈ 124 KB | **121 KB** |
+| `index.html` incl. inline CSS | ≈ 55 KB | **72 KB** |
+| **Artifact (everything shipped)** | **≈ 2.5–3.0 MB** | **4.10 MiB**, 155 files |
+| **First screen** (document, 3 fonts, ground tile) | — | **135 KB** |
+| **The whole page read, desktop** (AVIF 2×) | **≈ 550 KB** | **451 KB** |
+| **The whole page read, phone** (AVIF 1×, with the phone crops) | **≈ 320 KB** | **217 KB** |
+
+The three rows that moved most are worth reading rather than re-baselining. The exhibit rows rise
+because four wide exhibits now carry a second, art-directed crop instead of none — the set is bigger
+while **what a phone downloads falls, 257 KB to 217 KB**, which is the whole point of the change and
+would be invisible in an inventory row alone. `index.html` is 10 KB heavier than the table's old
+figure, spent across the acts rather than in one place, and `budget.json`'s own note itemises every
+step of it. The artifact row gains the 27,094 B library index and its 155th file. The estimate column
+is left as it was written, so the gap between the estimate and the measurement stays legible: this
+page is heavier than the plan guessed in the exhibit sets and much heavier in the document, and it is
+still under Thoria's 2–5 MB envelope, with a first screen of 135 KB.
 
 The two transfer rows are what one visitor actually downloads, and they are the rows that matter:
 one density of the AVIF set, plus the three fonts, plus the ground tile, plus the document. Two

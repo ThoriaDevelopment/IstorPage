@@ -53,11 +53,18 @@ HERE = pathlib.Path(__file__).resolve().parent
 # ---------------------------------------------------------------- expectations
 # A library page is a directory at the artifact root holding an index.html.
 # These four are directories at the root that are NOT pages.
+# Directories in the artifact that are assets rather than pages.
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
+# A directory in the artifact that holds a page but is not one of the 75 carried
+# articles: the library's own index at /library/. It is checked like any other
+# page — its 75 links are resolved by check 4 below — but it is not an article,
+# so it does not move LIBRARY_PAGES.
+NOT_AN_ARTICLE = {"library"}
+LIBRARY_TOC = NOT_A_PAGE | NOT_AN_ARTICLE
 
 LIBRARY_PAGES = 75
-LIBRARY_STYLES_BYTES = 35522          # §1.1: /styles.css is the library's file
-ARTIFACT_FILES = 154                  # 138 + the four phone crops' 16 files
+LIBRARY_STYLES_BYTES = 36191          # §1.1: /styles.css is the library's file
+ARTIFACT_FILES = 155                  # 138 + the four phone crops' 16 files + the library index
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18)
 
 # Check 8's marker. If the assembler ever globs OldVersion/ instead of copying by
@@ -675,7 +682,7 @@ def check_9(rep: Report, site: pathlib.Path,
     print("\n9  library integrity")
     pages = sorted(d for d in site.iterdir()
                    if d.is_dir() and (d / "index.html").is_file()
-                   and d.name not in NOT_A_PAGE)
+                   and d.name not in LIBRARY_TOC)
     if len(pages) != LIBRARY_PAGES:
         rep.fail("library page count",
                  f"{len(pages)}, expected {LIBRARY_PAGES}")
@@ -742,7 +749,13 @@ def check_9(rep: Report, site: pathlib.Path,
     # sitemap's neighbourhood, the GitHub release URL in llms.txt — and those
     # are not this check's business, so they are filtered by shape rather than
     # by an allowlist that would need editing every time a file is added.
-    have = {"/"} | {f"/{d.name}/" for d in pages}
+    # Every page, the index included: this set is compared against the sitemap
+    # and llms.txt, and both name /library/ now. `pages` above is the 75 carried
+    # articles, which is a different question — whether the library is intact.
+    all_pages = sorted(d for d in site.iterdir()
+                       if d.is_dir() and (d / "index.html").is_file()
+                       and d.name not in NOT_A_PAGE)
+    have = {"/"} | {f"/{d.name}/" for d in all_pages}
     for name in ("sitemap.xml", "llms.txt"):
         path = site / name
         if not path.is_file():

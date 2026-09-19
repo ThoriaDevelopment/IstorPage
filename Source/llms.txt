@@ -6,6 +6,7 @@ The site at [istor.fyi](https://istor.fyi/) is the product's home page. It is st
 
 ## Pages
 
+- [Every page on istor.fyi, by subject](https://istor.fyi/library/): the whole library as one directory, divided by the kind of question each page answers, with each page's own title and summary.
 - [Home](https://istor.fyi/): what Istor is, the four-step loop it runs on your own machine, how an answer is checked back against the passage it came from, where the tool stops, what hardware it needs, and the full FAQ.
 - [Istor and NotebookLM, compared](https://istor.fyi/vs-notebooklm/): a factual comparison for people weighing a cloud notebook against one that runs on their own machine.
 - [Istor and ChatGPT, compared](https://istor.fyi/vs-chatgpt/): a general-purpose cloud assistant with frontier-scale models, and a local research notebook where documents never leave your machine.

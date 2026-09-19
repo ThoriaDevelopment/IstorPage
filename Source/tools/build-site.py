@@ -55,6 +55,15 @@ _spec = importlib.util.spec_from_file_location("make_sitemap", HERE / "make-site
 make_sitemap = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(make_sitemap)
 
+# make-library-index.py, same reason and same shape: hyphenated name, and a
+# build() so the page is one call rather than an import. It is generated here
+# rather than committed because it is derived from the 75 pages, and a committed
+# copy would be one more thing to keep in step with them.
+_spec = importlib.util.spec_from_file_location("make_library_index",
+                                              HERE / "make-library-index.py")
+make_library_index = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(make_library_index)
+
 
 # --------------------------------------------------------------------------
 # The artifact's contents, as tables. §1.1 is the same list in prose.
@@ -457,6 +466,24 @@ def page_paths() -> list[str]:
     return paths
 
 
+def write_library_index() -> None:
+    """The door to the carried library, built from the pages themselves.
+
+    Published at /library/index.html rather than at the artifact root, which is
+    the only difference between this page and the eight root files: it has a
+    directory of its own because /library/ is how a reader reaches it, and
+    because the two verifiers count a directory with an index.html in it as a
+    library article. `NOT_AN_ARTICLE` over there is what keeps 75 meaning 75.
+    """
+    try:
+        page = make_library_index.build()
+    except make_library_index.MissingCopy as exc:
+        raise BuildError(str(exc)) from None
+    path = SITE / "library" / "index.html"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    write_text_lf(path, page)
+
+
 def write_sitemap() -> int:
     paths = page_paths()
     try:
@@ -482,6 +509,10 @@ def main() -> int:
     # copy_library() reads _site/index.html to prove the page is still there.
     splice_includes()
     copy_library()
+    # The index is written before the sitemap, because write_sitemap() derives
+    # its paths from what is in _site/ — a page that is not there is a page the
+    # sitemap does not know about.
+    write_library_index()
     urls = write_sitemap()
 
     files = [p for p in SITE.rglob("*") if p.is_file()]

@@ -182,7 +182,7 @@ CONTROL = """<h2>Control</h2>
 CONTROL_MIN_HITS = 8
 CONTROL_MIN_GROUPS = 5
 
-PAGES_EXPECTED = 77          # 76 urls in the sitemap, plus 404.html
+PAGES_EXPECTED = 78          # 77 urls in the sitemap, plus 404.html
 
 BLOCK = {
     "p", "div", "section", "article", "header", "footer", "nav", "main", "aside",
