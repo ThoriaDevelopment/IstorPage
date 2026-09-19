@@ -617,6 +617,47 @@ h3 {
 
 .answer-tools { display: flex; gap: 16px; margin-block-start: 20px; color: var(--ink-2); }
 
+/* M9 · the hero's own controls. The window's question is not the only one the
+   library can answer, so the current question carries a chip row. Authored
+   `hidden` and revealed by the script: without script the window is the single
+   exchange it has always been, and the `[hidden]` rule below is what keeps that
+   true, because a `display` declaration would otherwise outrank the attribute.
+
+   The states are the app's own rail grammar rather than a colour of this page's
+   own: a row is plain beside the one you are on, and the one you are on is
+   filled (see `.rail-nav a[aria-current]` above). Measured with the same
+   arithmetic as §4's table, on the pane's LIGHTEST stop, which is the worst
+   case: --ink-2 on #111620 is 5.70:1, and the pressed label, --ink on its own
+   fill composited over the pane's darkest, #E5E8EE on #303033, is 10.72:1.
+   Both pairs are asserted in verify-links.py check 6. The border at rest stays
+   --rule: a chip is named by its words, so the outline is not carrying the
+   control, and it is not asserted at 3:1 for that reason. */
+.ask {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 24px 0;
+}
+.ask-chip {
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  text-align: left;
+  padding: 7px 11px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-cite);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.ask-chip:hover { color: var(--ink); border-color: var(--ink-3); }
+.ask-chip[aria-pressed="true"] {
+  background: var(--fill-card);
+  border-color: transparent;
+  color: var(--ink);
+}
+.pane [hidden] { display: none; }
+
 /* The citation mark. A LIGHT surface in both themes — that is what the captures
    show, and it has to be, because the numeral sits on the wash: --azure-lift on
    --cite-wash is 2.2:1 and white on --azure-lift is 2.6:1, both of which fail. */
@@ -1267,6 +1308,7 @@ h3 {
    M6 the close         in view       700ms + parallax
    M7 the accordion     click         320ms
    M8 hover              hover         160ms
+   M9 the hero's question click        none — the answer's own arrival is M2
 
    ALL OF IT IS INSIDE `prefers-reduced-motion: no-preference`. Under `reduce`
    every element renders in its final state and M2 does not run — the hero shows
@@ -1295,6 +1337,13 @@ h3 {
   .scroll-cue { transition: color 160ms var(--ease); }
   .scroll-cue span { transition: transform 160ms var(--ease); }
   .scroll-cue:hover span { transform: translateY(1px) rotate(45deg); }
+  /* M9 has no transition on purpose. Switching a question swaps which answer
+     block is displayed, and `display: none` is what stops the answer's own M2
+     animation from running: the block becomes visible and the sequence plays,
+     in the product's order, for the question just asked. Animating the swap as
+     well would draw a second, faster motion over the first. */
+  .ask-chip { transition: color 160ms var(--ease), border-color 160ms var(--ease),
+                         background-color 160ms var(--ease); }
 
   /* M2 · The hero sequence, performed once, in the order the product works:
      question -> thinking -> answer -> citations. It RESTS; it does not loop.

@@ -42,6 +42,7 @@ from __future__ import annotations
 import gzip
 import json
 import pathlib
+import re
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -250,9 +251,29 @@ def main(argv: list[str]) -> int:
                 rep.fail("document.index_html_gzip_ceiling",
                          f"{gz:,} B, over the {told_gz:,} B ceiling — the document "
                          "has become harder to compress, not merely longer")
-            else:
-                rep.ok("document.index_html_gzip_ceiling",
-                       f"{gz:,} B  (ceiling {told_gz:,} B)")
+        else:
+            rep.ok("document.index_html_gzip_ceiling",
+                   f"{gz:,} B  (ceiling {told_gz:,} B)")
+
+    # 3b · the shipped script. The design plan's §7 gave the page a JS budget and
+    # nothing measured it, so the number had been exceeded by 1,503 B without
+    # anyone noticing — 1,250 B of which was prose in `//` comments, which ship.
+    # A budget that lives in a document is a sentence; this is the same budget as
+    # an assertion. The figure is a property of the file rather than of a
+    # compressor, so like the raw document above it is asserted exactly, and an
+    # edit to the script is meant to move it.
+    told_js = budget["document"].get("inline_js_bytes")
+    blocks = re.findall(r"<script>(.*?)</script>", html.decode("utf-8"), re.S)
+    js = sum(len(b.encode()) for b in blocks)
+    if told_js is None:
+        print(f"  --    inline script {js:,} B  (budget.json has no asserted "
+              f"value yet)")
+    elif js != told_js:
+        rep.fail("document.inline_js_bytes",
+                 f"{js:,} B of shipped script, budget says {told_js:,} B")
+    else:
+        rep.ok("document.inline_js_bytes",
+               f"{told_js:,} B of shipped script, {len(blocks)} block(s)")
 
     # -- the invariants the manifest implies --------------------------------
     print("\n   artifact integrity")

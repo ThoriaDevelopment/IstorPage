@@ -87,9 +87,21 @@
         </nav>
 
         <div class="pane">
-          <p class="bubble">Tell me about the cycles.</p>
+          <p class="bubble" id="hero-q">Tell me about the cycles.</p>
 
-          <div class="answer">
+          <!-- M9 · the same library, three questions. Authored `hidden` and
+               revealed by the script, so the window without script is the
+               single exchange it has always been. The second one is the
+               refusal on purpose: "it says so when it cannot" is the claim the
+               rest of this page has to take on trust, and this is the one
+               place a visitor can watch it happen. -->
+          <div class="ask" role="group" aria-label="Ask the same library another question" hidden>
+            <button type="button" class="ask-chip" aria-pressed="true" data-answer="ans-cycles">Tell me about the cycles.</button>
+            <button type="button" class="ask-chip" aria-pressed="false" data-answer="ans-who">Who made it?</button>
+            <button type="button" class="ask-chip" aria-pressed="false" data-answer="ans-inscriptions">What do the inscriptions say?</button>
+          </div>
+
+          <div class="answer" id="ans-cycles">
             <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
 
             <p>The Antikythera mechanism incorporated several key astronomical cycles:</p>
@@ -127,6 +139,38 @@
             <p>The mechanism's gearing incorporated a pin-and-slot mechanism that matches
               Hipparchus's lunar theory, replicating the Moon's variable
               velocity<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
+          </div>
+
+          <div class="answer" id="ans-who" hidden>
+            <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
+
+            <p>Your library does not settle that. The ten sources describe the gearing, the dials and
+              the inscriptions in close detail; none of them identifies a maker, and the names they
+              raise are offered as possibilities rather than findings.</p>
+
+            <p>So it stays open here, and I will not close it by guessing. Ask me to look outside
+              the library and I will, and I will say which pages I read.</p>
+          </div>
+
+          <div class="answer" id="ans-inscriptions" hidden>
+            <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
+
+            <p>The inscriptions are the mechanism's own manual, cut into the plates rather than
+              printed beside them. The back cover says what each dial does, and the dials label
+              themselves: month names from several Greek calendars ring the Metonic spiral, and the
+              Saros dial is lettered with the eclipses it predicts, down to the hour and the
+              direction of the shadow<span class="cite-wrap"><button type="button" class="cite-btn"
+              aria-expanded="false"><sup class="cite">4<span class="vh">, source 4, Decoding
+              Antikythera mechanism</span></sup></button><span class="witness" role="note"><span
+              class="witness-src"><svg class="i i-14" aria-hidden="true"><use
+              href="#i-save-note"/></svg>Decoding Antikythera mechanism</span><span
+              class="witness-quote">"eclipse predictions given to the hour, with the direction of
+              the shadow"</span></span></span>.</p>
+
+            <p>Most of that text came off the fragments rather than their surface. The surviving
+              lettering is small and partly corroded, and the imaging work is what recovered it.
+              Read together the plates say the machine was meant to be read: the front dial shows
+              where the sun and moon are, and the back is where the mechanism explains itself.</p>
           </div>
 
           <p class="answer-tools">
@@ -819,26 +863,54 @@
      It also runs inside the nav's ONE scroll listener rather than adding a
      second, so the eleven acts above it cost nothing.
 
-     This note is not in the script as a `//` comment because the plan's budget
-     is 4 KB of JS and comments inside `<script>` ship. Notes in the markup do
-     not: `inline_markup()` in build-site.py strips them on the way in, exactly
-     as `inline_css()` strips the stylesheet's. The reasoning is worth keeping
-     and not worth posting, and this is where it is kept. -->
+     THE PARALLAX'S SIGN, which is the whole effect and the easiest thing in the
+     file to get backwards: the wordmark is the LAYER BEHIND, so it moves slower
+     than the scroll, and the window is in front, so it moves faster. Get it the
+     wrong way round and the wordmark reads as the thing in front, which is the
+     opposite of what this page is saying.
+
+     THE RAIL'S COST ON A SCROLL. Only the row that changes is written to, so a
+     scroll costs one compare loop and at most two attribute writes rather than
+     seven.
+
+     THE HERO'S OWN CONTROLS (M9). The window's question is not the only one the
+     library can answer, and the third chip asks something ten sources about the
+     Antikythera mechanism genuinely do not settle, because the refusal is the
+     feature and the hero is the only place a visitor can watch it happen.
+     Three decisions in that switcher: the chips are authored `hidden` and the
+     script reveals them, so a visitor without script sees exactly the page that
+     existed before it; each answer block is authored `hidden` for the same
+     reason, so the no-script end state is the loaded answer and not an empty
+     pane; and nothing animates the swap, because the answer's own arrival is
+     already M2 and unhiding a block re-runs it. That last one is a property of
+     `display: none` rather than a trick: an animation does not run on an
+     element that is not displayed, so switching the block on is what starts
+     the sequence, in the product's own order, for the question just asked.
+
+     It is wired BEFORE the `IntersectionObserver` guard, which is deliberate:
+     this is a control rather than an animation, and a browser without that API
+     should still get a window it can ask things. Everything below the guard is
+     motion, and motion is the one thing on this page that may be absent.
+
+     WHY THESE NOTES LIVE HERE, and it is a rule now rather than a preference.
+     The plan's §7 sets a budget for shipped JS, and comments inside `<script>`
+     ship: 1,118 B of prose was arriving with the document and being parsed as
+     script on every phone that opened it. `inline_markup()` in build-site.py
+     strips markup comments on the way in, exactly as `inline_css()` strips the
+     stylesheet's, so this is the channel that keeps the reasoning and not the
+     weight. Every comment that explained a block of the script has moved up
+     into it; what the script still carries are the motion ids themselves (M1,
+     M3, M4, M6), which are the vocabulary §7 lists rather than prose about it. -->
 <script>
 (function () {
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // M6's parallax is written below, after the observer that decides whether the
-  // close is on screen. It hangs off this variable so the page keeps ONE scroll
-  // listener rather than two: the nav's, which already runs on every scroll.
-  var paintPoster = null;
+  var paintPoster = null;   // M6's parallax; set below, called by the nav's scroll
 
-  // M1 · the nav's hairline.
-  var nav = document.getElementById('nav');
+  var nav = document.getElementById('nav');   // M1
   if (nav) {
     var progress = nav.querySelector('.reading-progress > span');
 
-    // M1b and M1c. See the note above the script for both.
     var hero = document.querySelector('.field.hero');
     var rail = document.querySelector('.rail-nav');
     var heroBottom = 0, railLinks = [], railTops = [], railCurrent = null;
@@ -862,8 +934,6 @@
         nav.classList.toggle('over-field', window.scrollY + nav.offsetHeight < heroBottom);
       }
 
-      // Only the row that changes is written to, so a scroll costs one compare
-      // loop and at most two attribute writes rather than seven.
       var line = window.scrollY + window.innerHeight * 0.34, next = null;
       for (var i = 0; i < railTops.length && railTops[i] <= line; i++) next = railLinks[i];
       if (next !== railCurrent) {
@@ -885,10 +955,25 @@
     window.addEventListener('pageshow', onScroll);
   }
 
+  var ask = document.querySelector('.hero .ask');   // M9
+  if (ask) {
+    var chips = ask.querySelectorAll('.ask-chip');
+    var answers = document.querySelectorAll('.hero .answer');
+    var bubble = document.getElementById('hero-q');
+    var show = function (chip) {
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'); });
+      answers.forEach(function (a) { a.hidden = a.id !== chip.getAttribute('data-answer'); });
+      if (bubble) bubble.textContent = chip.textContent;
+    };
+    chips.forEach(function (c) {
+      c.addEventListener('click', function () { show(c); });
+    });
+    ask.hidden = false;
+  }
+
   if (!('IntersectionObserver' in window)) return;
 
-  // M3 / M5 · panel entrances. See the note above the script for `is-cold`.
-  var reveals = document.querySelectorAll('.reveal');
+  var reveals = document.querySelectorAll('.reveal');   // M3 / M5
   if (reveals.length && !reduced) {
     var io = new IntersectionObserver(function (entries) {
       for (var i = 0; i < entries.length; i++) {
@@ -907,8 +992,7 @@
     }
   }
 
-  // M4 · the witness. Click toggles; hover and focus are already handled in CSS.
-  var buttons = document.querySelectorAll('.cite-btn');
+  var buttons = document.querySelectorAll('.cite-btn');   // M4
   for (var j = 0; j < buttons.length; j++) {
     buttons[j].addEventListener('click', function () {
       var wrap = this.parentNode;
@@ -917,8 +1001,7 @@
     });
   }
 
-  // M6 · the close's re-ink. Authored inked; this only dims it below the fold.
-  var mark = document.getElementById('close-mark');
+  var mark = document.getElementById('close-mark');   // M6
   if (mark && !reduced && mark.getBoundingClientRect().top >= window.innerHeight) {
     mark.classList.add('is-cold');
     var mo = new IntersectionObserver(function (entries) {
@@ -933,8 +1016,7 @@
     mo.observe(mark);
   }
 
-  // M6, the second half: the close's parallax. See the note above the script.
-  var poster = document.querySelector('.poster');
+  var poster = document.querySelector('.poster');   // M6, second half
   var posterWin = poster && poster.querySelector('.win');
   if (poster && posterWin && mark && !reduced) {
     var lastMark = null, lastWin = null;
@@ -942,10 +1024,6 @@
       var box = poster.getBoundingClientRect();
       var fromCentre = (box.top + box.height / 2) - window.innerHeight / 2;
       var t = Math.max(-0.5, Math.min(0.5, fromCentre / window.innerHeight));
-      // The wordmark is the LAYER BEHIND, so it moves slower than the scroll,
-      // and the window is in front, so it moves faster. The sign is the whole
-      // effect: get it the wrong way round and the wordmark reads as the thing
-      // in front, which is the opposite of what this page is saying.
       var mv = (t * -28).toFixed(1), wv = (t * 14).toFixed(1);
       if (mv !== lastMark) { mark.style.transform = 'translate3d(0,' + mv + 'px,0)'; lastMark = mv; }
       if (wv !== lastWin) { posterWin.style.transform = 'translate3d(0,' + wv + 'px,0)'; lastWin = wv; }

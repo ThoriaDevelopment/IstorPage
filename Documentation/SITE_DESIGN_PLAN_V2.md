@@ -472,7 +472,13 @@ smaller. The `<picture>` keeps `width`/`height` attributes so layout never shift
 
 **No animation library.** The report verified zero requests for GSAP, ScrollTrigger, Lenis,
 Locomotive, AOS, ScrollMagic, Framer Motion or Swiper **across all five references**. Everything
-below is CSS plus one small `IntersectionObserver`. Budget: **≤ 4 KB of JS.**
+below is CSS plus one small `IntersectionObserver`. The budget this section carried, **≤ 4 KB of
+shipped JS**, is now measured rather than remembered: `document.inline_js_bytes` in
+`Source/tools/budget.json`, asserted by `verify-budget.py`. It read 5,599 B on 2026-09-19, of which
+1,250 B was prose in `//` comments that shipped to every visitor and was parsed as script; that prose
+moved into the note above the script, which the build strips. 5,010 B remain, and the overage is code
+for three jobs this table did not have when the sentence was written: the rail's current-section
+tracking (M1c), the close's parallax (M6), and the hero's own controls (M9).
 
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
@@ -487,6 +493,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M6** | Close: re-ink + occlusion | enters / scroll | 700ms + parallax | v1's one good moment, plus depth |
 | **M7** | Accordion open/close | click | 320ms | §8.3 |
 | **M8** | Link and button hover | hover | 160ms | genre baseline |
+| **M9** | **The hero's question** | click a chip | the answer's own M2 | the window answers a second and third question, and the second is the refusal |
 
 ### 7.1 M2 — the hero sequence, in detail
 

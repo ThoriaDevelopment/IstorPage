@@ -100,6 +100,13 @@ CONTRAST = [
     ("--azure-lift", "--field-hi", 5.19, "§4: the accent in the field, worst case"),
     ("--cite-ink", "--cite-wash", 4.74, "§4: the citation numeral on its wash"),
     ("--on-azure-lift", "--azure-lift-hi", 7.72, "§4: the CTA's ink, hovered"),
+    # M9's chips are the one control drawn in the WINDOW's scope rather than the
+    # page's, so these two are hex literals for the reason above: the pane is
+    # dark in both themes, and `--ink-2` resolves differently inside `.win`.
+    ("#8B9199", "#111620", 5.70,
+     "the hero chip's label at rest, on the pane's LIGHTEST stop"),
+    ("#E5E8EE", "#303033", 10.72,
+     "the hero chip's label on the active question, on --fill-card over the pane"),
 ]
 
 # Asserted to FAIL, so the reasons recorded beside the tokens cannot rot into
