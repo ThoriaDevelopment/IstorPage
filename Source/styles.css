@@ -966,20 +966,77 @@ h3 {
    means.
    --------------------------------------------------------------------------- */
 .poster {
+  /* The wordmark's size and leading, named, because the horizon has to sit at a
+     fraction of the mark's own height. A fixed pixel offset there would drift as
+     the mark scales, which is the same class of bug as a clearance written
+     against a drawing that resizes. Two numbers that must agree can only be one. */
+  --mark-size: clamp(72px, 22vw, 220px);
+  --mark-line: 0.86;
+  --poster-pad: 120px;
   position: relative;
   overflow: hidden;
-  padding-block: 120px 0;
+  padding-block: var(--poster-pad) 0;
   background-color: var(--field-base);
   background-image: var(--field-bg);
   color: var(--field-ink);
 }
+
+/* The close is layered in the order both reference closes use: the wordmark
+   behind, the horizon across the middle occluding its feet, and everything a
+   visitor can read or click in front of both. `.reading` and `.colophon` are
+   named here rather than left to default, because a positioned sibling paints
+   over an unpositioned one and the footer's links would have disappeared. */
+/* The horizon is a child of the wordmark, not of the poster, and that is a
+   measurement rather than a preference. `.poster-mark` sets line-height 0.86 on a
+   font whose own box is nearly 1em, so the negative half-leading hangs the mark's
+   box 14px ABOVE the poster's padding edge. Positioning from the poster therefore
+   missed by 14px at every width, and the correction for it is a font metric that
+   moves if the typography ever does. Anchored to the mark instead, the fraction
+   below is literally a fraction of the mark's box and nothing else.
+
+   100vw rather than 100%, because the mark's box is the width of its own text.
+   The scrollbar makes 100vw a little wider than the page, which the poster's
+   overflow:hidden crops, and it costs nothing that matters: the arc leaves the
+   frame at the same place the eye sees it leave. */
+.poster-horizon {
+  position: absolute;
+  left: 50%;
+  width: 100vw;
+  /* The global `img, svg, picture` rule caps every image at 100% of its
+     containing block, which would hold this band to the wrap's 1240px and leave
+     it inset. It is bleeding on purpose, so it opts out. */
+  max-width: none;
+  transform: translateX(-50%);
+  /* 0.889 of the mark's box, which is the wordmark's BASELINE: measured from the
+     font's own metric box, it holds to within a pixel from 390 to 1920. So the
+     arc's apex is the line the letters stand on, their feet among its beads, and
+     the ρ's tail (which descends half as far again) dips through it. A fraction
+     chosen by eye would be a number nobody could check later; this one is a fact
+     about the type. If --serif ever changes, re-measure with q-close.js. */
+  top: calc(var(--mark-size) * var(--mark-line) * 0.889);
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
+  /* The arc's own halo sits above the apex, and the apex is this box's top edge,
+     so the default clip would shave the glow off along a straight line. The
+     poster above still crops the band, which is what keeps it full-bleed. */
+  overflow: visible;
+}
+.poster .win,
+.poster .body,
+.poster .reading,
+.poster .colophon {
+  position: relative;
+  z-index: 3;
+}
+
 .poster-mark {
   position: relative;
   z-index: 1;
   margin: 0;
   font-family: var(--serif);
-  font-size: clamp(72px, 22vw, 220px);
-  line-height: 0.86;
+  font-size: var(--mark-size);
+  line-height: var(--mark-line);
   letter-spacing: -0.02em;
   text-align: center;
   color: var(--azure-lift);
@@ -1425,7 +1482,7 @@ h3 {
   .reading { margin-block-start: 64px; padding-block-start: 32px; }
   .reading-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
 
-  .poster { padding-block-start: 80px; }
+  .poster { --poster-pad: 80px; }
   .poster .win { width: 92%; margin-block-start: -32px; }
   .colophon { margin-block-start: 64px; }
   .reading + .colophon { margin-block-start: 44px; }

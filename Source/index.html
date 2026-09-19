@@ -605,7 +605,10 @@
      ===================================================================== -->
 <section class="poster">
   <div class="wrap">
-    <p class="poster-mark" id="close-mark">ἵστωρ<span class="mark-dot">.</span></p>
+    <!-- Inside the mark, not the poster: see the note on .poster-horizon. Its
+         position is a fraction of this paragraph's own box, so it has to have
+         this paragraph as its containing block. -->
+    <p class="poster-mark" id="close-mark"><!--#include poster-horizon-->ἵστωρ<span class="mark-dot">.</span></p>
 
     <div class="win" style="pointer-events: none">
       <div class="win-bar">

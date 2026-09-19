@@ -121,6 +121,7 @@ INCLUDES = {
     "styles":        (SOURCE / "styles.css",                  "css"),
     "icons":         (SOURCE / "icons.svg.partial",           "svg"),
     "calendar-ring": (SOURCE / "figures" / "calendar-ring.svg", "svg"),
+    "poster-horizon": (SOURCE / "figures" / "poster-horizon.svg", "svg"),
 }
 
 # A directory under _site/ that holds an index.html but is not a page.
