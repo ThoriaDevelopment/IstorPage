@@ -1506,7 +1506,24 @@ h3 {
    phones, so this is the build that has to survive.
    --------------------------------------------------------------------------- */
 @media (max-width: 1080px) {
-  :root { --t-display: clamp(44px, 9vw, 62px); --field-pad: 28px; }
+  /* --t-display is deliberately NOT overridden here, and the measurement is why.
+     This block carried `--t-display: clamp(44px, 9vw, 62px)`, which made a second
+     ladder for the same value. The two disagree at the breakpoint by 27px: the
+     headline is 88.8px at 1200 and 62px at 1024, so it pops rather than steps at
+     exactly 1080, and every viewport under it got a display size that no longer
+     outranked anything. Against 17px body the step fell to 3.65x at 1024, 3.18x
+     at 600 and **2.59x at 390**, which is below both sites the reference report
+     calls web-default (Breezy 3.1x, Freebuff 3.0x) on a page whose own report
+     ranks type-scale contrast as load-bearing item 11: "make the biggest type
+     much bigger, and use it once".
+
+     The rule is one ladder. `clamp(56px, 7.4vw, 94px)` at every width is
+     continuous (7.4vw of 1080 is 79.9), keeps the desktop value untouched at
+     94px, and lifts the phone step to 3.29x. What this block still does is the
+     thing it was written for: it scales the page's FURNITURE down for a small
+     screen -- field padding, act rhythm, the collapsed columns below -- which
+     costs nothing and changes no vertical rhythm the reader reads. */
+  :root { --field-pad: 28px; }
 
   .act { padding-block: 64px; }
   /* the nav's height is a constant, not a desktop concession, so it is added

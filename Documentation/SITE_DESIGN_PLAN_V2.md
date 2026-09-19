@@ -545,6 +545,20 @@ Freebuff (3.0×) are the two that feel most web-default.** v1 topped out at 68px
 **Display ÷ body = 94 ÷ 17 = 5.5×.** In the genre's top tier, and reached by *raising the top*, not
 by shrinking the body.
 
+**That ratio was true at one width, and this table was right about the token while the stylesheet was
+not.** `--t-display` was declared a second time inside `@media (max-width: 1080px)` as
+`clamp(44px, 9vw, 62px)` — a different ladder for the same value, and the two disagreed at the
+breakpoint by 27px, so the headline *popped* from 88.8px at 1200 to 62px at 1024 rather than stepping.
+Measured against the 17px body, the step the report's #11 is about was 5.53× at 1440, 3.65× at 1024,
+3.18× at 600 and **2.59× at 390** — under both sites the report calls web-default. The override is
+gone and the single ladder above serves every width; it is continuous across 1080 (7.4vw of 1080 is
+79.9), the desktop value is untouched at 94px, and the floor is 56px, which is 3.29×. The phone hero
+was the case that decided it: at 44px the h1 was barely larger than the 21px lede beneath it, and a
+type scale that stops outranking its own subhead on the screen most readers use is not a scale. That
+the media query still does its actual job — scaling the page's furniture (field padding, act rhythm,
+collapsed columns) rather than its type — is the reason deleting one declaration was the whole fix
+rather than re-tuning a second clamp against the breakpoint that caused this.
+
 ### 5.2 Leading, tracking, measure
 
 | | Value | Source |
