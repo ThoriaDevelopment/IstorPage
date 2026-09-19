@@ -56,7 +56,9 @@
   --card:    #FFFFFF;  /* the app's light modal                         */
   --ink:     #16181B;  /* the app's light body text                     */
   --ink-2:   #5F646B;  /* secondary; >= 4.5:1 on --paper                */
-  --ink-3:   #8A8F96;  /* labels and captions                           */
+  --ink-3:   #8A8F96;  /* a GRAPHIC ink, not a text ink: 3.12:1 on       */
+                       /* --paper, so it draws rules, the track and the  */
+                       /* scrollbar, and caption TEXT takes --ink-2     */
   --rule:    #E4E6E9;  /* the app's light table separator               */
 
   /* the accent. Azure is the ONLY interactive colour, in both themes — the
@@ -916,7 +918,13 @@ h3 {
   font-size: var(--t-sm);
 }
 .ruler-head strong { font-weight: 600; }
-.ruler-head span { color: var(--ink-3); white-space: nowrap; }
+/* The scale's label is text, so it takes the ratio-checked ink. It was on
+   --ink-3, the app's own label grey, which is a graphic value at 3.12:1 on
+   --paper: fine for the track it draws, not for a 15px caption a reader is
+   meant to read. --ink-2 is documented as secondary at >= 4.5:1 on the same
+   ground (5.71:1 measured), and the label still sits quieter than the strong
+   lead-in beside it. */
+.ruler-head span { color: var(--ink-2); white-space: nowrap; }
 .ruler-track {
   position: relative;
   height: 12px;
