@@ -83,8 +83,10 @@ Three consequences follow, and they are the whole design:
 1. **It gives the page a system instead of a style.** Every product moment resolves the same way,
    so the page reads as designed rather than assembled — the exact property v1 lacked.
 2. **It makes the app window an object on a surface.** A dark app window on paper is a hole; a
-   *light* app window on teal is a lit object. The app ships both themes, so both are real product
-   material, and §3.4 makes the pairing a rule rather than a decoration.
+   *light* app window on teal is a lit object. The app ships both themes and the captures use both, so
+   what actually makes a window read as an object is its **separator** rather than its theme: a 1px
+   seam with a field-tuned shadow where the ground is a field, and a paper-tuned shadow alone where it
+   is paper (§3.4, which is measured and was rewritten when the pairing turned out not to hold).
 3. **It is honest.** The teal is already the brand's, and the themes are already the app's. Nothing
    here is invented to look like a designed page.
 
@@ -105,61 +107,80 @@ can do that better than a video: the product moving on the page, with no player 
 
 ## §2 · Section architecture
 
-**Twelve acts in `<main>`**, ≈14 viewports, plus the sticky nav. The genre runs 7–16. Every headline is
-3–7 words; every body paragraph is 2–4 lines (genre rule, no exceptions across five sites).
+**Twelve acts in `<main>`**, ≈14 viewports, plus the sticky nav and the poster close. The genre runs
+7–16, and every body paragraph on this page is 2–4 lines (genre rule, no exceptions across five
+sites).
+
+The genre's other rule is headline length, **3–7 words**. Measured on the built page, the ten real
+headlines run **6, 12, 6, 5, 6, 3, 5, 3, 6, 4** words; the remaining two "headings" are a section
+label ("Questions") and a word being defined ("ἵστωρ"), where a word count does not apply. **Act 2
+is the one that breaks the rule**: "It checks what you already gave it, before it looks anywhere
+else." is two clauses where every other headline is one, and it is the first headline a reader meets
+after the hero. Recorded here as a measured defect rather than accepted: the fix is the split every
+other act already uses, its second clause moving into the lede, and it is the next copy change rather
+than a thing to forget.
 
 Compositions are named **C1–C5** and defined in §3. The page alternates them deliberately — the
 report ranks alternation **#12**, and notes that Gemini Notebook, competent and entirely
 non-alternating, *"is the least memorable of the five despite having the best single element."*
 
-This table is **measured from the built page, and `verify-links.py` now asserts it.** It said
-"Eleven acts" and enumerated ten while the page shipped twelve, and nothing noticed: the gate counted
-sections against a floor of ten, so the one document describing the design described a different
-page and every assertion stayed green. The rhythm it describes is asserted too — the grounds below
-are the sequence `DPPPPPDPPPPD`, whose longest run is five, and the paired acts must keep alternating
-the side the field sits on.
+This table is **measured from the built page, not remembered from the brief**, and `verify-links.py`
+asserts the parts of it a static check can hold: that there are **twelve** acts, that the grounds run
+`DPPPPPDPPPPD` with no run longer than five, and that the four C2 acts alternate the side the field
+sits on — right, left, right, left. It said "Eleven acts" and enumerated ten for a week while the
+page shipped twelve, and nothing noticed, because the gate counted sections against a floor of ten.
 
-| # | Act | Composition | Ground | Product shown |
-|---|---|---|---|---|
-| — | Nav — sticky | — | paper | — |
-| 1 | **Hero** — "It shows you what it saw." | **C1** field-full | teal | DOM replica, **animated** |
-| 2 | **The gate** — "It checks what you already gave it." | **C2** split, field right | paper + teal | `exhibit-10` |
-| 3 | **The passage** — "Every claim points at a passage." | **C2** split, field left | paper + teal | `exhibit-11`, interactive |
-| 4 | **The reading** — "You can watch it decide." | **C2** split, field right | paper + teal | `exhibit-12` |
-| 5 | **The dispute** — "It marks what nobody knows yet." | **C2** split, field left | paper + teal | `exhibit-13` |
-| 6 | **The machine** — "On your machine." | **C3** diptych | paper | `exhibit-14` + `exhibit-15` |
-| 7 | **The workspace** — "The library is the interface." | **C4** band | teal | `exhibit-16` + `exhibit-17` |
-| 8 | **The stop** — "Where it stops." | band, full-bleed | paper | the ring plate, generated |
-| 9 | **The evidence** — "What it did, and how well." | band | paper | `exhibit-18` (`exhibit-18-numbers`) |
-| 10 | **Questions** — accordion | two-column | paper | — |
-| 11 | **The name** — the word ἵστωρ, at display size | **C5**, tight | paper | — |
-| 12 | **The close** — "Istor is not finished." | **C5** poster | teal | the wordmark, occluding |
+**The act names below are the anchor ids.** That makes them the durable handle rather than a
+nickname: `#the-library` is in the nav, in the hero's own rail and in the ring's plate, so renaming
+one breaks navigation, which the link gate already catches. Three acts carry no id (4, 5 and 12)
+because nothing links to them. The headline column is each act's real `<h2>`, copied from the built
+page. The paraphrases it used to carry were shortened by hand and never checked: act 2's is twelve
+words and the table gave seven, which is how a headline that breaks the genre's length rule passed
+review for a week as one that kept it.
+
+| # | Act, by anchor id | Headline, as built | Composition | Ground | Product shown |
+|---|---|---|---|---|---|
+| — | nav — `#nav` | — | sticky bar, 1px hairline on scroll | paper | — |
+| 1 | hero — `#what-it-is` | It shows you what it saw. | **C1** field-full | teal | the app window as a live **DOM replica**, animated |
+| 2 | the gate — `#how-it-answers` | It checks what you already gave it, before it looks anywhere else. | **C2** split, field **right** | paper + teal | `exhibit-10` |
+| 3 | the passage — `#the-passage` | Every claim points at a passage. | **C2** split, field **left** | paper + teal | `exhibit-11`, the witness |
+| 4 | the reading — no id | You can watch it decide. | **C2** split, field **right** | paper + teal | `exhibit-12` |
+| 5 | the dispute — no id | It marks what nobody knows yet. | **C2** split, field **left** | paper + teal | `exhibit-13` |
+| 6 | the machine — `#on-your-machine` | On your machine. | **C3** diptych, one inset field | paper + teal | `exhibit-14` + `exhibit-15` |
+| 7 | the workspace — `#the-library` | The library is the interface. | **C4** band | teal | `exhibit-16` + `exhibit-17` |
+| 8 | the stop — `#where-it-stops` | Where it stops. | plate, drawing bleeds, no window | paper | the calendar-ring plate, generated |
+| 9 | the evidence — `#the-evidence` | What it did, and how well. | measure, then ruler and one exhibit | paper | `exhibit-18` |
+| 10 | questions — `#questions` | Questions | one column, 46rem, exclusive accordion | paper | — |
+| 11 | the name — `#the-name` | ἵστωρ | close measure, no exhibit | paper | — |
+| 12 | the close — no id | Istor is not finished. | **C5** poster | teal | the wordmark, occluded by the horizon |
 
 Four of the twelve are C2, and they are acts 2–5: field right, left, right, left. That is the
 zig-zag the report's #12 is about, and it is why the four paired acts are the page's first half.
 The second half has no field to flip, and carries its rhythm with the measure instead — the band at
-act 7, the full bleed at act 8, the ring's line-art against two screenshots. The grounds change four
+act 7, the ring's full-bleed line drawing at act 8, the ruler and one screenshot at act 9. The grounds change four
 times, which is more than four of the five references manage: Breezy is one flat blue throughout,
 Tempo is black throughout, Freebuff is black with photographic bookends, and Gemini Notebook is white
 throughout and is called the least memorable of the five for it.
 
-### 2.0 Read the table, not the subsections, where they disagree
+### 2.0 How these subsections are derived
 
-§2.1 to §2.11 below were written against the pre-rebuild act order and have NOT been re-verified
-against the built page; the table above has, and `verify-links.py` asserts it. Named here so the
-drift is a checklist rather than a trap. Each line was measured, and each is a subsection that now
-describes a different act:
+They are **§2.1 to §2.13 — the nav, then the twelve acts in built order**, one subsection each. That
+was not true before this pass. §2.3's diagram gave the C2 boxes as 488/688/560 when they are
+480/696/600; §2.4 called act 3 a "C4 band" when it is a **C2** split; §2.5 called act 4 "mirrored"
+where the measurable fact is that its field is on the right; §2.6 gave the portrait window as 360×470
+when its file is 430×480; §2.7's diptych was one field the width of `--field` in the definition and
+the width of `--page` on the page; §2.8 specified a three-up with icons that the build rejects by
+measurement (§2.8 gives the reason); §2.9 bundled three acts into one subsection with a paragraph of
+pointers; and **acts 8 and 12 had no subsection at all**, so the ring — the one drawing generated
+from the app's own answer — and the poster were the two acts the plan never described. The subsection
+numbers happened to line up with the act numbers; almost nothing under them did.
 
-  * their act NUMBERS are one behind from §2.3 onward, because the ring act ("Where it stops.") was
-    added and nothing renumbered the prose;
-  * **§2.4 "The passage — C4 band"** – the built act 3 is **C2**, split, field left. The band in this
-    page is act 7;
-  * **§2.6 "The dispute — C2, portrait"** – the built act 5 is C2, split, field left, and its
-    headline is "It marks what nobody knows yet." The portrait window the subsection describes is on
-    the hero's replica, not here;
-  * **§2.8 "The workspace — three-up"** – the built act 7 is **C4**, the `field band`, teal. The
-    three-up with icons is not on the page;
-  * and there is no subsection at all for act 8, the ring.
+Each subsection was written from the built markup rather than from the brief: the `<section>` class
+list, the exact `<h2>`, the DOM order of `.body` against `.field` (which is what the side alternation
+actually is, `is-flip` moving the field to column 1), the boxes measured at 1440, and the ids of the
+exhibits the act carries. Where the build departs from what this plan originally specified, the
+reason is recorded here rather than left in a markup comment that a reader of the plan will never
+open. The one number that is a measurement rather than a token is named with what produced it.
 
 ### 2.1 Nav — sticky
 
@@ -167,15 +188,29 @@ describes a different act:
 ┌────────────────────────────────────────────────────────────────────┐
 │  ἰστωρ.        How it answers · On your machine · Questions   [ Follow the build ] │
 └────────────────────────────────────────────────────────────────────┘
-   ↑ hairline fades in on scroll (M1)          ↑ the genre's persistent CTA
+   ↑ hairline + paper surface arrive on scroll (M1)   ↑ the genre's persistent CTA
+   2px reading progress, under the bar, scaled X
 ```
 
-Four of five references are sticky; each gains a 1px hairline once scrolled. Breezy skips it and,
-the report notes, *"reads more like a brochure than an app as a result."* Height ≈68px. Links are
-anchor links into the built acts 2, 6 and 10 — "How it answers", "On your machine" and "Questions" —
-the page's only real navigation, replacing v1's arrangement where the only nav was painted *inside a
-screenshot*. (This said "acts 4, 7 and 10" until the numbers were measured; the anchors themselves
-have not moved, only the numbering around them.)
+Four of five references are sticky, and each gains a 1px hairline once scrolled. Breezy skips it and,
+the report notes, *"reads more like a brochure than an app as a result."* Height is **68px**, the
+`--nav-h` token, which is also how far the hero's field is pulled up under the bar: two numbers that
+must agree are one number.
+
+The three links are anchors into the built acts 2, 6 and 10 — "How it answers", "On your machine" and
+"Questions" — and the mark links back to the hero. This is not the page's only navigation (§2.2's rail
+is the other) but it is the only one that persists, and it replaces v1's arrangement where the only
+nav was painted *inside a screenshot*. It also carries the page's one scroll indicator: a 2px
+`--azure` line under the bar, scaled on X, which the stylesheet calls *"a quiet orientation cue, not a
+second navigation system."*
+
+**The bar has two surfaces, and the change is content rather than paint.** While the nav is inside the
+hero's field it owns no surface at all — no background, no blur, no hairline — with its mark and links
+switched to the field's ink and its CTA to `--azure-lift`. Paper, blur and hairline arrive together
+once the field has scrolled past (`.nav.over-field`; §4 defines the two accents, because an accent
+that has to survive on teal cannot be the one that was chosen for paper).
+A reader whose browser never runs a script keeps the paper state throughout, which is the safe way to
+be wrong.
 
 ### 2.2 Hero — C1
 
@@ -185,22 +220,38 @@ have not moved, only the numbering around them.)
 ║                                                                    ║
 ║                 It shows you what it saw.                          ║  94px, GFS Didot, 1.06
 ║                                                                    ║
-║        A local notebook that answers only from what you gave it,   ║  21px, 1 line
-║        and points at the passage behind every claim.               ║
+║   A hundred pages to get through and one question. Istor reads the  ║  21px, --measure
+║   documents you give it, answers from them, and shows you the       ║
+║   passage behind every claim, and it says so when it cannot.        ║
 ║                                                                    ║
-║                    [ Follow the build ]                            ║  azure pill
+║      [ Follow the build ]    See the evidence ⌄                    ║  azure pill + scroll cue
 ║                                                                    ║
 ║        ┌──────────────────────────────────────────────┐            ║
-║        │  the app window — 959px, light theme          │            ║  ← M2 plays here
-║        │  (live DOM replica; the sequence runs once)   │            ║
+║        │  the app window — 959px, live DOM replica     │            ║  ← M2 plays here
+║        │  180px rail │ 594px answer pane │ 185px rail  │            ║
 ║        └──────────────────────────────────────────────┘            ║
-║                     ↑ 64px field padding                           ║
+║                     ↑ 48px field padding (--field-pad)             ║
 ╚════════════════════════════════════════════════════════════════════╝
 ```
 
 The hero **is** the product doing something, so there is no separate "product demo" section — the
-genre's usual second act is folded into the first. Headline is v1's, unchanged: it is six words,
-it is the page's own `<title>`, and it is the most distinctive sentence the brand owns.
+genre's usual second act is folded into the first. The headline is v1's, unchanged: six words, the
+page's own `<title>`, and the most distinctive sentence the brand owns.
+
+**The left rail is a real navigation.** It is a `<nav aria-label="Sections of this page">` carrying
+seven in-page links — What it is, How it answers, The passage, On your machine, The evidence,
+Questions, ἵστωρ — so the page's map is drawn *by* the replica rather than beside it, and the first
+thing a visitor can operate is the app. Every one of those anchors resolves in the link gate, which is
+what keeps the device from becoming a decoration that lies.
+
+**The two reserved answers are disclosures, not script.** "Who made it?" and "What do the inscriptions
+say?" sit in their own `<details>` inside the replica's answer pane, so a reader whose browser never
+ran a script can still open the second and read the refusal — the one place on the page where a
+visitor watches *it says so when it cannot* happen. With script, M10 moves each answer out of its
+shell into the pane once the app can answer for them, and hides the shell.
+
+**The secondary CTA is a scroll cue, not a second button.** "See the evidence" is a diamond-tipped
+link to act 9, which is the page's promise being checked by its own numbers.
 
 **Why a DOM replica and not a bitmap here.** It is resolution-independent at 959px (sharper than
 any capture), it weighs nothing, and — decisively — **it can move**, which is what §1's motion
@@ -213,31 +264,43 @@ faithful: `Black/verifiedsource.png`.
 
 ```
    ┌────────────────────────────┐   ╔═════════════════════════╗
-   │ It checks what you          │   ║ ░ teal field ░          ║
-   │ gave it.                    │   ║  ┌───────────────────┐  ║
-   │                             │   ║  │  exhibit-10       │  ║
-   │ Before it searches          │   ║  │  the question and  │  ║
-   │ anywhere else, it reads     │   ║  │  the whole answer  │  ║
-   │ what is already in your     │   ║  └───────────────────┘  ║
-   │ library. Sources you        │   ║                         ║
-   │ imported are the only       │   ║   the "Thoughts ⌄ /     ║
-   │ ones an answer may cite.    │   ║   Drafting the answer"  ║
+   │ It checks what you already  │   ║ ░ field, 696 wide ░     ║
+   │ gave it, before it looks    │   ║  ┌───────────────────┐  ║
+   │ anywhere else.              │   ║  │  exhibit-10        │  ║
+   │                             │   ║  │  600 wide, native  │  ║
+   │ Before it answers, Istor    │   ║  └───────────────────┘  ║
+   │ decides whether the         │   ║                         ║
+   │ documents in your library   │   ║   the "Thoughts ⌄ /     ║
+   │ already settle the question │   ║   Drafting the answer"  ║
    │                             │   ║   collapse tells the    ║
    │                             │   ║   story in one glance   ║
    └────────────────────────────┘   ╚═════════════════════════╝
-        488px on paper                    688px field, 560px window
+     480px on paper (--col-text)    696px field (--field), 600px window
 ```
 
-### 2.4 The passage — C4 band, and the page's one interaction
+Measured at 1440: the text column is **480** wide at x=100, the field **696** at x=620, and the
+exhibit inside it **600**, its file's own width (§3.1). This is the reference pattern for every C2
+act below, and the only thing that changes between them is which side the field sits on.
 
-The citations act gets the band because it is the product's core claim, and it carries **M4, the
-witness** — the single most product-specific interaction available (§8.2). On the answer exhibit,
-focusing or hovering a citation chip marks the sentence it supports.
+The act's second paragraph is the part worth keeping: Istor runs **two** models, and the small,
+heavily instructed one is asked the cheap question first — *is this already in the library?* — so the
+large model is only spent when the answer genuinely is not there.
+
+### 2.4 The passage — C2, split, field left, and the page's one interaction
+
+This is a **C2 split like its neighbours, not the band this subsection used to claim** — the page's
+only band is act 7. What makes the act load-bearing is **M4, the witness**, the single most
+product-specific interaction available (§8.2): on `exhibit-11`, focusing or hovering a citation chip
+marks the sentence it supports.
 
 This is v1's own "witness" idea, which v1 then forbade by its no-click rule. It is the one place on
-the page where a reader can do what the product does.
+the page where a reader can do what the product does, and the same device the hero's replica has
+already taught, so the page's one interaction is introduced before it is explained.
 
-### 2.5 The reading — C2, mirrored
+Its second paragraph earns the act: sometimes the answering model writes a good answer and forgets to
+cite as it goes, and the page says what happens then rather than pretending it does not.
+
+### 2.5 The reading — C2, split, field right
 
 `exhibit-12` is the domain-by-domain reading log — Wikipedia, Commons, archive.org, arXiv, Crossref,
 Open Library. The catalogue calls it *"**Only capture that shows real domain-by-domain fetching**"*
@@ -245,7 +308,7 @@ and the reference report's #9 says legibility is what creates the impression of 
 also gives the copy something v1 could only assert: the page can say *"you can watch it decide"* and
 then show it deciding.
 
-### 2.6 The dispute — C2, portrait
+### 2.6 The dispute — C2, split, field left, and the page's only portrait exhibit
 
 **The section v1 never had, and the most distinctive content in the whole capture set.**
 
@@ -260,29 +323,126 @@ page, it is verified product behaviour, and no competitor page in the genre coul
 also the honest counterpart to the genre's social-proof slot: it is evidence, and it is the kind of
 evidence only this product can offer.
 
-Portrait window (360×470) in the field, breaking the page's landscape rhythm deliberately — Tempo
-uses a phone-shaped mock for the same reason.
+**Portrait, and deliberately the only one.** `exhibit-13` is **430×480** (its file's own size, §6.4)
+inside a 600px figure, so the window is taller than it is wide and breaks the page's landscape rhythm
+in the one act whose subject is that something does not fit a tidy shape. Tempo uses a phone-shaped
+mock for the same reason. It is also the smallest exhibit on the page, which is the trade: a portrait
+crop at native scale is narrower than the field it sits in, and the whitespace that leaves is what
+makes the act read as quieter than the four around it.
 
-### 2.7 The machine — C3 diptych
+### 2.7 The machine — C3, in one inset field
 
 The privacy claim needs **two** captures and no single one carries it: dark `settingsresearch.png`
 shows *"Web research: off"* and *"Scrape (keyless, no service) — No API keys, no third-party search
 API"*; light `settingsmodels.png` shows *"Ollama (default) — Local model server"* at
 `http://localhost:11434` and the six model roles. The catalogue is explicit: *"Together they cover
-the claim; neither alone does."* And they are one dark and one light — which the §3.4 theme rule
-makes a virtue rather than an accident.
+the claim; neither alone does."* And they are one dark and one light, which is the diptych's argument
+in one glance.
 
-### 2.8 The workspace — three-up
+Measured at 1440: the field is **1240** (the full `--page`, not `--field` — this is C3, the inset
+field, and it holds both windows in one surface because they are two halves of one claim), with the
+two exhibits side by side at **400** and **396**, each at its file's own width rather than stretched
+to fill. At 1080px and below the pair stacks instead of shrinking (§7.4 records the same failure mode
+elsewhere: a window squeezed until its text is unreadable is worse than a window that moved).
 
-Genre-standard three-up (Gamma, Gemini Notebook). Icons, not images: the library, the notes pane,
-and the viewer. Reuses the **five Lucide icons already extracted** (24px viewBox, stroke 2, drawn at
-the app's own 14/16px) — no new icon work, and the provenance stays as recorded.
+### 2.8 The workspace — C4, the band, and why it is not the three-up
 
-### 2.9 The evidence, §2.10 Questions, §2.11 The name
+This subsection specified a genre-standard three-up with icons (Gamma, Gemini Notebook) and the build
+**rejects it by measurement**, which is the one change here that is a decision rather than a
+correction. Both captures are full-window views 1918px wide; halved into two ~470px panels, the app's
+own 16–17px text would render at about 8px, which §1's first principle forbids — *legible or absent*.
+A three-up has the same problem and adds icons that would have to stand for screens the reader cannot
+read.
 
-See §9 for the evidence band, §8.3 for the accordion, and §1/§6 for the close. The close merges
-v1's "the name" section (the brief: *"the name means 'one who has seen' and gets a real section"*)
-with the poster move, which is where it belongs.
+So act 7 is a **C4 band**: teal, full bleed, heading centred inside the field and the measure held to
+`--measure`. Under it, the two windows are stacked at **959** each — full window width — with their
+own captions and their own themes, dark (`exhibit-16-library`) then light (`exhibit-17-notes`). The
+band is the one act where the interface is the whole argument, and the page gives it the full width
+rather than a panel, which is why it is the widest thing on the page after the ring.
+
+### 2.9 The stop — the ring, and the one act with no window
+
+The act the plan never had a subsection for, and the only one whose illustration is **generated from
+the product's own answer**: 355 slots on a 4.602px pitch, emitted by `make-calendar-ring.py` rather
+than drawn by hand, so the drawing and the number act 10 quotes cannot drift apart. The markup's own
+comment calls it *"a quiet act between two loud ones"*, and that is its job in the rhythm: its
+neighbours are the teal band above it and the ruler and capture below it, and it is the only act whose
+exhibit is line art rather than a window.
+
+Measured at 1440: the `.plate` figure is **1240** wide and the `ring-plate` SVG inside it is **1463**,
+that is **118% of the wrap**, pulled 9% past each edge and cropped by `overflow-x: clip` on the
+section. So the drawing bleeds off both sides while the copy stays inside a **430px** column that sits
+*inside* the arc, which is the one place on the page where type and artwork share the same space.
+That column is also where the page's hardest measured clearance lives: the arc's `355` label and the
+act's heading collided by 28.1 × 57.8px at 1440, and by more on wider windows, until the gap above the
+copy was written as a fraction of the plate rather than a fixed 150px.
+
+The copy is the page's two admissions in bold lead-ins — *"Where it refuses."* and *"Where it
+genuinely ends."* — under a heading that names the act: **Where it stops.** The figcaption closes it:
+354 and 355 holes are the same ring at this size, *"which is why the app prints both numbers and picks
+neither."*
+
+### 2.10 The evidence — the numbers, on paper
+
+The genre has a social-proof slot. We have no users, logos or quotes, and inventing them would break
+the page's own rule, so the slot holds **evidence instead of endorsement** (§9) — and every figure is
+one the app printed, from a capture on this page.
+
+It is the one act built as a **measure followed by an instrument**: a four-row `<dl>` (354.08 / 68% /
+0.028 mm / 4) whose terms are the app's own numbers, then a **confidence ruler**, a 760px two-value
+scale showing the fitted 354.08 and the still-possible 355, exposed as `role="img"` with a sentence
+rather than as decoration. Then `exhibit-18`, at 600, the capture the first three figures came from.
+This act is why the hero's secondary CTA points here: it is the page's promise being checked by its
+own numbers, and the check includes the part that is wrong.
+
+### 2.11 Questions — the accordion
+
+One column, `max-width: 46rem`, six `<details name="questions">` with the first `open`. The `name`
+attribute makes it **exclusive** — opening one closes the other, which is the native version of the
+genre's FAQ behaviour and needs no script. v1 shipped a plain `<dl>` and defended it in a comment:
+*"an accordion would hide precisely the answers this audience came for."* The reversal is argued in
+§8.3: the answers are one keystroke away rather than hidden, all five references have one, and
+`<details>` works with script off.
+
+The act's first answer is also the one the page's whole claim rests on (*"Does anything leave my
+computer?"* — no), so it is the one that arrives already open.
+
+### 2.12 The name — quiet prose, and one word at display size
+
+`<section class="act act-tight" id="the-name">`, whose 72px block padding is the only tight one on the
+page. The heading is not a sentence but **the word being defined, at display size**: the h2 is ἵστωρ
+and the paragraph under it carries the etymology (*weyd-*, *videre*, *wit*) and then the turn — *"A
+witness is not the person who knows most; it is the person who was there, and can say what they saw."*
+No exhibit, no window, no field: after eleven acts of the app, the last thing before the close is the
+brand's own argument, in prose.
+
+The brief's requirement is that the name gets a real section. This is that section, and it is placed
+immediately before the poster so the etymology is the last thing read before the mark is drawn large.
+
+### 2.13 The close — C5, the poster, and the occlusion
+
+`<section class="poster">`, full-bleed teal, built as three layers in a stated order:
+
+  1. **`.poster-mark`** — ἵστωρ at `clamp(72px, 22vw, 220px)`, the page's largest type by a factor of
+     more than two over the h1, in `--azure-lift` on the field;
+  2. **`.poster-horizon`** — an arc spanning `100vw` whose **apex is the wordmark's baseline**,
+     `0.889` of the mark's own box, measured from the font's metric box and holding within a pixel
+     from 390 to 1920. Its beads sit among the letters' feet and its arc passes through them, so the
+     mark is *occluded* rather than placed on top of the artwork;
+  3. **the replica window**, then the act's `h2` and CTA, then `.reading`.
+
+**The occlusion is the point, and it inverts the genre.** The reference sites put their artwork in
+front of their wordmark; here the product overlaps the brand's lower third, so the mark passes behind
+the window and stays half-visible — which is what *"it shows you what it saw"* means when the product
+is the thing doing the showing. Everything readable or clickable is lifted above both layers, which is
+a correctness requirement rather than a style: a positioned sibling paints over an unpositioned one,
+and the footer's links would have disappeared.
+
+Below it, `.reading`: three columns of four pages each, drawn from the 75-page carried library, with a
+lede naming the count and a link to the directory. The markup's comment is the rule — *"a footer that
+lists everything is a sitemap, and the author of a sitemap is a crawler. These are the sixteen this
+page would hand to someone who had just read it."* The close merges v1's "the name" section with the
+poster move, which is where it belongs.
 
 ---
 
@@ -295,12 +455,22 @@ All widths derive from one measured fact: **every capture is 1918px wide and is 
 
 | Token | Value | Derivation |
 |---|---|---|
-| `--win` | **959px** | 1918 ÷ 2 — the app window's **native** CSS width |
-| `--field-pad` | **64px** | Tempo's measured ≈65px |
-| `--field` | **1087px** | `--win` + 2 × `--field-pad` |
+| `--win-sm` | **600px** | crop ÷ 2 — the pane exhibits, at native app scale |
+| `--win-lg` | **959px** | crop ÷ 2 — the full-window exhibits, and the replica |
+| `--field-pad` | **48px** | inside a field, and between the pair's two windows |
+| `--field` | **696px** | `--win-sm` + 2 × `--field-pad` |
+| `--col-text` | **480px** | the C2 text column |
+| `--gap` | **40px** | between the text column and the field |
 | `--page` | **1240px** | genre range 1150–1300 |
+| `--nav-h` | **68px** | the bar's height, and how far the hero is pulled under it |
 | `--measure` | **66ch** | kept from v1; correct typography, not a style |
-| `--gutter` | `clamp(20px, 5vw, 64px)` | |
+| `--gutter` | `clamp(20px, 5vw, 40px)` | |
+
+This table used to read `--win` 959, `--field-pad` 64 and `--field` 1087. Those three numbers agree
+with each other and with nothing else: 1087 is 959 + 128, which is the derivation you get by putting a
+*full-window* exhibit inside a field, and no field on this page holds one. There is no bare `--win`
+token; the pair is `--win-sm` for the panes and `--win-lg` for the windows, because they are two
+different crops and a single name would invite exactly that substitution.
 
 **The consequence is the most useful number in this plan.** An exhibit displayed at exactly
 `crop_px ÷ 2` is **pixel-perfect at both 1× and 2× DPR, with no upscaling** — because the source is
@@ -310,18 +480,34 @@ to look right, and why its weight lands far below the genre (§12).
 
 ### 3.2 The five compositions
 
-**C1 · field-full** — full-bleed teal; heading, subhead and CTA centred; window at `--win` centred,
-64px padding inside. Used by the hero only.
+Each entry carries the boxes, measured at 1440 off the built page, so that the definition and the
+page can be compared without opening either.
 
-**C2 · split** — paper text column **488px** (≈57ch) beside an inset teal field **688px** holding a
-**560px** window. Alternates side; the side is part of the rhythm.
+**C1 · field-full** — full-bleed teal; heading, subhead and CTA centred; the replica at `--win-lg`
+(**959**) centred, 48px field padding inside. Used by the hero only. Its left rail is a real in-page
+navigation (§2.2), which makes C1 the one composition with a second interactive layer inside it.
 
-**C3 · diptych** — paper ground; one inset teal field `--field` wide containing two windows
-side-by-side (dark + light), each ≈470px.
+**C2 · split** — paper ground; text column **480** at x=100 beside an inset teal field **696**
+(`--field` = `--win-sm` + 2 × `--field-pad`) holding a **600** window. Measured: the field sits at
+x=620 in acts 2 and 4 and at x=100 in acts 3 and 5, and the side is the only thing that differs
+between them. `is-flip` moves the field to column 1, so the side is content rather than a second class
+name to keep in sync.
 
-**C4 · band** — full-bleed teal; a wide 959px window spanning it; heading above, inside the field.
+**C3 · diptych** — paper ground holding one inset teal field the full `--page` (**1240**) wide, with
+two windows side by side at **400** and **396**, each at its file's own width rather than stretched to
+a common number. One field, not two: the two captures are two halves of one claim. The pair stacks
+below 1080px.
 
-**C5 · poster** — full-bleed teal; the giant wordmark, with `exhibit-16` overlapping its lower third.
+**C4 · band** — full-bleed teal; heading centred inside the field on the measure, at 88px of block
+padding; then windows at `--win-lg` (**959**). Act 7 is the band, and it carries **two** of them,
+stacked, each with its own caption and its own theme, because both are full-window captures: halved
+into a side-by-side pair, the app's 16–17px text would render at about 8px (§2.8).
+
+**C5 · poster** — full-bleed teal; three layers in a stated order: the giant wordmark
+(`clamp(72px, 22vw, 220px)`) at the back, then a `100vw` horizon arc whose apex is the mark's
+baseline at `0.889` of its own box, occluding the letters' feet, then the replica window and the
+reading columns in front of both. The mark stays half-visible, which is the difference between an
+occlusion and a cover (§2.13).
 
 ### 3.3 Radius, shadow, hairlines
 
@@ -335,9 +521,10 @@ surface'."* All five references have it. v1 had none of the three.
 | `--r-win` | **18px** | genre 17–22px |
 | `--r-chip` | **10px** | genre 8–12px |
 | `--r-cite` | **6px** | the app's own measured chip radius (5–6px) |
-| `--shadow` | `0 24px 60px rgba(4,10,12,.45)` | Breezy measured: ~9% darkening decaying over ≈50px CSS |
+| `--shadow-field` | `0 24px 60px rgb(4 10 12 / .45)` | Breezy measured: ~9% darkening decaying over ≈50px CSS |
+| `--shadow-paper` | `0 18px 44px rgb(16 24 27 / .14)` | the same effect retuned, because a shadow that dark over paper reads as a hole |
 | `--rule` | `#E4E6E9` | measured: the app's light table separator |
-| `--rule-field` | `rgba(255,255,255,.10)` | 1px hairlines separating dark from dark |
+| `--field-rule` | `rgb(255 255 255 / .10)` | 1px hairlines separating dark from dark |
 
 **Hairlines are 1px, never heavy strokes.** Freebuff and Tempo separate black-on-black with a
 hairline plus a 4% card lift. Nothing on this page uses a border thicker than 1px except the field
@@ -345,12 +532,26 @@ edge, which is a seam rather than a stroke.
 
 ### 3.4 The theme rule
 
-> **Light-theme windows stand on teal fields. Dark-theme windows stand on paper.**
+This section used to state a rule and reason from it: *"light-theme windows stand on teal fields,
+dark-theme windows stand on paper"*, therefore *"the window always contrasts its ground, so it always
+reads as an object."* **The premise is false on the built page and the conclusion does not follow.**
+Sampled from each exhibit's own title-bar pixels against the ground it stands on, six of the nine are
+**dark windows on the teal field** — 10, 11, 12, 13, 14 and 16 — at **1.10 to 1.15:1**, which is no
+contrast at all; the light pair (15 and 17) carry the contrast the old rule described, at 13.2:1 and
+16.3:1.
 
-Both themes are real (the app ships White as default and Black as selectable), so this invents
-nothing — and it turns a fact into a system: the window always *contrasts* its ground, so it always
-reads as an object. In the field, a 1px `--rule-field` seam separates window from ground, which is
-Tempo's measured technique. On paper the `--shadow` does the separating instead.
+> **The rule that holds is about the separator, not the theme.**
+
+A window on a field is separated by the 1px `--field-rule` seam with `--shadow-field` under it; a
+window on paper is separated by `--shadow-paper`. That is Tempo's measured technique (§3.3), and it is
+the reason a near-black window can stand on a near-black ground and still read as an object. The
+theme of each capture is whatever the app was in when it was taken, and the page does not recolour
+evidence to fit a rule, so the pairing is a fact about the captures rather than a specification.
+
+What must hold is that **every window has exactly one separator**: `.field .exhibit img` carries the
+seam and the field shadow, and `.exhibit img` outside a field carries `--shadow-paper`. No gate
+asserts that pair yet, and it is the next check this section owes, because "one separator each" is
+exactly the kind of rule that a later edit breaks in one place and leaves correct in the other eight.
 
 ### 3.5 The library's theme control
 
@@ -575,7 +776,7 @@ Freebuff (3.0×) are the two that feel most web-default.** v1 topped out at 68px
 | `--t-sm` | 15px | figcaptions, secondary |
 | `--t-body` | **17px** | body |
 | `--t-lede` | 21px | hero subhead, section intros |
-| `--t-h3` | 26px | three-up heads |
+| `--t-h3` | 26px | **unused.** Sized for the three-up heads that §2.8 rejects, and every `h3` on the page is a `.reading-head` at `--t-sm` |
 | `--t-h2` | **34px** | section headings (genre 25–31) |
 | `--t-display` | **`clamp(56px, 7.4vw, 94px)`** | **used exactly once — the hero** |
 
@@ -1028,8 +1229,8 @@ walked and how many elements it could not measure: a clean result that covered s
 long page is not a clean result.
 
 **It audits the states a render never shows, too.** §3.6 promises `prefers-contrast: more` on both
-halves, and §3.4's theme architecture promises a dark world to a reader whose machine is dark and
-who has stored no choice. Until 2026-09-19 only the *existence* of those rules was asserted, which is
+halves, and §3.5's theme control promises a dark world to a reader whose machine is dark and who has
+stored no choice. Until 2026-09-19 only the *existence* of those rules was asserted, which is
 a claim about the source rather than about the page, and for the dark one it was worse than that:
 headless Chrome reports a light OS, so `:root:not([data-theme="light"])` had never been rendered by
 anything. Chrome's command line has no switch for either feature, so the audit emulates them where a
@@ -1070,7 +1271,7 @@ AA, and none of them was clean by accident: a copy of the artifact with a bad co
 render had ever covered, and both now confirm what the stylesheet says rather than what it promises:
 a dark machine with no stored choice gets the dark world (`--canvas` #0A0A0A, `--mist` #A5A19B), and
 a stored light choice still wins on that same machine. The landing page reports **zero** rules for a
-dark machine, which is also true of it: it ships one world and has no dark theme at all, which §3.4
+dark machine, which is also true of it: it ships one world and has no dark theme at all, which §3.6
 and the print block both say in passing and nothing has ever questioned.
 
 **One more pass, and it answers a claim rather than a criterion.** The audit serves every page a

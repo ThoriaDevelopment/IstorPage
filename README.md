@@ -161,6 +161,20 @@ un-mirroring one split reports `sides [0, 0, 0, 1]`. It exists because the drift
 already happened: §2 said "Eleven acts" and listed ten while the page shipped twelve, and nothing
 noticed, because the gate counted sections against a floor of ten.
 
+The gate also **reads the plan as data**. §2's table is parsed out of
+`Documentation/SITE_DESIGN_PLAN_V2.md` and compared against the page: the row count, each row's
+anchor id against the act's own `id`, each row's headline against the act's real `<h1>`/`<h2>`, and
+every exhibit the table names against the markup. Counting sections could not catch a table
+describing a different page, which is what §2 had become in both directions — it gave act 2's
+headline as seven words when the page's is twelve, and it named compositions the build does not have.
+The comparison is whitespace-collapsed and NFC-normalised, because act 11's heading is a Greek word
+with a breathing mark and a spelling difference would be a failure with nothing behind it. Four
+mutations are shown failing against a copy: a paraphrased headline, a renamed anchor, a dropped act,
+and a document left in CRLF. That last one lives in the artifact-integrity block and came from an
+accident rather than a policy — a mutation script restored this plan through `write_text` and turned
+all 1381 of its lines into CRLF while every assertion stayed green — so the documents are now checked
+for line endings beside the artifact.
+
 Both halves of the site carry a print block and honour `prefers-contrast: more`, and both promises
 are asserted rather than trusted: `verify-links.py` requires the blocks to exist, computes every ink
 the print token world declares against white paper, and fails if any of them is under AA. That check

@@ -48,6 +48,7 @@ import importlib.util
 import pathlib
 import re
 import sys
+import unicodedata
 
 HERE = pathlib.Path(__file__).resolve().parent
 
@@ -191,6 +192,54 @@ def visible_text(page: str) -> str:
     text = re.sub(r"<style\b.*?</style>", "", text, flags=re.S | re.I)
     text = strip_html_comments(text)
     return re.sub(r"<[^>]+>", " ", text)
+
+
+# --------------------------------------------------------------- the plan, as data
+
+REPO = HERE.parent.parent                  # the checkout, from Source/tools/
+PLAN_DOC = REPO / "Documentation" / "SITE_DESIGN_PLAN_V2.md"
+DOCUMENTS = [PLAN_DOC, REPO / "README.md", REPO / "Documentation" / "OVERNIGHT_GOALS.md"]
+
+# The string that makes §2's table THE TABLE: a reformat that breaks this line is a
+# failure to re-point the check, not a silent skip. It is the header of the table
+# that maps every act to its anchor id, its built headline and its exhibit.
+PLAN_TABLE_HEAD = "| # | Act, by anchor id |"
+
+
+def norm_text(s: str) -> str:
+    """One comparable form for a string that exists in two files.
+
+    NFC because act 11's heading is a Greek word carrying a breathing mark and an
+    iota subscript: the same word written from a different keyboard can be a
+    different byte sequence, and that would be a failure with nothing wrong behind
+    it, which is how a check earns the reputation that gets it deleted.
+    """
+    s = htmllib.unescape(re.sub(r"<[^>]+>", "", s))
+    return unicodedata.normalize("NFC", re.sub(r"\s+", " ", s)).strip()
+
+
+def plan_act_rows() -> list[list[str]] | None:
+    """§2's table as data: one row of cells per numbered act.
+
+    None means the document or the table's header is gone. Callers report that as a
+    failure rather than skipping, because a check that goes quiet when its subject
+    is renamed is worse than no check: nothing else in this file reads the plan.
+    """
+    if not PLAN_DOC.exists():
+        return None
+    rows: list[list[str]] = []
+    inside = False
+    for line in PLAN_DOC.read_text(encoding="utf-8").splitlines():
+        if line.startswith(PLAN_TABLE_HEAD):
+            inside = True
+            continue
+        if inside:
+            if not line.startswith("|"):
+                break
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if cells and cells[0].isdigit():
+                rows.append(cells)
+    return rows or None
 
 
 # ------------------------------------------------------------------ css parsing
@@ -437,6 +486,70 @@ def check_5(rep: Report, page: str) -> None:
                                   f"is why this is exact rather than a floor")
     else:
         rep.ok("12 sections", "§2's acts are present")
+
+    # ---- §2's table, read against the page ---------------------------------
+    # This is the drift that actually happened, and it lasted a week: §2's table
+    # listed ten acts under a prose line that said eleven, on a page that shipped
+    # twelve, with every assertion in this file green — because the table is a
+    # claim about this file and nothing here was reading it. Counting sections
+    # cannot catch a table that describes a different page.
+    #
+    # So the table is read as DATA. Three things are asserted, and each is a way
+    # the plan and the page can disagree while both look fine:
+    #
+    #   * the row count, which is the "eleven acts" bug itself;
+    #   * each row's anchor id against the act's own `id`, because the ids are what
+    #     the nav, the hero's rail and the ring's plate link to — the table is
+    #     where a renamed one would be documented wrongly;
+    #   * each row's headline against the act's real <h1>/<h2>, because the table
+    #     paraphrased them, and a paraphrase is how a 12-word headline sat under a
+    #     rule that allows seven.
+    rows = plan_act_rows()
+    if rows is None:
+        rep.fail("§2's table is readable",
+                 f"{PLAN_DOC.name} is missing, or its table no longer starts with "
+                 f"{PLAN_TABLE_HEAD!r}. This check reads that table as data, so a "
+                 f"reformat has to re-point it rather than pass quietly")
+    elif len(rows) != len(acts):
+        rep.fail("§2's table matches the page",
+                 f"the plan lists {len(rows)} acts against {len(acts)} sections — the "
+                 f"table and the page are describing different pages, which is the "
+                 f"exact failure this check exists for")
+    else:
+        wrong_head, wrong_id, missing_ex = [], [], []
+        for i, cells in enumerate(rows, start=1):
+            chunk = acts[i - 1]
+            m = re.search(r"<h[12]\b[^>]*>(.*?)</h[12]>", chunk, re.S | re.I)
+            page_head = norm_text(m.group(1)) if m else "(no heading)"
+            if page_head != norm_text(cells[2]):
+                wrong_head.append(f"act {i}: plan {cells[2]!r} vs page {page_head!r}")
+            want = re.search(r"#([A-Za-z][\w-]*)", cells[1])
+            has = re.search(r"<section\b[^>]*\bid\s*=\s*[\"']([^\"']*)[\"']",
+                            chunk, re.I)
+            if want and (not has or has.group(1) != want.group(1)):
+                wrong_id.append(f"act {i}: plan #{want.group(1)} vs page "
+                                f"{'#' + has.group(1) if has else '(no id)'}")
+            if not want and has:
+                wrong_id.append(f"act {i}: plan says no id, page has #{has.group(1)}")
+            product = cells[5] if len(cells) > 5 else ""
+            for ex in sorted(set(re.findall(r"exhibit-\d+", product))):
+                if f"/img/{ex}" not in body:
+                    missing_ex.append(f"act {i}: {ex} is not on the page")
+        if wrong_head:
+            rep.fail("§2's headlines are the page's",
+                     "; ".join(wrong_head) + " — the table has to quote the built "
+                     "markup rather than paraphrase it, because the paraphrase is "
+                     "where the length rule went unchecked")
+        else:
+            rep.ok("§2's headlines are the page's", f"{len(rows)} rows, read from the plan")
+        if wrong_id:
+            rep.fail("§2's anchor ids are the page's", "; ".join(wrong_id))
+        else:
+            rep.ok("§2's anchor ids are the page's", "every id in the table is on the act it names")
+        if missing_ex:
+            rep.fail("§2's exhibits are the page's", "; ".join(missing_ex))
+        else:
+            rep.ok("§2's exhibits are the page's", "every exhibit the table names is in the markup")
 
     # ---- the rhythm gate (§2, report #12) ---------------------------------
     # §2 opens by claiming the page alternates its compositions deliberately, and
@@ -962,6 +1075,22 @@ def check_newlines(rep: Report, site: pathlib.Path) -> None:
             rep.fail("CRLF", f"{name} — the repository is LF-only")
     else:
         rep.ok("the artifact is LF-only", "no CRLF in any text file")
+
+    # The documents too, and the reason is not theoretical: a mutation script in
+    # .improvement restored this plan with `write_text`, whose default newline
+    # translation turned all 1381 lines CRLF, and nothing was watching the files
+    # that are not the artifact. These three are read by hand and diffed on every
+    # commit, so one of them arriving in CRLF is a diff of every line.
+    doc_crlf = [p.relative_to(REPO).as_posix() for p in DOCUMENTS
+                if p.exists() and b"\r\n" in p.read_bytes()]
+    if doc_crlf:
+        for name in doc_crlf:
+            rep.fail("CRLF in a document", f"{name} — the repository is LF-only, and "
+                                            f"a rewritten document is how this got "
+                                            f"past a gate the first time")
+    else:
+        rep.ok("the documents are LF-only",
+               f"{len([p for p in DOCUMENTS if p.exists()])} files")
 
     files = [p for p in site.rglob("*") if p.is_file()]
     if len(files) != ARTIFACT_FILES:
