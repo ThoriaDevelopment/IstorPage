@@ -264,6 +264,13 @@ html {
   scroll-behavior: smooth;
   /* the sticky nav is 68px; an anchor jump must not land under it */
   scroll-padding-block-start: 84px;
+  /* The UA draws a 17px white track down the right edge, which on a page whose
+     first screen is deep teal reads as a rendering fault rather than as
+     chrome. A transparent track lets whatever ground the page is on show
+     through, and one mid grey thumb stays legible on the field and on the
+     paper both. Browsers without scrollbar-color keep the UA scrollbar, which
+     is the only way this can be wrong. */
+  scrollbar-color: var(--ink-3) transparent;
 }
 
 body {
