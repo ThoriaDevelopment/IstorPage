@@ -391,7 +391,12 @@ PROBE = r"""
        built after the toggle has been clicked: the audits were right and their
        labels were wrong, which is the most annoying shape a bug can have. */
     return { theme: d.documentElement.getAttribute('data-theme'),
-             checked: checked, viewports: steps, fails: fails, gradient: gradient };
+             checked: checked, viewports: steps, fails: fails, gradient: gradient,
+             /* What a reader can actually read on this render. `innerText`
+                respects display and visibility, so it is the text that was
+                painted rather than the text that is in the file, which is the
+                only figure worth comparing against a render with no script. */
+             chars: (d.body.innerText || '').replace(/\s+/g, ' ').trim().length };
   };
 
   const one = await audit();
@@ -430,6 +435,71 @@ PROBE = r"""
     gradient: one.gradient,
     themeControl: control,
     docHeight: Math.ceil(d.documentElement.scrollHeight),
+  };
+})()
+"""
+
+NOSCRIPT_PROBE = r"""
+(async () => {
+  /* `d` and `w` are parameters of the function the harness builds around this
+     expression, and are the FRAMED page's document and window. Declaring them
+     here from `document` compiled, ran, and reported on the harness instead: 0
+     characters, 0 links, and two invisible elements that were the harness's own. */
+  await new Promise(r => setTimeout(r, 60));
+
+  /* EVERY ANIMATION FINISHED before anything is called invisible, and this is the
+     third time this tool has had to learn it. The hero's answer is six children
+     with animation DELAYS and `both` fill, so for the first 1.8 seconds they sit
+     at opacity 0 while being perfectly visible to a reader a moment later. The
+     first run of this probe reported the hero's opening answer as content behind
+     script, which it is not and never was: it is an entrance. What is asked here
+     is whether an element EVER gets a box, not whether it has one this
+     millisecond. */
+  d.getAnimations().forEach(function (a) { try { a.finish(); } catch (e) {} });
+  await new Promise(r => setTimeout(r, 60));
+  const reason = el => {
+    /* An ancestor's state is checked first, because otherwise a paragraph inside
+       a `hidden` answer reports whatever its own rules say, and an entrance
+       animation's from-state is `opacity: 0`: the first version of this listed
+       the two answers the hero keeps in reserve as content behind script, which
+       they are not, they are content behind a button. */
+    const hidden = el.closest('[hidden]');
+    if (hidden) return 'inside an element carrying the hidden attribute';
+    const cs = getComputedStyle(el);
+    if (el.hidden) return 'the hidden attribute';
+    if (cs.display === 'none') return 'display: none';
+    if (cs.visibility === 'hidden') return 'visibility: hidden';
+    if (parseFloat(cs.opacity || '1') === 0) return 'opacity: 0';
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return 'no box';
+    return '';
+  };
+  /* Every element that carries text of its own and is not rendered. A container
+     whose text is in a child is not listed: the child is. */
+  const invisible = [];
+  let elements = 0;
+  for (const el of d.body.querySelectorAll('*')) {
+    const own = [].slice.call(el.childNodes)
+      .filter(n => n.nodeType === 3).map(n => n.nodeValue).join('').replace(/\s+/g, ' ').trim();
+    if (!own) continue;
+    elements++;
+    const why = reason(el);
+    if (!why) continue;
+    invisible.push({
+      sel: el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') +
+           (el.className && typeof el.className === 'string'
+             ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : ''),
+      why: why,
+      text: own.slice(0, 120),
+    });
+  }
+  return {
+    scripts: false,
+    chars: (d.body.innerText || '').replace(/\s+/g, ' ').trim().length,
+    elements: elements,
+    links: d.querySelectorAll('a[href]').length,
+    controls: d.querySelectorAll('button, input, select, textarea, summary').length,
+    invisible: invisible,
   };
 })()
 """
@@ -751,6 +821,9 @@ function ratio(a, b) {{
 """
 
 
+_SCRIPT_ELEMENT = re.compile(r"<script\b[^>]*>.*?</script\s*>", re.S | re.I)
+
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     """`_site/` for everything, except our harnesses and screenshots, which live
     in a temp dir. Nothing of ours may write into the artifact.
@@ -769,8 +842,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=kw.pop("directory"), **kw)
 
+    # Set for the scriptless pass: the served HTML has its script elements
+    # removed, which is the only faithful way to ask a browser what a reader
+    # whose script never ran is given. Chrome's own `--disable-javascript` would
+    # disable the harness too, and the harness is how anything gets measured at
+    # all, so the copy is what changes rather than the browser.
+    strip_scripts = False
+
     def do_GET(self):
         patch = type(self).patch
+        strip = type(self).strip_scripts
         path = self.translate_path(self.path)
         # A directory is served as its index.html, and that resolution happens in
         # send_head, which is one frame too late for us: asking for `/library/`
@@ -782,14 +863,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         # server was built with is not necessarily the one `abspath` was given.
         scope = type(self).patch_scope
         inside = bool(scope) and os.path.abspath(path).startswith(scope)
-        if not patch or not inside or not path.lower().endswith((".html", ".htm")):
+        if not (patch or strip) or not inside or not path.lower().endswith((".html", ".htm")):
             return super().do_GET()
         try:
             with open(path, "rb") as fh:
                 body = fh.read().decode("utf-8", "replace")
         except OSError:
             return super().do_GET()
-        data = inject_patch(body, patch).encode("utf-8")
+        if strip:
+            body = _SCRIPT_ELEMENT.sub("", body)
+            if "<script" in body.lower():
+                # Half-stripped is worse than not stripped: a src script left
+                # behind would run and the pass would report the scripted page.
+                return super().do_GET()
+        data = inject_patch(body, patch).encode("utf-8") if patch else body.encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
@@ -866,19 +953,26 @@ def media_label(media):
 
 
 def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
-              media=None):
+              media=None, scripts=True):
     """One theme and one media state, one render: probe the cascade, then sample
     the pixels of the SAME render. The theme is forced by the harness before the
     page is parsed, and the media state by unwrapping the page's own media rules
     before anything is measured. `media` is a map of feature to emulated value,
-    or None for the state the machine is actually in."""
+    or None for the state the machine is actually in.
+
+    `scripts=False` is the reader whose script never ran: the served page has its
+    script elements removed, no theme is forced and no media state is emulated,
+    and a different probe asks what got painted rather than what passes AA."""
     profile = os.path.join(tmp, "profile")
-    tag = "-".join(x for x in (theme or "asis", media_label(media)) if x)
+    tag = "-".join(x for x in (theme or "asis", media_label(media),
+                               "" if scripts else "noscript") if x)
     write(os.path.join(tmp, "audit-%s.html" % tag),
-          HARNESS.format(w=width, h=height, url=page, expr=json.dumps(PROBE),
+          HARNESS.format(w=width, h=height, url=page,
+                         expr=json.dumps(PROBE if scripts else NOSCRIPT_PROBE),
                          settle=settle, theme=json.dumps(theme or ""),
                          media=json.dumps(media or {})))
     Handler.harness = os.path.join(tmp, "audit-%s.html" % tag)
+    Handler.strip_scripts = not scripts
     # The patch rides on the page the iframe loads, not on the harness, so it can
     # only touch files under the site it was pointed at.
     Handler.patch = MEDIA_PATCH.format(media=json.dumps(media or {})) if media else ""
@@ -893,6 +987,7 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
             return doc
         v = doc["value"]
         v["media"] = media
+        v["scripts"] = scripts
         v["mediaRules"] = v.get("mediaRules") or 0
         # The patched matchMedia is what decides BOTH halves of this: whether the
         # page's own scripts pick a world, and whether the emulation finds any rule
@@ -982,7 +1077,7 @@ def media_states(contrast_more, os_dark, as_authored):
 
 
 def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
-               contrast_more=True, os_dark=True):
+               contrast_more=True, os_dark=True, scriptless=True):
     """Every theme and media state this page can be delivered in, as a list.
 
     The first pass forces nothing, so a page with no theme control is audited in
@@ -1001,6 +1096,14 @@ def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
     for media in media_states(contrast_more, os_dark, True):
         states.append(run_state(chrome, site, tmp, page, width, height, settle,
                                 None, pixels, media))
+    # The reader whose script never ran, in the state they would arrive in: no
+    # forced theme (the stamp is gone, so the media queries alone decide) and no
+    # emulated media state, because both of those are things this site does with
+    # script. Its probe is a different question from the rest of this tool's, so
+    # it reports on its own line.
+    if scriptless:
+        states.append(run_state(chrome, site, tmp, page, width, height, settle,
+                                None, False, None, scripts=False))
     if (first.get("themeControl") or {}).get("found"):
         other = "dark" if first.get("state") != "dark" else "light"
         states.append(run_state(chrome, site, tmp, page, width, height, settle,
@@ -1034,6 +1137,9 @@ def main(argv):
                     help="skip the emulated prefers-contrast: more pass")
     ap.add_argument("--no-os-dark", action="store_true",
                     help="skip the emulated dark-OS pass on the unstamped theme")
+    ap.add_argument("--no-scriptless", action="store_true",
+                    help="skip the pass that serves each page with its scripts "
+                         "removed, for the reader whose script never ran")
     ap.add_argument("--json", default=None, help="write the findings here")
     a = ap.parse_args(argv[1:])
 
@@ -1049,7 +1155,8 @@ def main(argv):
             r = audit_page(chrome, a.site, tmp, page, a.width, a.height, a.settle,
                            pixels=not a.no_pixels,
                            contrast_more=not a.no_contrast_more,
-                           os_dark=not a.no_os_dark)
+                           os_dark=not a.no_os_dark,
+                           scriptless=not a.no_scriptless)
             if r.get("error"):
                 print("  FAIL  %s  %s" % (page, r["error"]))
                 failures += 1
@@ -1065,6 +1172,28 @@ def main(argv):
                 if s.get("error"):
                     print("  FAIL  %s state %d  %s" % (page, index, s["error"]))
                     failures += 1
+                    continue
+                if s.get("scripts") is False:
+                    # The scriptless reader gets the comparison and the inventory
+                    # instead of an AA verdict: this render was not about
+                    # contrast, it was about whether the page still says anything.
+                    base = next((x.get("chars", 0) for x in r["states"]
+                                 if x.get("scripts") is not False), 0)
+                    share = ("%.0f%% of the %d characters the scripted page paints"
+                             % (100.0 * s["chars"] / base, base)) if base else ""
+                    print("  --    %-42s %5d chars  %3d links  %2d controls  "
+                          "%2d elements present but invisible  %s"
+                          % ("%s scriptless" % page, s["chars"], s["links"],
+                             s["controls"], len(s["invisible"]), share))
+                    for item in s["invisible"][:8]:
+                        print("          %s  %s  %r" % (item["sel"], item["why"], item["text"]))
+                    if len(s["invisible"]) > 8:
+                        print("          and %d more" % (len(s["invisible"]) - 8))
+                    findings.append({"page": page, "scripts": False,
+                                     "chars": s["chars"], "links": s["links"],
+                                     "controls": s["controls"],
+                                     "scriptedChars": base,
+                                     "invisible": s["invisible"]})
                     continue
                 label = "%s %s" % (page, s.get("state") or "single-theme")
                 if s.get("media"):
@@ -1134,7 +1263,12 @@ def main(argv):
     kinds = sorted({media_label(f["media"]) for f in emulated})
     note = ("%d of them emulated (%s)" % (len(emulated), ", ".join(kinds))
             if emulated else "no media state emulated")
-    print("\n%d page-states audited at %dpx, %s" % (len(states), a.width, note))
+    scriptless = [f for f in findings if f.get("scripts") is False]
+    print("\n%d page-states audited at %dpx, %s%s"
+          % (len(states), a.width, note,
+             ", plus %d scriptless pass%s"
+             % (len(scriptless), "es" if len(scriptless) != 1 else "")
+             if scriptless else ""))
     if failures:
         print("FAILED - %d below AA" % failures)
         return 1

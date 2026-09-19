@@ -208,6 +208,8 @@ rules it found**, and a state whose patch did not install is an error rather tha
 zero rules is a page that does not style the state and not a state that passed. `--no-contrast-more`
 and `--no-os-dark` skip those passes, and `--no-pixels` skips the screenshot pass.
 
+It also serves every page **with its scripts removed**, for the reader whose script never ran, and reports what got painted rather than what passes AA: characters of text, links, controls, and every element present but invisible with the reason and its first line. That pass exists because this site leans on script for its optional parts, and "optional" is a claim. Measured across the six templates: nothing is behind script. The invisible inventory is the hero's three alternate answers and its reserved-answer block (all inside elements carrying `hidden`), the witness tooltip's two spans, the directory's find control, and the 404's suggestions, and every one of those is an affordance the page still works without. The library reader gets 89 links and the whole directory, the 404 reader gets a working form, and a carried article has nothing hidden at all. Two instrument traps are recorded in the docstring, both of which reported the opposite: the probe ran against the harness's own document until it stopped shadowing the `d` and `w` the harness passes in, and it called the hero's opening answer invisible until it finished every animation before asking what had a box.
+
 The emulation is shown failing rather than trusted: a copy of the artifact with a deliberately bad
 `@media (prefers-contrast: more)` block passes clean in its base state and reports 61 failures under
 the emulated one, named with their colours and text. See the tool's docstring for the wrong ways to

@@ -1004,6 +1004,24 @@ a stored light choice still wins on that same machine. The landing page reports 
 dark machine, which is also true of it: it ships one world and has no dark theme at all, which §3.4
 and the print block both say in passing and nothing has ever questioned.
 
+**One more pass, and it answers a claim rather than a criterion.** The audit serves every page a
+second time with its script elements removed, which is the only faithful way to ask a browser what a
+reader whose script never ran is given: Chrome's own switch would disable the harness too, and the
+harness is how anything gets measured. Its probe asks a different question, so it reports on its own
+line: characters painted, links, controls, and every element present but invisible with the reason
+and its first line. This site leans on script for its optional parts, and "optional" is a claim.
+Across the six templates the answer is that nothing is behind script. The invisible inventory is the
+hero's three alternate answers and its reserved answer block, all inside elements carrying `hidden`,
+the witness tooltip's two spans, the directory's find control, and the 404's suggestions, and the
+pages work without every one of them: a scriptless reader of the directory gets 89 links and all
+seventy-five entries, a scriptless reader of the 404 gets a form that reaches `/library/?q=`, and a
+carried article hides nothing at all. Nothing was changed to make that true; it had been designed
+that way and never measured. Two instrument traps are recorded in the tool, and both reported the
+opposite of the truth: the probe ran against the harness's own document until it stopped shadowing
+the `d` and `w` the harness passes in (0 characters, 0 links), and it called the hero's opening
+after 1.8 seconds of animation invisible until it finished every animation before asking which
+elements have a box.
+
 Turning the feature on immediately found three numbers that were wrong in the stylesheet that
 promises it. `Source/styles.css` recorded `--ink-2` going to 9.8:1 and `--ink-3` to 8.4:1 under
 `more`; neither reproduces on any ground the page has, and the true pairs are **9.41:1** and
