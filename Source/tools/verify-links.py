@@ -77,7 +77,7 @@ LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
-LIBRARY_STYLES_BYTES = 43557
+LIBRARY_STYLES_BYTES = 46801
 ARTIFACT_FILES = 156                  # 138 + the four phone crops' 16 files + the library index
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
 
@@ -871,6 +871,90 @@ def check_newlines(rep: Report, site: pathlib.Path) -> None:
 
 # ------------------------------------------------------------------------ main
 
+def media_block(css: str, query: str) -> str:
+    """The text inside `@media <query> { ... }`, by brace depth."""
+    m = re.search(r"@media\s*" + query + r"\s*\{", css)
+    if not m:
+        return ""
+    i, depth = m.end(), 1
+    while i < len(css) and depth:
+        if css[i] == "{":
+            depth += 1
+        elif css[i] == "}":
+            depth -= 1
+        i += 1
+    return css[m.end():i - 1]
+
+
+def check_10(rep: Report, page_css: str, library_css: str) -> None:
+    """The two promises a stylesheet makes to a reader nobody sees.
+
+    A reader prints the page, and a reader asks their system for more contrast.
+    Both fail silently: without a print block, a reader whose system is dark prints
+    the dark world's near-white ink onto white paper (measured before this block
+    existed: 13 of 46 text elements on one article, 17 of 185 on the home page),
+    and without a contrast block the reader who asked gets exactly what everyone
+    else gets. So both are computed here rather than trusted, and the numbers are
+    read out of the stylesheets rather than out of a comment about them.
+    """
+    print("\n10  the reader's own settings")
+
+    for label, css in (("landing page", page_css), ("library", library_css)):
+        got = media_block(css, r"print")
+        if not got:
+            rep.fail(f"{label} print block",
+                     "no @media print — this half of the site prints its dark "
+                     "inks onto white paper")
+        else:
+            rep.ok(f"{label} carries a print block")
+
+        more = media_block(css, r"\(prefers-contrast:\s*more\)")
+        if not more:
+            rep.fail(f"{label} prefers-contrast: more",
+                     "no block, so a reader who asks for more contrast is given "
+                     "the same page as everyone else")
+        else:
+            rep.ok(f"{label} honours prefers-contrast: more")
+
+    # The ink the print block promises, against the paper it will land on. Text
+    # tokens at 4.5:1 or better, and the two that draw rules and rails at 3:1,
+    # which is the same bar the screen version documents for a graphic.
+    # Only the ROOT declarations of each print block, which is where the token
+    # world is written. A print block can also redefine tokens for one component
+    # (the landing page gives its replica the light window's own block), and those
+    # are a component's internals rather than the paper's ink: `.win`'s `--rule`
+    # is #E4E6E9 in both themes, so counting it here reported a 1.25:1 rule.
+    printed = ""
+    for css in (page_css, library_css):
+        block = media_block(css, r"print")
+        m = re.search(r":root[^{]*\{([^}]*)\}", block)
+        printed += (m.group(1) if m else "")
+    inks = re.findall(r"(--[a-z0-9-]+)\s*:\s*(#[0-9A-Fa-f]{6})\s*;", printed)
+    text_tokens = {t for t, _v in inks if t in
+                   ("--ink", "--mist", "--cite-ink", "--field-ink", "--field-ink-2")}
+    rule_tokens = {t for t, _v in inks if t in ("--hairline", "--rule", "--field-rule")}
+    worst_text, worst_rule = 21.0, 21.0
+    for token, value in inks:
+        if token in text_tokens:
+            worst_text = min(worst_text, contrast(value, "#FFFFFF"))
+        elif token in rule_tokens:
+            worst_rule = min(worst_rule, contrast(value, "#FFFFFF"))
+    if not text_tokens:
+        rep.fail("the print block's ink", "no text token declared in print")
+    elif worst_text < 4.5:
+        rep.fail("the print block's ink",
+                 f"a text token is {worst_text:.2f}:1 on white paper, under 4.5")
+    else:
+        rep.ok("every print ink clears AA on white paper",
+               f"worst {worst_text:.2f}:1")
+    if rule_tokens:
+        if worst_rule < 3:
+            rep.fail("the print block's rules",
+                     f"a rule token is {worst_rule:.2f}:1 on white paper, under 3")
+        else:
+            rep.ok("every printed rule is visible", f"worst {worst_rule:.2f}:1")
+
+
 def main(argv: list[str]) -> int:
     # The Windows console is cp1252 by default, and this file's output is full of
     # section signs and em dashes. Reconfigure rather than strip them: the
@@ -907,6 +991,7 @@ def main(argv: list[str]) -> int:
     check_7(rep, page, css)
     check_8(rep, page)
     check_9(rep, site, docs)
+    check_10(rep, css, (site / "styles.css").read_text(encoding="utf-8"))
     check_newlines(rep, site)
 
     print()
@@ -916,7 +1001,7 @@ def main(argv: list[str]) -> int:
         for f in rep.failures:
             print(f"  {f}", file=sys.stderr)
         return 1
-    print(f"links ok - {rep.checks} assertions, Stage 9 checks 4-9")
+    print(f"links ok - {rep.checks} assertions, Stage 9 checks 4-10")
     return 0
 
 

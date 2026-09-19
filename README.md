@@ -142,6 +142,12 @@ is one command each rather than 75 hand edits:
 `verify-links.py` asserts the second one's output as a walk through all 75 articles, so a page that
 never got its pair fails the gate rather than shipping as a dead end.
 
+Both halves of the site carry a print block and honour `prefers-contrast: more`, and both promises
+are asserted rather than trusted: `verify-links.py` requires the blocks to exist, computes every ink
+the print token world declares against white paper, and fails if any of them is under AA. That check
+exists because the failure it guards against is invisible on screen: a reader whose system is dark
+used to print near-white text onto white paper, 13 of 46 text elements on one article.
+
 CI runs the same three checks and fails on any of them. `Source/tools/budget.json` asserts the
 artifact's byte sizes exactly. When a number moves because the page changed, re-baseline it **by
 measurement**, in the same commit as the change that moved it, and never by transcribing a figure

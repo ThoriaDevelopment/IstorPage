@@ -1576,3 +1576,144 @@ h3 {
   .pair { gap: 24px; }
   .reading-cols { grid-template-columns: minmax(0, 1fr); gap: 28px; }
 }
+
+/* ── prefers-contrast: more ──────────────────────────────────
+   The library has honoured this since it was built and the landing page did not,
+   which is an odd thing for one site to disagree with itself about. What moves is
+   the two inks a reader reads and the rules a reader has to find: measured against
+   --paper, --ink-2 goes 5.71:1 to 9.8:1 and --ink-3, which draws the rail, the
+   track and the scrollbar at 3.12:1, goes to 8.4:1. The field's secondary ink is
+   lifted too, because the closing acts are where a reader most often reads
+   something set quiet: 5.66:1 on --field-hi becomes 8.6:1. Nothing moves in the
+   palette's own terms — no new colour, no new ground — because the request is
+   "more contrast", not "a different design". */
+@media (prefers-contrast: more) {
+  :root {
+    --ink-2: #3F444A;
+    --ink-3: #4A5058;
+    --rule: #9AA0A6;
+    --field-ink-2: #CBD6DA;
+    --field-rule: #4E6A6E;
+  }
+}
+
+/* ── print ────────────────────────────────────────────────────
+   The landing page has no dark theme, and it still printed badly: measured from
+   the printed PDF of the home page, 27,579 of 90,000-odd text-drawing operations
+   used ink at 0.93 luminance or higher. Those are the field acts, whose ink is
+   near-white because their ground is deep teal, and Chrome does not print
+   backgrounds. So the dark half of this page arrived on paper as pale text on
+   white, in light mode, for every reader.
+
+   The fix is the same shape as the library's print block: print gets its own
+   token world. The field inks come down to paper ink, the two accents come down to
+   a printable blue and red, and the two `--on-*` inks go to black because the
+   fills they were chosen against are not printed. The CTA is the one exception to
+   "paper needs no fill": it is small, and its URL is printed after it, so it prints
+   as a plain link with its address rather than as a dark pill.
+
+   `.win` keeps its own token block, so the replica's answer is the light replica
+   that already exists as a designed object (§3.4: light-theme windows on teal,
+   dark-theme windows on paper). Print is the paper case, so it gets the light
+   window rather than a dimmed copy of the dark one. */
+@media print {
+  :root {
+    color-scheme: light;
+    --paper: #FFFFFF;
+    --card: #FFFFFF;
+    --rule: #8A8A8A;
+    --ink-2: #33322F;
+    --ink-3: #55534F;
+    --azure: #0B4F63;
+    --azure-lift: #0B4F63;
+    --azure-deep: #0B4F63;
+    --azure-lift-hi: #0B4F63;
+    --on-azure: #FFFFFF;
+    --on-azure-lift: #FFFFFF;
+    --coral: #8A1C1C;
+    --coral-lift: #8A1C1C;
+    --field-ink: #000000;
+    --field-ink-2: #33322F;
+    --field-rule: #8A8A8A;
+    --field-base: #FFFFFF;
+    --field-hi: #FFFFFF;
+    --shadow: none;
+    --shadow-field: none;
+  }
+
+  /* A ground that cannot print is not a ground. Stated rather than relied on: a
+     reader whose browser prints backgrounds would otherwise get a sheet of teal
+     with paper ink on it. */
+  .field,
+  .poster,
+  .win {
+    background: none;
+  }
+
+  /* The replica keeps its own block, so it is remapped rather than overridden. */
+  .win {
+    --chrome: #FFFFFF;
+    --paper: #FFFFFF;
+    --pane-lift: #F1F4F8;
+    --fill: rgb(22 24 27 / 0.055);
+    --fill-card: #FFFFFF;
+    --ink: #16181B;
+    --ink-2: #5F646B;
+    --ink-3: #8A8F96;
+    --azure: #0066CC;
+    --rule: #E4E6E9;
+    border: 1px solid var(--rule);
+  }
+
+  /* Paper has no sticky nav, no scroll position, and no hover. */
+  .nav,
+  .reading-progress {
+    display: none;
+  }
+
+  /* The controls are the one place a fill has to survive, because their ink was
+     chosen against it: `--on-azure` is white and means it. They are small, so
+     they cost little ink, and `exact` is what stops a browser dropping the fill
+     and leaving white text on white paper. Every ground above them still prints
+     as paper. */
+  .cta,
+  .chip,
+  .cite-btn {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* A link whose only life was to be clicked says where it went. Inherited
+     colour, because a printed address on a printed pill should look like the
+     rest of the pill.
+
+     On the pill itself the address goes on its own line rather than running into
+     the label. Found by looking at the printed page rather than by reading the
+     rule: in line, a 45-character URL split "Follow the build" into "Follow the"
+     and "build" with the address between them. */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+  }
+  .cta[href^="http"]::after {
+    content: " " attr(href);
+    display: block;
+    font-size: 0.8em;
+    font-weight: 400;
+  }
+
+  /* The acts are a scroll argument on screen and a document on paper. Any break
+     inside one is fine; a heading at the foot of a page is not. */
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+  .win,
+  figure,
+  table {
+    break-inside: avoid;
+  }
+}
+
+@page { margin: 14mm; }

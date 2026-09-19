@@ -1655,3 +1655,84 @@ a { color: inherit; }
   .page-head-in, .page-foot-in { padding-left: 1.25rem; padding-right: 1.25rem; }
   .page { padding: 2.5rem 1.25rem 3.5rem; }
 }
+
+/* ── print ────────────────────────────────────────────────────
+   A reader whose system is dark prints a page whose paper is white and whose ink
+   is the dark world's near-white. Measured rather than argued: before these
+   rules, the printed PDF of /what-is-a-local-llm/ drew 29,250 of its 93,461
+   text operations in #EDEDED, which is 0.93 luminance on a sheet that is 1.0.
+   The changelog page was 9,209 of 37,668. That is the whole defect this block
+   exists to fix, and the fix is the TOKEN WORLD rather than a filter: print gets
+   the light tokens with the ink taken all the way to black, because paper has no
+   backlight to make a grey look deliberate.
+
+   `:root[data-theme]` is listed explicitly so that a reader who chose a theme in
+   the header is printed on paper rather than in their choice, and `color-scheme`
+   is set so the form controls and the like are drawn for a light surface.
+
+   Chrome does not print backgrounds unless a rule asks it to, which is why the
+   grounds need nothing here. What has to be stated is the ink, the hairlines, the
+   `color-scheme`, and the furniture a sheet of paper does not need. Ratios against
+   white: --mist 13.1:1, --cite-ink 9.0:1, --hairline 3.4:1, --witness 9.1:1. */
+@media print {
+  :root,
+  :root[data-theme="light"],
+  :root[data-theme="dark"] {
+    color-scheme: light;
+    --canvas: #FFFFFF;
+    --subtle: #FFFFFF;
+    --ink: #000000;
+    --mist: #33322F;
+    --hairline: #8A8A8A;
+    --cite-ink: #0B4F63;
+    --cite-wash: transparent;
+    --witness: #8A1C1C;
+    --dot: #8A1C1C;
+  }
+
+  /* The theme control cannot be clicked on paper, and the pair at the foot of an
+     article is navigation for a pointer. The brand stays: a printed article
+     should say what it is. */
+  .theme-toggle,
+  .page-next,
+  .page-head .btn-grad { display: none; }
+
+  /* The one place a fill has to survive, and the exception proves the rule about
+     grounds: a control's ink was chosen against its fill, so dropping the fill
+     leaves `--canvas` on `--canvas`. They are small, so the ink they cost is
+     nothing, and `exact` is what tells a browser not to make the decision for
+     them. Everything else on the page prints as ink on paper. */
+  .cta,
+  .btn-primary,
+  .btn-grad {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* There is no scrollbar on paper, so the measure can be the sheet's own. */
+  .page { max-width: none; padding: 0; }
+  .page-head-in, .page-foot-in { padding-left: 0; padding-right: 0; }
+
+  /* A link whose only life was to be clicked has to say where it went. Internal
+     links are left alone, and that is this site's own argument: seventy internal
+     URLs printed under seventy internal links is noise on paper, while the one
+     external link on a page is the thing a reader might need later. */
+  .page a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+  }
+
+  /* Things that read as units, and headings that should not be orphaned. */
+  figure,
+  table,
+  .capsule {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+}
+
+@page { margin: 16mm; }

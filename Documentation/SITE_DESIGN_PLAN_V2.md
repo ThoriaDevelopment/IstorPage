@@ -334,7 +334,42 @@ own hover: 5.36:1 and 5.14:1 on the light grounds, 7.70:1 and 7.17:1 on the dark
 browser rather than argued: a click on a machine set to dark stores `light`, and the next library
 page arrives light.
 
-### 3.6 Continue reading
+### 3.6 The reader's own settings: print, and more contrast
+
+Two promises a stylesheet makes to a reader nobody sees, and both failed silently
+until this section existed.
+
+**Print.** The library honoured `prefers-color-scheme: dark` and the landing page
+has no dark theme at all, and both printed the same way: a dark system put near-white
+ink on paper. Measured before the fix, by asking a browser what it would paint: 13 of
+46 text elements on `/what-is-a-local-llm/`, and 17 of 185 on the home page,
+resolved to ink above 0.55 luminance on a sheet that prints at 1.0. The landing page
+needed no dark system for that, because its closing acts set `--field-ink` on deep
+teal grounds and Chrome does not print backgrounds.
+
+Each half now gets its own print token world: ink to `#000000`, the secondary inks
+to printable greys, the accents to a printable blue and red, and the field inks down
+to paper ink. `:root[data-theme]` is listed explicitly so a reader who chose a theme
+in the header is printed on paper rather than in their choice. The two `--on-*` inks
+are the exception that proves the rule about grounds: a control's ink was chosen
+against its fill, so `.cta`, `.chip`, `.cite-btn` and the like carry
+`print-color-adjust: exact` and keep the one small fill that has to survive. `.win`
+keeps its own token block, so the replica answers with the **light** replica that
+already exists as a designed object (§3.4). A link whose only life was to be clicked
+prints its address after it, and internal links deliberately do not, because seventy
+internal URLs under seventy internal links is noise on paper.
+
+**More contrast.** The library has honoured `prefers-contrast: more` since it was
+built and the landing page did not, which is an odd thing for one site to disagree
+with itself about. Its `--ink-2` goes 5.71:1 to 9.8:1 on `--paper` and `--ink-3`,
+which draws the rail and the scrollbar, goes 3.12:1 to 8.4:1.
+
+Both are asserted rather than trusted. `verify-links.py` requires a block of each
+kind in both halves, computes every text ink the print world declares against white
+paper (worst 9.08:1), and every rule token too (worst 3.45:1). Six of its 50
+assertions are these.
+
+### 3.7 Continue reading
 
 Seventy-five articles, a generated directory, and until now nothing joining one article to the next:
 a reader who arrived at "What is a local LLM?" from a search result finished it and met a footer of
@@ -797,7 +832,7 @@ The build gates are re-baselined **by measurement, never transcription** — the
 
 | Gate | Change |
 |---|---|
-| `document.index_html_bytes` | exact, re-baselined to **62,469 B**; LF-only so platform-independent; **73,449 B** on 2026-09-19 after a night of work on the page, each step itemised in `budget.json`'s own note |
+| `document.index_html_bytes` | exact, re-baselined to **62,469 B**; LF-only so platform-independent; **75,025 B** on 2026-09-19 after a night of work on the page, each step itemised in `budget.json`'s own note |
 | `document.index_html_gzip_ceiling` | re-baselined to **18,400 B** with headroom — **never an equality** (the 2026-09-19 toolchain lesson); **20,480 B** after the reading list, at a round KiB rather than another 2.1% margin, so it stops being edited on every commit that touches the document |
 | `document.inline_js_bytes` **(new)** | exact, and it exists because §7 carried a 4 KB JS budget that nothing measured: the page shipped 5,599 B, of which 1,250 B was `//` prose arriving with every document and being parsed as script. Figure is now **5,010 B** |
 | `totals.phone_1x` / `retina_2x` | re-baselined over 9 exhibits: **194,064 B** / **388,356 B**, and again on 2026-09-19 over 9 exhibits **plus 4 phone crops** at **237,991 B** / **500,885 B** — the inventory grows while what a device *downloads* shrinks, because those four exhibits now serve a narrower crop below 430px |
