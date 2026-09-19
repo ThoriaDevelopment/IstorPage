@@ -162,10 +162,24 @@ iframe, walks it in viewport-sized steps, prints every element below AA with its
 and exits non-zero if it finds one. Grounds come from the rendered pixels: a gradient is measured
 from the pixels just outside each line of text, and a ground whose luminance varies too widely to be
 a wash (a photograph, a mask, the app's own screenshots) is reported unmeasured rather than judged.
-Entrance states are settled before anything is measured, so the numbers describe the page a visitor
-reads rather than one frame of its animation. See the tool's docstring for the wrong ways to find an
-element's ground and for the two ways the pixel sampler itself lied first: every one of them returned
-a confident number instead of an error, which is why the file is as long as it is.
+Entrance states are settled before anything is measured, and the page's clock is advanced rather
+than waited out, so the numbers describe the page a visitor ends up with rather than one frame of its
+animation.
+
+It also audits the states a stylesheet promises but a normal render never shows. Both halves of the
+site honour `prefers-contrast: more`, and Chrome's command line has no switch for it, so the audit
+emulates the media feature where a browser resolves one: in the cascade. The framed page is asked
+for its own `@media` rules, the ones matching the requested state are unwrapped, and their inner
+rules are appended where they would have landed. Every emulated state prints **how many of the
+page's own rules it found**, because zero is a page that does not style the state and not a state
+that passed. `--no-contrast-more` skips that pass, and `--no-pixels` skips the screenshot pass.
+
+The emulation is shown failing rather than trusted: a copy of the artifact with a deliberately bad
+`@media (prefers-contrast: more)` block passes clean in its base state and reports 61 failures under
+the emulated one, named with their colours and text. See the tool's docstring for the wrong ways to
+find an element's ground and for the ways the pixel sampler, the settle and the media emulation each
+lied first: every one of them returned a confident number instead of an error, which is why the file
+is as long as it is.
 
 ## What is not published
 

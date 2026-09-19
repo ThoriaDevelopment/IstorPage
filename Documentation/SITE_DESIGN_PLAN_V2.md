@@ -361,13 +361,19 @@ internal URLs under seventy internal links is noise on paper.
 
 **More contrast.** The library has honoured `prefers-contrast: more` since it was
 built and the landing page did not, which is an odd thing for one site to disagree
-with itself about. Its `--ink-2` goes 5.71:1 to 9.8:1 on `--paper` and `--ink-3`,
-which draws the rail and the scrollbar, goes 3.12:1 to 8.4:1.
+with itself about. Its `--ink-2` goes 5.71:1 to **9.41:1** on `--paper` and
+`--ink-3`, which draws the rail and the scrollbar, goes 3.12:1 to **7.80:1**; the
+field's secondary ink goes 6.07:1 to 9.20:1 on `--field-hi`. Those four pairs were
+9.8:1 and 8.4:1 and 5.66:1 until the audit learned to emulate the state and measured
+it (§12, the audit note): the first two were white-ground numbers, and the third
+contradicted the token block that had it right.
 
 Both are asserted rather than trusted. `verify-links.py` requires a block of each
 kind in both halves, computes every text ink the print world declares against white
 paper (worst 9.08:1), and every rule token too (worst 3.45:1). Six of its 50
-assertions are these.
+assertions are these. The contrast promise is the one that a verifier cannot fully
+reach, because asserting a block exists is not the same as measuring it, which is
+why the state is now emulated and measured by hand at §12.
 
 ### 3.7 Continue reading
 
@@ -862,6 +868,36 @@ lightest stop. Both were fixed in the ink, not in the tool. Grounds that are pho
 the app's own screenshots are reported as unmeasured, and every run prints how many viewports it
 walked and how many elements it could not measure: a clean result that covered seven elements of a
 long page is not a clean result.
+
+**It audits the states a render never shows, too.** §3.6 promises `prefers-contrast: more` on both
+halves, and until 2026-09-19 only the *existence* of those blocks was asserted, which is a claim
+about the source rather than about the page. Chrome's command line has no switch for the feature, so
+the audit emulates it the way a browser resolves one, in the cascade: the framed page is asked for
+its own `@media` rules, the ones matching the requested state are unwrapped, and their inner rules
+are appended where they would have landed. Nothing is invented in the tool and no colour is written
+down there, which makes the failure mode the honest one: **every emulated state prints how many of
+the page's own rules it found**, because zero rules is a page that does not style the state, not a
+state that passed. Which is measurable now: all five states of the landing page, both theme passes
+of `/library/` and of `/vs-chatgpt/`, and the same again at 390px, are clean under AA, and none of
+them was clean by accident, since a copy of the artifact with a bad contrast block reports **61**
+failures under the emulated state and zero without it.
+
+Turning the feature on immediately found three numbers that were wrong in the stylesheet that
+promises it. `Source/styles.css` recorded `--ink-2` going to 9.8:1 and `--ink-3` to 8.4:1 under
+`more`; neither reproduces on any ground the page has, and the true pairs are **9.41:1** and
+**7.80:1** on `--paper`. The old figures were white-ground numbers written beside a base pair
+measured on `--paper`, and the field pair had drifted the same way, `5.66:1` where the token block
+nine hundred lines above already said, correctly, `6.07:1`. All four are now the audited values, so
+the comment and the tool assert the same thing.
+
+The same night found the audit measuring a page half-way through its own entrance. The hero's answer
+arrives as six children on a stagger with delays up to 1,780ms, and `both` holds a delayed animation
+at `opacity: 0`, so a fixed settle is a bet on where the page's clock is and the tool lost it about
+half the time: **163 text elements in one run, 150 in the next, same build, same width**, five
+paragraphs and a citation a visitor reads and the audit walked past. The report printing its own
+element count on every line is what made that visible at all. The fix advances the clock instead of
+guessing at it, finishing every animation and transition through `document.getAnimations()`, which
+needs no number that drifts when somebody retimes the page.
 
 ---
 

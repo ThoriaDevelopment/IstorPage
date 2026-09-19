@@ -1580,13 +1580,24 @@ h3 {
 /* ── prefers-contrast: more ──────────────────────────────────
    The library has honoured this since it was built and the landing page did not,
    which is an odd thing for one site to disagree with itself about. What moves is
-   the two inks a reader reads and the rules a reader has to find: measured against
-   --paper, --ink-2 goes 5.71:1 to 9.8:1 and --ink-3, which draws the rail, the
-   track and the scrollbar at 3.12:1, goes to 8.4:1. The field's secondary ink is
-   lifted too, because the closing acts are where a reader most often reads
-   something set quiet: 5.66:1 on --field-hi becomes 8.6:1. Nothing moves in the
-   palette's own terms — no new colour, no new ground — because the request is
-   "more contrast", not "a different design". */
+   the two inks a reader reads and the rules a reader has to find, and the four
+   pairs are now re-measured by audit-contrast.py rather than trusted from here:
+   against --paper, --ink-2 goes 5.71:1 to 9.41:1 and --ink-3, which draws the
+   rail, the track and the scrollbar at 3.12:1, goes to 7.80:1. The field's
+   secondary ink lifts too, because the closing acts are where a reader most often
+   reads something set quiet: 6.07:1 on --field-hi becomes 9.20:1.
+
+   Two of those numbers were 9.8 and 8.4 until the audit learned to emulate the
+   state and measured it: neither reproduces on any ground this page has, so both
+   are replaced with what the browser actually computes. The old figures were
+   white-ish grounds (9.83:1 and 8.14:1 on #FFFFFF), and the base pair they were
+   written beside was measured on --paper, which is how a sentence can carry two
+   different grounds and still look consistent. The field pair carried a third
+   error of the same shape: 5.66:1 matched no stop, and --field-hi at 6.07:1 was
+   already written down correctly nine hundred lines above.
+
+   Nothing moves in the palette's own terms — no new colour, no new ground —
+   because the request is "more contrast", not "a different design". */
 @media (prefers-contrast: more) {
   :root {
     --ink-2: #3F444A;

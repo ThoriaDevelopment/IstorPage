@@ -63,13 +63,41 @@ printed beside every ratio, so a wide spread reads as a wide spread instead of
 hiding behind one number. A ground that is a photograph or a mask is still not
 measured, and is still counted rather than guessed.
 
+WHAT IT EMULATES. Chrome's command line has no switch for `prefers-contrast`, so
+the audit fakes the media feature where a browser resolves one: in the cascade. The
+framed page is asked for its own `@media` rules, the ones whose condition matches
+the requested state are unwrapped, and their inner rules are appended as one plain
+stylesheet at the end of the head, which is where they would have landed anyway.
+Nothing is invented here, no colour is written down in this file, and the tool is
+asserting the stylesheet's own promise back at it rather than restating it. Which
+makes the failure mode the honest one: a page that does not style the state comes
+back with **zero rules**, and the report prints that count on every emulated state,
+because zero rules is a gap and not a pass. Its two stated limits: every other
+condition in a compound rule is the browser's to answer and it answers for the
+machine as it really is, so `prefers-contrast: more and prefers-color-scheme: dark`
+correctly does not apply to a stamped dark theme on a light machine; and a media
+rule nested inside a `@supports` would not be reached by the walk.
+
 WHAT IT SETTLES FIRST. `is-cold` is this site's name for not-yet-revealed, and the
 revealing observers answer a real visitor's scrolling rather than a programmatic
-one. Every cold class is therefore cleared, and the longest transition waited out,
-before anything is measured, which measures the page a visitor reads rather than one
-frame of the animation they watch. The cost is stated rather than hidden: a
-pre-reveal state that was genuinely unreadable would be settled away instead of
-reported.
+one. Every cold class is therefore cleared before anything is measured, which
+measures the page a visitor reads rather than one frame of the animation they
+watch.
+
+THE CLOCK IS THEN ADVANCED, NOT WAITED OUT, and this tool had to learn that twice.
+Clearing `is-cold` was not enough, because this page also has ordinary entrance
+animations WITH DELAYS: the hero's answer arrives as six children on a stagger, the
+last chip at 1,780ms, and `both` means a delayed animation holds its from-state,
+which for these is `opacity: 0`. A fixed settle is therefore a bet on where the
+page's clock is, and the audit lost it about half the time: **163 text elements in
+one run, 150 in the next, same build, same width**, the difference being five
+paragraphs and a citation that a visitor sees and the audit had walked past. What
+found it was the element count the report prints on every line, and what fixed it
+was `document.getAnimations().forEach(a => a.finish())`, which is exact and needs
+no number that drifts when somebody retimes the page. An infinite animation cannot
+be finished and is caught and skipped. The cost is stated rather than hidden: an
+entrance state that was genuinely unreadable would be finished away instead of
+reported, which is the same trade the cold-class settle already makes.
 
 TWO TRAPS IN THE HARNESS ITSELF:
 
@@ -200,7 +228,23 @@ PROBE = r"""
     d.querySelectorAll('.is-cold').forEach(function (el) {
       el.classList.remove('is-cold');
     });
-    await new Promise(r => setTimeout(r, 800));
+    /* THE CLOCK IS ADVANCED, NOT WAITED OUT, and this is the second time this
+       tool has had to learn the same lesson. The hero's answer arrives as six
+       children each with its own animation DELAY, the last at 1,780ms, and
+       `both` means a delayed animation holds its from-state: opacity 0. A fixed
+       wait therefore measures whichever children have started. Measured on this
+       page: 163 elements in one run and 150 in the next, same build, same
+       width, the difference being five paragraphs and a citation that a
+       visitor sees and the audit did not. Nobody would have noticed if the
+       report did not print its own element count on every line. Finishing every
+       animation and transition is exact and needs no number that drifts with
+       the stylesheet. */
+    try {
+      d.getAnimations().forEach(function (a) {
+        try { a.finish(); } catch (e) {}   /* an infinite one cannot finish */
+      });
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 250));
     const steps = Math.min(24, Math.ceil(d.documentElement.scrollHeight / vh));
     for (let i = 0; i < steps; i++) {
       w.scrollTo({ top: i * vh, behavior: 'instant' });
@@ -340,6 +384,9 @@ PROBE = r"""
        on one sample of a wash. Those elements come back with their rects so a
        later run can sample the pixels Chrome actually painted. */
     state: one.theme,
+    /* How many of the page's own media rules the harness unwrapped to emulate
+       the requested state. Zero means the page does not style that state. */
+    mediaRules: w.__auditMediaRules || 0,
     checked: one.checked,
     viewports: one.viewports,
     viewportHeight: w.innerHeight,
@@ -366,6 +413,68 @@ if (THEME) {{ try {{ localStorage.setItem('istor.site.theme', THEME); }} catch (
    the last row. That returned 59 confident failures on the home page, all of
    them white ground under dark-ground text. */
 var SCROLL = parseInt((new URLSearchParams(location.search).get('scroll') || '0'), 10);
+
+/* THE MEDIA STATE IS EMULATED HERE, and that is a choice worth stating. Chrome's
+   command line has no switch for prefers-contrast, and the honest place to fake a
+   media feature is the same place a browser resolves one: in the cascade. So the
+   framed page is asked for its own @media rules, the ones whose condition matches
+   the requested state are unwrapped, and their inner rules are appended as one
+   plain stylesheet at the end of the head, which is where they would have landed.
+   Nothing is invented; no colour is written down here. Which means the failure
+   mode is the honest one: a page that does not style this state comes back with
+   zero rules, and zero rules is REPORTED rather than read as a pass. */
+var MEDIA = {media};
+function mediaMatches(cond, w, want) {{
+  var parts = String(cond || '').split(/\\s+and\\s+/i), ok = true;
+  for (var i = 0; i < parts.length; i++) {{
+    var p = parts[i].trim();
+    if (!p) continue;
+    if (/prefers-contrast/i.test(p)) {{
+      /* "(prefers-contrast: more)", "(prefers-contrast: less)", and the bare
+         "(prefers-contrast)", which asks for more. */
+      var asked = !/:/.test(p) ? 'more'
+                 : p.slice(p.indexOf(':') + 1).replace(/[^a-z-]/gi, '').toLowerCase();
+      ok = ok && asked === want;
+    }} else {{
+      /* Every other condition is the browser's to answer, and it answers for the
+         machine as it really is: this harness emulates contrast and nothing
+         else. That is why a rule written as "contrast and dark OS" does not
+         apply to a stamped dark theme on a light machine, which is correct and
+         is also the reason the library carries a plain [data-theme="dark"] copy
+         of the same tokens. */
+      ok = ok && w.matchMedia(p).matches;
+    }}
+  }}
+  return ok;
+}}
+function emulateMedia(d, w, want) {{
+  var n = 0, sheets = d.styleSheets;
+  var walk = function (rules) {{
+    for (var i = 0; i < rules.length; i++) {{
+      var r = rules[i];
+      if (r.type !== 4) continue;                 /* 4 is CSSRule.MEDIA_RULE */
+      /* Only a rule that NAMES the emulated feature is touched. A width query
+         matches at this width anyway, so unwrapping one would inject a second
+         copy of rules that already apply, and the count reported beside every
+         emulated state would then be a count of nothing in particular. */
+      var cond = String(r.conditionText || '');
+      if (/prefers-contrast/i.test(cond) && mediaMatches(cond, w, want)) {{
+        var st = d.createElement('style');
+        st.setAttribute('data-audit-media', 'prefers-contrast:' + want);
+        st.textContent = [].map.call(r.cssRules, function (x) {{ return x.cssText; }}).join('\\n');
+        d.head.appendChild(st);
+        n += 1;
+      }}
+      if (r.cssRules) walk(r.cssRules);           /* a media rule inside a media rule */
+    }}
+  }};
+  for (var i = 0; i < sheets.length; i++) {{
+    var rules = null;
+    try {{ rules = sheets[i].cssRules; }} catch (e) {{ continue; }}
+    if (rules) walk(rules);
+  }}
+  return n;
+}}
 </script>
 </head>
 <body>
@@ -377,6 +486,9 @@ f.addEventListener('load', async function () {{
   try {{
     var d = f.contentDocument, w = f.contentWindow;
     if (!d || !d.body || !d.body.childElementCount) throw new Error('iframe is empty: ' + f.src);
+    /* Injected BEFORE the settle, so anything the page transitions between the
+       two palettes has finished by the time anything is measured. */
+    if (MEDIA) w.__auditMediaRules = emulateMedia(d, w, MEDIA);
     await new Promise(function (r) {{ setTimeout(r, {settle}); }});
     if (SCROLL) {{
       w.scrollTo({{ top: SCROLL, behavior: 'instant' }});
@@ -610,14 +722,18 @@ def screenshot(chrome, profile, url, width, height, out):
     return out if os.path.exists(out) else None
 
 
-def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels):
-    """One theme, one render: probe the cascade, then sample the pixels of the
-    SAME render. The theme is forced by the harness before the page is parsed."""
+def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
+              media=None):
+    """One theme and one media state, one render: probe the cascade, then sample
+    the pixels of the SAME render. The theme is forced by the harness before the
+    page is parsed, and the media state by unwrapping the page's own media rules
+    before anything is measured."""
     profile = os.path.join(tmp, "profile")
-    tag = theme or "asis"
+    tag = "-".join(x for x in (theme or "asis", media or "") if x)
     write(os.path.join(tmp, "audit-%s.html" % tag),
           HARNESS.format(w=width, h=height, url=page, expr=json.dumps(PROBE),
-                         settle=settle, theme=json.dumps(theme or "")))
+                         settle=settle, theme=json.dumps(theme or ""),
+                         media=json.dumps(media or "")))
     Handler.harness = os.path.join(tmp, "audit-%s.html" % tag)
     srv = http.server.ThreadingHTTPServer(
         ("127.0.0.1", 0), lambda *a, **kw: Handler(*a, directory=site, **kw))
@@ -628,6 +744,8 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels):
         if "error" in doc:
             return doc
         v = doc["value"]
+        v["media"] = media
+        v["mediaRules"] = v.get("mediaRules") or 0
         if not pixels or not v.get("gradient"):
             v["onPixels"] = []
             return v
@@ -649,7 +767,8 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels):
         shots, shots_url = [], []
         write(os.path.join(tmp, "shot-%s.html" % tag),
               HARNESS.format(w=width, h=vh, url=page, expr=json.dumps("null"),
-                             settle=settle, theme=json.dumps(theme or "")))
+                             settle=settle, theme=json.dumps(theme or ""),
+                             media=json.dumps(media or "")))
         Handler.harness = os.path.join(tmp, "shot-%s.html" % tag)
         # The image index is the POSITION in the shot list, not the viewport
         # number: the list only holds the viewports that had gradient text in
@@ -688,17 +807,27 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels):
         srv.shutdown()
 
 
-def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True):
+def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
+               contrast_more=True):
     """Both themes of one page. The first pass forces nothing, so a page with no
-    theme control is audited in the state it actually ships in."""
+    theme control is audited in the state it actually ships in. With
+    contrast_more, each pass is repeated under an emulated prefers-contrast: more,
+    so what the stylesheets promise a reader who asks for it is measured rather
+    than assumed."""
     first = run_state(chrome, site, tmp, page, width, height, settle, None, pixels)
     if first.get("error"):
         return first
-    out = {"first": first, "second": None}
+    out = {"first": first, "firstMore": None, "second": None, "secondMore": None}
+    if contrast_more:
+        out["firstMore"] = run_state(chrome, site, tmp, page, width, height, settle,
+                                     None, pixels, "more")
     if (first.get("themeControl") or {}).get("found"):
         other = "dark" if first.get("state") != "dark" else "light"
         out["second"] = run_state(chrome, site, tmp, page, width, height, settle,
                                   other, pixels)
+        if contrast_more:
+            out["secondMore"] = run_state(chrome, site, tmp, page, width, height,
+                                          settle, other, pixels, "more")
     return out
 
 
@@ -721,6 +850,8 @@ def main(argv):
     ap.add_argument("--settle", type=int, default=700)
     ap.add_argument("--no-pixels", action="store_true",
                     help="skip the screenshot pass; gradient grounds stay unmeasured")
+    ap.add_argument("--no-contrast-more", action="store_true",
+                    help="skip the emulated prefers-contrast: more pass")
     ap.add_argument("--json", default=None, help="write the findings here")
     a = ap.parse_args(argv[1:])
 
@@ -734,13 +865,14 @@ def main(argv):
     with tempfile.TemporaryDirectory(prefix="istor-audit-") as tmp:
         for page in pages:
             r = audit_page(chrome, a.site, tmp, page, a.width, a.height, a.settle,
-                           pixels=not a.no_pixels)
+                           pixels=not a.no_pixels,
+                           contrast_more=not a.no_contrast_more)
             if r.get("error"):
                 print("  FAIL  %s  %s" % (page, r["error"]))
                 failures += 1
                 findings.append({"page": page, "error": r["error"]})
                 continue
-            for state in ("first", "second"):
+            for state in ("first", "firstMore", "second", "secondMore"):
                 s = r.get(state)
                 if not s:
                     continue
@@ -753,6 +885,8 @@ def main(argv):
                     failures += 1
                     continue
                 label = "%s %s" % (page, s.get("state") or "single-theme")
+                if s.get("media"):
+                    label += " +" + s["media"]
                 n_grad = len(s["gradient"])
                 on_pixels = [g for g in s.get("onPixels", []) if g.get("sampled")]
                 unpixelled = n_grad - len(on_pixels)
@@ -770,14 +904,19 @@ def main(argv):
                 mark = "ok  " if not below else "FAIL"
                 ctl = s.get("themeControl") or {}
                 ctl_note = ""
-                if ctl.get("found"):
+                if s.get("media"):
+                    # Say how many media rules the emulation found, because zero is
+                    # a page that does not style this state, which is not the same
+                    # result as a state that passed.
+                    ctl_note = "  %d media rules" % s.get("mediaRules", 0)
+                elif ctl.get("found"):
                     ctl_note = "  control %s->%s" % (ctl.get("from"), ctl.get("to"))
                     if not ctl.get("flipped"):
                         ctl_note += " NOT FLIPPED"
                         failures += 1
                 elif state == "first":
                     ctl_note = "  no theme control"
-                print("  %s  %-32s %3d elements  %2d views  %2d flat-fail  "
+                print("  %s  %-42s %3d elements  %2d views  %2d flat-fail  "
                       "%3d on pixels  %2d unmeasured  %2d replica  %d below AA%s"
                       % (mark, label, s["checked"], s["viewports"], len(flat),
                          len(on_pixels), unpixelled, in_replica, len(below), ctl_note))
@@ -792,6 +931,8 @@ def main(argv):
                           % (g["ratio"], g["need"], g["sel"], g["ground"],
                              g["lumMin"], g["lumMax"], g["sampled"], g["text"]))
                 findings.append({"page": page, "theme": s.get("state"),
+                                 "media": s.get("media"),
+                                 "mediaRules": s.get("mediaRules", 0),
                                  "themeControl": ctl,
                                  "flatFails": s["fails"], "onPixels": on_pixels,
                                  "unmeasured": unpixelled,
@@ -803,8 +944,11 @@ def main(argv):
             json.dump(findings, fh, indent=1)
         print("\nfindings written to %s" % a.json)
 
-    pages_audited = sum(1 for f in findings if "checked" in f)
-    print("\n%d page-states audited at %dpx" % (pages_audited, a.width))
+    states = [f for f in findings if "checked" in f]
+    emulated = [f for f in states if f.get("media")]
+    note = ("%d of them under emulated prefers-contrast: more" % len(emulated)
+            if emulated else "no media state emulated")
+    print("\n%d page-states audited at %dpx, %s" % (len(states), a.width, note))
     if failures:
         print("FAILED - %d below AA" % failures)
         return 1
