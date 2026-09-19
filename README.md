@@ -184,7 +184,8 @@ never by transcribing a figure from another document.
 
 One tool is deliberately **not** in that list, because CI installs nothing and this needs Chrome:
 
-    python Source/tools/audit-contrast.py  # every text element against WCAG AA, in both themes
+    python Source/tools/audit-contrast.py  # every text element against WCAG AA, in both themes,
+                                           # every control against WCAG 2.5.8 target size
 
 Run it by hand after touching a colour token, a ground or a face. It renders each page in a sized
 iframe, walks it in viewport-sized steps, prints every element below AA with its measured colours,
@@ -206,7 +207,26 @@ outranks every media rule. Emulating only the CSS was the first version, and it 
 dark-OS page that it had measured in light. Every emulated state prints **how many of the page's own
 rules it found**, and a state whose patch did not install is an error rather than a pass, because
 zero rules is a page that does not style the state and not a state that passed. `--no-contrast-more`
-and `--no-os-dark` skip those passes, and `--no-pixels` skips the screenshot pass.
+and `--no-os-dark` skip those passes, and `--no-pixels` skips the screenshot pass, as `--no-tap`
+does for the target-size pass and `--no-scriptless` for the no-script pass.
+
+It also measures **target size**, WCAG 2.5.8, which is the first check here about a finger rather
+than an eye. A control is large enough at 24 by 24 CSS px, or is excused in one of two ways, and both
+are measured on the rendered boxes rather than read off the markup: it is inline in a run of text,
+or no 24px-diameter circle centred on it reaches any other control. Twelve passes at phone and
+desktop widths cover 414 controls; 260 of them are under 24px and every one is excused, with the
+tightest clearance on the whole site at **13.2px** past the required radius, so nothing passes by a
+hair. `--no-tap` skips it.
+
+That pass is also the reason this file records a bug in the shape of a *name*. Its nested-target
+exception was written as `contains(a,b) || contains(b,a)`, and each half tested x-overlap **and**
+y-overlap, which is rectangle intersection, not enclosure. Read that way the exception excused every
+pair of boxes that touched at all, which is exactly the set the spacing rule exists to judge: two
+20px rows 16px apart overlap by 4px and were skipped before the circle was drawn. Nothing on the site
+was affected, because nothing here overlaps, and the tool said `0 FAIL` regardless, which is how it
+got through: collapsing the directory into a dense column changed not one number. A negative test is
+what caught it, and a check that cannot fail is not a check. `encloses` now means enclosure, and the
+same mutation reports 69 failures.
 
 It also serves every page **with its scripts removed**, for the reader whose script never ran, and reports what got painted rather than what passes AA: characters of text, links, controls, and every element present but invisible with the reason and its first line. That pass exists because this site leans on script for its optional parts, and "optional" is a claim. Measured across the six templates, the inventory is short and every line is an affordance the page works without: the hero's three ask chips and its witness tooltip spans, the directory's find control, and the 404's suggestions. The library reader gets 89 links and the whole directory, the 404 reader gets a working form, and a carried article has nothing hidden at all. It also distinguishes a closed disclosure from hidden content, because those are different findings: the hero's two reserved answers are disclosures, one click away with no script, and the first run of this pass is what made that true. Before it, the refusal that demonstrates the page's own claim sat behind a click only script could answer. Two instrument traps are recorded in the docstring, both of which reported the opposite: the probe ran against the harness's own document until it stopped shadowing the `d` and `w` the harness passes in, and it called the hero's opening answer invisible until it finished every animation before asking what had a box.
 

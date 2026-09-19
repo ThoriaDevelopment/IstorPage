@@ -176,6 +176,11 @@ CHROME_CANDIDATES = [
 DEFAULT_PAGES = ["/", "/library/", "/what-is-a-local-llm/", "/changelog/",
                  "/vs-chatgpt/", "/404.html"]
 
+# The width the target-size pass is run at in addition to `--width`, because a
+# target is small where the layout is narrow and this is the width the site's own
+# breakpoints are written for. §3.2's phone column.
+PHONE_WIDTH = 390
+
 
 def find_chrome() -> str:
     env = os.environ.get("CHROME")
@@ -520,6 +525,134 @@ NOSCRIPT_PROBE = r"""
     links: d.querySelectorAll('a[href]').length,
     controls: d.querySelectorAll('button, input, select, textarea, summary').length,
     invisible: invisible,
+  };
+})()
+"""
+
+TAP_PROBE = r"""
+(async () => {
+  /* WCAG 2.5.8 at AA: a target is at least 24 by 24 CSS px, unless it is inline
+     in a sentence (the exception every citation chip and in-text link relies on),
+     or unless a 24px-diameter circle centred on it intersects no other target.
+
+     The spacing exception is measured rather than assumed, because it is the one
+     that lets a row of small controls stand: a link that is 20px tall passes if
+     nothing else comes within 12px of its centre. Nested targets are skipped from
+     that test: a link inside a link, or a chip filling its own list item, is one
+     control with two boxes rather than two controls, and counting it as the other
+     would excuse nothing and only add noise, and "nested" means one box encloses
+     the other, not merely that the two overlap.
+
+     The inline exception is the one this probe has had to learn twice. v1 asked
+     only whether the target's display was `inline` and its parent held MORE text.
+     On the directory that granted the exception to seventy of ninety-one targets:
+     each entry is `<li><a>title</a><span class="index-desc">blurb</span></li>`, so
+     the parent does hold more text, in a different block, on the next line. A link
+     that heads its own list item is not a word in a sentence, and excusing it also
+     skipped its spacing test. The test is now the real one: the exception needs an
+     inline formatting context, which means a non-empty text node or an inline-level
+     sibling next to the target. A `display: block` sibling starts its own line and
+     does not count, however much text it carries. */
+  const MIN = 24;
+  await new Promise(r => setTimeout(r, 60));
+  d.getAnimations().forEach(function (a) { try { a.finish(); } catch (e) {} });
+  const name = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') +
+    (el.className && typeof el.className === 'string'
+      ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '');
+  /* Is there inline content beside this element, in the same line box? */
+  const hasInlineRun = el => {
+    const p = el.parentElement;
+    if (!p) return false;
+    for (const n of p.childNodes) {
+      if (n === el) continue;
+      if (n.nodeType === 3) { if (n.nodeValue.trim()) return true; continue; }
+      if (n.nodeType !== 1) continue;
+      const ncs = getComputedStyle(n);
+      if (ncs.display !== 'inline' || ncs.visibility === 'hidden') continue;
+      if ((n.textContent || '').trim()) return true;
+    }
+    return false;
+  };
+  const els = [].slice.call(d.querySelectorAll(
+    'a[href], button, input, select, textarea, summary, [role="button"]'));
+  const targets = [];
+  for (const el of els) {
+    const cs = getComputedStyle(el);
+    if (el.hidden || cs.display === 'none' || cs.visibility === 'hidden') continue;
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) continue;
+    const words = (el.textContent || '').replace(/\s+/g, ' ').trim();
+    targets.push({
+      sel: name(el), text: words.slice(0, 70),
+      box: {x: r.left, y: r.top, w: r.width, h: r.height},
+      /* `display: inline` alone is not the exception: it needs a run of text to be
+         inline IN. A non-empty text node, or an inline-level sibling, beside the
+         target is that run. A block sibling is the next line, not the same one. */
+      inline: cs.display === 'inline' && !!words && hasInlineRun(el),
+    });
+  }
+  const small = t => t.box.w < MIN - 0.5 || t.box.h < MIN - 0.5;
+  const under = targets.filter(small);
+  /* Enclosure, not intersection, and the difference is the whole value of this
+     test. This predicate was written first as `contains(a,b) || contains(b,a)`
+     where each half was `a.x <= b.x+b.w && b.x <= a.x+a.w && a.y <= b.y+b.h &&
+     b.y <= a.y+a.h`. Read it once: that is x-overlap AND y-overlap, which is
+     rectangle intersection. Symmetric, so the `||` was noise and the test
+     simplified to "the two boxes touch at all always means one control".
+     That excuse swallowed every overlapping pair, which is precisely the set
+     the spacing exception exists to judge: two 20px rows 16px apart overlap by
+     4px and were skipped before the circle was ever drawn. A negative test
+     caught it: collapsing the directory into a dense column changed nothing at
+     all, and a check that cannot fail is not a check. A target is nested only
+     when one box encloses the other outright. */
+  const encloses = (a, b) => a.x <= b.x + 0.5 && a.y <= b.y + 0.5 &&
+                             b.x + b.w <= a.x + a.w + 0.5 &&
+                             b.y + b.h <= a.y + a.h + 0.5;
+  const circleHits = (c, box) => {
+    const nx = Math.max(box.x, Math.min(c.cx, box.x + box.w));
+    const ny = Math.max(box.y, Math.min(c.cy, box.y + box.h));
+    const dx = c.cx - nx, dy = c.cy - ny;
+    return dx * dx + dy * dy < c.r * c.r;
+  };
+  /* The spec's second condition, and not the same as the first: the circle must
+     miss the other TARGET's box, and it must also miss the other UNDER-SIZED
+     target's own circle. That circle is centred on a box smaller than itself, so
+     it pokes out past the box, and two small controls can clear each other's boxes
+     while their circles still overlap. Checking only the box is the looser read. */
+  const circlesOverlap = (a, b) => {
+    const dx = a.cx - b.cx, dy = a.cy - b.cy;
+    return dx * dx + dy * dy < (a.r + b.r) * (a.r + b.r);
+  };
+  const fails = [], inline = [], spaced = [];
+  for (const t of under) {
+    if (t.inline) { inline.push(t); continue; }
+    const c = {cx: t.box.x + t.box.w / 2, cy: t.box.y + t.box.h / 2, r: MIN / 2};
+    let blocked = null;
+    for (const other of targets) {
+      if (other === t) continue;
+      if (encloses(t.box, other.box) || encloses(other.box, t.box)) continue;
+      const oc = {cx: other.box.x + other.box.w / 2,
+                  cy: other.box.y + other.box.h / 2, r: MIN / 2};
+      if (circleHits(c, other.box) || (small(other) && circlesOverlap(c, oc))) {
+        blocked = other; break;
+      }
+    }
+    if (blocked) {
+      t.blockedBy = blocked.sel;
+      fails.push(t);
+    } else {
+      spaced.push(t);
+    }
+  }
+  return {
+    tap: true,
+    width: Math.round(w.innerWidth),
+    targets: targets.length,
+    under: under.length,
+    inline: inline.length,
+    spaced: spaced.length,
+    fails: fails.map(t => ({sel: t.sel, text: t.text, w: Math.round(t.box.w),
+                            h: Math.round(t.box.h), blockedBy: t.blockedBy})),
   };
 })()
 """
@@ -961,6 +1094,9 @@ def screenshot(chrome, profile, url, width, height, out):
     return out if os.path.exists(out) else None
 
 
+TAP_MIN = 24            # WCAG 2.5.8's minimum, in CSS px
+
+
 def media_label(media):
     """`{"prefers-color-scheme": "dark", "prefers-contrast": "more"}` reads as
     `os-dark+contrast-more`, sorted so the label is stable."""
@@ -972,8 +1108,19 @@ def media_label(media):
                     for k, v in sorted(media.items()))
 
 
+def run_tap_pass(chrome, site, tmp, page, width, height, settle):
+    """One render at one width, asking only about target size.
+
+    Its own pass rather than a field on the contrast probe, because the answer
+    depends on the WIDTH and the other passes are per theme: tap targets do not
+    change with the colour scheme, they change when the layout does.
+    """
+    return run_state(chrome, site, tmp, page, width, height, settle, None, False,
+                     None, probe=TAP_PROBE)
+
+
 def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
-              media=None, scripts=True):
+              media=None, scripts=True, probe=None):
     """One theme and one media state, one render: probe the cascade, then sample
     the pixels of the SAME render. The theme is forced by the harness before the
     page is parsed, and the media state by unwrapping the page's own media rules
@@ -985,10 +1132,11 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
     and a different probe asks what got painted rather than what passes AA."""
     profile = os.path.join(tmp, "profile")
     tag = "-".join(x for x in (theme or "asis", media_label(media),
-                               "" if scripts else "noscript") if x)
+                               "" if scripts else "noscript",
+                               "tap%d" % width if probe else "") if x)
     write(os.path.join(tmp, "audit-%s.html" % tag),
           HARNESS.format(w=width, h=height, url=page,
-                         expr=json.dumps(PROBE if scripts else NOSCRIPT_PROBE),
+                         expr=json.dumps(probe or (PROBE if scripts else NOSCRIPT_PROBE)),
                          settle=settle, theme=json.dumps(theme or ""),
                          media=json.dumps(media or {})))
     Handler.harness = os.path.join(tmp, "audit-%s.html" % tag)
@@ -1097,7 +1245,7 @@ def media_states(contrast_more, os_dark, as_authored):
 
 
 def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
-               contrast_more=True, os_dark=True, scriptless=True):
+               contrast_more=True, os_dark=True, scriptless=True, tap_widths=True):
     """Every theme and media state this page can be delivered in, as a list.
 
     The first pass forces nothing, so a page with no theme control is audited in
@@ -1124,6 +1272,9 @@ def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
     if scriptless:
         states.append(run_state(chrome, site, tmp, page, width, height, settle,
                                 None, False, None, scripts=False))
+    for tap_width in ([width, PHONE_WIDTH] if tap_widths and width != PHONE_WIDTH
+                      else [width] if tap_widths else []):
+        states.append(run_tap_pass(chrome, site, tmp, page, tap_width, height, settle))
     if (first.get("themeControl") or {}).get("found"):
         other = "dark" if first.get("state") != "dark" else "light"
         states.append(run_state(chrome, site, tmp, page, width, height, settle,
@@ -1157,6 +1308,8 @@ def main(argv):
                     help="skip the emulated prefers-contrast: more pass")
     ap.add_argument("--no-os-dark", action="store_true",
                     help="skip the emulated dark-OS pass on the unstamped theme")
+    ap.add_argument("--no-tap", action="store_true",
+                    help="skip the WCAG 2.5.8 target-size pass")
     ap.add_argument("--no-scriptless", action="store_true",
                     help="skip the pass that serves each page with its scripts "
                          "removed, for the reader whose script never ran")
@@ -1169,14 +1322,15 @@ def main(argv):
     chrome = find_chrome()
     pages = [page_path(p) for p in a.pages]
 
-    findings, failures = [], 0
+    findings, failures, tap_fails = [], 0, 0
     with tempfile.TemporaryDirectory(prefix="istor-audit-") as tmp:
         for page in pages:
             r = audit_page(chrome, a.site, tmp, page, a.width, a.height, a.settle,
                            pixels=not a.no_pixels,
                            contrast_more=not a.no_contrast_more,
                            os_dark=not a.no_os_dark,
-                           scriptless=not a.no_scriptless)
+                           scriptless=not a.no_scriptless,
+                           tap_widths=not a.no_tap)
             if r.get("error"):
                 print("  FAIL  %s  %s" % (page, r["error"]))
                 failures += 1
@@ -1192,6 +1346,26 @@ def main(argv):
                 if s.get("error"):
                     print("  FAIL  %s state %d  %s" % (page, index, s["error"]))
                     failures += 1
+                    continue
+                if s.get("tap"):
+                    # WCAG 2.5.8 at AA, measured rather than assumed. The two
+                    # exceptions are counted separately and printed, because an
+                    # exception that is not itemised is indistinguishable from a
+                    # check that did not run.
+                    tap_fails += len(s["fails"])
+                    print("  %s  %-42s %3d targets  %2d under %dpx  %2d inline  "
+                          "%2d spacing-exempt  %d FAIL"
+                          % ("ok  " if not s["fails"] else "FAIL",
+                             "%s targets@%dpx" % (page, s["width"]), s["targets"],
+                             s["under"], TAP_MIN, s["inline"], s["spaced"],
+                             len(s["fails"])))
+                    for t in s["fails"]:
+                        print("          %dx%d  %s  %r  (blocked by %s)"
+                              % (t["w"], t["h"], t["sel"], t["text"], t["blockedBy"]))
+                    findings.append({"page": page, "tap": True, "width": s["width"],
+                                     "targets": s["targets"], "under": s["under"],
+                                     "inline": s["inline"], "spaced": s["spaced"],
+                                     "fails": s["fails"]})
                     continue
                 if s.get("scripts") is False:
                     # The scriptless reader gets the comparison and the inventory
@@ -1283,16 +1457,27 @@ def main(argv):
     kinds = sorted({media_label(f["media"]) for f in emulated})
     note = ("%d of them emulated (%s)" % (len(emulated), ", ".join(kinds))
             if emulated else "no media state emulated")
+    tap = [f for f in findings if f.get("tap")]
+    if tap:
+        print("\n%d target-size passes: %d controls, %d under %dpx, %d excused as "
+              "inline text and %d by spacing"
+              % (len(tap), sum(f["targets"] for f in tap),
+                 sum(f["under"] for f in tap), TAP_MIN,
+                 sum(f["inline"] for f in tap), sum(f["spaced"] for f in tap)))
+
     scriptless = [f for f in findings if f.get("scripts") is False]
     print("\n%d page-states audited at %dpx, %s%s"
           % (len(states), a.width, note,
              ", plus %d scriptless pass%s"
              % (len(scriptless), "es" if len(scriptless) != 1 else "")
              if scriptless else ""))
-    if failures:
-        print("FAILED - %d below AA" % failures)
+    if failures or tap_fails:
+        print("FAILED - %d below AA, %d targets under %dpx with neither exception"
+              % (failures, tap_fails, TAP_MIN))
         return 1
     print("contrast ok - nothing below AA where the ground could be measured")
+    if tap:
+        print("targets ok - every control reaches %dpx, or is excused" % TAP_MIN)
     return 0
 
 

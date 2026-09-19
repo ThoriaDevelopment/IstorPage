@@ -14,6 +14,27 @@ separate detector that touches a file, or --cue-command with a command that
 returns exit code 0 when the cue has been heard. Without either option, the
 helper submits on the interval.
 
+TWO WAYS TO RUN IT WRONG, both of which the shell reports as something else
+entirely, so neither is obvious from the error:
+
+  * **Run it from the repository root, or from Source/tools without the
+    prefix.** From Source/tools, `python Source/tools/freebuff-continue.py`
+    resolves to Source/tools/Source/tools/... and fails with "can't open file".
+  * **Keep every option on ONE line.** PowerShell ends the statement at each
+    newline, so a pasted block where the options sit on their own lines parses
+    line 2 as a statement beginning with `--`, which is the decrement operator,
+    and reports "Missing expression after unary operator '--'". The `>>` at the
+    start of those lines is PowerShell's continuation prompt, not part of the
+    command.
+
+Measure the click point before trusting it:
+
+    python Source/tools/freebuff-continue.py --chat-x 0.50 --chat-y 0.90 --debug --dry-run
+
+--dry-run moves the cursor to the computed point and types nothing, so a wrong
+ratio costs nothing. --chat-x and --chat-y are ratios of the window's CLIENT
+area, not pixels.
+
 Stop with Ctrl+C. Use --max-sends to put a hard limit on unattended sends.
 """
 
@@ -193,7 +214,12 @@ def cue_ready(args: argparse.Namespace) -> bool:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
+    # Raw form, so `--help` shows the worked examples on their own lines. The
+    # default formatter reflows the docstring into one paragraph, which is how
+    # the two run-it-wrong notes above became invisible to the person who hit
+    # both of them in a row.
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--window", default="Freebuff", help="case-insensitive window-title fragment")
     parser.add_argument("--chat-x", type=float, required=True, help="chat-box x position as a window ratio from 0 to 1")
     parser.add_argument("--chat-y", type=float, required=True, help="chat-box y position as a window ratio from 0 to 1")

@@ -992,6 +992,24 @@ scheme in the cascade alone, matched the rule, injected it, and measured the LIG
 it threw on its first run (a Python string ate its backslashes) and the run said `ok` again, so now
 a state whose patch did not install is an **error**, not a pass.
 
+**It measures target size, which is the first question here about a finger rather than an eye.**
+WCAG 2.5.8 asks for 24 by 24 CSS px, or two measured exceptions: a control inline in a run of text,
+or one where no 24px-diameter circle centred on it reaches any other control. Twelve passes at phone
+and desktop width cover 414 controls, 260 of them under 24px and every one excused, the tightest
+clearance anywhere being **13.2px** past the required radius. The pass found no defect on the site,
+and the reason to keep it is what it found in itself. Its nested-target exception read
+`contains(a,b) || contains(b,a)` with each half testing x-overlap **and** y-overlap: that is
+rectangle intersection, and the symmetric `||` makes the whole test "these two boxes touch", so every
+overlapping pair was skipped before the circle was drawn. The pairs that overlap are the pairs the
+exception exists to judge, so the check could not fail, and it reported `0 FAIL` on the real site and
+on a copy whose directory had been collapsed to a dense column of 20px rows 16px apart. What caught
+it was the negative test, then the same mutation reporting 69 failures once `encloses` meant
+enclosure. The exception also had to learn what "inline" means: asking whether the target's parent
+held more text granted it to seventy of the directory's ninety-one targets, because each entry is a
+link followed by a block-level blurb, and a link that heads its own list item is not a word in a
+sentence. It now requires a non-empty text node or an inline-level sibling, which is the run of text
+the rule is about.
+
 Nothing is invented in the tool and no colour is written down there, which makes the failure mode
 the honest one: **every emulated state prints how many of the page's own rules it found**, because
 zero rules is a page that does not style the state, not a state that passed. The landing page is
