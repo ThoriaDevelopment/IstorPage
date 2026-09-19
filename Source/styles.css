@@ -946,6 +946,63 @@ h3 {
 .poster .cta { margin-block-start: 28px; }
 
 /* ---------------------------------------------------------------------------
+   14c · The reading.  Act 12b, and the reason the close is a footer.
+
+   The site carries 75 pages of writing and the landing page used to link to one
+   of them, mislabelled. Four columns of four, in the genre's own footer shape,
+   which is the one piece of the shared grammar this page did not have.
+
+   The links are --field-ink-2, the same quiet tone as every other secondary
+   string in the field, rather than the --azure-lift the page uses for the links
+   it wants you to follow. That is deliberate: sixteen azure links in a footer
+   would be the loudest thing on the page after the wordmark, and they are a
+   way out, not a call to action. They gain the field's brighter ink on hover.
+
+   Not a <nav>: this is a reading list, not navigation. The nav on this page is
+   the sticky bar. A second landmark here would create two navigation regions
+   for a visitor using a screen reader to choose between.
+   --------------------------------------------------------------------------- */
+.reading {
+  margin-block-start: 88px;
+  padding-block-start: 40px;
+  border-block-start: 1px solid var(--field-rule);
+}
+.reading-lede {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--field-ink-2);
+  font-size: var(--t-sm);
+  text-wrap: pretty;
+}
+.reading-cols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 40px 32px;
+  margin-block-start: 34px;
+}
+/* The column heads are h3 in the document, because they sit under the act's own
+   h2, and small here, because a footer column head at the page's h3 size would
+   stand as tall as the section heading it belongs to. */
+.reading-head {
+  margin: 0 0 12px;
+  font-family: var(--sans);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--field-ink);
+}
+.reading-col ul { list-style: none; margin: 0; padding: 0; }
+.reading-col li + li { margin-block-start: 9px; }
+.reading-col a {
+  color: var(--field-ink-2);
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  text-decoration: none;
+  text-wrap: pretty;
+}
+.reading-col a:hover { color: var(--field-ink); text-decoration: underline; }
+
+/* ---------------------------------------------------------------------------
    14 · The colophon.
    --------------------------------------------------------------------------- */
 .colophon {
@@ -954,6 +1011,9 @@ h3 {
   padding-block: 26px 36px;
   font-size: var(--t-sm);
 }
+/* The fine print belongs to the reading list above it, not to the close, so it
+   sits nearer to that than the poster's body does. */
+.reading + .colophon { margin-block-start: 56px; }
 .colophon-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 32px; }
 .colophon-row nav { display: flex; flex-wrap: wrap; gap: 32px; }
 .colophon a { color: var(--field-ink-2); text-decoration: none; }
@@ -1304,12 +1364,19 @@ h3 {
     .nav .cta { margin-inline-start: 0; padding-inline: 14px; }
   }
 
+  /* Four columns of two-word headings and question-length links have no room
+     here; two by two keeps every label on one or two lines. */
+  .reading { margin-block-start: 64px; padding-block-start: 32px; }
+  .reading-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
+
   .poster { padding-block-start: 80px; }
   .poster .win { width: 92%; margin-block-start: -32px; }
   .colophon { margin-block-start: 64px; }
+  .reading + .colophon { margin-block-start: 44px; }
 }
 
 @media (max-width: 560px) {
   .evidence { grid-template-columns: minmax(0, 1fr); }
   .pair { gap: 24px; }
+  .reading-cols { grid-template-columns: minmax(0, 1fr); gap: 28px; }
 }
