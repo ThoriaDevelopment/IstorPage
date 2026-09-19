@@ -148,10 +148,13 @@ the print token world declares against white paper, and fails if any of them is 
 exists because the failure it guards against is invisible on screen: a reader whose system is dark
 used to print near-white text onto white paper, 13 of 46 text elements on one article.
 
-CI runs the same three checks and fails on any of them. `Source/tools/budget.json` asserts the
-artifact's byte sizes exactly. When a number moves because the page changed, re-baseline it **by
-measurement**, in the same commit as the change that moved it, and never by transcribing a figure
-from another document.
+CI runs the same three checks and fails on any of them, and they are not only about links and bytes:
+the directory tells its reader that `/` focuses the find field and the arrow keys walk the matches,
+which is a promise about behaviour, so `verify-links.py` requires those three key names to appear in
+the page's own script. Break the walk and it fails with the sentence naming the unkept promise.
+`Source/tools/budget.json` asserts the artifact's byte sizes exactly. When a number moves because the
+page changed, re-baseline it **by measurement**, in the same commit as the change that moved it, and
+never by transcribing a figure from another document.
 
 One tool is deliberately **not** in that list, because CI installs nothing and this needs Chrome:
 

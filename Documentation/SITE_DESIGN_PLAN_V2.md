@@ -370,8 +370,11 @@ contradicted the token block that had it right.
 
 Both are asserted rather than trusted. `verify-links.py` requires a block of each
 kind in both halves, computes every text ink the print world declares against white
-paper (worst 9.08:1), and every rule token too (worst 3.45:1). Six of its 50
-assertions are these. The contrast promise is the one that a verifier cannot fully
+paper (worst 9.08:1), and every rule token too (worst 3.45:1). Six of its 51
+assertions are these, and a seventh is the directory's keyboard (§3.8): the page tells
+its reader in visible copy that `/` focuses the field and the arrow keys walk the
+matches, which is a promise about behaviour and therefore the one kind the copy gate
+cannot see. The contrast promise is the one that a verifier cannot fully
 reach, because asserting a block exists is not the same as measuring it, which is
 why the state is now emulated and measured by hand at §12.
 
@@ -399,7 +402,41 @@ It costs **~431 B per page, 32,328 B across the library**, and it is asserted as
 than sampled: `verify-links.py` follows the links from the one page with no previous, requires that
 they reach all 75 exactly once, and then follows them backwards from the end, because a broken
 `prev` is invisible to a next-only check. Removing one pair makes that assertion fail with the
-instruction to re-run the tool. That assertion is 1 of the 44 the link gate now carries.
+instruction to re-run the tool. That assertion is 1 of the 51 the link gate now carries.
+
+### 3.8 The directory answers the keyboard
+
+The directory lists all 75 pages and has had a find field since §3.6's night. What it did not have
+was a keyboard path: a reader arriving from an article had to find the field with the mouse, and a
+reader who filtered to three entries had to Tab into the list. So the page now teaches one gesture
+and honours four. **`/` focuses the field** from anywhere on the page, unless the reader is already
+typing. **The arrow keys walk the matches**, and each step moves *real focus* onto the entry's own
+link rather than a decorative highlight: the reader's screen reader announces the page title as they
+arrive, Enter activates it natively, and no ARIA listbox has to be layered over a list of links.
+Down and Up are each other's inverse and the walk closes field-to-field, so a reader who overshoots
+presses the other arrow instead of hunting for the way back. **Typing while a row has focus** puts the
+character in the field and continues from there, which is what the reader was doing before they
+walked away. **Escape** clears, and a second Escape leaves the field.
+
+One thing was built and then removed: focusing the field when a URL arrives with `#find`. The footer
+of every article links to `/library/` and not to a fragment, so nothing would ever have sent a reader
+there, and a behaviour nothing triggers is worse than no behaviour at all. The visible hint is what
+teaches the shortcut, which is the honest way for a page to say it is keyboard-ready.
+
+The picked row is marked with a **rule drawn inside the row**, not a tint behind it, and that is a
+measurement rather than a preference. An index entry's title is `--cite-ink` at 5.41:1 on the light
+paper and its summary is `--mist` at 5.1:1: two passes with about half a step of margin. A `--witness`
+tint darkens the ground under both and spends that margin, measured on the row itself: **8% costs 0.6**
+and leaves the title at 4.78:1, and **12% leaves it at 4.50:1**, which is the bar for 16px type to the
+second decimal. Both tints pass, so the tint was not a bug; it was a focus state spending a page's
+whole contrast margin to say something a graphic says for nothing.
+
+It costs **2,841 B of index and 1,614 B of stylesheet** (30,679 → 33,520 and 46,801 → 48,415), a
+third of the index half being the comment that ships beside the script. It is asserted by name:
+`verify-links.py` requires the three key names the hint teaches to appear in the page's own script,
+because that hint is visible copy and the copy gate reads text rather than behaviour. Breaking the
+walk in a copy of the artifact fails with `the hint promises ArrowUp and the script does not handle
+it`, which is the sentence the check exists to print.
 
 ---
 

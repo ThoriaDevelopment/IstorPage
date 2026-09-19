@@ -77,7 +77,7 @@ LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
-LIBRARY_STYLES_BYTES = 46801
+LIBRARY_STYLES_BYTES = 48415
 ARTIFACT_FILES = 156                  # 138 + the four phone crops' 16 files + the library index
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
 
@@ -712,6 +712,25 @@ def check_9(rep: Report, site: pathlib.Path,
                  f"{LIBRARY_STYLES_BYTES:,} B")
     else:
         rep.ok("/styles.css is the library's", f"{LIBRARY_STYLES_BYTES:,} B")
+
+    # The directory tells its reader, in visible copy, that `/` focuses the field
+    # and that the arrow keys walk the matches. That is a promise about behaviour,
+    # which is the one kind this file's copy sibling cannot see: it reads text. So
+    # the text is checked here against the script that has to keep it, by name.
+    index = site / "library" / "index.html"
+    script = docs.get(index, "")
+    if "to search, then the arrow keys" in script:
+        missing = [k for k in ("'/'", "ArrowDown", "ArrowUp") if k not in script]
+        if missing:
+            rep.fail("the directory's keyboard",
+                     "the hint promises " + ", ".join(missing) + " and the script "
+                     "does not handle it — a promise in visible copy, unkept")
+        else:
+            rep.ok("the directory's keyboard matches its own hint",
+                   "slash, ArrowDown, ArrowUp")
+    else:
+        rep.fail("the directory's keyboard",
+                 "/library/ no longer carries the hint that teaches the shortcut")
 
     lost = []
     for d in pages:

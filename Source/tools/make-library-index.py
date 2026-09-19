@@ -205,9 +205,77 @@ FIND_SCRIPT = r"""  <script>
     }
     field.addEventListener('input', apply);
     form.addEventListener('submit', function (event) { event.preventDefault(); apply(); });
-    field.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && field.value) { field.value = ''; apply(); }
+
+    /* The rows the reader can currently see, in reading order. Read fresh on every
+       keystroke rather than cached: the list changes under the reader's fingers as
+       they type, and a stale cache would walk into a hidden row. */
+    function rows() {
+      var out = [];
+      items.forEach(function (li) {
+        if (!li.hidden) out.push(li.querySelector('a'));
+      });
+      return out.filter(Boolean);
+    }
+
+    /* ONE FOCUS ORDER: the field, then every match, then the field again. Arrow
+       keys move real focus to the link rather than a decorative highlight, so the
+       reader's screen reader announces each page's title as they arrive, Enter
+       activates it natively, and no ARIA listbox has to be layered over a list of
+       links. Down and Up are each other's inverse, so a reader who overshoots
+       presses the other arrow instead of hunting for the way back. */
+    function walk(step) {
+      var list = rows();
+      if (!list.length) return false;
+      var at = list.indexOf(document.activeElement);
+      if (at === -1 && document.activeElement !== field) return false;
+      var next = at === -1 ? (step > 0 ? 0 : list.length - 1) : at + step;
+      if (next < 0 || next >= list.length) field.focus();
+      else list[next].focus();
+      return true;
+    }
+
+    document.addEventListener('keydown', function (event) {
+      var t = event.target;
+      var typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' ||
+                         t.isContentEditable);
+      var plain = !event.metaKey && !event.ctrlKey && !event.altKey;
+
+      /* `/` from anywhere on the page puts the caret in the field. A find box a
+         reader has to click is a find box most readers never use, and the key is
+         the one every reader of a directory already reaches for. */
+      if (event.key === '/' && plain && !typing) {
+        event.preventDefault();
+        field.focus();
+        field.select();
+        return;
+      }
+
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        if (walk(event.key === 'ArrowDown' ? 1 : -1)) event.preventDefault();
+        return;
+      }
+
+      /* A row has focus and the reader has started typing again, so the character
+         belongs in the field rather than being swallowed by a link. */
+      if (plain && document.activeElement !== field && rows().indexOf(document.activeElement) !== -1) {
+        if (event.key.length === 1) {
+          event.preventDefault();
+          field.focus();
+          field.value += event.key;
+          apply();
+        } else if (event.key === 'Backspace') {
+          event.preventDefault();
+          field.focus();
+        }
+      }
     });
+
+    field.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      if (field.value) { field.value = ''; apply(); }
+      else field.blur();
+    });
+
     apply();
   })();
   </script>"""
@@ -281,6 +349,8 @@ def build() -> str:
         '      <label for="find">Find a page</label>',
         '      <input type="search" id="find" name="q" autocomplete="off"',
         '             spellcheck="false" placeholder="A term, a question, a subject" />',
+        '      <p class="index-hint">Press <kbd>/</kbd> to search, then the arrow keys',
+        '        to walk the matches.</p>',
         '      <p class="index-said" aria-live="polite"></p>',
         "    </form>",
     ]

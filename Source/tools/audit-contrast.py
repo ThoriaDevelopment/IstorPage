@@ -166,7 +166,12 @@ CHROME_CANDIDATES = [
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
 ]
 
-DEFAULT_PAGES = ["/", "/changelog/", "/vs-chatgpt/"]
+# One page per template the site actually ships, which is the point: the landing
+# page, the generated directory, a carried article, and the two sub-page shapes.
+# The directory is here because it was the page nothing had ever measured, and it
+# is the one with 75 entries whose titles sit within half a step of the bar.
+DEFAULT_PAGES = ["/", "/library/", "/what-is-a-local-llm/", "/changelog/",
+                 "/vs-chatgpt/"]
 
 
 def find_chrome() -> str:
