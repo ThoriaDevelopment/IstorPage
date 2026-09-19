@@ -9,7 +9,7 @@ The other fifty-nine had no door: a reader who wanted more had to guess a slug o
 read the sitemap, and the crawlers that already read `llms.txt` were better served
 than the people the site is for. This builds that door.
 
-FOUR DECISIONS, and each is a way this file could have gone wrong:
+FIVE DECISIONS, and each is a way this file could have gone wrong:
 
 * **It is generated from the pages, not maintained beside them.** Every title and
   every summary is the page's own `<title>` and `name="description"`, read from
@@ -28,6 +28,14 @@ FOUR DECISIONS, and each is a way this file could have gone wrong:
 * **It carries no new stylesheet.** The page links `/styles.css`, the library's
   own file, and the handful of rules the list needs were added there so the index
   is drawn by the same tokens as the pages it lists.
+* **The find field is authored `hidden` and revealed by the page's one script.**
+  Seventy-five entries is a list a reader can read and cannot search, so the list
+  got a field. It ships hidden, which means a reader whose script does not run
+  gets the whole directory rather than a box that filters nothing, and the script
+  filters on each entry's own title and summary. Matching is deliberately dull:
+  every word typed has to appear in the entry, all of them, in any order, which is
+  a rule a reader can predict after using it twice. Ranking and fuzzing would be a
+  search engine inside a page whose claim is that it does not need one.
 
 Standard library only.
 """
@@ -128,6 +136,83 @@ def _lift(pattern: re.Pattern[str], text: str, what: str) -> str:
     return m.group(0)
 
 
+# The page's one script. The generator's docstring carries the reasoning; what
+# repeats here is what a reader of the page can see for themselves. It is
+# authored hidden and unhidden by this script, so an unscripted reader gets the
+# whole directory and no dead field. Matching is a word-AND over each entry's own
+# title and summary, because a rule a reader can predict beats a rank they cannot
+# see. The query is kept in the URL, so a filtered view can be linked and
+# reloaded. And a group heading that says "(6)" while showing two entries is a
+# lie, so the headings count what is on screen.
+FIND_SCRIPT = r"""  <script>
+  (function () {
+    var form = document.querySelector('.index-find');
+    var field = document.getElementById('find');
+    var said = document.querySelector('.index-said');
+    if (!form || !field || !said) return;
+
+    var groups = [].slice.call(document.querySelectorAll('.index-group'));
+    var items = [].slice.call(document.querySelectorAll('.index-list li'));
+    var total = items.length;
+
+    items.forEach(function (li) {
+      li.setAttribute('data-hay', (li.textContent || '').toLowerCase());
+    });
+
+    function apply() {
+      var query = field.value.trim();
+      var words = query.toLowerCase().split(/\s+/).filter(Boolean);
+      var shown = 0;
+
+      items.forEach(function (li) {
+        var hit = words.every(function (word) {
+          return li.getAttribute('data-hay').indexOf(word) !== -1;
+        });
+        li.hidden = !hit;
+        if (hit) shown++;
+      });
+
+      groups.forEach(function (group) {
+        var head = group.querySelector('h2');
+        /* The group's own count is read off the heading ONCE, into data
+           attributes, so a second pass is arithmetic rather than a re-parse: a
+           heading that already reads "(2 of 6)" does not match the pattern that
+           produced it. */
+        if (!head.dataset.total) {
+          var counts = /^(.*) \((\d+)\)$/.exec(head.textContent);
+          if (!counts) return;
+          head.dataset.name = counts[1];
+          head.dataset.total = counts[2];
+        }
+        var here = group.querySelectorAll('.index-list li:not([hidden])').length;
+        head.textContent = head.dataset.name + ' (' +
+          (query ? here + ' of ' + head.dataset.total : head.dataset.total) + ')';
+        group.hidden = !here;
+      });
+
+      said.textContent = !query ? ''
+        : shown ? shown + ' of ' + total + ' pages match "' + query + '".'
+        : 'Nothing matches "' + query + '". Try a shorter word.';
+
+      history.replaceState(null, '', location.pathname +
+        (query ? '?q=' + encodeURIComponent(query) : ''));
+    }
+
+    form.hidden = false;
+    var saved = /[?&]q=([^&]*)/.exec(location.search);
+    if (saved) {
+      try { field.value = decodeURIComponent(saved[1].replace(/\+/g, ' ')); } catch (e) {}
+    }
+    field.addEventListener('input', apply);
+    form.addEventListener('submit', function (event) { event.preventDefault(); apply(); });
+    field.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && field.value) { field.value = ''; apply(); }
+    });
+    apply();
+  })();
+  </script>"""
+
+
 def build() -> str:
     slugs = library_slugs()
     if not slugs:
@@ -191,6 +276,13 @@ def build() -> str:
         f'    <p class="lede">All {len(slugs)} pages about local AI on istor.fyi, '
         "grouped by the kind of question each one answers. Every title and every "
         "line under it is the page's own, read from the page.</p>",
+        "",
+        '    <form class="index-find" role="search" hidden>',
+        '      <label for="find">Find a page</label>',
+        '      <input type="search" id="find" name="q" autocomplete="off"',
+        '             spellcheck="false" placeholder="A term, a question, a subject" />',
+        '      <p class="index-said" aria-live="polite"></p>',
+        "    </form>",
     ]
 
     for heading, _prefixes, blurb in GROUPS:
@@ -200,22 +292,27 @@ def build() -> str:
         items.sort(key=lambda row: row[1].lower())
         out += [
             "",
-            f"    <h2>{html.escape(heading)} ({len(items)})</h2>",
-            f'    <p class="index-blurb">{html.escape(blurb)}</p>',
-            '    <ul class="index-list">',
+            '    <section class="index-group">',
+            f"      <h2>{html.escape(heading)} ({len(items)})</h2>",
+            f'      <p class="index-blurb">{html.escape(blurb)}</p>',
+            '      <ul class="index-list">',
         ]
         for slug, title, summary in items:
             out += [
-                f'      <li><a href="/{slug}/">{html.escape(title)}</a>'
+                f'        <li><a href="/{slug}/">{html.escape(title)}</a>'
                 f'<span class="index-desc">{html.escape(summary)}</span></li>',
             ]
-        out.append("    </ul>")
+        out += [
+            "      </ul>",
+            "    </section>",
+        ]
 
     out += [
         "  </main>",
         "",
         "  " + foot,
         "",
+        FIND_SCRIPT,
         "</body>",
         "</html>",
         "",
