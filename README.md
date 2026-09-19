@@ -130,12 +130,23 @@ The timer is the reliable mode. Freebuff does not currently expose a documented 
     python Source/tools/build-site.py      # Source/ + Assets/ + OldVersion/ -> _site/
     python Source/tools/verify-budget.py   # every asserted byte size
     python Source/tools/verify-links.py    # every link in the artifact
+    python Source/tools/verify-copy.py     # the humanizer pass, and the release-claim rule
     python -m http.server --directory _site 8080
 
-CI runs the same checks and fails on any of them. `Source/tools/budget.json` asserts the
+CI runs the same three checks and fails on any of them. `Source/tools/budget.json` asserts the
 artifact's byte sizes exactly. When a number moves because the page changed, re-baseline it **by
 measurement**, in the same commit as the change that moved it, and never by transcribing a figure
 from another document.
+
+One tool is deliberately **not** in that list, because CI installs nothing and this needs Chrome:
+
+    python Source/tools/audit-contrast.py  # every text element against WCAG AA, in both themes
+
+Run it by hand after touching a colour token, a ground or a face. It renders each page in a sized
+iframe, walks it in viewport-sized steps, prints every element below AA with its measured colours,
+and exits non-zero if it finds one. Elements standing on a gradient or a photograph are listed but
+not judged, because a ratio there would bearithmetic on one sample of a wash and would read as a pass. See the tool's docstring for the two wrong ways to find an element's ground, both of which
+returned confident numbers and are the reason the file looks the way it does.
 
 ## What is not published
 

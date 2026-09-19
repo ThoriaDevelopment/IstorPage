@@ -771,16 +771,31 @@ The build gates are re-baselined **by measurement, never transcription** — the
 
 | Gate | Change |
 |---|---|
-| `document.index_html_bytes` | exact, re-baselined to **62,469 B**; LF-only so platform-independent |
-| `document.index_html_gzip_ceiling` | re-baselined to **18,400 B** with headroom — **never an equality** (the 2026-09-19 toolchain lesson) |
+| `document.index_html_bytes` | exact, re-baselined to **62,469 B**; LF-only so platform-independent; **73,315 B** on 2026-09-19 after a night of work on the page, each step itemised in `budget.json`'s own note |
+| `document.index_html_gzip_ceiling` | re-baselined to **18,400 B** with headroom — **never an equality** (the 2026-09-19 toolchain lesson); **20,480 B** after the reading list, at a round KiB rather than another 2.1% margin, so it stops being edited on every commit that touches the document |
+| `document.inline_js_bytes` **(new)** | exact, and it exists because §7 carried a 4 KB JS budget that nothing measured: the page shipped 5,599 B, of which 1,250 B was `//` prose arriving with every document and being parsed as script. Figure is now **5,010 B** |
 | `totals.phone_1x` / `retina_2x` | re-baselined over 9 exhibits: **194,064 B** / **388,356 B**, and again on 2026-09-19 over 9 exhibits **plus 4 phone crops** at **237,991 B** / **500,885 B** — the inventory grows while what a device *downloads* shrinks, because those four exhibits now serve a narrower crop below 430px |
 | `totals.exports_all_*` | **renamed `exports_all_36`** and the `.png` suffix dropped from the sum, because PNG left the shipped set; **renamed again to `exports_all`** when the phone crops took the set from 36 files to 52 and the number in the name stopped being true |
-| `ARTIFACT_FILES` | re-baselined to **138** (the whole +18 is 9 exhibits × 4 files against 3 × 6), then to **154** on 2026-09-19 (+16 = 4 phone crops × 4 files) |
+| `ARTIFACT_FILES` | re-baselined to **138** (the whole +18 is 9 exhibits × 4 files against 3 × 6), then to **154** on 2026-09-19 (+16 = 4 phone crops × 4 files), then to **156** (+the generated library index, +`/theme.js`) |
+| `library.*` **(new)** | the carried library as four numbers: `page_count` 75, `page_bytes` exact, `index_bytes` exact (generator output, so a change means a page or the generator changed), and the shared files by size. Pages are asserted as a count and a total rather than file by file, because their bytes move whenever anyone edits a summary |
+| `verify-copy.py` **(new tool)** | Stage 9's checks 10 and 11: the humanizer pass as a rule rather than a memory, and §10.4's release-claim rule in both prose and tables. Both run a positive control before they trust their own silence, and an allow-list entry that stops matching fails the build |
 | **`composition` (new)** | asserts the page has **≥ 10 sections, ≥ 4 distinct composition classes, ≥ 1 sticky element, ≥ 1 `<details>`, and ≤ 1 display-size element** |
 
 That last gate is the point. v1 had 53 assertions and none could see that the page was nine identical
 sections. **A composition gate is what would have caught it**, and it is the only gate here that
 asserts the *design* rather than the bytes.
+
+**One audit is deliberately not a gate.** `Source/tools/audit-contrast.py` measures every text
+element against WCAG AA, in both themes, by rendering each page in a sized iframe and walking it in
+viewport-sized steps. It needs Chrome, and CI installs nothing, so running it there is not possible
+without breaking the property that makes the gates trustworthy. It is a local tool with a non-zero
+exit, run by hand after any change to a colour token, a ground or a face. Its first real run found
+exactly one failure in 166 elements, the confidence ruler's scale label at **3.12:1** where 15px
+needs 4.5, and the bug was the token block rather than the rule: `--ink-3` was labelled "labels and
+captions" while it is the app's own label grey, a fine graphic at that ratio and the wrong colour
+for a sentence. Elements standing on a gradient or a photograph are reported and not judged, which
+is why the tool's output prints how many viewports it walked and how many elements it could not
+measure: a clean result that covered seven elements of a long page is not a clean result.
 
 ---
 
