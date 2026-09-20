@@ -65,27 +65,30 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VB_W} {VB_H}"
        Source/tools/make-calendar-ring.py — do not hand-edit. -->
 
   <g fill="none" stroke="var(--rule)" stroke-width="1">
-    <circle cx="{CX:g}" cy="{CY:g}" r="{R_BAND_OUT:g}"/>
-    <circle cx="{CX:g}" cy="{CY:g}" r="{R_BAND_IN:g}"/>
+    <circle class="ring-frame" cx="{CX:g}" cy="{CY:g}" r="{R_BAND_OUT:g}"/>
+    <circle class="ring-frame" cx="{CX:g}" cy="{CY:g}" r="{R_BAND_IN:g}"/>
   </g>
 
   <!-- 355 holes in one dashed circle rather than 355 elements. pathLength is not
        used, so the dash arithmetic is literal and cannot drift between renderers.
        --ink-3 because the holes are the subject, not the frame: at --rule they
-       measured 1.20:1 on --paper. Why, in full, is in make-calendar-ring.py. -->
-  <circle cx="{CX:g}" cy="{CY:g}" r="{R_HOLES:g}" fill="none"
+       measured 1.20:1 on --paper. Why, in full, is in make-calendar-ring.py.
+       class=ring-holes: M12's roll, one dash period, styles.css motion block. -->
+  <circle class="ring-holes" cx="{CX:g}" cy="{CY:g}" r="{R_HOLES:g}" fill="none"
           stroke="var(--ink-3)" stroke-width="{DOT:g}" stroke-linecap="round"
           stroke-dasharray="0.02 {GAP:.6f}"
           transform="rotate({THETA:.4f} {CX:g} {CY:g})"/>
 
   <!-- The hole in question: the figure's only --azure, and the one thing in it that
-       is a claim rather than a measure. -->
-  <circle cx="{mx:.4f}" cy="{my:.4f}" r="{DOT / 2:.2f}" fill="var(--azure)"/>
-  <path d="M{t1[0]:.3f} {t1[1]:.3f} L{t2[0]:.3f} {t2[1]:.3f}"
-        stroke="var(--azure)" stroke-width="1" fill="none"/>
-  <text x="{lx:.3f}" y="{ly:.3f}" fill="var(--azure)" font-size="13"
-        font-family="Inter, sans-serif" text-anchor="middle"
-        dominant-baseline="middle">355</text>
+       is a claim rather than a measure. class=ring-claim: lands last in M12. -->
+  <g class="ring-claim">
+    <circle cx="{mx:.4f}" cy="{my:.4f}" r="{DOT / 2:.2f}" fill="var(--azure)"/>
+    <path d="M{t1[0]:.3f} {t1[1]:.3f} L{t2[0]:.3f} {t2[1]:.3f}"
+          stroke="var(--azure)" stroke-width="1" fill="none"/>
+    <text x="{lx:.3f}" y="{ly:.3f}" fill="var(--azure)" font-size="13"
+          font-family="Inter, sans-serif" text-anchor="middle"
+          dominant-baseline="middle">355</text>
+  </g>
 </svg>
 '''
 

@@ -1423,8 +1423,9 @@ h3 {
   height: 8px;
   border-radius: 50%;
   background: var(--ink-3);
-  transition: background-color 160ms var(--ease), transform 160ms var(--ease);
 }
+/* The pointer answer is motion, so it lives in the reduced-motion guard with
+   the page's other transitions (§15); the base rule above is the still page. */
 .act-index a:hover { background: var(--azure); transform: scale(1.3); }
 .act-index a[aria-current],
 .act-index a[aria-current]:hover {
@@ -1476,6 +1477,9 @@ h3 {
   .scroll-cue { transition: color 160ms var(--ease); }
   .scroll-cue span { transition: transform 160ms var(--ease); }
   .scroll-cue:hover span { transform: translateY(1px) rotate(45deg); }
+  /* M11's pointer answer: the dot fills toward the accent and leans out. Same
+     160ms family as every other hover; the base rule (§14e) stays still. */
+  .act-index a { transition: background-color 160ms var(--ease), transform 160ms var(--ease); }
   /* M9 has no transition on purpose. Switching a question swaps which answer
      block is displayed, and `display: none` is what stops the answer's own M2
      animation from running: the block becomes visible and the sequence plays,
@@ -1560,6 +1564,39 @@ h3 {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
+
+  /* M12 · The scribe. The stop act's ring draws itself in when the plate
+     arrives, in the order the arithmetic itself has: frames first (scribed,
+     like the master plates they stand for), then the hole ring ROLLS one dash
+     period (4.60177 = 0.02 + 4.581770, exactly one hole-to-hole step; the end
+     state is one period off from the start and the pattern is period-strict,
+     so the drawing is identical and the 355 count stays true), and the claim
+     -- the azure marker, the only thing in the figure that is an argument --
+     lands last, when the instrument that measures it is finished.
+
+     The dash lengths are the LITERAL circumferences (2*pi*272 = 1709.0264,
+     2*pi*248 = 1558.23, arithmetic recorded here rather than trusted to
+     pathLength, which is the generator's own discipline in this figure).
+     Keyed to `.plate.is-cold`, the same reveal the windows use. The COLD
+     state below HOLDS the un-drawn start (offset = full length, claim hidden,
+     roll at minus one period), removing the class plays, and a reader whose
+     script never ran never sees the cold state at all -- the authored page is
+     the finished ring.
+
+     The hole ring animates stroke-dashoffset. The 160ms-object rule is about
+     pointer feedback; this is an entrance in the same family as the windows'
+     700ms. Reduced-motion needs no extra rule: the whole block sits inside
+     the no-preference guard. */
+  .plate > svg .ring-frame { stroke-dasharray: 1709.0264; stroke-dashoffset: 0;
+                             transition: stroke-dashoffset 900ms var(--ease); }
+  .plate > svg .ring-frame + .ring-frame { stroke-dasharray: 1558.23; stroke-dashoffset: 0;
+                             transition: stroke-dashoffset 900ms var(--ease) 120ms; }
+  .plate > svg .ring-holes { transition: stroke-dashoffset 1400ms var(--ease) 700ms; }
+  .plate.is-cold > svg .ring-frame { stroke-dashoffset: 1709.0264; }
+  .plate.is-cold > svg .ring-frame + .ring-frame { stroke-dashoffset: 1558.23; }
+  .plate.is-cold > svg .ring-holes { stroke-dashoffset: -4.60177; }
+  .plate > svg .ring-claim { transition: opacity 320ms var(--ease) 2000ms; }
+  .plate.is-cold > svg .ring-claim { opacity: 0; transition: none; }
 
   /* M5 · The numbers. The content genuinely is a sequence, so a stagger is
      honest here rather than decorative.

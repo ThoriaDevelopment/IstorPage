@@ -5,25 +5,28 @@
        Source/tools/make-calendar-ring.py — do not hand-edit. -->
 
   <g fill="none" stroke="var(--rule)" stroke-width="1">
-    <circle cx="297" cy="360" r="272"/>
-    <circle cx="297" cy="360" r="248"/>
+    <circle class="ring-frame" cx="297" cy="360" r="272"/>
+    <circle class="ring-frame" cx="297" cy="360" r="248"/>
   </g>
 
   <!-- 355 holes in one dashed circle rather than 355 elements. pathLength is not
        used, so the dash arithmetic is literal and cannot drift between renderers.
        --ink-3 because the holes are the subject, not the frame: at --rule they
-       measured 1.20:1 on --paper. Why, in full, is in make-calendar-ring.py. -->
-  <circle cx="297" cy="360" r="260" fill="none"
+       measured 1.20:1 on --paper. Why, in full, is in make-calendar-ring.py.
+       class=ring-holes: M12's roll, one dash period, styles.css motion block. -->
+  <circle class="ring-holes" cx="297" cy="360" r="260" fill="none"
           stroke="var(--ink-3)" stroke-width="2.8" stroke-linecap="round"
           stroke-dasharray="0.02 4.581770"
           transform="rotate(-449.4930 297 360)"/>
 
   <!-- The hole in question: the figure's only --azure, and the one thing in it that
-       is a claim rather than a measure. -->
-  <circle cx="297.0000" cy="100.0000" r="1.40" fill="var(--azure)"/>
-  <path d="M297.000 88.000 L297.000 74.000"
-        stroke="var(--azure)" stroke-width="1" fill="none"/>
-  <text x="297.000" y="61.000" fill="var(--azure)" font-size="13"
-        font-family="Inter, sans-serif" text-anchor="middle"
-        dominant-baseline="middle">355</text>
+       is a claim rather than a measure. class=ring-claim: lands last in M12. -->
+  <g class="ring-claim">
+    <circle cx="297.0000" cy="100.0000" r="1.40" fill="var(--azure)"/>
+    <path d="M297.000 88.000 L297.000 74.000"
+          stroke="var(--azure)" stroke-width="1" fill="none"/>
+    <text x="297.000" y="61.000" fill="var(--azure)" font-size="13"
+          font-family="Inter, sans-serif" text-anchor="middle"
+          dominant-baseline="middle">355</text>
+  </g>
 </svg>

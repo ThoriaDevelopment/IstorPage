@@ -13,8 +13,8 @@
     }
   },
   "document": {
-    "_note": "Ceilings, not equalities. index_html_bytes_ceiling 78,643 = 256 KiB over a 75,770 B document; index_html_gzip_ceiling is a round 32 KiB; inline_js_bytes_ceiling 16,384 = 16 KiB over 5,354 B of shipped script.",
-    "index_html_bytes_ceiling": 78643,
+    "_note": "Ceilings, not equalities. index_html_bytes_ceiling 131,072 = a round 128 KiB, re-baselined when M11 and M12 shipped together (78,643 before); still catches a doubling; index_html_gzip_ceiling is a round 32 KiB; inline_js_bytes_ceiling 16,384 = 16 KiB over 5,354 B of shipped script.",
+    "index_html_bytes_ceiling": 131072,
     "index_html_gzip_ceiling": 32768,
     "inline_js_bytes_ceiling": 16384
   },

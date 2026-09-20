@@ -912,6 +912,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M8** | Link and button hover | hover | 160ms | genre baseline |
 | **M9** | **The hero's question** | click a chip | the answer's own M2 | the window answers a second and third question, and the second is the refusal |
 | **M11** | **The act index** | first scroll / act change | 160ms colour, 1.45x scale | the rail's echo at the viewport edge (§2.14); the Awwwards device G36 took |
+| **M12** | **The scribe** | plate enters | 900ms frames, 1,400ms roll, claim last | the ring is drawn the way its plates were made (§7.5) |
 
 ### 7.1 M2 — the hero sequence, in detail
 
@@ -958,7 +959,20 @@ does not rest on colour alone. Hidden at ≤1080px, where the rail it echoes is 
 inset fields run nearly to the viewport edge; hidden in print, where there is no scroll position.
 Authored `hidden` in the markup, so a reader whose script never ran gets nothing unusable.
 
-### 7.5 Reduced motion
+### 7.5 M12 — the scribe
+
+The stop act's ring draws itself in when the plate arrives, in the order the arithmetic itself has:
+the two frame circles scribe (literal circumferences as dash lengths — 2π·272 = 1,709.0264 and
+2π·248 = 1,558.23, no `pathLength`, the generator's own discipline), then the hole ring ROLLS
+exactly one dash period (4.60177 = 0.02 + 4.581770, one hole-to-hole step; the pattern is
+period-strict, so the end state is the identical drawing and the 355 count stays true), and the
+azure claim — the only thing in the figure that is an argument — lands last, at 2s, when the
+instrument that measures it is finished. Keyed to the plate joining the `.reveal` system: the cold
+state holds the un-drawn start, a reader whose script never ran never sees it. The classes
+(`ring-frame`, `ring-holes`, `ring-claim`) are emitted by `make-calendar-ring.py`, because the
+figure carries "do not hand-edit".
+
+### 7.6 Reduced motion
 
 **Every item above is wrapped in `@media (prefers-reduced-motion: no-preference)`.** Under
 `reduce`, each element renders in its final state immediately, and M2 does not run — the hero shows
