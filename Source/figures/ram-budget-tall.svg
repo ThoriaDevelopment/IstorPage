@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 356" width="340" height="356" role="img" aria-label="A line: the file size of a 7-billion-parameter model grows linearly with the bits spent per parameter, from about 14 gigabytes at 16 bit to about 5 at 4 bit." focusable="false" data-variant="tall" data-generated-by="Source/tools/make-ram-budget.py - do not hand-edit">
+<text x="46.0" y="20" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">file size of a 7B model,</text>
+<text x="6" y="38" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">by bits per parameter</text>
+<text x="12.0" y="58" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">GB</text>
+<line x1="46.0" y1="72.0" x2="46.0" y2="288.0" stroke="var(--hairline)" stroke-width="1"/>
+<line x1="46.0" y1="288.0" x2="296.0" y2="288.0" stroke="var(--hairline)" stroke-width="1"/>
+<line x1="42.0" y1="288.0" x2="46.0" y2="288.0" stroke="var(--hairline)" stroke-width="1"/>
+<text x="39.0" y="292.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="end">0</text>
+<line x1="42.0" y1="180.0" x2="46.0" y2="180.0" stroke="var(--hairline)" stroke-width="1"/>
+<text x="39.0" y="184.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="end">7</text>
+<line x1="42.0" y1="72.0" x2="46.0" y2="72.0" stroke="var(--hairline)" stroke-width="1"/>
+<text x="39.0" y="76.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="end">14</text>
+<line x1="296.0" y1="288.0" x2="296.0" y2="292.0" stroke="var(--hairline)" stroke-width="1"/>
+<text x="296.0" y="308.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="14" fill="var(--mist)" text-anchor="middle">16</text>
+<line x1="153.1" y1="288.0" x2="153.1" y2="292.0" stroke="var(--hairline)" stroke-width="1"/>
+<text x="153.14285714285714" y="308.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="14" fill="var(--mist)" text-anchor="middle">8</text>
+<line x1="81.7" y1="288.0" x2="81.7" y2="292.0" stroke="var(--hairline)" stroke-width="1"/>
+<text x="81.71428571428572" y="308.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="14" fill="var(--mist)" text-anchor="middle">4</text>
+<line x1="46.0" y1="288.0" x2="46.0" y2="292.0" stroke="var(--hairline)" stroke-width="1"/>
+<text x="46.0" y="308.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="14" fill="var(--mist)" text-anchor="middle">2</text>
+<text x="171.0" y="328.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="middle">bits per parameter</text>
+<line x1="296.0" y1="72.0" x2="46.0" y2="261.0" stroke="var(--ink)" stroke-width="2"/>
+<circle cx="296.0" cy="72.0" r="4.5" fill="var(--witness)"/>
+<text x="286.0" y="86.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--ink)" text-anchor="end" font-weight="600">around 14 GB</text>
+<circle cx="81.7" cy="234.0" r="4.5" fill="var(--witness)"/>
+<text x="91.71428571428572" y="224.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--ink)" text-anchor="start" font-weight="600">about 5 GB</text>
+</svg>

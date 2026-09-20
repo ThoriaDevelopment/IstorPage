@@ -171,6 +171,8 @@ LIBRARY_INCLUDES = {
     "gguf-anatomy-tall": (SOURCE / "figures" / "gguf-anatomy-tall.svg", "svg"),
     "quant-ladder-wide": (SOURCE / "figures" / "quant-ladder-wide.svg", "svg"),
     "quant-ladder-tall": (SOURCE / "figures" / "quant-ladder-tall.svg", "svg"),
+    "ram-budget-wide": (SOURCE / "figures" / "ram-budget-wide.svg", "svg"),
+    "ram-budget-tall": (SOURCE / "figures" / "ram-budget-tall.svg", "svg"),
 }
 
 # A directory under _site/ that holds an index.html but is not a page.
