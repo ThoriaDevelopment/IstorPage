@@ -126,6 +126,21 @@ be finished and is caught and skipped. The cost is stated rather than hidden: an
 entrance state that was genuinely unreadable would be finished away instead of
 reported, which is the same trade the cold-class settle already makes.
 
+AND THE FIXED BAR IS FIXED, WHICH THE WALK FORGOT. The walk stops at multiples
+of the viewport, and the nav is `position: fixed`, so an element can be seen for
+the first time inside the band the bar occupies. The pixel pass then sampled the
+bar: the notes act's caption, 38px from the top at the stop it was recorded at,
+came back at 1.7:1 against the nav's own surface, a confident number about a
+ground the text never sits on. The fix is not to trust that, and not to drop the
+element either: the probe HIT-TESTS the sample points (`elementFromPoint`, which
+is what the browser uses to decide what is on top), and when the thing on top is
+fixed or sticky it records the scroll that clears the bar. The pixel pass then
+takes that element's picture at that scroll, so the element is still measured.
+Only a fixed or sticky occluder is treated this way: it moves with the viewport,
+so covering this element was a fact about where the walk stopped. A badge
+positioned over a caption covers it at every scroll, and that overlap is real,
+so it is measured rather than dodged.
+
 TWO TRAPS IN THE HARNESS ITSELF:
 
   * The harness page and the Chrome profile are written to a temp directory, NOT
@@ -383,6 +398,52 @@ PROBE = r"""
             if ((pbg && pbg.a > 0) || (pcs.backgroundImage && pcs.backgroundImage !== 'none')) ownArt = true;
           }
           rec.hasOwn = ownArt;
+          /* THE WALK STOPS AT MULTIPLES OF THE VIEWPORT, so an element can land
+             in the band a FIXED bar occupies, and the pixels sampled there
+             belong to the bar. The notes act's caption, first seen at the stop
+             where it sat 38px from the top, was sampled through the nav that
+             way: a confident 1.7:1 against the nav's own surface, which is a
+             ratio about a ground the text never sits on. Hit-testing is exact,
+             so it is asked rather than guessed, and the scroll that clears the
+             bar is recorded: the pixel pass takes that element's picture there
+             instead, which keeps the element MEASURED rather than dropping it
+             into the unmeasured pile.
+
+             Only a fixed or sticky occluder is treated this way, because only
+             that one moves with the viewport: a fixed bar covers a different
+             band at every scroll, so what covered this element is a fact about
+             where the walk stopped. A badge positioned over a caption covers it
+             at every scroll, and that overlap is real: it is measured, not
+             dodged. */
+          const sampleDocY = rec.hasOwn
+            ? rec.rect.y + rec.rect.h / 2
+            : (rec.lines && rec.lines.length
+                ? rec.lines[0].y + Math.max(1, Math.min(2, rec.lines[0].h * 0.12))
+                : rec.rect.y + rec.rect.h / 2);
+          const pts = rec.hasOwn
+            ? [[rec.rect.x + 4, sampleDocY], [rec.rect.x + rec.rect.w - 4, sampleDocY]]
+            : (rec.lines && rec.lines.length ? rec.lines : [rec.rect]).map(function (L) {
+                return [L.x + 3, L.y + Math.max(1, Math.min(2, L.h * 0.12))];
+              });
+          for (let pi = 0; pi < pts.length; pi++) {
+            const pvx = pts[pi][0] - w.scrollX, pvy = pts[pi][1] - w.scrollY;
+            if (pvx < 0 || pvx > vw - 1 || pvy < 0 || pvy > vh - 1) continue;
+            const hit = d.elementFromPoint(pvx, pvy);
+            if (!hit || hit === el || el.contains(hit) || hit.contains(el)) continue;
+            let bar = null;
+            for (let o = hit; o && o !== d.documentElement; o = o.parentElement) {
+              const pos = getComputedStyle(o).position;
+              if (pos === 'fixed' || pos === 'sticky') { bar = o; break; }
+            }
+            if (!bar) continue;
+            /* 24px of daylight, so the sample lands below the bar's own edge
+               rather than on it. The bar is measured at THIS scroll, which is
+               the same stuck state it will be in at the scroll recorded here.*/
+            rec.covered = Math.max(0, Math.round(sampleDocY - bar.getBoundingClientRect().bottom - 24));
+            rec.coveredBy = bar.tagName.toLowerCase() +
+              (bar.className ? '.' + String(bar.className).trim().split(/\s+/)[0] : '');
+            break;
+          }
           gradient.push(rec);
           continue;
         }
@@ -1303,7 +1364,14 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
         vh = int(v.get("viewportHeight") or height)
         per_view: dict[int, list[dict]] = {}
         for g in v["gradient"]:
-            anchor = int(g.get("anchor") or 0)
+            # A record the probe found covered by the fixed bar names the scroll
+            # that clears it (see the occlusion note in PROBE). Its rect is
+            # translated by THAT scroll and its picture is taken there, so the
+            # element stays measured instead of being sampled through the bar.
+            # Anchors that only this record asked for cost one extra screenshot,
+            # which is why the probe only records one when hit-testing proved it.
+            covered = g.pop("covered", None)
+            anchor = int(covered) if covered is not None else int(g.get("anchor") or 0)
             g["rect"]["y"] -= anchor
             for L in g.get("lines") or []:
                 L["y"] -= anchor
