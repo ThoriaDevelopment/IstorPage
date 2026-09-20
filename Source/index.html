@@ -107,7 +107,14 @@
         </nav>
 
         <div class="pane">
-          <p class="bubble" id="hero-q">Tell me about the cycles.</p>
+          <!-- role=status: clicking a chip swaps both the bubble and the answer
+               below it, and the pressed state alone does not tell a screen
+               reader the answer changed. The bubble IS the question being
+               answered, so announcing it as a status region is the smallest
+               honest fix -- one attribute, no hidden second copy. Safe from
+               load chatter because the script never writes here until a chip
+               is clicked (M2 is CSS). -->
+          <p class="bubble" id="hero-q" role="status">Tell me about the cycles.</p>
 
           <!-- M9 · the same library, three questions. Authored `hidden` and
                revealed by the script, so the window without script is the
