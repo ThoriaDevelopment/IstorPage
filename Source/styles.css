@@ -942,7 +942,11 @@ h3 {
 .evidence { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
 .evidence dt {
   font-family: var(--serif);
-  font-size: 46px;
+  /* Display size, one ladder: the app's own figures are act 9's argument, and
+     the genre sets statistics at display scale. clamp serves every width, so
+     there is no second value for a media query to disagree with at 1080 (the
+     two-ladder defect the display size itself had, fixed the same way). */
+  font-size: clamp(40px, 4.6vw, 66px);
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -1586,7 +1590,6 @@ h3 {
   .cite-wrap { display: block; }
 
   .evidence { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; }
-  .evidence dt { font-size: 38px; }
   .confidence-ruler { margin-block-start: 40px; }
   .ruler-head { display: block; }
   .ruler-head span { display: block; margin-block-start: 6px; }
