@@ -1497,13 +1497,15 @@ h3 {
      slower than a colour. Text captions stay still; the lift is the window's
      alone. The separator rule is untouched -- the seam stays 1px -- so the
      separator measurement in audit-contrast.py is unaffected. */
-  .exhibit img, .exhibit picture > img { transition: transform 260ms var(--ease),
-                                     box-shadow 260ms var(--ease); }
+  .exhibit img, .exhibit picture > img,
+  .hero .win, .poster .win { transition: transform 260ms var(--ease),
+                                        box-shadow 260ms var(--ease); }
   .field .exhibit:hover img { transform: translateY(-4px);
     box-shadow: var(--shadow-field-lift); }
   .act .exhibit:hover img { transform: translateY(-4px);
     box-shadow: var(--shadow-paper-lift); }
-  .poster .win { transition: transform 260ms var(--ease), box-shadow 260ms var(--ease); }
+  .hero .win:hover { transform: translateY(-4px);
+    box-shadow: var(--shadow-field-lift); }
   .poster .win:hover { transform: translateY(-4px); }
 
   /* M2 · The hero sequence, performed once, in the order the product works:
