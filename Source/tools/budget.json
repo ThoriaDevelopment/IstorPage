@@ -70,12 +70,12 @@
     "/img/ground-grain.png": 451
   },
   "library": {
-    "_note": "The carried library. page_count stays exact: a missing page is a dead end for a reader. page_bytes and index_bytes are ceilings: page_bytes_ceiling 1,048,576 = 1 MiB over 633,110 B measured, index_bytes_ceiling 131,072 = 128 KiB over 34,635 B measured, so prose edits and generator output changes ship without a re-baseline and real accidents still fail. The shared files below stay exact: they are addressed by all 75 pages, so a regenerated theme.js or a recoloured stylesheet is a replacement, not a content edit.",
+    "_note": "The carried library. page_count stays exact: a missing page is a dead end for a reader. page_bytes and index_bytes are ceilings: page_bytes_ceiling 1,048,576 = 1 MiB over 633,110 B measured, index_bytes_ceiling 131,072 = 128 KiB over 34,635 B measured, so prose edits and generator output changes ship without a re-baseline and real accidents still fail. The shared files below stay exact: they are addressed by all 75 pages, so a regenerated theme.js or a recoloured stylesheet is a replacement, not a content edit. RE-BASELINED 2026-09-20, and the reason is a rendering fix rather than a design one: the stylesheet grew 50,980 to 55,112 B (+4,132) for four fallback faces and the measurement that chose them. They exist because the layout pass measured /what-is-a-local-llm/ at CLS 0.0395 with the fonts held 1,200ms, the capsule paragraph being five lines in the fallback and six in Inter, which moved the whole document under it by 27px. Nothing about the loaded page changes: the real faces stay first in every stack.",
     "page_count": 75,
     "page_bytes_ceiling": 1048576,
     "index_bytes_ceiling": 131072,
     "files": {
-      "/styles.css": 50980,
+      "/styles.css": 55112,
       "/theme.js": 3924,
       "/assets/fonts/fraunces-600.woff2": 18096,
       "/assets/fonts/gfs-didot.woff2": 14540,

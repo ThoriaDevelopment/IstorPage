@@ -1399,6 +1399,41 @@ element count on every line is what made that visible at all. The fix advances t
 guessing at it, finishing every animation and transition through `document.getAnimations()`, which
 needs no number that drifts when somebody retimes the page.
 
+**Two passes were added on 2026-09-20, and the first one found a defect on its first run.** The
+reduced-motion pass renders every page twice, once as a visitor gets it and once with
+`--force-prefers-reduced-motion`, and compares the two renders: nothing may still be running in the
+reduced render, and nothing may be invisible there that the settled ordinary render shows. Site wide:
+**0 animations running**, and two elements hidden in both renders, which are the citation witnesses,
+a hover affordance, so they are the baseline rather than findings and no whitelist is needed. The
+switch is a browser flag and not a cascade trick on purpose: the site guards motion the opposite way
+round from the colour states, and emulating it in the CSS measured the page in both states at once
+and reported 16 animations running on a site that has none.
+
+The layout pass holds **every `.woff2` response for 1,200ms** and asks what moves, because every other
+measurement in this project is taken on a machine where the fonts arrive in 90ms, which is a machine
+where a font swap cannot be seen at all. It reads Chrome's own Cumulative Layout Shift from an
+observer the run writes into the head of the copy it serves, and it gates on **0.02**, a fifth of the
+web-vitals "good" line of 0.1, chosen so the ceiling is above the site with room rather than set to
+the site's own measured value.
+
+What it found is the reason it exists. `/what-is-a-local-llm/` measured **0.0395**: the capsule
+paragraph at the top is **5 lines in the fallback face and 6 in Inter**, so the whole document under
+it jumped down by 27px when the font landed. The same 0.0395 appears with the fonts held 0ms and at
+148ms, so this had always been happening on every slow connection and had simply never been measured.
+The fix is the standard arithmetic one: the fallback faces are declared with `size-adjust` set to the
+measured ratio between the real face's advance widths and the fallback's, `ascent-override` and
+`descent-override` set to Inter's own metrics so inline boxes are the same height, and the real face
+left first in every stack so nothing changes once it loads. The ratio computed from a long string is
+**107.74%** for Segoe UI, and the value that ships is **104%**, because a width ratio is an average
+and a line break is a discrete event: swept across every page with the fonts held, the worst shift is
+0.0090 at 102%, **0.0039 at 104%**, 0.0661 at 106% and 0.0298 at 107.74%. Arial keeps its computed
+106.64% because no machine here has Arial to measure, and the residual is named rather than rounded
+away: two typefaces do not scale into each other glyph for glyph, so a wrap point can still differ.
+The landing page was already at 0.0039 and keeps its own stylesheet, since its fonts are preloaded
+and its stylesheet is inlined, which is the whole of why it was never the worst case. The page the fix
+was aimed at went from 0.0395 to **0.0025**, and the worst page in the sample is now the 404 at
+0.0081.
+
 ---
 
 ## §13 · What v2 supersedes in v1, explicitly

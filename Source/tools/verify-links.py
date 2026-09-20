@@ -78,7 +78,10 @@ LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
-LIBRARY_STYLES_BYTES = 50980
+LIBRARY_STYLES_BYTES = 55112           # 50,980 to 55,112 on 2026-09-20: the
+                                      # metric-matched fallback faces and the
+                                      # measurement that chose them, so the swap
+                                      # does not move the page on a slow link
 ARTIFACT_FILES = 148                  # 138 + the four phone crops' 16 files + the library
                                       # index, less exhibit-12's eight retired exports
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js

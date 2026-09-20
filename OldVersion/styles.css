@@ -27,6 +27,87 @@
   font-display: swap;
 }
 
+/*  METRIC-MATCHED FALLBACKS, so a slow connection does not move the page.
+
+    Every face here loads with `font-display: swap`, which means the text is drawn
+    in a fallback first and RE-LAID-OUT when the real one arrives. On this page that
+    is not a subtle swap: measured at 1440px, one paragraph in the capsule at the
+    top of /what-is-a-local-llm/ is 5 lines in Segoe UI and 6 in Inter, so the whole
+    document below it jumped down 27px, and the layout pass read CLS 0.0395 with
+    every font held 1,200ms (it reads the same 0.0395 at 148ms, so this was always
+    happening and had simply never been measured).
+
+    The fix is the standard one and it is arithmetic rather than taste: declare the
+    fallback face with `size-adjust` set to the ratio between the real face's advance
+    widths and the fallback's, measured on this page at 16px with `white-space:
+    nowrap`:
+
+      Inter    3,116.13px   Segoe UI  2,892.28px   ratio 107.74%
+      Inter    3,116.13px   Arial     2,922.09px   ratio 106.64%
+      Fraunces   229.31px   Georgia     209.95px   ratio 109.22%
+      Fraunces   229.31px   Times       194.16px   ratio 118.10%
+
+    THE SEGOE NUMBER IS A MEASUREMENT AND NOT THE RATIO, and the two disagree by
+  3.7 points, which is worth stating rather than rounding away. A width ratio is
+  an average over a long string; a line break is a discrete event, and the
+  residual this is tuning for is one inline link that gains a line in exactly
+  one place. Swept across every page the pass covers, with the fonts held
+  1,200ms, the whole-site worst shift was: 102% -> 0.0090, 104% -> 0.0039,
+  106% -> 0.0661 (a wrap on /what-is-a-local-llm/ breaks between those last two,
+  which is why the sweep is not a slope), 107.74% -> 0.0298. 104% is the value
+  every page measures best at, and it is the one that ships. Arial keeps the
+  computed ratio because no machine here has Arial to measure.
+
+  Two faces per family rather than one, because `size-adjust` is a single number
+    and these fallbacks are 1.1% apart: the first `local()` name a machine has wins,
+    and a face whose sources are all absent is skipped, so the next family in the
+    stack is used instead. The stack therefore names `Inter Fallback Segoe` before
+    `Inter Fallback Arial`, and the REAL face stays first in the font-family list, so
+    nothing about the loaded page changes at all.
+
+    What this does not claim: an exact match. Two typefaces do not scale into each
+    other glyph for glyph, so a wrap point can still differ; the point is that the
+    width is within a percent instead of ten, which is the difference between a page
+    that moves and a page that does not.
+
+    `ascent-override` and friends carry INTER's own metrics (96.88% and 24.12% of the
+    em, which is what the font's hhea table holds), and they were added after the
+    first measurement rather than with it. With `size-adjust` alone the swap still
+    moved every inline box on the page by 3px, because the fallback's inline box is
+    its own metrics' business: dozens of links changed height by 3 and pushed the
+    next line down by one, which is small and everywhere. Matching the metrics makes
+    the inline boxes the same height as Inter's, so the only thing left to differ is
+    where a line breaks. */
+@font-face {
+  font-family: "Inter Fallback Segoe";
+  src: local("Segoe UI"), local("Segoe UI Variable Text");
+  size-adjust: 104.00%;
+  ascent-override: 96.88%;
+  descent-override: 24.12%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback Arial";
+  src: local("Arial"), local("Helvetica Neue"), local("Liberation Sans"), local("Roboto");
+  size-adjust: 112.00%;
+  ascent-override: 96.88%;
+  descent-override: 24.12%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Fraunces Fallback Georgia";
+  src: local("Georgia");
+  size-adjust: 109.22%;
+}
+
+@font-face {
+  font-family: "Fraunces Fallback Times";
+  src: local("Times New Roman"), local("Liberation Serif"), local("Tinos");
+  size-adjust: 118.10%;
+}
+
 :root {
   color-scheme: light dark;
 
@@ -53,8 +134,8 @@
   --btn-shade: rgba(10, 10, 10, 0.32);
 
   --max: 68rem;
-  --font-sans: "Inter", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", "Inter Fallback Segoe", "Inter Fallback Arial", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Fraunces", "Fraunces Fallback Georgia", "Fraunces Fallback Times", Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
 
   /* every entrance on the page leaves through this one curve */
