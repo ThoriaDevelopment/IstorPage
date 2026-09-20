@@ -704,6 +704,21 @@ h3 {
   color: var(--cite-ink);
   background: var(--cite-wash);
 }
+/* Touch has no hover to discover the witness with: a chip that only fills on
+   hover reads as static text until after it is tapped, and the first tap then
+   has to be a guess. So on devices with no hover at all the chips render in
+   the filled state they otherwise reach on hover -- white on --cite-ink, the
+   pair the tokens already document at 5.57:1. The affordance is visible
+   before the first touch, not after it. Desktop keeps the quiet wash: there
+   the discovery mechanism (hover) actually exists, and a page of filled
+   chips would shout. */
+@media (hover: none) {
+  .cite-btn .cite {
+    color: var(--on-azure);
+    background: var(--cite-ink);
+    border-radius: var(--r-pill);
+  }
+}
 /* 8.1 · The witness.  M4, and the page's one piece of product mechanism made
    operable. A chip is a real focusable control: hover or focus it and the
    sentence it supports is marked, and the card names the passage behind it.
