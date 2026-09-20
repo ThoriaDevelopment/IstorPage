@@ -257,9 +257,11 @@ def main(argv: list[str]) -> int:
                 rep.ok("document.index_html_gzip_ceiling",
                        f"{gz:,} B gzipped  (ceiling {told_gz:,} B)")
 
-    # 3b · the shipped script, also a ceiling (16 KiB over 5,354 B shipped).
-    # Its history as an exact assertion, and the 1,250 B of `//` prose that made
-    # it exist, is in git; the ceiling keeps catching script that doubles.
+    # 3b · the shipped script, also a ceiling (16 KiB over the 5,354 B shipped
+    # when the ceiling was set; re-measured 8,596 B on 2026-09-20, the growth
+    # being the act index, the reading log and the hero's mechanism). Its history
+    # as an exact assertion, and the 1,250 B of `//` prose that made it exist, is
+    # in git; the ceiling keeps catching script that doubles.
     told_js = budget["document"].get("inline_js_bytes_ceiling")
     blocks = re.findall(r"<script>(.*?)</script>", html.decode("utf-8"), re.S)
     js = sum(len(b.encode()) for b in blocks)

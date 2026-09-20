@@ -255,6 +255,43 @@ shell into the pane once the app can answer for them, and hides the shell.
 **The secondary CTA is a scroll cue, not a second button.** "See the evidence" is a diamond-tipped
 link to act 9, which is the page's promise being checked by its own numbers.
 
+**The field carries a world, and it is the mechanism (2026-09-20).** Every reference hero stands on
+one: Tempo's product floats over a planet limb and Freebuff's over an illustrated landscape, both
+cropped so the world reads as larger than the frame. This hero stood on a gradient — type, a window,
+and nothing to look at on a 1440-wide field. A band 418px tall at the field's bottom edge now carries
+the gearing: the mechanism's largest wheel, **223 teeth**, and two of its **48-tooth** wheels meshed on
+the wheel's flanks. 223 is in the literature the page's library is built from and the page already
+prints it as the Saros cycle's length; 48 is the count of the wheel that drives it in the published
+reconstruction, so the numbers came from the same place the prose did.
+
+The band's geometry is arithmetic rather than arrangement, and the interesting part is what it
+refuses: the pinions' centres sit at y = 240 in the drawing so that neither wheel is cut by the
+container's own box, because a layer's edge cuts a circle into a straight chord and a gear with a
+flat side is a bug that looks like a style. The great wheel is centred 300px below the band, so it
+runs off the page's edge exactly where the page ends, and the window's plate takes its crown: the
+product occludes the world, which is the same move as the close's poster, in the other direction.
+
+The teeth are a **dash pattern**, not 223 paths: `stroke-dasharray` on a circle stroked at the tooth's
+depth is what a cut tooth is, and it costs 90 bytes a wheel where the paths would have cost about 9 KB
+of coordinates. The phase of each wheel is solved so a tooth's centre meets a gap's centre at each
+mesh point, which is also what lets the drawing MOVE: the pattern is rigid with the wheel, the two
+phases sum to a constant under a rotation of `R1/R2` in the opposite sense, and that relation is what
+M14 drives — so the mechanism is a geared drawing and not a drawing of gears. `make-hero-gears.py
+--self-test` asserts the invariant at 0°, 2°, 4° and 8° and asserts that flipping the pinion's sense
+breaks it, because a check that cannot fail is not a check.
+
+**Two pinions ride one wheel, and that is the drawing's choice rather than a claim about the train.**
+Nothing on the page says which wheel drives which, the figure carries no title, no caption and
+`aria-hidden`, and it is the one place in this artwork that is arranged rather than observed. The
+record is in the generator's docstring, which is where this project keeps the things it decided.
+
+The band is cropped, not scaled, below 420px of height: `xMinYMid slice` anchors the crop to the left,
+so a 390-wide phone keeps a pinion meshing the rim rather than an empty stretch of arc, and the wheel
+reads as a machine at both widths. Measured: the hero is 1,975px tall at 1440 and 2,454 at 390,
+the band is 418 and 240 of that, and the band's top edge sits 40px up under the window's bottom edge,
+so the two read as one object rather than as a strip below it. The SVG is 2,452 B and it arrives in `index.html`: 91,859 B raw and
+23,729 B gzipped, against ceilings of 131,072 and 32,768.
+
 **Why a DOM replica and not a bitmap here.** It is resolution-independent at 959px (sharper than
 any capture), it weighs nothing, and — decisively — **it can move**, which is what §1's motion
 thesis requires and what no reference can do. The fidelity constraint is absolute: the replica must
@@ -927,9 +964,13 @@ below is CSS plus one small `IntersectionObserver`. The budget this section carr
 shipped JS**, is now measured rather than remembered: `document.inline_js_bytes` in
 `Source/tools/budget.json`, asserted by `verify-budget.py`. It read 5,599 B on 2026-09-19, of which
 1,250 B was prose in `//` comments that shipped to every visitor and was parsed as script; that prose
-moved into the note above the script, which the build strips. 5,010 B remain, and the overage is code
-for three jobs this table did not have when the sentence was written: the rail's current-section
-tracking (M1c), the close's parallax (M6), and the hero's own controls (M9).
+moved into the note above the script, which the build strips. 5,010 B remained at that point, and the
+overage over the ≤ 4 KB sentence is code for jobs this table did not have when the sentence was
+written: the rail's current-section tracking (M1c), the close's parallax (M6), the hero's own controls
+(M9), the act index's echo (M11), the reading log's stagger (M13) and the hero's mechanism (M14).
+**Re-measured 2026-09-20: 8,596 B, the only place in this project where a number has grown without a
+ceiling being re-derived, and it is recorded rather than smoothed: the ceiling (16,384 B) has been
+catching growth rather than holding a measurement.**
 
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
@@ -948,6 +989,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M11** | **The act index** | first scroll / act change | 160ms colour, 1.45x scale | the rail's echo at the viewport edge; the Awwwards device G36 took |
 | **M12** | **The scribe** | plate enters | 900ms frames, 1,400ms roll, claim last | the ring is drawn the way its plates were made (§7.5) |
 | **M13** | **The reading log fills in** | act 4 enters | 140ms apart, ticks last | the act's claim is that you watch it read (§7.6) |
+| **M14** | **The hero's mechanism** | the reader's own scroll through the hero | 8° of the great wheel, 37° of each pinion | the world turns because the reader moved, not because the page did (§2.2) |
 
 ### 7.1 M2 — the hero sequence, in detail
 
