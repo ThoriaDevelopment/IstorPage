@@ -911,6 +911,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M7** | Accordion open/close | click | 320ms | §8.3 |
 | **M8** | Link and button hover | hover | 160ms | genre baseline |
 | **M9** | **The hero's question** | click a chip | the answer's own M2 | the window answers a second and third question, and the second is the refusal |
+| **M11** | **The act index** | first scroll / act change | 160ms colour, 1.45x scale | the rail's echo at the viewport edge (§2.14); the Awwwards device G36 took |
 
 ### 7.1 M2 — the hero sequence, in detail
 
@@ -944,7 +945,20 @@ Two moves, and the second is the one the report says people skip (#13):
    passes in front. Ours inverts it: **the product occludes the brand.** Which is, precisely, what
    *"it shows you what it saw"* means.
 
-### 7.4 Reduced motion
+### 7.4 M11 — the act index
+
+One dot per anchored act, fixed at the right edge, revealed by the first scroll and driven by the
+same M1c arithmetic that promotes the rail's rows: the dots mirror the rail's rows one for one, so
+the current act is shared state, not a second tracker. The Awwwards staple on long scroll-story
+pages (Cerebrium, Sharplink — the G36 pass), and Istor's page is exactly that shape. The dots sit
+directly on whatever ground is under them, so rather than track grounds they wear the tokens that
+hold on both extremes: `--ink-3` idle, `--azure-deep` current (§4 calls it the lightness midpoint of
+the two accents — the accent built for this duality), the current dot scaled 1.45x so the emphasis
+does not rest on colour alone. Hidden at ≤1080px, where the rail it echoes is hidden too and the
+inset fields run nearly to the viewport edge; hidden in print, where there is no scroll position.
+Authored `hidden` in the markup, so a reader whose script never ran gets nothing unusable.
+
+### 7.5 Reduced motion
 
 **Every item above is wrapped in `@media (prefers-reduced-motion: no-preference)`.** Under
 `reduce`, each element renders in its final state immediately, and M2 does not run — the hero shows

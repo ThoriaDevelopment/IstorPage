@@ -1375,6 +1375,64 @@ h3 {
 .greek { font-size: clamp(56px, 9vw, 92px); line-height: 1; }
 
 /* ---------------------------------------------------------------------------
+   14e · The act index.
+
+   The one device taken from the Awwwards pass (G36): the fixed edge navigation
+   on long scroll-story pages — Cerebrium and Sharplink both carry one. Istor's
+   page is exactly that shape, a story in seven anchored acts, and the rail is
+   already the app's own table of contents, so the index is its edge echo: one
+   dot per act, in the page's order.
+
+   POSITION, which is the load-bearing part. The nav is `fixed` and authored
+   outside the hero because a fixed element is positioned against the viewport
+   *unless an ancestor has a transform*, in which case it becomes that
+   ancestor's coordinate system and scrolls away with it. Nothing in §7 or the
+   transitions ever transforms a `.field`, so being authored inside the hero is
+   safe, and it keeps the index next to the rail it echoes, which is worth more
+   than a node of indirection. The entrance is opacity, never transform, for
+   the same reason.
+
+   ONE STYLING, BOTH GROUNDS, and this is a deliberate refusal. The nav models
+   the other solution — two accent values, one per ground, switched by M1c —
+   but the nav can afford it because it is a solid paper bar once stuck; the
+   index is transparent chrome that sits directly on whatever is under it, and
+   the under-it changes five times across a scroll (hero field, paper, inset
+   fields, paper, the close's field). Rather than track each, the dots wear the
+   tokens that hold on both extremes: --ink-3 idle (3.12:1 on --paper, 5.4:1 on
+   the field) and --azure-deep current — the token whose own definition is
+   "the lightness midpoint of the two accents", which is to say the accent
+   built for exactly this duality (>= 3.7:1 on both grounds, with the 1.45x
+   scale carrying the rest of the emphasis). The first draft switched grounds
+   with the nav and measured 1.3:1 idle dots over the close; this replaces it.
+
+   PRINT. Paper has no scroll position, so there is nothing for an index to
+   index into; hidden with the nav in the print block below.
+   --------------------------------------------------------------------------- */
+.act-index {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-end: clamp(10px, 1.6vw, 24px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  z-index: 9;
+}
+.act-index a {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  transition: background-color 160ms var(--ease), transform 160ms var(--ease);
+}
+.act-index a:hover { background: var(--azure); transform: scale(1.3); }
+.act-index a[aria-current],
+.act-index a[aria-current]:hover {
+  background: var(--azure-deep);
+  transform: scale(1.45);
+}
+
+/* ---------------------------------------------------------------------------
    15 · Motion.
 
    EIGHT items, no library. The report verified ZERO animation-library requests
@@ -1582,6 +1640,13 @@ h3 {
   .rail { display: none; }
   .win-body { display: block; }
 
+  /* The act index goes with them. Under 1080 the page is one column and the
+     inset fields run nearly to the viewport edge, so fixed dots would sit on
+     top of the exhibits they are meant to be quieter than; and the rail they
+     echo is itself gone below here. Orientation at this width is the page's
+     own order, plus the reading progress the nav already carries. */
+  .act-index { display: none; }
+
   /* The witness stops floating and becomes a block under its citation. */
   .witness {
     position: static;
@@ -1759,7 +1824,8 @@ h3 {
 
   /* Paper has no sticky nav, no scroll position, and no hover. */
   .nav,
-  .reading-progress {
+  .reading-progress,
+  .act-index {
     display: none;
   }
 

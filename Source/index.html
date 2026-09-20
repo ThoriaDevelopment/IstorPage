@@ -69,6 +69,22 @@
     <a class="cta" href="https://github.com/ThoriaDevelopment/Istor" target="_blank" rel="noopener">Follow the build</a>
     <a class="scroll-cue" href="#the-evidence"><span aria-hidden="true"></span>See the evidence</a>
 
+    <!-- The act index: one dot per anchored act, fixed at the right edge once
+         the hero has scrolled past. The Awwwards staple on long scroll-story
+         pages (Cerebrium, Sharplink), and cheap here because the script
+         already tracks the current section for the rail: same measurement,
+         one more paint. Authored `hidden` so a reader whose script never ran
+         gets nothing unusable; M11 reveals it after the first measure. -->
+    <nav class="act-index" aria-label="Acts of this page" hidden>
+      <a href="#what-it-is" title="What it is" aria-label="What it is" aria-current="location"></a>
+      <a href="#how-it-answers" title="How it answers" aria-label="How it answers"></a>
+      <a href="#the-passage" title="The passage" aria-label="The passage"></a>
+      <a href="#on-your-machine" title="On your machine" aria-label="On your machine"></a>
+      <a href="#the-evidence" title="The evidence" aria-label="The evidence"></a>
+      <a href="#questions" title="Questions" aria-label="Questions"></a>
+      <a href="#the-name" title="ἵστωρ" aria-label="ἵστωρ"></a>
+    </nav>
+
     <div class="win">
       <div class="win-bar">
         <span class="win-mark">ἵστωρ<span class="mark-dot">.</span></span>
@@ -933,6 +949,13 @@
 
     var hero = document.querySelector('.field.hero');
     var rail = document.querySelector('.rail-nav');
+    // M11 · the act index, the rail's echo at the viewport's edge. Its dots
+    // mirror the rail's rows one for one, so the current act stays shared
+    // arithmetic: whichever row M1c promotes, the dot at the same position
+    // follows. The element is authored `hidden`; the first scroll reveals it.
+    // Ground tracking is deliberately absent -- see the note in the CSS.
+    var actIndex = document.querySelector('.act-index');
+    var dots = actIndex ? actIndex.querySelectorAll('a') : [];
     var heroBottom = 0, railLinks = [], railTops = [], railCurrent = null;
     var measure = function () {
       if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
@@ -953,6 +976,10 @@
       if (hero) {
         nav.classList.toggle('over-field', window.scrollY + nav.offsetHeight < heroBottom);
       }
+      // M11 · the index is revealed once there is something to be oriented in.
+      // It needs no ground switch: its tokens hold on both of the page's
+      // grounds by design (the note in §14e), so there is nothing to track.
+      if (actIndex && actIndex.hidden && window.scrollY > 0) actIndex.hidden = false;
 
       var line = window.scrollY + window.innerHeight * 0.34, next = null;
       for (var i = 0; i < railTops.length && railTops[i] <= line; i++) next = railLinks[i];
@@ -960,6 +987,13 @@
         if (railCurrent) railCurrent.removeAttribute('aria-current');
         if (next) next.setAttribute('aria-current', 'location');
         railCurrent = next;
+        // M11's half of the same arithmetic. `k` is -1 above the first act,
+        // which clears every dot: no dot claims a position the reader is not in.
+        var k = railLinks.indexOf(next);
+        for (var d = 0; d < dots.length; d++) {
+          if (d === k) dots[d].setAttribute('aria-current', 'location');
+          else dots[d].removeAttribute('aria-current');
+        }
       }
 
       if (progress) {
