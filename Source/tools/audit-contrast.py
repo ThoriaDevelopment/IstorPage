@@ -20,6 +20,21 @@ WHAT IT MEASURES. For every element with its own text: its computed colour, its
 computed size and weight, the ground it actually sits on, and the ratio. AA wants
 4.5:1, or 3:1 at 24px, or at 18.66px bold.
 
+IT ALSO MEASURES MOTION, WHICH IS NOT A COLOUR. Every motion item on this site lives
+inside `prefers-reduced-motion: no-preference`, so a reader who asks for less motion
+is handed the finished page. That is a claim about content that may never appear,
+which is why it is checked instead of trusted: the page is rendered twice, once
+ordinarily and once with `--force-prefers-reduced-motion`, and the two renders are
+compared with each other. Nothing may still be running in the reduced render, and
+nothing may be invisible there that the settled ordinary render shows. The
+comparison is what makes the check usable: a hover disclosure is invisible in both
+renders and is therefore not a finding, so the pass needs no whitelist, and the
+first version of it (which trusted the cascade emulation the colour states use)
+reported 16 animations running on a page that has none. `--self-test` keeps it
+honest: it builds a three-panel page for the question, an entrance inside the
+guard, the same entrance outside it, and a paragraph hidden in both renders, and
+insists the pass names exactly the one that is wrong.
+
 THE GROUND IS THE HARD PART, and the two wrong ways of doing it are recorded here
 because both returned confident numbers rather than errors, which is the only kind
 of bug worth writing down:
@@ -1227,11 +1242,24 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         pass
 
 
-def run_chrome(chrome, profile, args, budget):
+def run_chrome(chrome, profile, args, budget, extra=None):
+    """`extra` carries switches a state needs from the BROWSER rather than from the
+    cascade, and there is exactly one of those: `--force-prefers-reduced-motion`.
+
+    The reduced-motion pass cannot use the cascade trick the colour states use.
+    That trick unwraps the media rules that MATCH the state we are emulating, which
+    works when the page's rules for that state are inside such a block and the
+    machine is in the other one. Motion is guarded the OPPOSITE way round here: this
+    site puts its motion inside `prefers-reduced-motion: no-preference`, so on a
+    machine that reports no preference those rules are already applied, and adding
+    the reduce rules on top measures a page in both states at once. The first run of
+    this pass reported 16 animations running and 31 elements still hidden, all of it
+    the no-preference page being measured as though it were the reduced one. The
+    browser is asked instead, and Blink answers honestly."""
     cmd = [chrome, "--headless", "--disable-gpu", "--no-first-run",
            "--no-default-browser-check", "--hide-scrollbars",
            "--user-data-dir=" + profile,
-           "--virtual-time-budget=" + str(budget)] + args
+           "--virtual-time-budget=" + str(budget)] + list(extra or []) + args
     # encoding= is not optional: without it Python decodes subprocess output with
     # the locale codec, which on a Windows box is cp1252, and the page contains
     # characters cp1252 cannot map. The decode then fails inside subprocess and
@@ -1255,8 +1283,8 @@ def result_from(proc, what):
     return doc
 
 
-def dump_dom(chrome, profile, url, budget=60000):
-    return run_chrome(chrome, profile, ["--dump-dom", url], budget)
+def dump_dom(chrome, profile, url, budget=60000, extra=None):
+    return run_chrome(chrome, profile, ["--dump-dom", url], budget, extra)
 
 
 def screenshot(chrome, profile, url, width, height, out):
@@ -1272,6 +1300,167 @@ def screenshot(chrome, profile, url, width, height, out):
 
 
 TAP_MIN = 24            # WCAG 2.5.8's minimum, in CSS px
+
+
+SELF_TEST_PAGE = """<!doctype html>
+<html><head><meta charset="utf-8"><title>motion self-test</title>
+<style>
+  body { margin: 0; padding: 40px; background: #101418; color: #E8ECEE;
+         font: 16px/1.5 system-ui, sans-serif; }
+  /* Hidden in BOTH states, so it is a hover disclosure rather than a motion
+     finding, and the pass must stay quiet about it. */
+  .hidden-by-design { visibility: hidden; }
+  /* Right: the entrance lives inside the guard, so a reader who asked for less
+     motion never sees it run and never sees its from-state. */
+  @media (prefers-reduced-motion: no-preference) {
+    .guarded { animation: rise 400ms both; }
+  }
+  /* Wrong: the same entrance outside the guard. This is the defect the pass
+     exists to find, and it must be named. */
+  .unguarded { animation: rise 3000ms both; }
+  @keyframes rise { from { opacity: 0 } to { opacity: 1 } }
+</style></head>
+<body>
+  <p class="guarded">entrance inside the guard</p>
+  <p class="unguarded">entrance outside the guard</p>
+  <p class="hidden-by-design">hover-only copy</p>
+</body></html>
+"""
+
+
+MOTION_PROBE = r"""
+(async () => {
+  /* REDUCED MOTION, MEASURED RATHER THAN TRUSTED.
+
+     The stylesheet's rule is that every motion item lives inside
+     `prefers-reduced-motion: no-preference`, so a reader who asks for less motion
+     is handed the FINISHED page: no entrance to sit through, nothing looping, and
+     -- the part that is easy to get wrong and impossible to see by reading a
+     comment -- no text that is visible only because an entrance was going to lift
+     it later.
+
+     This probe runs TWICE and is compared with itself, which is the only reason it
+     can be trusted. In the ordinary render (no switch) it finishes every animation
+     and transition and then lists what is still invisible: that list is the content
+     the page hides ON PURPOSE, the hover disclosures and closed disclosures, and it
+     is the baseline. In the reduced render the same list is taken with the switch
+     forced and NOTHING finished. Anything invisible there and visible in the
+     baseline is invisible because a motion rule was needed to lift it, which is the
+     whole defect this pass exists to find. Without the comparison the pass would
+     report the citation witnesses, which are a hover affordance and have nothing to
+     do with motion; with it, a hand-maintained whitelist is not needed either.
+
+     Finishing animations in the ORDINARY run is the file's usual trade, applied
+     where it cannot hide anything: under no preference the finishing is exactly
+     what the reader gets a moment later. The reduced run is deliberately left
+     unfinished, because there the question is what a reader is given, not what
+     they would have been given. */
+  let reduced = false;
+  try { reduced = w.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  d.querySelectorAll('.is-cold').forEach(function (el) { el.classList.remove('is-cold'); });
+  if (!reduced) {
+    d.getAnimations().forEach(function (a) { try { a.finish(); } catch (e) {} });
+  }
+  await new Promise(r => setTimeout(r, 80));
+
+  const name = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') +
+    (el.className && typeof el.className === 'string'
+      ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '');
+
+  /* Named, not just counted. "14 animations still running" is a number nobody can
+     act on; the name of each one and of the element it runs on is a repair. */
+  let running = 0, animations = 0;
+  const moving = [];
+  try {
+    const all = d.getAnimations();
+    animations = all.length;
+    for (const a of all) {
+      if (a.playState !== 'running') continue;
+      running++;
+      const target = a.effect && a.effect.target ? name(a.effect.target) : 'the document';
+      const what = a.animationName ? 'animation ' + a.animationName
+        : a.transitionProperty ? 'transition ' + a.transitionProperty
+        : a.constructor && a.constructor.name ? String(a.constructor.name) : 'animation';
+      moving.push({ sel: target, why: what + (a.effect && a.effect.getTiming
+        ? ' (' + Math.round(Number(a.effect.getTiming().duration) || 0) + 'ms)' : ''),
+        text: '' });
+    }
+  } catch (e) {}
+
+  const fails = [];
+  const reason = el => {
+    const hidden = el.closest('[hidden]');
+    if (hidden) return 'inside an element carrying the hidden attribute';
+    const cs = getComputedStyle(el);
+    if (el.hidden) return 'the hidden attribute';
+    if (cs.display === 'none') return 'display: none';
+    if (cs.visibility === 'hidden') return 'visibility: hidden';
+    if (parseFloat(cs.opacity || '1') === 0) return 'opacity: 0 with no motion to lift it';
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return 'no box';
+    return '';
+  };
+  let elements = 0;
+  for (const el of d.body.querySelectorAll('*')) {
+    const own = [].slice.call(el.childNodes)
+      .filter(n => n.nodeType === 3).map(n => n.nodeValue).join('').replace(/\s+/g, ' ').trim();
+    if (!own) continue;
+    elements++;
+    /* Content behind a control is not content that needed motion: a closed
+       disclosure is one click away, and the hero's reserved answers are behind
+       their chips. Neither is a script or a style block's source text. The
+       question here is narrow on purpose, because a motion pass that reports the
+       page's own hidden plumbing is a pass nobody reads. */
+    if (el.closest('[hidden], details:not([open]), script, style, template, noscript')) continue;
+    const why = reason(el);
+    if (why) fails.push({ sel: name(el), why: why, text: own.slice(0, 48) });
+  }
+
+  return { motion: true, running: running, animations: animations, texts: elements,
+           moving: moving, invisible: fails, hidden: fails.length, reduced: reduced,
+           /* The same marker every probe carries: a state that was not emulated is
+              an error here, not a state that passed. Without it this pass would
+              report a page in the machine's own motion setting and call it the
+              reduced-motion answer. */
+           mediaPatch: w.__auditMediaPatch || "" };
+})()
+"""
+
+
+def self_test(chrome, keep=False):
+    """Prove the reduced-motion pass can still fail.
+
+    A check that has never failed is a check nobody can trust, and this one nearly
+    shipped unable to fail at all: the first version emulated the state in the
+    cascade, which for motion meant measuring the ordinary page and reporting 16
+    animations running on a site that has none, and a version that reported nothing
+    would have looked exactly as convincing. So the pass carries its own site: an
+    entrance inside the guard, the same entrance outside it, and a paragraph hidden
+    in both renders. It must name the unguarded one, and only that one.
+
+    Run by hand with `--self-test`, after any change to the motion pass.
+    """
+    tmp = tempfile.mkdtemp(prefix="istor-selftest-")
+    site = os.path.join(tmp, "site")
+    os.makedirs(site)
+    write(os.path.join(site, "index.html"), SELF_TEST_PAGE)
+    try:
+        v = run_motion_pass(chrome, site, tmp, "/", 1024, 700, 400)
+        if v.get("error"):
+            print("self-test FAILED - the pass did not run: %s" % v["error"])
+            return 1
+        named = sorted({f.get("sel") for f in v.get("fails") or []})
+        if named != ["p.unguarded"]:
+            print("self-test FAILED - expected the unguarded entrance and nothing "
+                  "else, and the pass named %r" % (named,))
+            return 1
+        print("self-test ok - the pass named the entrance outside the guard and "
+              "stayed quiet about the guarded one and about the paragraph that is "
+              "hidden in both renders")
+        return 0
+    finally:
+        if not keep:
+            shutil.rmtree(tmp, ignore_errors=True)
 
 
 def media_label(media):
@@ -1296,6 +1485,57 @@ def run_tap_pass(chrome, site, tmp, page, width, height, settle):
                      None, probe=TAP_PROBE)
 
 
+def run_motion_pass(chrome, site, tmp, page, width, height, settle):
+    """One render with `prefers-reduced-motion: reduce`, asking what a reader who
+    asked for less motion is actually given.
+
+    Its own pass rather than a field on the contrast probe, for the reason the
+    separator and target checks have their own: the answer is not a colour, it does
+    not change with the theme, and the question is about content that may never
+    appear at all. Folding it into the AA verdict would let "nothing animating" pass
+    as a colour result, which is the kind of silent substitution this tool exists to
+    refuse."""
+    # The browser is asked, not the cascade: see run_chrome's note. No media map
+    # here on purpose, because the state must come from one place, and a run that
+    # both forced the flag and unwrapped rules would be measuring neither.
+    def key(of):
+        return (of.get("sel"), (of.get("text") or "")[:24])
+
+    ordinary = run_state(chrome, site, tmp, page, width, height, settle, None, False,
+                         probe=MOTION_PROBE)
+    if "error" in ordinary:
+        return ordinary
+    # A run that did not get the state it asked for is an error, not a pass. This is
+    # the same insistence the media patch gets, and it is the more necessary of the
+    # two: without it, a browser that ignored the switch would report the ordinary
+    # page as the reduced-motion page and call every entrance animation "running
+    # with motion reduced", which is exactly what the first version of this pass
+    # did.
+    if ordinary.get("reduced"):
+        return {"error": "the ordinary render reported prefers-reduced-motion: reduce, "
+                         "so there was no baseline to compare the reduced render with"}
+    v = run_state(chrome, site, tmp, page, width, height, settle, None, False,
+                  probe=MOTION_PROBE, extra=["--force-prefers-reduced-motion"])
+    if "error" in v:
+        return v
+    if not v.get("reduced"):
+        return {"error": "the browser did not report prefers-reduced-motion: reduce, "
+                         "so the reduced-motion state was NOT audited"}
+
+    # What the page hides on purpose, settled and with motion allowed. Everything
+    # invisible in the reduced render that is NOT in this set is invisible because a
+    # motion rule was needed to lift it.
+    by_design = {key(of): of for of in (ordinary.get("invisible") or [])}
+    v["byDesign"] = len(by_design)
+    v["fails"] = list(v.get("moving") or [])
+    for of in (v.get("invisible") or []):
+        if key(of) in by_design:
+            continue
+        v["fails"].append(dict(of, why=(of.get("why") or "invisible") +
+                               ", and the ordinary render shows it"))
+    return v
+
+
 def run_seam_pass(chrome, site, tmp, page, width, height, settle):
     """One render, asking only whether each window has the right separator.
 
@@ -1309,7 +1549,7 @@ def run_seam_pass(chrome, site, tmp, page, width, height, settle):
 
 
 def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
-              media=None, scripts=True, probe=None):
+              media=None, scripts=True, probe=None, extra=None):
     """One theme and one media state, one render: probe the cascade, then sample
     the pixels of the SAME render. The theme is forced by the harness before the
     page is parsed, and the media state by unwrapping the page's own media rules
@@ -1323,6 +1563,8 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
     tag = "-".join(x for x in (theme or "asis", media_label(media),
                                "" if scripts else "noscript",
                                "tap%d" % width if probe else "") if x)
+    if extra:
+        tag += "-forced"
     write(os.path.join(tmp, "audit-%s.html" % tag),
           HARNESS.format(w=width, h=height, url=page,
                          expr=json.dumps(probe or (PROBE if scripts else NOSCRIPT_PROBE)),
@@ -1339,7 +1581,8 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     base = "http://127.0.0.1:%d" % srv.server_address[1]
     try:
-        doc = result_from(dump_dom(chrome, profile, base + "/_audit.html"), "probe")
+        doc = result_from(dump_dom(chrome, profile, base + "/_audit.html", 60000, extra),
+                          "probe")
         if "error" in doc:
             return doc
         v = doc["value"]
@@ -1442,7 +1685,7 @@ def media_states(contrast_more, os_dark, as_authored):
 
 def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
                contrast_more=True, os_dark=True, scriptless=True, tap_widths=True,
-               seam=True):
+               seam=True, motion=True):
     """Every theme and media state this page can be delivered in, as a list.
 
     The first pass forces nothing, so a page with no theme control is audited in
@@ -1471,6 +1714,8 @@ def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
                                 None, False, None, scripts=False))
     if seam:
         states.append(run_seam_pass(chrome, site, tmp, page, width, height, settle))
+    if motion:
+        states.append(run_motion_pass(chrome, site, tmp, page, width, height, settle))
     for tap_width in ([width, PHONE_WIDTH] if tap_widths and width != PHONE_WIDTH
                       else [width] if tap_widths else []):
         states.append(run_tap_pass(chrome, site, tmp, page, tap_width, height, settle))
@@ -1512,9 +1757,15 @@ def main(argv):
     ap.add_argument("--no-seam", action="store_true",
                     help="skip the pass that asks whether every window carries the "
                          "separator its ground calls for")
+    ap.add_argument("--no-motion", action="store_true",
+                    help="skip the reduced-motion pass, which asks what a reader "
+                         "who asked for less motion is given")
     ap.add_argument("--no-scriptless", action="store_true",
                     help="skip the pass that serves each page with its scripts "
                          "removed, for the reader whose script never ran")
+    ap.add_argument("--self-test", action="store_true",
+                    help="check that the reduced-motion pass can still fail, against "
+                         "a tiny site built for it, and exit")
     ap.add_argument("--json", default=None, help="write the findings here")
     a = ap.parse_args(argv[1:])
 
@@ -1522,9 +1773,11 @@ def main(argv):
         sys.exit("audit-contrast: %s is missing. Run python Source/tools/build-site.py"
                  % a.site)
     chrome = find_chrome()
+    if a.self_test:
+        return self_test(chrome)
     pages = [page_path(p) for p in a.pages]
 
-    findings, failures, tap_fails, seam_fails = [], 0, 0, 0
+    findings, failures, tap_fails, seam_fails, motion_fails = [], 0, 0, 0, 0
     with tempfile.TemporaryDirectory(prefix="istor-audit-") as tmp:
         for page in pages:
             r = audit_page(chrome, a.site, tmp, page, a.width, a.height, a.settle,
@@ -1533,7 +1786,8 @@ def main(argv):
                            os_dark=not a.no_os_dark,
                            scriptless=not a.no_scriptless,
                            tap_widths=not a.no_tap,
-                           seam=not a.no_seam)
+                           seam=not a.no_seam,
+                           motion=not a.no_motion)
             if r.get("error"):
                 print("  FAIL  %s  %s" % (page, r["error"]))
                 failures += 1
@@ -1593,6 +1847,26 @@ def main(argv):
                                      "targets": s["targets"], "under": s["under"],
                                      "inline": s["inline"], "spaced": s["spaced"],
                                      "fails": s["fails"]})
+                    continue
+                if s.get("motion"):
+                    # REDUCED MOTION, MEASURED. The stylesheet promises that every
+                    # motion item sits inside `prefers-reduced-motion: no-preference`,
+                    # so a reader who asks for less motion gets the finished page. Two
+                    # questions are asked rather than assumed: is anything still
+                    # moving, and is any text invisible in a render where no entrance
+                    # will ever lift it. The second one is the same test the scriptless
+                    # pass makes, for the same reason.
+                    motion_fails += len(s["fails"])
+                    print("  %s  %-42s %3d text elements  %2d running  %2d hidden "
+                          "either way  %d FAIL"
+                          % ("ok  " if not s["fails"] else "FAIL",
+                             "%s reduced-motion" % page, s["texts"], s["running"],
+                             s["byDesign"], len(s["fails"])))
+                    for f in s["fails"]:
+                        print("          %s  %s  %r" % (f["sel"], f["why"], f["text"]))
+                    findings.append({"page": page, "motion": True, "running": s["running"],
+                                     "animations": s["animations"], "texts": s["texts"],
+                                     "byDesign": s["byDesign"], "fails": s["fails"]})
                     continue
                 if s.get("scripts") is False:
                     # The scriptless reader gets the comparison and the inventory
@@ -1699,22 +1973,35 @@ def main(argv):
                  sum(f["under"] for f in tap), TAP_MIN,
                  sum(f["inline"] for f in tap), sum(f["spaced"] for f in tap)))
 
+    motion_passes = [f for f in findings if f.get("motion")]
+    if motion_passes:
+        print("\n%d reduced-motion passes, each compared against its own ordinary "
+              "render: %d text elements seen, %d animations running with motion "
+              "reduced, %d elements hidden either way"
+              % (len(motion_passes), sum(f["texts"] for f in motion_passes),
+                 sum(f["running"] for f in motion_passes),
+                 sum(f["byDesign"] for f in motion_passes)))
+
     scriptless = [f for f in findings if f.get("scripts") is False]
     print("\n%d page-states audited at %dpx, %s%s"
           % (len(states), a.width, note,
              ", plus %d scriptless pass%s"
              % (len(scriptless), "es" if len(scriptless) != 1 else "")
              if scriptless else ""))
-    if failures or tap_fails or seam_fails:
+    if failures or tap_fails or seam_fails or motion_fails:
         print("FAILED - %d below AA, %d targets under %dpx with neither exception, "
-              "%d windows without the separator their ground calls for"
-              % (failures, tap_fails, TAP_MIN, seam_fails))
+              "%d windows without the separator their ground calls for, "
+              "%d in a reduced-motion render that is not the finished page"
+              % (failures, tap_fails, TAP_MIN, seam_fails, motion_fails))
         return 1
     print("contrast ok - nothing below AA where the ground could be measured")
     if seam:
         print("separators ok - every window carries the separator its ground calls for")
     if tap:
         print("targets ok - every control reaches %dpx, or is excused" % TAP_MIN)
+    if motion_passes:
+        print("motion ok - with motion reduced nothing runs and nothing is held "
+              "invisible by an entrance")
     return 0
 
 
