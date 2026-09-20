@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 560" width="340" height="560" role="img" aria-label="Anatomy of a GGUF file: header, metadata, tensor table, alignment, then the weights, which are nearly the whole file." focusable="false" data-variant="tall" data-generated-by="Source/tools/make-gguf-anatomy.py - do not hand-edit">
+<rect x="6" y="6.0" width="328" height="48" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"/>
+<text x="20" y="36.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="14" fill="var(--mist)" text-anchor="start">0x00</text>
+<text x="86" y="39.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="26" fill="var(--witness)" text-anchor="start" font-weight="600">GGUF</text>
+<text x="318" y="37.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="14" fill="var(--mist)" text-anchor="end">4 bytes</text>
+<rect x="6" y="54.0" width="328" height="48" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"/>
+<text x="20" y="80.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="14" fill="var(--mist)" text-anchor="start">0x04</text>
+<text x="86" y="81.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)" text-anchor="start" font-weight="600">header</text>
+<text x="86" y="100.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">version and counts</text>
+<text x="318" y="80.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="14" fill="var(--mist)" text-anchor="end">20 bytes</text>
+<rect x="6" y="102.0" width="328" height="64" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"/>
+<text x="20" y="128.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="14" fill="var(--mist)" text-anchor="start">0x18</text>
+<text x="86" y="129.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)" text-anchor="start" font-weight="600">metadata</text>
+<text x="86" y="148.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">key-value pairs</text>
+<rect x="6" y="166.0" width="328" height="64" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"/>
+<text x="86" y="193.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)" text-anchor="start" font-weight="600">tensor table</text>
+<text x="86" y="212.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">names, shapes, offsets</text>
+<rect x="6" y="230.0" width="328" height="56" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"/>
+<text x="86" y="257.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)" text-anchor="start" font-weight="600">alignment</text>
+<text x="86" y="276.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">padding, up to 32 bytes</text>
+<rect x="6" y="286" width="328" height="242" fill="var(--subtle)" stroke="var(--hairline)" stroke-width="1"/>
+<text x="20" y="373.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)" text-anchor="start" font-weight="600">tensor data</text>
+<text x="20" y="395.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">the weights themselves</text>
+<text x="20" y="433.0" font-family="Fraunces, Georgia, serif" font-size="22" fill="var(--ink)" text-anchor="start">nearly the whole file</text>
+<text x="318" y="433.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--mist)" text-anchor="end" font-weight="600">99%</text>
+<polyline points="6.0,528.0 17.7,539.9 29.4,528.4 41.1,539.2 52.9,529.3 64.6,538.0 76.3,530.6 88.0,536.7 99.7,532.0 111.4,535.4 123.1,533.0 134.9,534.7 146.6,533.4 158.3,534.7 170.0,533.1 181.7,535.3 193.4,532.2 205.1,536.5 216.9,530.9 228.6,537.8 240.3,529.5 252.0,539.1 263.7,528.5 275.4,539.8 287.1,528.0 298.9,540.0 310.6,528.3 322.3,539.4 334.0,529.1" fill="none" stroke="var(--hairline)" stroke-width="1"/>
+<text x="6" y="554" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">band heights are not to scale</text>
+</svg>

@@ -161,6 +161,16 @@ INCLUDES = {
     "boundary-tall":  (SOURCE / "figures" / "boundary-tall.svg",  "svg"),
 }
 
+# Library-only includes: offered to carried pages by splice_library_includes(),
+# which splices only the markers a page actually carries. They are deliberately
+# NOT in INCLUDES, whose splice_includes() requires every entry on the home
+# page - a dictionary shared by both passes would make the home page fail for
+# a marker it never had.
+LIBRARY_INCLUDES = {
+    "gguf-anatomy-wide": (SOURCE / "figures" / "gguf-anatomy-wide.svg", "svg"),
+    "gguf-anatomy-tall": (SOURCE / "figures" / "gguf-anatomy-tall.svg", "svg"),
+}
+
 # A directory under _site/ that holds an index.html but is not a page.
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 
@@ -415,7 +425,6 @@ def splice_includes() -> None:
     src = SOURCE / "index.html"
     page = SITE / "index.html"
     text = src.read_text(encoding="utf-8")
-
     for name, (path, kind) in INCLUDES.items():
         marker = f"<!--#include {name}-->"
         if marker not in text:
@@ -494,6 +503,57 @@ def splice_includes() -> None:
             "       previous home page."
         )
     write_text_lf(page, inline_markup(text))
+
+
+def splice_library_includes() -> int:
+    """Splice include markers into CARRIED pages, after they are copied.
+
+    The library ships verbatim - that rule is the build's spine, and the
+    marker guard at the end of copy_library() exists to keep it that way. So
+    the library's one concession to the include system is strictly opt-in: a
+    page that carries no `<!--#include` marker is untouched, byte for byte,
+    and this pass touches nothing else. A page that DOES carry one gets the
+    same splice the home page gets: the real figure, from its generator, not
+    a hand-pasted copy that can drift. Only svg includes are offered here; a
+    library page has no business inlining a second stylesheet.
+    """
+    count = 0
+    for d in sorted(SITE.iterdir()):
+        page = d / "index.html" if d.is_dir() else None
+        if not page or not page.exists():
+            continue
+        text = page.read_text(encoding="utf-8")
+        if "<!--#include" not in text:
+            continue
+        for name, (path, kind) in LIBRARY_INCLUDES.items():
+            marker = f"<!--#include {name}-->"
+            if marker not in text:
+                continue
+            if not path.is_file():
+                raise BuildError(
+                    f"missing include source for {marker}: {path}\n"
+                    "       Run the generator that writes it and commit the output."
+                )
+            chunk = path.read_text(encoding="utf-8")
+            if "<!--#include" in chunk:
+                raise BuildError(
+                    f"{path} contains an `<!--#include` marker literal."
+                )
+            text = text.replace(marker, chunk)
+            count += 1
+        write_text_lf(page, text)
+    if count:
+        # the same final guard splice_includes() keeps: no marker may survive
+        for d in sorted(SITE.iterdir()):
+            page = d / "index.html" if d.is_dir() else None
+            if not page or not page.exists():
+                continue
+            t = page.read_text(encoding="utf-8")
+            if "<!--#include" in t:
+                raise BuildError(
+                    f"{page} still carries an include marker after splicing"
+                )
+    return count
 
 
 # --------------------------------------------------------------------------
@@ -585,6 +645,10 @@ def main() -> int:
     # copy_library() reads _site/index.html to prove the page is still there.
     splice_includes()
     copy_library()
+    # Library splicing runs after the copy: it is opt-in per page (a marker
+    # in the page's own markup), so verbatim copy remains the default and
+    # the count tells the build log which pages took figures.
+    spliced = splice_library_includes()
     # The index is written before the sitemap, because write_sitemap() derives
     # its paths from what is in _site/ — a page that is not there is a page the
     # sitemap does not know about.
@@ -597,6 +661,8 @@ def main() -> int:
     total = sum(p.stat().st_size for p in files)
     print(f"_site/  {len(files)} files, {total:,} B")
     print(f"        {urls} urls in sitemap.xml")
+    if spliced:
+        print(f"        {spliced} library include(s) spliced")
     print("        preview:  python -m http.server --directory _site 8080")
     return 0
 
