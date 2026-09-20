@@ -57,6 +57,23 @@
      first thing a visitor can touch is the mechanism the site is about.
      ===================================================================== -->
 <section class="field hero" id="what-it-is">
+  <!-- The world the window stands on. Tempo's product floats over a planet
+       limb and Freebuff's over an illustrated landscape; this hero floated over
+       a gradient. The machine is the site's own subject, and its largest gear
+       and the wheel that drives it are drawn here in the counts the literature
+       gives, meshed, riding a band at the field's bottom edge so the mechanism
+       runs off the page exactly where the page ends.
+
+       It is BEHIND the window, not beside it. The reference trick is that the
+       artwork and the product share a layer, so the reader reads them as one
+       illustration; the window's plate cutting the great wheel's crown is that,
+       and it is also why this element is first in the section and the wrap that
+       follows is lifted one plane above it.
+
+       Decorative, and marked as such: no title, no caption, `aria-hidden`. It
+       states nothing a reader has to take on trust from a picture. -->
+  <div class="hero-world"><!--#include hero-gears--></div>
+
   <div class="wrap">
     <h1>It shows you <span class="h1-see">what it saw</span>.</h1>
     <!-- The lede is one line on purpose. The genre's heroes run a 3-7 word
@@ -1018,6 +1035,23 @@
     // Ground tracking is deliberately absent -- see the note in the CSS.
     var actIndex = document.querySelector('.act-index');
     var dots = actIndex ? actIndex.querySelectorAll('a') : [];
+    // M14 · the hero's world. The mechanism turns as the reader moves through the
+    // hero, which is the reference sites' one shared idea about a hero's ground:
+    // a world that is a place and not a backdrop. The pinion's angle is the great
+    // wheel's multiplied by the ratio of their pitch radii and NEGATED, because
+    // that is what external gearing is, and it is also the only angle at which the
+    // teeth stay interleaved: the drawing's dash phases were solved for this
+    // relation, so a rotation that ignores it would grind. Set from the scroll
+    // position rather than animated, so it is the reader's movement and not the
+    // page's; under reduced motion it never moves at all.
+    var world = reduced ? null : document.querySelector('.hero-world');
+    var gearA = world && world.querySelector('[data-gear-a]');
+    var gearsB = world ? world.querySelectorAll('[data-gear-b]') : [];
+    // The ratio is the TOOTH COUNTS, 223:48, which is also the ratio of the pitch
+    // radii the generator used: R = N*P/(2*pi), so R cancels the shared module.
+    // Written as counts rather than as radii so the two files cannot disagree.
+    var RATIO = 223 / 48;
+    var heroTurn = -1;
     var heroBottom = 0, railLinks = [], railTops = [], railCurrent = null;
     var measure = function () {
       if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
@@ -1055,6 +1089,23 @@
         for (var d = 0; d < dots.length; d++) {
           if (d === k) dots[d].setAttribute('aria-current', 'location');
           else dots[d].removeAttribute('aria-current');
+        }
+      }
+
+      // M14 · eight degrees of the great wheel across the whole hero, which is
+      // 37 of the pinion's 48 teeth: one whole turn of the reader's scroll moves
+      // the mechanism about a fifth of how far the real wheel turns in a year.
+      if (gearA && heroBottom > 0) {
+        var turn = Math.round(Math.min(1, window.scrollY / heroBottom) * 80) / 10;
+        if (turn !== heroTurn) {
+          heroTurn = turn;
+          gearA.setAttribute('transform', 'rotate(' + turn + ' 720 720)');
+          for (var g = 0; g < gearsB.length; g++) {
+            var cx = gearsB[g].getAttribute('data-gear-cx');
+            var cy = gearsB[g].getAttribute('data-gear-cy');
+            gearsB[g].setAttribute('transform',
+              'rotate(' + (-turn * RATIO) + ' ' + cx + ' ' + cy + ')');
+          }
         }
       }
 

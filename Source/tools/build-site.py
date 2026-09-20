@@ -154,6 +154,7 @@ INCLUDES = {
     "poster-horizon": (SOURCE / "figures" / "poster-horizon.svg", "svg"),
     "etymology":      (SOURCE / "figures" / "etymology.svg",      "svg"),
     "etymology-tall": (SOURCE / "figures" / "etymology-tall.svg", "svg"),
+    "hero-gears":     (SOURCE / "figures" / "hero-gears.svg",     "svg"),
 }
 
 # A directory under _site/ that holds an index.html but is not a page.

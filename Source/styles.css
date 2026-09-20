@@ -114,6 +114,15 @@
   --field:     696px;   /* --win-sm + 2 x --field-pad                  */
   --measure:   66ch;
   --gutter:    clamp(20px, 5vw, 40px);
+  /* The hero's world band. --world-h is capped at the figure's own viewBox
+     height (420), so above 1448px the drawing fills the width and crops
+     vertically rather than stretching; below ~420 the band crops horizontally
+     instead, anchored left so a phone keeps a wheel meshing the rim rather than
+     an empty stretch of it. --world-overlap pulls the band's top edge up under
+     the window's bottom edge, so the world is one layer with the product
+     instead of a strip below it. */
+  --world-h:       clamp(240px, 29vw, 420px);
+  --world-overlap: 40px;
   /* One nav height, used twice: the bar's own height, and how far the hero's
      field is pulled up under it. Two numbers that must agree can only be one. */
   --nav-h:     68px;
@@ -955,10 +964,36 @@ h3 {
      under the sticky nav instead of beginning below it, so the page opens on
      the ground itself rather than on a strip of paper. The nav's height is
      added back as padding so the heading still clears the bar. */
+  position: relative;
+  overflow: hidden;
   margin-block-start: calc(-1 * var(--nav-h));
-  padding-block: calc(var(--nav-h) + 72px) 96px;
+  padding-block: calc(var(--nav-h) + 72px) calc(var(--world-h) - var(--world-overlap));
 }
-.hero .wrap { display: flex; flex-direction: column; align-items: center; text-align: center; }
+/* The wrap is lifted one plane so the window's plate cuts the wheel behind it. */
+.hero .wrap { display: flex; flex-direction: column; align-items: center; text-align: center;
+              position: relative; z-index: 1; }
+/* The world band: the mechanism at the field's bottom edge, under everything the
+   hero says. `slice` with a left anchor, so the crop keeps a wheel on the rim at
+   phone width instead of the empty middle of the drawing. */
+.hero-world {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--world-h);
+  pointer-events: none;
+}
+.hero-world svg { display: block; width: 100%; height: 100%; }
+/* Three inks, and all three are the field's own tokens. The teeth carry the
+   lightest weight because there are 223 of them: at full strength they would be
+   a texture and not a drawing. */
+.hero-world .gear-tooth { fill: none; stroke: var(--field-ink-2); opacity: 0.40; }
+.hero-world .gear-band { fill: none; stroke: var(--field-ink-2); opacity: 0.07; }
+.hero-world .gear-rim,
+.hero-world .gear-face {
+  fill: none;
+  stroke: var(--field-ink-2);
+  opacity: 0.48;
+  stroke-width: 1;
+}
 .hero h1 { max-width: 16ch; }
 /* The hero's one accent: "what it saw" in azure-lift on the field. It is the
    h1's phrase and the page's promise, lifted the way the genre lifts its key
@@ -1820,7 +1855,10 @@ h3 {
   .act { padding-block: 64px; }
   /* the nav's height is a constant, not a desktop concession, so it is added
      back here too: the field still runs under the bar at every width */
-  .hero { padding-block: calc(var(--nav-h) + 40px) 64px; }
+  /* The bottom half of this is the world band's formula, restated here because
+     this block is the last word on the hero's padding at this width and the
+     band's height is a token: 64px would have cut the band in half. */
+  .hero { padding-block: calc(var(--nav-h) + 40px) calc(var(--world-h) - var(--world-overlap)); }
 
   /* C2 collapses to one column: the field goes under its text. */
   .split,
