@@ -911,7 +911,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M7** | Accordion open/close | click | 320ms | §8.3 |
 | **M8** | Link and button hover | hover | 160ms | genre baseline |
 | **M9** | **The hero's question** | click a chip | the answer's own M2 | the window answers a second and third question, and the second is the refusal |
-| **M11** | **The act index** | first scroll / act change | 160ms colour, 1.45x scale | the rail's echo at the viewport edge (§2.14); the Awwwards device G36 took |
+| **M11** | **The act index** | first scroll / act change | 160ms colour, 1.45x scale | the rail's echo at the viewport edge; the Awwwards device G36 took |
 | **M12** | **The scribe** | plate enters | 900ms frames, 1,400ms roll, claim last | the ring is drawn the way its plates were made (§7.5) |
 
 ### 7.1 M2 — the hero sequence, in detail
