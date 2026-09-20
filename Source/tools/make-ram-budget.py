@@ -81,7 +81,7 @@ def curve_points(x0, y0, w, h, bmin=2.0, bmax=16.0):
 
 def wide():
     """560 units: axes, the line, two marked points with the page's values."""
-    W, H = 560, 300
+    W, H = 560, 316
     X0, Y0, PW, PH = 56.0, 30.0, 440.0, 200.0
     bmin, bmax = 2.0, 16.0
     def px(b): return X0 + PW * (b - bmin) / (bmax - bmin)
@@ -108,21 +108,33 @@ def wide():
     # the line
     rows.append(f'<line x1="{px(16):.1f}" y1="{py(16):.1f}" x2="{px(2):.1f}" y2="{py(2):.1f}" '
                 f'stroke="{TOK_INK}" stroke-width="2"/>')
-    # the two marked points. Labels sit BELOW-LEFT / BELOW-RIGHT of their
-    # points: the line rises left-to-right, so above-right is where the line
-    # itself passes - the first draft's label sat on its own line
+    # the two marked points. The line rises left-to-right, so it sweeps
+    # through every horizontal band left of the top mark - three drafts
+    # (below-right, below-left at two depths) each grazed it somewhere in
+    # the label's span. The 16-bit label goes ABOVE the plot's top edge,
+    # right-aligned beside its mark: the line ends at that mark, so nothing
+    # above the frame top can ever be crossed. The 4-bit label goes below
+    # its mark, where the line is long gone upward. 19 is the emphasis size
+    # every other library figure uses; 17 was a one-off.
     for b, lab in MARKS:
         x, y = px(b), py(b)
         rows.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="{TOK_WITNESS}"/>')
-        anchor = "start" if b < 10 else "end"
-        dx = 12 if b < 10 else -12
-        rows.append(text(x + dx, y + 24, 17, TOK_INK, lab, FONTS_SANS, anchor=anchor, weight="600"))
+        if b < 10:
+            rows.append(text(x + 12, y + 24, 19, TOK_INK, lab, FONTS_SANS,
+                             anchor="start", weight="600"))
+        else:
+            rows.append(text(x - 8, Y0 - 10, 19, TOK_INK, lab, FONTS_SANS,
+                             anchor="end", weight="600"))
+    # the honesty line, the idiom the anatomy and ladder plates set: a figure
+    # whose geometry makes a claim prints the claim where it is drawn
+    rows.append(text(X0, H - 6, 16, TOK_MIST,
+                     "mark positions are exact byte arithmetic", FONTS_SANS))
     return svg(W, H, rows, "wide")
 
 
 def tall():
     """340 units: the same line, taller, values beside their marks."""
-    W, H = 340, 356
+    W, H = 340, 372
     X0, Y0, PW, PH = 46.0, 72.0, 250.0, 216.0
     bmin, bmax = 2.0, 16.0
     def px(b): return X0 + PW * (b - bmin) / (bmax - bmin)
@@ -158,6 +170,8 @@ def tall():
         dx = 10 if b < 10 else -10
         dy = 14 if b >= 10 else -10
         rows.append(text(x + dx, y + dy, 14, TOK_INK, lab, FONTS_SANS, anchor=anchor, weight="600"))
+    rows.append(text(X0 - 34 + 34, H - 6, 14, TOK_MIST,
+                     "mark positions are exact byte arithmetic", FONTS_SANS))
     return svg(W, H, rows, "tall")
 
 
