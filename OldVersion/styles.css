@@ -121,6 +121,7 @@
   /* the witness pair (light ground) */
   --witness: #D93A3A;
   --dot: #D93A3A;
+  --sel-ink: #FFFFFF;
 
   /* citation accent, judged on the light mock panels */
   --cite-ink: #0E7490;
@@ -164,6 +165,7 @@
   /* the witness pair (dark ground) */
   --witness: #4DA3FF;
   --dot: #4DA3FF;
+  --sel-ink: var(--canvas);
 
   /* citation accent, judged on the dark mock panels */
   --cite-ink: #56C0EC;
@@ -202,6 +204,14 @@
 }
 
 * { box-sizing: border-box; }
+
+/* The library brands its selection like the landing does. Two chips, because
+   the accent is two colors: light ground takes white on --witness (measured
+   4.55:1); dark takes the dark canvas ink on the lifted witness, 7.05:1, since
+   white on the dark witness is 2.2:1 and a highlight you cannot read the text
+   through is not a highlight. --sel-ink is declared beside --witness in all
+   three token blocks, so an explicit theme choice and the OS default agree. */
+::selection { background: var(--witness); color: var(--sel-ink); }
 
 /* anchored sections stop below the sticky header */
 section[id] { scroll-margin-top: 4.5rem; }

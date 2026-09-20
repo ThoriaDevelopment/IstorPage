@@ -269,6 +269,14 @@
    --------------------------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
 
+/* The page brands its selection. Every reference site's text highlights in the
+   site's own accent, not the browser's; the default is the one unthemed surface
+   a reader touches on every drag. The chip replaces the ground behind the span,
+   so one pair covers every section: white on --azure is the CTA's measured
+   5.57:1, and it holds over paper, field and poster alike because there is no
+   ground left to disagree with. */
+::selection { background: var(--azure); color: var(--on-azure); }
+
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;

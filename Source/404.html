@@ -54,6 +54,10 @@
   }
 }
 *{box-sizing:border-box}
+/* Selection wears the page's own accent, as on the landing and the library.
+   --azure and --on-azure already swap per theme, so one line covers both; the
+   pair is the measured 5.57:1 light chip and its dark-theme counterpart. */
+::selection{background:var(--azure);color:var(--on-azure)}
 html{-webkit-text-size-adjust:100%}
 body{
   margin:0; background:var(--paper); color:var(--ink);

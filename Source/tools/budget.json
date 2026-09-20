@@ -75,7 +75,7 @@
     "page_bytes_ceiling": 1048576,
     "index_bytes_ceiling": 131072,
     "files": {
-      "/styles.css": 55112,
+      "/styles.css": 55701,
       "/theme.js": 3924,
       "/assets/fonts/fraunces-600.woff2": 18096,
       "/assets/fonts/gfs-didot.woff2": 14540,
