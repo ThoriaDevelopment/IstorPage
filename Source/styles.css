@@ -1215,6 +1215,26 @@ h3 {
 .qa .qa-body > * { margin-block: 0; }
 .qa .qa-body > * + * { margin-block-start: 0.8em; }
 
+/* The answer arrives instead of snapping. `::details-content` (Chromium 131+)
+   with an interpolable height transition animates the panel's expansion;
+   `interpolate-size: allow-keywords` is what lets `height: auto` be a
+   transition endpoint rather than a cliff. Both are progressive: engines
+   without them ignore the lines and the accordion behaves exactly as it did,
+   and the transition sits inside the no-preference gate so reduced motion
+   gets the instant toggle back. The 260ms and the site's one easing are the
+   reveals' own values - an answer opening is the same family of motion as a
+   block arriving. */
+@media (prefers-reduced-motion: no-preference) {
+  .qa { interpolate-size: allow-keywords; }
+  .qa details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size 260ms var(--ease), content-visibility 260ms var(--ease);
+    transition-behavior: allow-discrete;
+  }
+  .qa details[open]::details-content { block-size: auto; }
+}
+
 /* ---------------------------------------------------------------------------
    13 · The close.  C5, the poster.
 
