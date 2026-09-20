@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 430"
+     class="etym etym-tall" role="img" focusable="false"
+     aria-labelledby="etym-tall-title">
+  <title id="etym-tall-title">One root, *weyd-, to see, and three words that came
+    from it: Latin videre, English wit, and the Greek word for a witness, which is
+    the name of this tool.</title>
+  <!-- The same descent as etymology.svg, read downward so a phone gets a
+       composition rather than a scaled one. Regenerate with
+       Source/tools/make-etymology.py -- do not hand-edit. -->
+
+  <text class="etym-root" x="52" y="60">*weyd-</text>
+  <text class="etym-gloss" x="176" y="60">root · to see</text>
+
+  <g stroke="var(--rule)" stroke-width="1" fill="none">
+    <path class="etym-rail" d="M16 92 V320"/>
+    <path class="etym-branch" d="M16 120 H42"/>
+    <path class="etym-branch" d="M16 220 H42"/>
+    <path class="etym-branch" d="M16 320 H42"/>
+  </g>
+
+  <g fill="var(--ink-3)">
+    <circle class="etym-node" cx="16" cy="120" r="3"/>
+    <circle class="etym-node" cx="16" cy="220" r="3"/>
+    <circle class="etym-node" cx="16" cy="320" r="3"/>
+  </g>
+
+  <text class="etym-word" x="52" y="129" font-size="28">videre</text>
+  <text class="etym-gloss" x="176" y="129">latin · to see</text>
+  <text class="etym-word" x="52" y="229" font-size="28">wit</text>
+  <text class="etym-gloss" x="176" y="229">english · to know</text>
+  <path class="etym-claim" d="M52 344 H160"/>
+  <text class="etym-name" x="52" y="334" font-size="40">ἵστωρ</text>
+  <text class="etym-gloss" x="176" y="334">greek · a witness</text>
+</svg>

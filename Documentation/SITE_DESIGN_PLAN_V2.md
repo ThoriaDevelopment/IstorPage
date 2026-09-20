@@ -417,17 +417,42 @@ genre's FAQ behaviour and needs no script. v1 shipped a plain `<dl>` and defende
 The act's first answer is also the one the page's whole claim rests on (*"Does anything leave my
 computer?"* — no), so it is the one that arrives already open.
 
-### 2.12 The name — quiet prose, and one word at display size
+### 2.12 The name — the word at display size, and the descent it carries
 
 `<section class="act act-tight" id="the-name">`, whose 72px block padding is the only tight one on the
-page. The heading is not a sentence but **the word being defined, at display size**: the h2 is ἵστωρ
-and the paragraph under it carries the etymology (*weyd-*, *videre*, *wit*) and then the turn — *"A
-witness is not the person who knows most; it is the person who was there, and can say what they saw."*
-No exhibit, no window, no field: after eleven acts of the app, the last thing before the close is the
-brand's own argument, in prose.
+page. The heading is not a sentence but **the word being defined, at display size**: the h2 is ἵστωρ.
 
-The brief's requirement is that the name gets a real section. This is that section, and it is placed
-immediately before the poster so the etymology is the last thing read before the mark is drawn large.
+**The etymology plate (2026-09-20).** The act used to spend a paragraph naming the descent (*weyd-*,
+*videre*, *wit*) and the change is a species swap rather than a decoration: a descent is a picture,
+and prose is not the instrument for one. The single paragraph that went is the one the plate already
+says, so the act's word count fell while the act gained its only visual, which is what the whole page
+argues for everywhere else.
+
+This was the last content act with **no figure at all**, on a page whose whole claim is that it shows
+rather than tells. Every other act has a capture, a window, a ring or a poster; the act carrying the
+brand's own etymology, the one story nobody else can tell, was the one with nothing to look at.
+
+Like the ring, the plate is generated and not authored by hand — `Source/tools/make-etymology.py`
+writes `Source/figures/etymology.svg` and `etymology-tall.svg`, and the generator's own docstring
+carries the layout argument. Two variants, and the tall one is **not a scaled copy**: the same descent
+read downward as a ledger, so a phone gets a composition instead of 5px glosses. That is the same
+reason the exhibits art-direct their phone crops, and an SVG does not escape the reason by being
+scalable.
+
+The plate hangs on `--field.is-inset` and therefore takes the field's own inks, which the token block
+already documents as AA pairs measured against `--field-hi`, the field's lightest stop: `--field-ink-2`
+6.07:1 and `--azure-lift` 5.19:1. The structural ink is `--field-ink-2` rather than `--field-rule`,
+because `--field-rule` over the field is about 1.3:1 and a rail nobody can see is not a quiet rail.
+It carries one accent: the short rule under the word the tool is named after.
+
+The plate enters with the panel treatment every other figure gets (M3's `opacity` and `translateY(24px)
+scale(0.97)` on the `.reveal` / `.is-cold` pair), so the motion sits on the figure and never on the act's
+prose.
+
+What stays in prose is the turn — *"A witness is not the person who knows most; it is the person who
+was there, and can say what they saw."* The brief's requirement is that the name gets a real section,
+and it is placed immediately before the poster so the etymology is the last thing read before the mark
+is drawn large.
 
 ### 2.13 The close — C5, the poster, and the occlusion
 

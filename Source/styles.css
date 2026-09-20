@@ -1443,6 +1443,70 @@ h3 {
    Greek codepoints, so the browser picks it without being told. */
 .greek { font-size: clamp(56px, 9vw, 92px); line-height: 1; }
 
+/* 14d.1 · The etymology plate, the name act's one visual.
+
+   The act was the last content act with no figure in it: a word and two
+   paragraphs, on the one page whose whole argument is that it shows rather than
+   tells. The paragraph that went is the one the plate already says, and prose is
+   not the instrument for a descent.
+
+   TWO VARIANTS SWAPPED BY WIDTH, and the tall one is not a scaled copy: it is the
+   same descent read downward, so a phone gets a composition where the wide plate
+   would be 5px glosses. That is the same reason the exhibits art-direct their
+   phone crops, and an SVG does not escape the reason by being scalable.
+
+   Ink: the four words are --ink and the Greek carries the size, the glosses are
+   --ink-2 at the page's own 13px label size (the token list documents that pair as
+   >= 4.5:1 on --paper; --ink-3 is the graphic ink at 3.12:1 and would be a caption
+   nobody can read), the rail and nodes are --rule and --ink-3 because they are
+   structure, and the plate's single --azure is the short rule under the word the
+   tool is named after. One accent, one claim. The generator carries the full
+   argument: Source/tools/make-etymology.py. */
+.etymology { margin: 42px 0 0; }
+.etymology .field.is-inset { max-width: 780px; }
+.etymology figcaption { max-width: var(--measure); }
+.etym { display: block; width: 100%; height: auto; margin-inline: auto; }
+.etym-wide { max-width: 605px; }
+.etym-tall { max-width: 320px; }
+.etym-word, .etym-name, .etym-root { font-family: var(--serif); fill: var(--ink); }
+.etym-root { font-size: 28px; }
+.etym-gloss {
+  font-family: Inter, sans-serif;
+  font-size: var(--t-label);
+  fill: var(--ink-2);
+}
+.etym-rail, .etym-branch, .etym-root-rule { stroke: var(--ink-3); }
+.etym-node { fill: var(--ink-3); }
+.etym-claim { stroke: var(--azure); stroke-width: 1.5; fill: none; }
+
+/* On a field the plate takes the field's own inks, and the page documents those as
+   AA pairs measured against --field-hi, the field's LIGHTEST stop and therefore the
+   worst case: --field-ink-2 6.07:1, --azure-lift 5.19:1. Which means the plate is
+   correct on either ground rather than needing to be moved when someone re-hangs
+   it. The structural ink is --field-ink-2 and NOT --field-rule, and that is a
+   measurement rather than a taste call: --field-rule is 10% white, which over the
+   field is about 1.3:1, and a rail nobody can see is not a quiet rail, it is a
+   missing one. */
+.field .etym-word, .field .etym-name, .field .etym-root { fill: var(--field-ink); }
+.field .etym-gloss { fill: var(--field-ink-2); }
+.field .etym-rail, .field .etym-branch, .field .etym-root-rule { stroke: var(--field-ink-2); }
+.field .etym-node { fill: var(--field-ink-2); }
+.field .etym-claim { stroke: var(--azure-lift); }
+.etym-tall { display: none; }
+/* The swap is measured, not guessed. The wide plate is 540 units of viewBox, so it
+   renders at 13px glosses while its field gives it about that; the field is the
+   frame width minus its padding minus the wrap's, which is what the 660 below
+   accounts for. Above it the wide plate is at or near one to one; below it the
+   ledger takes over. And the phone's frame is tightened to 18/16 for this figure:
+   at the field's ordinary 28px the ledger's column came to 294, which renders its
+   13px glosses at 12 - the kind of near miss that looks fine in a screenshot and
+   not in a hand. */
+@media (max-width: 640px) {
+  .etym-wide { display: none; }
+  .etym-tall { display: block; }
+  .etymology .field.is-inset { padding: 18px 16px; }
+}
+
 /* ---------------------------------------------------------------------------
    14e · The act index.
 
@@ -1611,11 +1675,13 @@ h3 {
      page rather than a column of invisible sections — which is the difference
      between an enhancement and a dependency. */
   .reveal .win,
-  .reveal .exhibit img {
+  .reveal .exhibit img,
+  .etymology {
     transition: opacity 700ms var(--ease), transform 700ms var(--ease);
   }
   .reveal.is-cold .win,
-  .reveal.is-cold .exhibit img {
+  .reveal.is-cold .exhibit img,
+  .etymology.is-cold {
     opacity: 0;
     transform: translateY(24px) scale(0.97);
   }
