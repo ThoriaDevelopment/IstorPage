@@ -277,6 +277,20 @@
    ground left to disagree with. */
 ::selection { background: var(--azure); color: var(--on-azure); }
 
+/* Crossings keep their place. The landing and the library are one journey —
+   every footer leads to the other world — and a hard white flash between them
+   is the one moment the page feels like two sites. `navigation: auto` opts the
+   document pair into cross-document view transitions (Chromium 126+; the other
+   engines ignore the rule and get the plain navigation they always had), and
+   the wordmark carries `view-transition-name: brand` on both sides, so the
+   name is the one thing that glides instead of snapping. Gated behind
+   no-preference here, in CSS, where this page keeps every motion decision:
+   under reduced motion the rule never matches and the old navigation returns
+   unchanged. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
@@ -944,6 +958,10 @@ h3 {
   letter-spacing: -0.005em;
   color: var(--ink);
   text-decoration: none;
+  /* the view-transition pair member: the library's header wordmark carries the
+     same name, so crossing between the two documents morphs the name instead
+     of cutting it (see the @view-transition note in section 3) */
+  view-transition-name: brand;
 }
 .nav-links { display: flex; gap: 28px; margin-inline-start: auto; font-size: var(--t-sm); }
 .nav-links a { color: var(--ink-2); text-decoration: none; }

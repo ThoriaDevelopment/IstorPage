@@ -213,6 +213,17 @@
    three token blocks, so an explicit theme choice and the OS default agree. */
 ::selection { background: var(--witness); color: var(--sel-ink); }
 
+/* The crossing: same rule, same name, one journey with the landing (which
+   declares its copy in section 3 of Source/styles.css). `navigation: auto`
+   opts this document into cross-document view transitions for same-origin
+   navigations; the wordmark carries the matching `view-transition-name`
+   below. Inside the no-preference gate so reduced motion gets the plain
+   navigation back. Chromium 126+; engines without @view-transition drop the
+   rule and lose nothing. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+
 /* anchored sections stop below the sticky header */
 section[id] { scroll-margin-top: 4.5rem; }
 
@@ -303,6 +314,10 @@ a { color: inherit; }
   font-family: "GFS Didot", "Istor Wordmark", Georgia, serif;
   font-weight: 400;
   font-size: 1.0625rem;
+  /* the view-transition pair member: the landing's nav-mark carries the same
+     name, so crossing between the two documents morphs the name instead of
+     cutting it (see the @view-transition note above) */
+  view-transition-name: brand;
 }
 
 .cite-dot { color: var(--dot); }
