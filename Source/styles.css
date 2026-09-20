@@ -429,6 +429,28 @@ h3 {
 .band .exhibit { width: min(var(--win-lg), 100%); margin-inline: auto; }
 .band .body { max-width: var(--measure); margin-inline: auto; text-align: center; }
 
+/* The privacy band's inset panels. Its windows are LIGHT-theme captures: they
+   were chosen so the settings' own text stays readable at native scale, and
+   on the dark field they need the seam and shadow the C2 inset panels get -
+   a light window on a dark ground with no seam reads as a hole in the page.
+   The inset is sized by its contents, which is the discipline the split used:
+   400 + 396 windows + the pair's 48 gap + 2*48 of its own padding = 944 (940
+   left the pair 2px short and they wrapped - measured), so the pair sits
+   beside each other as the pair they are and the inset is as wide as the
+   claim it carries and no wider. */
+.band-private .field.is-inset {
+  max-width: 944px;
+  margin-inline: auto;
+  border: 1px solid var(--field-rule);
+  box-shadow: var(--shadow-field);
+  border-radius: var(--r-field);
+}
+.band-private .pair-caption { color: var(--field-ink-2); }
+/* .band sizes every exhibit to --win-lg (959) for full-window captures; this
+   band's two are 400/396 settings panels, so they take their own widths and
+   sit beside each other as the pair they are. */
+.band-private .exhibit { width: auto; }
+
 /* 6.2 · C2 — the split ----------------------------------------------------- */
 
 /* Text on paper, the field inset beside it. The field is a ROUNDED PANEL here,
