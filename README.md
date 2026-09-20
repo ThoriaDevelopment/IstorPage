@@ -274,6 +274,22 @@ find an element's ground and for the ways the pixel sampler, the settle and the 
 lied first: every one of them returned a confident number instead of an error, which is why the file
 is as long as it is.
 
+That emulation now also covers the world no browser switch can reach and no visitor's screen ever
+shows: the **printed sheet**. `@media print` is its own world with its own tokens -- paper ink on
+paper, the replica remapped to its own palette, the sticky nav and the ground gradients removed -- and
+its own *generated* type: a printed link says where it went through an `::after` carrying the address
+at 0.85em of its parent, text that no `textContent` walk can see. Chrome has no command-line switch
+for a media type any more than for the features, so the sheet is emulated where a browser resolves
+one: bare `print` in `matchMedia`, and the page's own print block unwrapped by the same machinery
+(which is why it works whether the stylesheet is inlined into the page or linked, as the library's
+is). A print state that finds zero rules is an ERROR rather than a pass, because it would report the
+screen's numbers under the sheet's name. The pass carries its own fixture in the self-test: a page
+made unreadable on paper and a page that is not, the unreadable one also run with nothing emulated so
+the finding can only have come from the block, and the 10px annotation named as `a::after` while the
+same page shows no generated text on screen. Measured on the real site: no printed ink falls below AA
+and no printed text -- annotation included -- clears the 11px floor at any of the sheet's widths, 640,
+794 (A4 at 96dpi) and 1440. `--no-print` skips it.
+
 ## What is not published
 
 The GitHub Actions workflow uploads a Pages artifact assembled from `Source/` plus an allowlist of

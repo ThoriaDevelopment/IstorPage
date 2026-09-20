@@ -989,8 +989,18 @@ f.addEventListener('load', async function () {{
       await new Promise(function (r) {{ setTimeout(r, 250); }});
     }}
     var fn = new Function('d', 'w', 'return (' + {expr} + ')');
+    /* Whether the media state got emulated, and how many of the page's own rules
+       it took, ride out BESIDE the probe's own answer rather than inside it. Every
+       probe would otherwise have to remember to report them, and the one that
+       forgets reports zero rules -- which reads as a page that does not style the
+       state, and is indistinguishable from a state that passed. The print sweep
+       was that probe on its first run, and the assertion below caught it because
+       the count is now read from the place the emulation actually happened. */
     out.textContent = 'RESULT:' + JSON.stringify({{ value: await fn(d, w),
-                                                    scrolled: SCROLL }});
+                                                    scrolled: SCROLL,
+                                                    mediaRules: EMULATED.length
+                                                      ? (w.__auditMediaRules || 0) : 0,
+                                                    mediaPatch: w.__auditMediaPatch || null }});
   }} catch (e) {{
     out.textContent = 'RESULT:' + JSON.stringify({{ error: String((e && e.stack) || e) }});
   }}
@@ -1035,7 +1045,19 @@ MEDIA_PATCH = r"""<script>
     var q = String(query == null ? '' : query);
     var parts = q.split(/\s+and\s+/i), keep = [], emulated = false, ok = true;
     for (var i = 0; i < parts.length; i++) {{
-      var p = parts[i].trim(), m = NAMED.exec(p);
+      var p = parts[i].trim(), m = NAMED.exec(p), bare = p.toLowerCase();
+      if (!m && EMU.hasOwnProperty(bare)) {{
+        /* A MEDIA TYPE rather than a feature. `print` is a bare keyword whose value
+           is 'on' or 'off' instead of a comparison, and Chrome has no command line
+           switch for one any more than for the features: the only place it can be
+           emulated is wherever a browser resolves it, which is here. Emulating it
+           here is what lets the page's own @media print block be unwrapped by the
+           same machinery the feature states use, so the printed sheet stops being
+           a world this tool can only claim not to cover. */
+        emulated = true;
+        if (EMU[bare] !== 'on') ok = false;
+        continue;
+      }}
       if (m) {{
         emulated = true;
         if ((m[2] || 'more').trim().toLowerCase() !== EMU[m[1].toLowerCase()]) ok = false;
@@ -1512,6 +1534,41 @@ SELF_TEST_LAYOUT = """<!doctype html>
 # `.below` is 45vh tall so
 # that it is still on screen after being pushed down, since an element that moves
 # entirely out of the viewport contributes no shift at all, which is its own trap.
+# The print world's own fixture, and it exists for the reason the other two do: a
+# state that quietly fails to apply measures the SCREEN and reports it under the
+# sheet's name, and on this site both come back clean, so the mistake would be
+# invisible in every run. So the sheet is made to be wrong on purpose.
+#
+# One page carries the ink and the annotation of a printed page: `p` at #C9C9C9 on
+# white is 1.6:1, and an address annotation at 0.5em of a 20px paragraph is 10px,
+# under the 11px floor. The other is the same page with a passing #222 and a
+# passing 0.85em, and the bad one is ALSO run with no state emulated, where the
+# annotation does not exist at all -- which is the only way to show the finding
+# came from the print block rather than from the page.
+#
+# The annotation is the half no `textContent` walk can see, which is the whole
+# reason the type probe had to learn about ::after: this is the only world on this
+# site that renders text the screen sweep is blind to.
+SELF_TEST_PRINT = """<!doctype html>
+<html><head><meta charset="utf-8"><title>print self-test</title>
+<style>
+  html, body {{ margin: 0; padding: 24px; background: #FFFFFF; color: #222222; }}
+  body {{ font: 20px/1.5 system-ui, sans-serif; }}
+  p {{ margin: 0 0 12px; }}
+  @media print {{
+    p {{ color: {ink}; }}
+    a[href^="http"]::after {{ content: " (" attr(href) ")"; font-size: {size}; }}
+  }}
+</style></head>
+<body>
+  <p>this paragraph is readable in this world</p>
+  <p><a href="https://example.com/a-rather-long-address">a link that says where it went</a></p>
+</body></html>
+"""
+SELF_TEST_PRINT_BAD = SELF_TEST_PRINT.format(ink="#C9C9C9", size="0.5em")
+SELF_TEST_PRINT_GOOD = SELF_TEST_PRINT.format(ink="#222222", size="0.85em")
+
+
 SELF_TEST_LAYOUT_SHIFTS = SELF_TEST_LAYOUT
 SELF_TEST_LAYOUT_STABLE = SELF_TEST_LAYOUT.replace(
     "  @font-face { font-family: \"FixtureFace\"; src: url(\"gfs-didot.woff2\") format(\"woff2\");\n"
@@ -1634,7 +1691,15 @@ def self_test(chrome, keep=False):
     look exactly like a page that never shifts: one fixture grows a block after paint
     and must be failed, and the same markup without the growth must be passed.
 
-    Run by hand with `--self-test`, after any change to either pass.
+    The print state gets the third fixture, and it is the one that needed it most:
+    its emulation is a media TYPE rather than a feature, it is the only state whose
+    block is at the end of a stylesheet that is sometimes inlined and sometimes
+    linked, and it is the only world that renders text the probes cannot read from
+    `textContent`. One page is made unreadable on paper and one is not; the
+    unreadable one is also run with nothing emulated, where its annotation does not
+    exist, so the finding can only have come from the print block.
+
+    Run by hand with `--self-test`, after any change to any of these passes.
     """
     tmp = tempfile.mkdtemp(prefix="istor-selftest-")
     site = os.path.join(tmp, "site")
@@ -1642,6 +1707,8 @@ def self_test(chrome, keep=False):
     write(os.path.join(site, "index.html"), SELF_TEST_PAGE)
     write(os.path.join(site, "shifts.html"), SELF_TEST_LAYOUT_SHIFTS)
     write(os.path.join(site, "stable.html"), SELF_TEST_LAYOUT_STABLE)
+    write(os.path.join(site, "print-bad.html"), SELF_TEST_PRINT_BAD)
+    write(os.path.join(site, "print-good.html"), SELF_TEST_PRINT_GOOD)
     # The face the growth waits on has to be a real file, served by the run's own
     # handler, so the delay the pass applies is the delay the fixture waits out. It
     # is one of the site's own fonts rather than a test blob, because a fixture that
@@ -1674,9 +1741,69 @@ def self_test(chrome, keep=False):
                   "reported as shifting (%s, CLS %.4f)"
                   % (stable.get("error"), stable.get("total", -1)))
             return 1
+        sheet = run_state(chrome, site, tmp, "/print-bad.html", 1024, 700, 400, None,
+                          False, PRINT_MEDIA)
+        if sheet.get("error"):
+            print("self-test FAILED - the print state did not run: %s" % sheet["error"])
+            return 1
+        if sheet.get("mediaRules") != 1:
+            print("self-test FAILED - the fixture has one print rule and the state "
+                  "unwrapped %r of them" % (sheet.get("mediaRules"),))
+            return 1
+        if not sheet.get("fails"):
+            print("self-test FAILED - the printed fixture's text is 1.6:1 and the "
+                  "print state reported no contrast failure")
+            return 1
+        # The same page with nothing emulated: the annotation does not exist and the
+        # ink is #222, so a finding here would mean the failure above came from the
+        # page rather than from the print block.
+        plain = run_state(chrome, site, tmp, "/print-bad.html", 1024, 700, 400, None,
+                          False)
+        if plain.get("error") or plain.get("fails"):
+            print("self-test FAILED - the fixture failed with no state emulated ("
+                  "%s), so the finding was not the print block's"
+                  % plain.get("error"))
+            return 1
+        good = run_state(chrome, site, tmp, "/print-good.html", 1024, 700, 400, None,
+                         False, PRINT_MEDIA)
+        if good.get("error") or good.get("fails"):
+            print("self-test FAILED - the printable fixture was reported as failing "
+                  "(%s)" % (good.get("error") or good["fails"][:1]))
+            return 1
+        # And the half only this pass can see: the annotation is text no
+        # `textContent` walk reaches, at 10px in the bad fixture and 17px in the
+        # good one, so the floor has to name it in one world and not in the other.
+        bad_type = run_type_pass(chrome, site, tmp, "/print-bad.html", 700, 400,
+                                 widths=(1024,), media=PRINT_MEDIA)
+        named = sorted({f.get("sel") for f in bad_type.get("fails") or []})
+        if not bad_type.get("pseudo"):
+            print("self-test FAILED - the print sweep measured no pseudo-element "
+                  "text, so the annotation the sheet generates is still invisible "
+                  "to it")
+            return 1
+        if named != ["a::after"]:
+            print("self-test FAILED - expected the 10px annotation and nothing else, "
+                  "and the type pass named %r" % (named,))
+            return 1
+        clean_type = run_type_pass(chrome, site, tmp, "/print-good.html", 700, 400,
+                                   widths=(1024,), media=PRINT_MEDIA)
+        if clean_type.get("fails"):
+            print("self-test FAILED - the 17px annotation in the printable fixture "
+                  "was failed: %r" % (clean_type["fails"][:1],))
+            return 1
+        screen_type = run_type_pass(chrome, site, tmp, "/print-good.html", 700, 400,
+                                    widths=(1024,))
+        if screen_type.get("fails") or screen_type.get("pseudo"):
+            print("self-test FAILED - the screen world reported generated text (%r "
+                  "pseudo, %r fails), so the annotation is not the print block's"
+                  % (screen_type.get("pseudo"), screen_type.get("fails")))
+            return 1
         print("self-test ok - the motion pass named the entrance outside the guard "
               "and nothing else, the layout pass failed the fixture that grows "
-              "(CLS %.4f) and passed the one that does not" % shifting["total"])
+              "(CLS %.4f) and passed the one that does not, the print state failed "
+              "the sheet that is unreadable and passed the one that is not, and the "
+              "type sweep named the printed annotation at 10px while the same page "
+              "showed no generated text on screen" % shifting["total"])
         return 0
     finally:
         if not keep:
@@ -1840,6 +1967,18 @@ def run_seam_pass(chrome, site, tmp, page, width, height, settle):
 TYPE_FLOOR = 11.0
 TYPE_WIDTHS = (320, 360, 390, 430, 480, 560, 640, 700, 768, 800, 900, 1024, 1440)
 
+# The print world, which had no gate at all until this one. Only one feature is
+# emulated because only one is what the block is keyed to, and the widths are the
+# widths a sheet is looked at through rather than the widths a screen is: 794 is A4
+# minus nothing at 96 CSS px, and 640 is the narrow column a browser gives a print
+# preview at a small window. 1440 stays in the list because the page's own layout is
+# still the screen layout -- a print preview is a viewport with print rules on it, so
+# what is measured is the cascade in the print world, not a paginated sheet. `@page`
+# margins and the break rules have no effect on a viewport and are not simulated;
+# that limit is stated in the report rather than left implied.
+PRINT_MEDIA = {"print": "on"}
+PRINT_WIDTHS = (640, 794, 1440)
+
 
 # Rendered type size, which for SVG text is NOT `font-size`: the element's own size
 # is in user units and the user unit is scaled by the viewBox. Walking up to the
@@ -1873,7 +2012,7 @@ TYPE_PROBE = r"""
       s += '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.');
     return s;
   }
-  var floor = __FLOOR__, seen = 0, below = [], lowest = null;
+  var floor = __FLOOR__, seen = 0, pseudo = 0, below = [], lowest = null;
   var all = [].slice.call(d.querySelectorAll('body *'));
   all.forEach(function (el) {
     if (el.children.length) return;
@@ -1891,12 +2030,41 @@ TYPE_PROBE = r"""
     if (!lowest || px < lowest.px) lowest = { px: px, text: t.slice(0, 30), sel: name(el) };
     if (px < floor) below.push({ px: px, text: t.slice(0, 40), sel: name(el) });
   });
-  return { seen: seen, lowest: lowest, below: below };
+  /* PSEUDO-ELEMENT TEXT, which no `textContent` walk can see and which the printed
+     sheet is full of: a printed link says where it went through an ::after that
+     carries its own URL, at 0.85em of its parent, so the one world where the type
+     is generated rather than written would have been the world this sweep could
+     not see into. The size is readable even where the box is not, and size is what
+     a floor is about. Run over every element rather than the leaves, because the
+     annotation hangs off an element that has children of its own. */
+  all.forEach(function (el) {
+    ['::before', '::after'].forEach(function (which) {
+      var ps = w.getComputedStyle(el, which);
+      if (!ps) return;
+      var c = String(ps.content == null ? '' : ps.content);
+      if (!c || c === 'none' || c === 'normal' || c === '""' || c === "''") return;
+      if (ps.display === 'none' || ps.visibility === 'hidden') return;
+      var own2 = parseFloat(ps.fontSize) || 0;
+      if (!own2) return;
+      var r2 = el.getBoundingClientRect();
+      if (!r2.width && !r2.height) return;
+      var px2 = +(own2 * scaleOf(el)).toFixed(2);
+      var t2 = c.replace(/^["']|[\"']$/g, '').trim();
+      seen++;
+      pseudo++;
+      if (!lowest || px2 < lowest.px)
+        lowest = { px: px2, text: t2.slice(0, 30), sel: name(el) + which };
+      if (px2 < floor)
+        below.push({ px: px2, text: t2.slice(0, 40), sel: name(el) + which });
+    });
+  });
+  return { seen: seen, pseudo: pseudo, lowest: lowest, below: below };
 })()
 """
 
 
-def run_type_pass(chrome, site, tmp, page, height, settle, widths=TYPE_WIDTHS):
+def run_type_pass(chrome, site, tmp, page, height, settle, widths=TYPE_WIDTHS,
+                  media=None):
     """One render per width, asking what size the type actually renders at.
 
     Its own pass, and the only pass in this tool that walks widths rather than
@@ -1904,16 +2072,24 @@ def run_type_pass(chrome, site, tmp, page, height, settle, widths=TYPE_WIDTHS):
     rendered size is a fact about layout, which moves with every width. The finding
     names the width it happened at, because "a plate's glosses are 9px" is not
     actionable and "at 641" is.
+
+    `media` is empty for the screen and `PRINT_MEDIA` for the sheet the reader puts
+    on paper: the same question asked of a world with its own tokens and its own
+    generated type. The pass records which world it measured, because a report that
+    printed both under one heading would be a report where a finding could not be
+    attributed.
     """
-    below, seen, lowest, failed = [], 0, None, []
+    below, seen, pseudo, lowest, failed = [], 0, 0, None, []
     for width in widths:
         v = run_state(chrome, site, tmp, page, width, height, settle, None, False,
+                      media=media,
                       probe=TYPE_PROBE.replace("__FLOOR__", repr(TYPE_FLOOR)),
                       tag_note="type%d" % width)
         if "error" in v:
             failed.append({"width": width, "error": v["error"]})
             continue
         seen += v.get("seen") or 0
+        pseudo += v.get("pseudo") or 0
         low = v.get("lowest") or {}
         if low and (not lowest or low.get("px", 999) < lowest.get("px", 999)):
             lowest = dict(low, width=width)
@@ -1921,9 +2097,11 @@ def run_type_pass(chrome, site, tmp, page, height, settle, widths=TYPE_WIDTHS):
             below.append(dict(item, width=width, height=height))
     return {
         "type": True,
+        "media": media,
         "widths": list(widths),
         "floor": TYPE_FLOOR,
         "seen": seen,
+        "pseudo": pseudo,
         "lowest": lowest,
         "below": below,
         "fails": below + failed,
@@ -2013,7 +2191,11 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
         v = doc["value"]
         v["media"] = media
         v["scripts"] = scripts
-        v["mediaRules"] = v.get("mediaRules") or 0
+        # From the harness, whose load handler is where the emulation ran, and only
+        # falling back to the probe for the separate runs that report it themselves.
+        v["mediaRules"] = doc.get("mediaRules", v.get("mediaRules")) or 0
+        if doc.get("mediaPatch"):
+            v["mediaPatch"] = doc["mediaPatch"]
         # The patched matchMedia is what decides BOTH halves of this: whether the
         # page's own scripts pick a world, and whether the emulation finds any rule
         # to unwrap. If it did not install, this state was not audited at all, and
@@ -2021,6 +2203,17 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
         if media and v.get("mediaPatch") != ",".join(sorted(media)):
             v["error"] = ("the matchMedia patch did not install (%r), so the %s state "
                           "was NOT emulated" % (v.get("mediaPatch"), media_label(media)))
+        # A print state whose block was not found is a screen render wearing the
+        # name of a sheet: it would report the screen's contrast and the screen's
+        # type sizes as if they were paper's, which is the worst answer a gate can
+        # give. Every page this tool audits carries the print block, so zero rules
+        # here means the emulation or the unwrapping failed, and it is an error
+        # rather than a note. A page that genuinely has no print rules should make
+        # this fail loudly and be dealt with, not be papered over.
+        if media and "print" in media and not v.get("mediaRules"):
+            v["error"] = ("no @media print rules were unwrapped, so the printed "
+                          "sheet was not measured: this page carries no print "
+                          "block, or the emulation found it and could not read it")
         if not pixels or not v.get("gradient"):
             v["onPixels"] = []
             return v
@@ -2111,7 +2304,7 @@ def media_states(contrast_more, os_dark, as_authored):
 def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
                contrast_more=True, os_dark=True, scriptless=True, tap_widths=True,
                seam=True, motion=True, layout=True, type_floor=True,
-               font_delay_ms=1200):
+               print_world=True, font_delay_ms=1200):
     """Every theme and media state this page can be delivered in, as a list.
 
     The first pass forces nothing, so a page with no theme control is audited in
@@ -2147,6 +2340,18 @@ def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
                                       font_delay_ms))
     if type_floor:
         states.append(run_type_pass(chrome, site, tmp, page, height, settle))
+    # The printed sheet: one render for contrast, one narrow sweep for type. Both
+    # are asked of the world the page describes when a reader prints it, which is a
+    # world with its own tokens (paper ink on paper, the replica remapped to its own
+    # palette), its own removals (no sticky nav, no ground gradient) and its own
+    # GENERATED type -- an annotation carrying a link's address, which the screen
+    # sweep cannot see at all.
+    if print_world:
+        states.append(run_state(chrome, site, tmp, page, width, height, settle,
+                                None, pixels, PRINT_MEDIA, tag_note="sheet"))
+        if type_floor:
+            states.append(run_type_pass(chrome, site, tmp, page, height, settle,
+                                        widths=PRINT_WIDTHS, media=PRINT_MEDIA))
     for tap_width in ([width, PHONE_WIDTH] if tap_widths and width != PHONE_WIDTH
                       else [width] if tap_widths else []):
         states.append(run_tap_pass(chrome, site, tmp, page, tap_width, height, settle))
@@ -2198,6 +2403,9 @@ def main(argv):
                     help="skip the pass that walks widths and asks what size every "
                          "text actually renders at, including text inside a scaled "
                          "SVG, where the computed font-size is not the answer")
+    ap.add_argument("--no-print", action="store_true",
+                    help="skip the printed sheet: the pass that emulates @media print "
+                         "and measures the paper world's contrast and generated type")
     ap.add_argument("--font-delay", type=int, default=1200,
                     help="milliseconds the layout pass holds every .woff2 response "
                          "(default 1200)")
@@ -2205,8 +2413,8 @@ def main(argv):
                     help="skip the pass that serves each page with its scripts "
                          "removed, for the reader whose script never ran")
     ap.add_argument("--self-test", action="store_true",
-                    help="check that the reduced-motion pass can still fail, against "
-                         "a tiny site built for it, and exit")
+                    help="check that the reduced-motion, layout and print passes can "
+                         "still fail, against a tiny site built for each, and exit")
     ap.add_argument("--json", default=None, help="write the findings here")
     a = ap.parse_args(argv[1:])
 
@@ -2233,6 +2441,7 @@ def main(argv):
                            motion=not a.no_motion,
                            layout=not a.no_layout,
                            type_floor=not a.no_type_floor,
+                           print_world=not a.no_print,
                            font_delay_ms=a.font_delay)
             if r.get("error"):
                 print("  FAIL  %s  %s" % (page, r["error"]))
@@ -2303,10 +2512,12 @@ def main(argv):
                     # how close it was.
                     type_fails += len(s["fails"])
                     low = s.get("lowest") or {}
+                    world = media_label(s.get("media"))
                     print("  %s  %-42s %3d widths  %4d texts  smallest %.2fpx at %dpx "
                           "%s  %d FAIL"
                           % ("ok  " if not s["fails"] else "FAIL",
-                             "%s type floor" % page, len(s["widths"]), s["seen"],
+                             "%s type floor%s" % (page, " +%s" % world if world else ""),
+                             len(s["widths"]), s["seen"],
                              low.get("px") or 0, low.get("width") or 0,
                              "(%s)" % low.get("sel") if low.get("sel") else "",
                              len(s["fails"])))
@@ -2318,8 +2529,10 @@ def main(argv):
                                   % (f["px"], s["floor"], f["width"], f["sel"],
                                      f["text"]))
                     findings.append({"page": page, "type": True,
+                                     "media": s.get("media"),
                                      "widths": s["widths"], "floor": s["floor"],
-                                     "seen": s["seen"], "lowest": low,
+                                     "seen": s["seen"], "pseudo": s.get("pseudo") or 0,
+                                     "lowest": low,
                                      "fails": s["fails"]})
                     continue
                 if s.get("motion"):
@@ -2493,15 +2706,29 @@ def main(argv):
                  " and ".join("%dms" % d for d in delays),
                  max(f["worst"] for f in layout_passes), LAYOUT_CEILING))
 
+    # One line per world, because a printed sheet and a screen are not the same
+    # measurement and a shared heading is how a finding loses its attribution.
     type_passes = [f for f in findings if f.get("type")]
-    if type_passes:
-        small = [f["lowest"]["px"] for f in type_passes if f.get("lowest")]
-        print("\n%d type-floor passes at %s: %d texts measured, smallest %.2fpx, "
-              "floor %.1fpx"
-              % (len(type_passes),
-                 ", ".join(str(w) for w in sorted(type_passes[0]["widths"])),
-                 sum(f["seen"] for f in type_passes),
-                 min(small) if small else 0, TYPE_FLOOR))
+    groups: list[dict] = []
+    for f in type_passes:
+        if not any(g["media"] == f.get("media") for g in groups):
+            groups.append({"media": f.get("media"), "passes": []})
+        for g in groups:
+            if g["media"] == f.get("media"):
+                g["passes"].append(f)
+    for g in groups:
+        lab = media_label(g["media"])
+        world = "the %s world" % lab.split("-")[0] if lab else "the screen world"
+        small = [f["lowest"]["px"] for f in g["passes"] if f.get("lowest")]
+        generated = sum(f.get("pseudo") or 0 for f in g["passes"])
+        print("\n%d type-floor passes in %s at %s: %d texts measured, smallest "
+              "%.2fpx, floor %.1fpx%s"
+              % (len(g["passes"]), world,
+                 ", ".join(str(w) for w in sorted(g["passes"][0]["widths"])),
+                 sum(f["seen"] for f in g["passes"]),
+                 min(small) if small else 0, TYPE_FLOOR,
+                 ", %d of them written by a ::before or ::after" % generated
+                 if generated else ""))
 
     scriptless = [f for f in findings if f.get("scripts") is False]
     print("\n%d page-states audited at %dpx, %s%s"
@@ -2532,8 +2759,10 @@ def main(argv):
               "place on the page")
     if type_passes:
         print("type ok - nothing a reader has to read renders under %.0fpx, at any "
-              "width from %d to %d"
-              % (TYPE_FLOOR, min(TYPE_WIDTHS), max(TYPE_WIDTHS)))
+              "width from %d to %d%s"
+              % (TYPE_FLOOR, min(TYPE_WIDTHS), max(TYPE_WIDTHS),
+                 " on screen or on the printed sheet"
+                 if any(f.get("media") for f in type_passes) else ""))
     return 0
 
 
