@@ -488,7 +488,9 @@ measured widths and bigger type would run out of them, and it could not be the t
 340-wide drawing in a 720-wide column is a stamp in a field. So the row stays a row and the one part
 that needed the wall's flank moves above it: MID keeps the three nodes side by side and puts the
 outside stack over the wall, which brings the drawing's own width down to 576 and makes it 1:1 in
-the whole band. The tall plate's type also steps UP in user units (17 and 13.5 against the wide
+the whole band. The swap is at 783 rather than a round number, derived rather than chosen: the wide
+drawing is 704 units and the page's gutters are 40 at each side, so 784 is the first window it fits
+in at 1:1. The tall plate's type also steps UP in user units (17 and 13.5 against the wide
 plate's 15 and 11.5), because a phone column is narrower than the drawing and the rendered size is
 what matters.
 

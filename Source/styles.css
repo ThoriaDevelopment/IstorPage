@@ -1565,9 +1565,11 @@ h3 {
    labels are in user units, so they scale with the figure, and the sweep that
    measures rendered type across widths (audit-contrast.py, the type-floor pass)
    found the wide drawing's 704 units rendering its 11.5px glosses at 9.4px in a
-   641px viewport and at 10.8 in 768. The site's floor is 11. So: WIDE above 800,
-   MID 641-800, TALL 640 and below, and each one is 1:1 in its band instead of
-   being a shrunken copy. The three are different drawings, not one drawing at
+   641px viewport and at 10.8 in 768. The site's floor is 11. So: WIDE above 783,
+   MID 641-783, TALL 640 and below, and each one is 1:1 in its band instead of
+   being a shrunken copy. 783 is derived rather than chosen: the wide drawing is
+   704 units and the page's gutters are 40 at each side, so 704 + 80 is the first
+   window it fits in at 1:1. The three are different drawings, not one drawing at
    three sizes: the stack sits beside the wall, then above it, then the nodes read
    downward and the stack stays above. "Outside" stays outside at every width.
    --------------------------------------------------------------------------- */
@@ -1604,7 +1606,7 @@ h3 {
 @media (max-width: 360px) {
   .bnd-label { font-size: 16px; }
 }
-@media (max-width: 800px) {
+@media (max-width: 783px) {
   .bnd-wide { display: none; }
   .bnd-mid { display: block; }
 }
