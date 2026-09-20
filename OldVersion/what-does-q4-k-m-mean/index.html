@@ -73,6 +73,24 @@
     <h2>Reading the code piece by piece.</h2>
     <p>The number after the Q is the headline: bits per weight, and the main dial on file size. Each halving roughly halves the download and the memory bill. The letters after it describe how the rounding is done. K series recipes store weights in blocks, each with its own scale factor, which keeps precision where it is needed instead of flattening it everywhere. The trailing letter grades the recipe: L for large, M for medium, S for small. Q4_K_M therefore reads as: four bits, K-style block scales, the medium variant of that family.</p>
 
+    <figure class="q4km-anatomy">
+      <!--#include q4km-anatomy-wide-->
+      <!--#include q4km-anatomy-tall-->
+      <figcaption>The code, decoded. Q4 is the dial you turn; the letters name
+      the recipe that turns it. Every GGUF file stamps its recipe in the
+      filename, so once you can read this, downloads stop being a
+      lottery.</figcaption>
+    </figure>
+    <style>
+      .q4km-anatomy { margin: 2rem auto; max-width: 40rem; }
+      .q4km-anatomy svg { width: 100%; height: auto; display: block; }
+      .q4km-anatomy [data-variant="tall"] { display: none; }
+      .q4km-anatomy figcaption { margin-top: 0.75rem; color: var(--mist); font-size: 0.9rem; }
+      @media (max-width: 560px) {
+        .q4km-anatomy [data-variant="wide"] { display: none; }
+        .q4km-anatomy [data-variant="tall"] { display: block; }
+      }
+    </style>
     <h2>Why the mixing matters.</h2>
     <p>Not all weights are equally important, and a good recipe spends its bits accordingly. K-family quantizations keep the most sensitive parts of the model, such as attention and output layers, at higher precision while compressing the rest harder. That is why Q4_K_M consistently tests close to the full-precision model on ordinary tasks, while a naive uniform 4 bit scheme loses more. The same logic explains the ladder: every step from Q4_K_S to Q5_K_M to Q6_K buys a little accuracy back at the cost of size, and <a href="/how-much-ram-for-local-ai/">your memory budget</a> picks where you stop.</p>
 

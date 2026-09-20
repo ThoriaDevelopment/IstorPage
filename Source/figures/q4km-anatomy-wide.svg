@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 402" width="560" height="402" role="img" aria-label="The code Q4_K_M decoded: Q4 means four bits per weight, the main dial on file size; K means K-style block scales, precision kept where it is needed; M means the medium variant of the two grades." focusable="false" data-variant="wide" data-generated-by="Source/tools/make-q4km-anatomy.py - do not hand-edit">
+<text x="280" y="76" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="60" text-anchor="middle" font-weight="600"><tspan fill="var(--witness)">Q4</tspan><tspan fill="var(--ink)">_K_</tspan><tspan fill="var(--ink)">M</tspan></text>
+<text x="280" y="104" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--mist)" text-anchor="middle">the code on the file, piece by piece</text>
+<line x1="24" y1="136" x2="536" y2="136" stroke="var(--hairline)" stroke-width="1"/>
+<text x="24" y="163" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="19" fill="var(--witness)" text-anchor="start" font-weight="600">Q4</text>
+<text x="130" y="163" font-family="Inter, system-ui, sans-serif" font-size="19" fill="var(--witness)" text-anchor="start" font-weight="600">four bits per weight</text>
+<text x="130" y="188" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--mist)" text-anchor="start">the main dial on file size</text>
+<line x1="24" y1="208" x2="536" y2="208" stroke="var(--hairline)" stroke-width="1"/>
+<text x="24" y="235" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="19" fill="var(--ink)" text-anchor="start" font-weight="600">_K_</text>
+<text x="130" y="235" font-family="Inter, system-ui, sans-serif" font-size="19" fill="var(--ink)" text-anchor="start" font-weight="600">K-style block scales</text>
+<text x="130" y="260" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--mist)" text-anchor="start">precision kept where it is needed</text>
+<line x1="24" y1="280" x2="536" y2="280" stroke="var(--hairline)" stroke-width="1"/>
+<text x="24" y="307" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="19" fill="var(--ink)" text-anchor="start" font-weight="600">M</text>
+<text x="130" y="307" font-family="Inter, system-ui, sans-serif" font-size="19" fill="var(--ink)" text-anchor="start" font-weight="600">the medium variant</text>
+<text x="130" y="332" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--mist)" text-anchor="start">of the two grades</text>
+<text x="280" y="378" font-family="Inter, system-ui, sans-serif" font-size="19" fill="var(--ink)" text-anchor="middle">four bits, K-style block scales, the medium variant of the two</text>
+</svg>
