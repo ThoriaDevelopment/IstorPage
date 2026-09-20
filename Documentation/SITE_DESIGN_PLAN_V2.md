@@ -448,7 +448,7 @@ own numbers, and the check includes the part that is wrong.
 
 ### 2.11 Questions — the accordion
 
-One column, `max-width: 46rem`, six `<details name="questions">` with the first `open`. The `name`
+One column, `max-width: 46rem`, seven `<details name="questions">` with the first `open`. The `name`
 attribute makes it **exclusive** — opening one closes the other, which is the native version of the
 genre's FAQ behaviour and needs no script. v1 shipped a plain `<dl>` and defended it in a comment:
 *"an accordion would hide precisely the answers this audience came for."* The reversal is argued in
@@ -457,6 +457,60 @@ genre's FAQ behaviour and needs no script. v1 shipped a plain `<dl>` and defende
 
 The act's first answer is also the one the page's whole claim rests on (*"Does anything leave my
 computer?"* — no), so it is the one that arrives already open.
+
+**The boundary plate (2026-09-20).** This act was the last one on the page with **nothing to look
+at**: seven disclosures, 323 words, no figure. It is also where four of the seven answers turn out to
+be the same answer from four directions — what runs locally, what does not leave, what it needs
+installed, and what it cannot do yet — and a drawing of a boundary says that in one look where prose
+has to say it four times.
+
+Every label in it is **a phrase these answers already use**: `your library`, `istor`, `ollama or
+llama.cpp`, `the model you choose`, `web research`, `off until you turn it on`, `no account, no key`.
+Nothing in the plate is new copy and nothing is a claim the act does not make in words a reader can
+check, which is the rule the ring and the etymology plate follow too. The claim the figure adds is
+structural rather than verbal: the three things run **inside** a hairline rectangle labelled `your
+machine`, and the only wire that leaves it is crossed out in `--azure` — the plate's single accent,
+on the figure's single assertion.
+
+The act's one paragraph of synthesis above the accordion went with it, and the figcaption came down
+to a single line (*"Four of the seven answers below are the same answer, and this is it."*) because
+the plate now carries the rest. That sentence is the only part of the idea the drawing cannot show,
+which is the division of labour the whole page is built on.
+
+Generated, like the ring and the plate before it: `Source/tools/make-boundary.py` writes
+`Source/figures/boundary-wide.svg` (736×250, 2,259 B) and `boundary-tall.svg` (340×430, 2,295 B),
+and both are inlined into the page rather than fetched. Two variants again, and the tall one is a
+different diagram: the same three nodes read downward, and the wire leaves through the **top** of the
+boundary with the outside stack above it, so a phone keeps the one relationship the figure exists to
+show. Both variants sit on `--rule` for the frame and the wire, `--card` inside the boxes,
+`--ink` for what is named and `--ink-2` for every gloss, and enter on the standard `.reveal` panel
+treatment.
+
+**What the first version got wrong, because it is the kind of mistake that ships.** Every node label
+was drawn from its box's centre with no anchor set, so the wider of each name/gloss pair ran out
+through the right wall of its own box — by 59 units in the wide plate and 60 in the tall one, with
+the tall plate's glosses ending at x=326.9 inside a box that stops at 260.4. It survived two passes
+because a figure whose text does not line up reads as *loosely typeset*, not as broken, and because
+it was checked by looking at a screenshot at a size where the overflow was a few pixels. Three
+things came out of finding it:
+
+1. `text-anchor="middle"` is now an **attribute** in the generator. Anchoring is geometry: the box is
+   centred on `cx`, so the label has to be, and a stylesheet rule that is missing or renamed should
+   not be able to turn that into a defect.
+2. **Every string's rendered width is a measured number in the generator** (`MEASURED`, in user units,
+   taken off the rendered page with `camera.py measure`). The boxes are sized from those numbers, and
+   `tw()` refuses a string that has no measurement, so adding copy without re-measuring fails the build
+   instead of quietly drawing outside the box. `node()` refuses a label that does not keep 12 units
+   inside its box, and `wide()` refuses a plate too narrow to run the wire outside the row.
+3. The generator has a `--self-test` that calls every one of those guards once with an input that has
+   to fail **and** once with the shipped layout, because a guard that fires on everything is as
+   useless as one that fires on nothing, and only one of the two is easy to notice.
+
+The plate's right margin is exactly 8 units and the wire's stop is **derived from the label stack**
+rather than chosen: the plate is the width of its longest string, so the wire yields instead of the
+copy running off the plate. That is also why the row keeps 14 units from the boundary's walls rather
+than the 24 it started with — every unit of that air was a unit the label stack outside the wall did
+not have.
 
 ### 2.12 The name — the word at display size, and the descent it carries
 

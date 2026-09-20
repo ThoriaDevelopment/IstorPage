@@ -1514,6 +1514,54 @@ h3 {
 .etym-node { fill: var(--ink-3); }
 .etym-claim { stroke: var(--azure); stroke-width: 1.5; fill: none; }
 
+/* ---------------------------------------------------------------------------
+   14f · The boundary plate, in the questions act.
+
+   The act with no illustration, and four of its seven answers are the same answer:
+   what runs here, what does not leave, what it needs installed. So the figure is
+   the boundary itself, and its one accent is the one assertion (the crossed wire).
+
+   Line art on paper, in the light-ground tokens, like the ring and the etymology
+   plate rather than like the exhibits: this diagram is a statement about the
+   product's shape, so it is drawn in the page's structural inks, not photographed.
+   The node boxes take --card so they read as objects on --paper; the wires and the
+   frame are --rule and --ink-3, and only the cross is --azure.
+
+   Two variants and the SWAP is at 640, the same breakpoint as the etymology plate
+   and for the same reason. Measured: at 641 the column gives the wide plate 577px,
+   where its 15px names render at 11.8 and its 11.5px glosses at 9.0. At 640 and
+   below the tall plate is 1:1 (15 and 11.5) down to a 400px viewport, and at 340,
+   the narrowest width the site supports, it is 13.2 and 10.1. The tall plate is a
+   different drawing, not a squashed one: the same three nodes read downward and the
+   wire leaves the top, so "outside" stays outside.
+   --------------------------------------------------------------------------- */
+.boundary { max-width: 736px; margin-block-end: 44px; }
+.boundary .boundary-plate { display: block; }
+.bnd-wide { max-width: 736px; }
+.bnd-tall { max-width: 340px; }
+.bnd-line, .bnd-box { fill: none; stroke: var(--rule); }
+.bnd-box { fill: var(--card); }
+.bnd-wire { fill: none; stroke: var(--ink-3); }
+.bnd-cross { fill: none; stroke: var(--azure); stroke-width: 1.6; }
+.bnd-name, .bnd-sub, .bnd-outside, .bnd-claim, .bnd-label {
+  font-family: Inter, sans-serif;
+}
+.bnd-name, .bnd-outside { fill: var(--ink); }
+.bnd-sub, .bnd-claim, .bnd-label { fill: var(--ink-2); }
+.bnd-label { font-size: var(--t-label); }
+.boundary figcaption {
+  max-width: 52ch;
+  margin-block-start: 18px;
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+  text-wrap: pretty;
+}
+.bnd-tall { display: none; }
+@media (max-width: 640px) {
+  .bnd-wide { display: none; }
+  .bnd-tall { display: block; }
+}
+
 /* On a field the plate takes the field's own inks, and the page documents those as
    AA pairs measured against --field-hi, the field's LIGHTEST stop and therefore the
    worst case: --field-ink-2 6.07:1, --azure-lift 5.19:1. Which means the plate is
