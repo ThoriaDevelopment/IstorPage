@@ -156,6 +156,17 @@ so covering this element was a fact about where the walk stopped. A badge
 positioned over a caption covers it at every scroll, and that overlap is real,
 so it is measured rather than dodged.
 
+AND THE SHUTTER WAITS FOR THE PAGE, LIKE THE MEASURING PASS DOES. The screenshot
+is taken by a second Chrome run whose harness asked for no expression, so nothing
+ended the entrance states before the picture was taken, while the measuring pass
+settles every one of them. Two passes, two pages, and the one in the picture was a
+state nobody reads. It cost the name act's etymology plate eight confident failures
+at 1.13:1 to 2.15:1 against a near-white ground, on a plate that measures 12.2:1 and
+13.7:1 against the field it actually sits on. Found by reproducing the pass and
+reading its own PNG at the sampler's own coordinates, which is the only way to tell
+a frame of the animation from a finding; the shot harness now runs the same settle
+expression, and `SETTLE_SHOT` carries the note.
+
 TWO TRAPS IN THE HARNESS ITSELF:
 
   * The harness page and the Chrome profile are written to a temp directory, NOT
@@ -347,14 +358,29 @@ PROBE = r"""
         const y = Math.min(Math.max(r0.top + r0.height / 2, 1), vh - 2);
         const size = parseFloat(cs.fontSize), weight = Number(cs.fontWeight) || 400;
         const need = (size >= 24 || (size >= 18.66 && weight >= 700)) ? 3 : 4.5;
-        const c = parse(cs.color);
+        /* AN SVG TEXT ELEMENT IS INKED BY `fill`, NOT BY `color`, and the first
+           version of this read `color` for everything. That was harmless while the
+           only SVG text on the page was the ring figure's "355" label, and it
+           stopped being harmless the moment the name act gained a plate: the
+           plate's glosses would have been reported against a colour they are not
+           painted in, which is the false PASS this whole tool exists not to give.
+           A paint server (`fill: url(#...)`) has no colour to composite and is
+           skipped rather than guessed at. */
+        const svgText = el.namespaceURI === 'http://www.w3.org/2000/svg';
+        const c = parse(svgText ? getComputedStyle(el).fill : cs.color);
         if (!c) continue;
         const fg = over(c, [255, 255, 255]);
         const g = groundAt(x, y);
         const r = ratio(fg, g.rgb);
         checked++;
+        /* `className` on an SVG element is an SVGAnimatedString, so the usual
+           concatenation printed the finding's selector as
+           `text.[object SVGAnimatedString]`, which tells a reader nothing about
+           which word failed. SVG elements are named by their attribute. */
+        const cls = (el.namespaceURI === 'http://www.w3.org/2000/svg'
+          ? el.getAttribute('class') : el.className) || '';
         const rec = {
-          sel: el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).trim().split(/\s+/).join('.') : ''),
+          sel: el.tagName.toLowerCase() + (cls ? '.' + String(cls).trim().split(/\s+/).join('.') : ''),
           text: txt.slice(0, 48),
           color: cs.color,
           ground: 'rgb(' + g.rgb.map(v => Math.round(v)).join(', ') + ')',
@@ -365,6 +391,13 @@ PROBE = r"""
           replica: !!el.closest('.win'),
         };
         if (g.gradient) {
+          /* SVG text has no line box, so the sampler's usual trick (sample the
+             leading just inside the top of each line box, where no glyph reaches)
+             has nothing to sample BESIDE the glyphs: it lands on them. The plate's
+             words came back at 1.14:1 against the antialiased edge of their own
+             letters. The record says it is SVG text and the sampler looks outside
+             the glyph box instead. */
+          rec.svg = el.namespaceURI === 'http://www.w3.org/2000/svg';
           /* Rects are reported in DOCUMENT coordinates, because they are sampled
              from a full-page screenshot in a later run, where the scroll offset
              that produced them no longer exists. */
@@ -1036,6 +1069,30 @@ def inject_patch(html, patch):
 #     cannot report a pass on a ground that is really darker somewhere.
 #   * Reported with every ratio: the sampled luminance range, so a wide spread is
 #     visible as a wide spread instead of hiding behind one number.
+# THE SHUTTER HAS TO WAIT FOR THE PAGE, WHICH THE FIRST VERSION DID NOT DO. The shot
+# harness asked for no expression at all (`null`), so the screenshot was taken with
+# the page's entrance states still running, while the MEASURING pass settles every
+# one of them before it measures. Two passes, two different pages, and the one in
+# the picture is a state nobody reads: the name act's field came back at 13% opacity
+# over paper, and the etymology plate's words were then reported at 1.13:1 against a
+# near-white ground they never sit on. Found by reproducing the pass and reading its
+# own PNG at the sampler's own coordinates, which is the only way to tell an
+# instrument's frame from a finding.
+#
+# The expression below is the measuring pass's own settle, run inside the shot
+# harness after its scroll: `is-cold` ends, every animation is finished, and the
+# picture is the page a visitor reads rather than one frame of the animation they
+# watch. The trade is the measuring pass's trade: an entrance state that was
+# genuinely unreadable would be finished away instead of being photographed, and
+# the honest place to ask about an entrance is the reveal audit, not this one.
+SETTLE_SHOT = ("(() => {"
+               " d.querySelectorAll('.is-cold').forEach(function (el)"
+               " { el.classList.remove('is-cold'); });"
+               " d.getAnimations().forEach(function (a)"
+               " { try { a.finish(); } catch (e) {} });"
+               " return null; })()")
+
+
 SAMPLER = """<!doctype html>
 <html><head><meta charset="utf-8"><title>sampler</title></head>
 <body>
@@ -1078,6 +1135,18 @@ function ratio(a, b) {{
     }};
 
     var probes = function (r) {{
+      if (r.svg) {{
+        /* OUTSIDE the glyph box, because SVG text has no leading to sample.
+           Just above and just below the glyphs, at a quarter and three quarters of
+           the box, plus the two sides: the ground a plate's word sits on is the
+           field around it. The worst sample wins as always, so a word on a light
+           field is still caught, and a word whose neighbour is a bright shape is
+           still measured against that shape rather than against the page. */
+        var rr = r.rect;
+        return [[rr.x + rr.w * 0.25, rr.y - 5], [rr.x + rr.w * 0.75, rr.y - 5],
+                [rr.x + rr.w * 0.25, rr.y + rr.h + 5], [rr.x + rr.w * 0.75, rr.y + rr.h + 5],
+                [rr.x - 5, rr.y + rr.h / 2], [rr.x + rr.w + 5, rr.y + rr.h / 2]];
+      }}
       if (r.hasOwn) {{
         /* Its own ground: sample INSIDE the box, in the padding at the vertical
            centre, where no glyph reaches. For a centred label that is the left
@@ -1623,7 +1692,7 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
 
         shots, shots_url = [], []
         write(os.path.join(tmp, "shot-%s.html" % tag),
-              HARNESS.format(w=width, h=vh, url=page, expr=json.dumps("null"),
+              HARNESS.format(w=width, h=vh, url=page, expr=json.dumps(SETTLE_SHOT),
                              settle=settle, theme=json.dumps(theme or ""),
                              media=json.dumps(media or {})))
         Handler.harness = os.path.join(tmp, "shot-%s.html" % tag)
