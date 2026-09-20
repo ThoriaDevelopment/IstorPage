@@ -142,7 +142,7 @@ review for a week as one that kept it.
 | 1 | hero — `#what-it-is` | It shows you what it saw. | **C1** field-full | teal | the app window as a live **DOM replica**, animated |
 | 2 | the gate — `#how-it-answers` | It checks what you already gave it. | **C2** split, field **right** | paper + teal | `exhibit-10` |
 | 3 | the passage — `#the-passage` | Every claim points at a passage. | **C2** split, field **left** | paper + teal | `exhibit-11`, the witness |
-| 4 | the reading — no id | You can watch it decide. | **C2** split, field **right** | paper + teal | `exhibit-12` |
+| 4 | the reading — no id | You can watch it decide. | **C2** split, field **right** | paper + teal | the live reading log (DOM) |
 | 5 | the dispute — no id | It marks what nobody knows yet. | **C2** split, field **left** | paper + teal | `exhibit-13` |
 | 6 | the machine — `#on-your-machine` | On your machine. | **C3** diptych, one inset field | paper + teal | `exhibit-14` + `exhibit-15` |
 | 7 | the workspace — `#the-library` | The library is the interface. | **C4** band | teal | `exhibit-16` + `exhibit-17` |
@@ -304,11 +304,19 @@ cite as it goes, and the page says what happens then rather than pretending it d
 
 ### 2.5 The reading — C2, split, field right
 
-`exhibit-12` is the domain-by-domain reading log — Wikipedia, Commons, archive.org, arXiv, Crossref,
-Open Library. The catalogue calls it *"**Only capture that shows real domain-by-domain fetching**"*
-and the reference report's #9 says legibility is what creates the impression of a real product. It
-also gives the copy something v1 could only assert: the page can say *"you can watch it decide"* and
-then show it deciding.
+Act 4's exhibit is **the page's second DOM replica** since 2026-09-20, and it is the same argument
+the hero's replica makes: the act's claim is that you watch it read, and a bitmap cannot be watched.
+The log is transcribed line for line from the `exhibit-12` capture (Wikipedia on the mechanism and on
+the wreck, nature.com, arXiv), including the row where nature.com came back as a refusal — which is
+the most product-honest thing either replica shows: the log keeps what actually arrived, and does not
+retry until the answer looks tidy. The capture is the source of that copy, not the exhibit: it stays
+in the source tree, and its crop line is parked in make-exhibits.py with the reason.
+
+Why the capture could go where the others cannot: the reading log is **text**, so a replica loses
+nothing a crop held. It also deletes a phone problem rather than solving it — the capture needed an
+art-directed 300px second crop to render the app's text at native size on a phone, and live text
+reflows. Eight capture files left the set (185,174 B), and the act's claim stopped being an
+illustration of a claim.
 
 ### 2.6 The dispute — C2, split, field left, and the page's only portrait exhibit
 
@@ -832,14 +840,15 @@ Every exhibit is a real capture of the real app on a real session, at its native
 
 ### 6.2 The exhibits
 
-Full geometry in **Appendix A**. Nine exhibits, each derived from a capture in the 36, each cropped
-so its display width is exactly `crop_px ÷ 2` (§3.1).
+Full geometry in **Appendix A**. Nine exhibits: eight derived from captures in the 36, each cropped
+so its display width is exactly `crop_px ÷ 2` (§3.1), and one built as DOM because its subject is
+text and its act's claim is that you watch it happen.
 
 | id | Proves | Source |
 |---|---|---|
 | `exhibit-10` | it answers from what you gave it | `Black/Question1.png` |
 | `exhibit-11` | every claim points at a passage | `Black/verifiedsource.png` |
-| `exhibit-12` | you can watch it decide | `Black/FetchingPages.png` |
+| `exhibit-12` | you can watch it decide | **DOM replica** — the log transcribed from `Black/FetchingPages.png` |
 | `exhibit-13` | it keeps the disagreements | `Black/Question2.png` or `viewingnote-editingsource.png` |
 | `exhibit-14` | no network, no keys | `Black/settingsresearch.png` |
 | `exhibit-15` | it runs on your machine | `White/settingsmodels.png` |
@@ -913,6 +922,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M9** | **The hero's question** | click a chip | the answer's own M2 | the window answers a second and third question, and the second is the refusal |
 | **M11** | **The act index** | first scroll / act change | 160ms colour, 1.45x scale | the rail's echo at the viewport edge; the Awwwards device G36 took |
 | **M12** | **The scribe** | plate enters | 900ms frames, 1,400ms roll, claim last | the ring is drawn the way its plates were made (§7.5) |
+| **M13** | **The reading log fills in** | act 4 enters | 140ms apart, ticks last | the act's claim is that you watch it read (§7.6) |
 
 ### 7.1 M2 — the hero sequence, in detail
 
@@ -972,7 +982,16 @@ state holds the un-drawn start, a reader whose script never ran never sees it. T
 (`ring-frame`, `ring-holes`, `ring-claim`) are emitted by `make-calendar-ring.py`, because the
 figure carries "do not hand-edit".
 
-### 7.6 Reduced motion
+### 7.6 M13 — the reading log fills in
+
+Act 4's replica fills the way a fetch log fills: four rows arrive 140ms apart and each row's tick
+lands 300ms after its own row, because that is the order the app works in — the page comes back, then
+it is marked read. One shot, keyed to the same `.reveal`/`.is-cold` pair as every other entrance, and
+the delays live on the base rule for the reason §7's M5 note gives. The tick is drawn in CSS (two
+borders on a rotated box, the hero scroll cue's technique) rather than becoming a sixth glyph in an
+icon set that holds five on purpose.
+
+### 7.7 Reduced motion
 
 **Every item above is wrapped in `@media (prefers-reduced-motion: no-preference)`.** Under
 `reduce`, each element renders in its final state immediately, and M2 does not run — the hero shows
@@ -1382,7 +1401,7 @@ starting points, not a substitute for measuring.
 |---|---|---|---|---|
 | `exhibit-10` | `Black/Question1.png` | centre pane, ≈1242×880 | 621×440 | question + full answer; the "Thoughts ⌄" collapse carries the gate story |
 | `exhibit-11` | `Black/verifiedsource.png` | `1242x900+318+88` | 621×450 | crop A; `+318+150` starts on the answer and drops the bubble |
-| `exhibit-12` | `Black/FetchingPages.png` | `1242x880+318+100` | 621×440 | crop D; the reading log |
+| ~~`exhibit-12`~~ | `Black/FetchingPages.png` | *retired 2026-09-20* | — | its log is DOM now (§2.5); the crop line is parked in make-exhibits.py |
 | `exhibit-13` | `Black/viewingnote-editingsource.png` | `720x940+500+60` | 360×470 | crop B; portrait. Three-pane split — do not use the default |
 | `exhibit-14` | `Black/settingsresearch.png` | `800x568+560+226` | 400×284 | crop C; modal pixel-for-pixel, no dimmed background |
 | `exhibit-15` | `White/settingsmodels.png` | modal bounds — **measure at build** | ≈400×300 | the modal is content-sized; measure as crop C was |

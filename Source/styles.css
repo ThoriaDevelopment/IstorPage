@@ -510,7 +510,61 @@ h3 {
 }
 .win-mark { font-family: var(--serif); font-size: 15px; color: var(--ink); letter-spacing: -0.005em; }
 .mark-dot { color: var(--azure); }
-.win-count { margin-inline-start: auto; }
+.win-count {
+  margin-inline-start: auto;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: var(--fill);
+  color: var(--ink-2);
+  font-size: var(--t-label);
+}
+
+/* 8.2 · The reading log.
+
+   Act 4's exhibit is the app mid-fetch, and it is DOM for the reason the hero is:
+   the act's claim is that you watch it read, and a bitmap cannot be watched. The
+   geometry is the pane exhibits' own (--win-sm, native app scale), so the window
+   sits in its field exactly where exhibit-12's capture sat before it, at the same
+   600px, and the phone gets real text instead of the art-directed second crop the
+   capture needed (a bitmap at 1x renders the app's text at 7.6px on a phone; live
+   text reflows and stays legible at any width).
+
+   The ticks are CSS: two borders on a rotated box, the same technique the hero's
+   scroll cue uses for its chevron. The icon set is five Lucide glyphs by design,
+   and a check mark does not earn a sixth.
+
+   Markdown prefixes ("#", "##") are visible because they are what the app printed;
+   they are aria-hidden so a screen reader hears the words, not the punctuation. */
+.win-readlog { width: min(var(--win-sm), 100%); }
+.pane-readlog { padding: 18px 20px 20px; }
+.readlog {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  font-size: var(--t-sm);
+  line-height: 1.5;
+}
+.readlog li {
+  position: relative;
+  padding-block: 11px;
+}
+.readlog li + li { border-block-start: 1px solid var(--rule); }
+.readlog-tick {
+  position: absolute;
+  inset-block-start: 17px;
+  inset-inline-start: 2px;
+  width: 9px;
+  height: 5px;
+  border-inline-start: 1.5px solid var(--ink-3);
+  border-block-end: 1.5px solid var(--ink-3);
+  transform: rotate(-45deg);
+}
+.readlog-head,
+.readlog-body { margin: 0; padding-inline-start: 22px; }
+.readlog-head { color: var(--ink-2); }
+.readlog-head b { color: var(--ink); font-weight: 600; }
+.readlog-body { margin-block-start: 5px; color: var(--ink-2); }
+.readlog-body b { color: var(--ink); font-weight: 600; }
 
 .win-body {
   display: grid;
@@ -1513,13 +1567,15 @@ h3 {
      alone. The separator rule is untouched -- the seam stays 1px -- so the
      separator measurement in audit-contrast.py is unaffected. */
   .exhibit img, .exhibit picture > img,
+  .exhibit .win,
   .hero .win, .poster .win { transition: transform 260ms var(--ease),
                                         box-shadow 260ms var(--ease); }
   .field .exhibit:hover img { transform: translateY(-4px);
     box-shadow: var(--shadow-field-lift); }
   .act .exhibit:hover img { transform: translateY(-4px);
     box-shadow: var(--shadow-paper-lift); }
-  .hero .win:hover { transform: translateY(-4px);
+  .hero .win:hover,
+  .field .exhibit .win:hover { transform: translateY(-4px);
     box-shadow: var(--shadow-field-lift); }
   .poster .win:hover { transform: translateY(-4px); }
 
@@ -1614,6 +1670,29 @@ h3 {
   .plate.is-cold > svg .ring-holes { stroke-dashoffset: -4.60177; }
   .plate > svg .ring-claim { transition: opacity 320ms var(--ease) 2000ms; }
   .plate.is-cold > svg .ring-claim { opacity: 0; transition: none; }
+
+  /* M13 · The reading log fills in.
+
+     Four rows, and the content is a sequence for a literally documentary reason:
+     this is what a fetch log looks like as it fills, one page at a time. Each row
+     arrives and its tick lands after it, the way the app marks a page read when it
+     is done. 140ms apart, one shot, never a loop.
+
+     Same shape as M5: the delay lives on the BASE rule because a transition reads
+     its timing from the state it is heading to, and the cold state carries only the
+     hidden values. The tick is a rotated border box, so its own arrival is opacity
+     and its delay is the row's delay plus 300ms -- the fetch finishes, then it is
+     marked. */
+  .readlog li { transition: opacity 480ms var(--ease), transform 480ms var(--ease); }
+  .readlog li:nth-child(2) { transition-delay: 140ms; }
+  .readlog li:nth-child(3) { transition-delay: 280ms; }
+  .readlog li:nth-child(4) { transition-delay: 420ms; }
+  .readlog-tick { transition: opacity 260ms var(--ease) 300ms; }
+  .readlog li:nth-child(2) .readlog-tick { transition-delay: 440ms; }
+  .readlog li:nth-child(3) .readlog-tick { transition-delay: 580ms; }
+  .readlog li:nth-child(4) .readlog-tick { transition-delay: 720ms; }
+  .field.is-cold .readlog li { opacity: 0; transform: translateY(10px); }
+  .field.is-cold .readlog-tick { opacity: 0; transition: none; }
 
   /* M5 · The numbers. The content genuinely is a sequence, so a stagger is
      honest here rather than decorative.

@@ -68,7 +68,8 @@ DUPLICATED = [
 # /theme.js: the library's theme control is one shared file rather than a script
 # copied into each of the 75 pages, which is the only shape that keeps a fix to
 # it a one-file edit.
-ARTIFACT_FILES = 156                  # + the generated library index
+ARTIFACT_FILES = 148                  # + the generated library index; 8 fewer since
+                                      # exhibit-12 retired its exports (2026-09-20)
 
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 # The library index lives at /library/ and is a page, but it is not one of the 75

@@ -98,16 +98,16 @@ ASSETS_PUBLISHED = {
     "/og-card.png":                "brand/og-card.png",
 }
 
-# The nine exhibits the v2 page ships, in the order it uses them. Every one is a
+# The eight captures the v2 page ships, in the order it uses them. Every one is a
 # measured crop of a real capture, written by make-exhibits.py — see that file
-# for the crop bounds and for why each is crop_px / 2 CSS px.
+# for the crop bounds and for why each is crop_px / 2 CSS px. The page carries
+# nine exhibits, not eight: act 4's is the DOM reading log, which is not an export
+# and therefore not in this list.
 EXPORTS = [
     "exhibit-10-gate",
     "exhibit-10-gate-phone",
     "exhibit-11-citations",
     "exhibit-11-citations-phone",
-    "exhibit-12-reading",
-    "exhibit-12-reading-phone",
     "exhibit-13-dispute",
     "exhibit-14-research",
     "exhibit-15-models",

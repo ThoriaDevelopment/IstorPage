@@ -79,7 +79,8 @@ LIBRARY_PAGES = 75
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
 LIBRARY_STYLES_BYTES = 50980
-ARTIFACT_FILES = 156                  # 138 + the four phone crops' 16 files + the library index
+ARTIFACT_FILES = 148                  # 138 + the four phone crops' 16 files + the library
+                                      # index, less exhibit-12's eight retired exports
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
 
 # Check 8's marker. If the assembler ever globs OldVersion/ instead of copying by
@@ -631,11 +632,21 @@ def check_5(rep: Report, page: str) -> None:
     else:
         rep.ok(f"{len(classes)} compositions in use", ", ".join(sorted(classes)))
 
+    # Nine exhibits, of which eight are captures. Act 4's is the DOM reading log
+    # since 2026-09-20, so this asserts BOTH halves rather than lowering the
+    # count: eight <picture> elements, and the live log that replaced the ninth.
+    # A count alone would let the replacement slide back to a bitmap unnoticed,
+    # which is the one thing this pair of checks exists to prevent.
     pictures = len(re.findall(r"<picture\b", body, re.I))
-    if pictures < 9:
-        rep.fail("exhibit count", f"{pictures} <picture> elements — §6 ships nine")
+    if pictures < 8:
+        rep.fail("exhibit count", f"{pictures} <picture> elements — §6 ships eight captures")
     else:
-        rep.ok(f"{pictures} exhibits", "§6's exhibit set is present")
+        rep.ok(f"{pictures} exhibits", "§6's capture set is present")
+    if 'class="win win-readlog"' not in body:
+        rep.fail("the reading log", "act 4's live log is missing — §6.2 ships it as the "
+                                    "page's second DOM replica, not a capture")
+    else:
+        rep.ok("the reading log", "act 4's exhibit is the live log, not a bitmap")
 
     # v1 shipped the FAQ as a plain <dl> and wrote a comment explaining that an
     # accordion "would hide precisely the answers this audience came for". Every

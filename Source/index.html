@@ -367,20 +367,60 @@
 
     <div class="field reveal">
       <figure class="exhibit">
-        <picture>
-          <source media="(max-width: 430px)" type="image/avif" width="300" height="464"
-                  srcset="/img/exhibit-12-reading-phone.avif 1x, /img/exhibit-12-reading-phone@2x.avif 2x">
-          <source media="(max-width: 430px)" type="image/webp" width="300" height="464"
-                  srcset="/img/exhibit-12-reading-phone.webp 1x, /img/exhibit-12-reading-phone@2x.webp 2x">
-          <source type="image/avif" srcset="/img/exhibit-12-reading.avif 1x, /img/exhibit-12-reading@2x.avif 2x">
-          <source type="image/webp" srcset="/img/exhibit-12-reading.webp 1x, /img/exhibit-12-reading@2x.webp 2x">
-          <img src="/img/exhibit-12-reading.webp" srcset="/img/exhibit-12-reading.webp 1x, /img/exhibit-12-reading@2x.webp 2x"
-               width="600" height="464" loading="lazy" decoding="async"
-               alt="Istor mid-research in the dark theme, reading the web. A log names each page as it comes back, with a tick beside it: en.wikipedia.org on the Antikythera mechanism, en.wikipedia.org on the wreck, nature.com, and arxiv.org on an improved calendar-ring hole count. Each entry carries the opening of the page the app actually fetched.">
-        </picture>
+        <!-- THE READING LOG IS DOM, NOT A CAPTURE, and it is the same argument the
+             hero's replica makes one act earlier: a bitmap cannot be watched, and
+             this act's whole claim is that you witness the reading. It is also the
+             one exhibit whose copy could be kept without redrawing anything -- the
+             log below is transcribed from the exhibit-12 capture, line for line,
+             including the row where nature.com came back as a refusal. That row is
+             the most product-honest thing on this page: the log keeps what actually
+             arrived. Crop cuts in the capture are marked with an ellipsis; nothing
+             here is invented, and the markdown prefixes are the app's own output.
+             The tick is drawn in CSS (rotated borders, the scroll-cue's technique)
+             rather than becoming a sixth glyph in the icon set. -->
+        <div class="win win-readlog">
+          <div class="win-bar">
+            <span class="win-mark">ἵστωρ<span class="mark-dot">.</span></span>
+            <span class="win-count">0 sources</span>
+          </div>
+
+          <div class="pane pane-readlog">
+            <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
+
+            <ol class="readlog">
+              <li>
+                <span class="readlog-tick" aria-hidden="true"></span>
+                <p class="readlog-head">Read <b>en.wikipedia.org</b>, Antikythera Mechanism</p>
+                <p class="readlog-body"><span aria-hidden="true">## </span>Overview<br>
+                  The <b>Antikythera mechanism</b> is an ancient Greek…<br>
+                  discovered in 1901. It is the oldest known example…</p>
+              </li>
+              <li>
+                <span class="readlog-tick" aria-hidden="true"></span>
+                <p class="readlog-head">Read <b>en.wikipedia.org</b>, Antikythera Wreck</p>
+                <p class="readlog-body"><span aria-hidden="true">## </span>Discovery<br>
+                  Around Easter 1900, Captain Dimitrios Kondos…</p>
+              </li>
+              <li>
+                <span class="readlog-tick" aria-hidden="true"></span>
+                <p class="readlog-head">Read <b>nature.com</b></p>
+                <p class="readlog-body"><span aria-hidden="true"># </span>Nature.com<br>
+                  A required part of this site couldn't load.</p>
+              </li>
+              <li>
+                <span class="readlog-tick" aria-hidden="true"></span>
+                <p class="readlog-head">Read <b>arxiv.org</b>, 2403</p>
+                <p class="readlog-body"><span aria-hidden="true"># </span>arXiv:2403.00040,
+                  An Improved Calendar Ring…<br>
+                  <span aria-hidden="true">## </span>Authors<br>
+                  Graham Woan<br>Joseph Bayley</p>
+              </li>
+            </ol>
+          </div>
+        </div>
         <figcaption>The gate sent this one to the web rather than answering from the library, so you
-          watch it read, page by page. Every domain it opened is named, and the first lines of each
-          page are printed under it.</figcaption>
+          watch it read, page by page. Four domains, named as each page came back. One of them
+          refused to load, and the log keeps that too.</figcaption>
       </figure>
     </div>
   </div>

@@ -68,8 +68,12 @@ EXHIBITS = [
      "the grounding disclosure: question, the reasoning line, the answer"),
     ("exhibit-11-citations", "Black/verifiedsource.png", "1200x876+359+44",
      "the cited answer; carries the M4 witness interaction"),
-    ("exhibit-12-reading", "Black/FetchingPages.png", "1200x928+400+44",
-     "the reading log - domain by domain, the only capture showing real fetching"),
+    # exhibit-12-reading RETIRED 2026-09-20. Act 4's exhibit is a live DOM replica
+    # now (see the markup note in act 4 of Source/index.html): the act's claim is
+    # that you watch it read, and a bitmap cannot be watched. Its copy was
+    # transcribed into the page from this capture before the crop was dropped, so
+    # nothing was lost but the bytes. Regenerate with the line above restored if a
+    # future act ever needs the capture as a bitmap again.
     ("exhibit-13-dispute", "Black/Question2.png", "860x960+540+44",
      "the twelve-row disputed-claims table, kept rather than resolved"),
     ("exhibit-14-research", "Black/settingsresearch.png", "800x568+560+226",
@@ -93,7 +97,6 @@ EXHIBITS = [
 PHONE = {
     "exhibit-10-gate": "600x884+540+0",
     "exhibit-11-citations": "600x876+540+0",
-    "exhibit-12-reading": "600x928+540+0",
     "exhibit-18-numbers": "600x956+540+0",
 }
 
