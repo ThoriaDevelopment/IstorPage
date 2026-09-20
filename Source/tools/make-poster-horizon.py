@@ -85,6 +85,36 @@ GLOW_CY = 260.0
 GLOW_R = 680.0
 GLOW_SQUASH = 0.35
 
+# The depth layers: the mechanism's plates, sinking below the ring the visitor
+# reads as the horizon. Concentric with the limb but smaller, so each apex sits
+# lower (apex y = R minus its own radius), and each is fainter, so the eye
+# stacks them as distance. Each carries the 355 holes at its own pitch, one
+# dashed circle again, because the count is the figure's content at every depth.
+# Freebuff's close stacks cloud behind cloud; Tempo's stacks atmosphere against
+# the limb; this is the same depth cue in Istor's own material. Layers are
+# (radius offset, stroke opacity, hole opacity): derived positions, tuned ink.
+LAYERS = ((38, 0.30, 0.16), (90, 0.18, 0.09), (160, 0.10, 0.045))
+
+
+def layer_arcs():
+    out = []
+    for off, line_op, dot_op in LAYERS:
+        r = R - off
+        pitch = 2 * math.pi * r / HOLES
+        gap = pitch - 0.02
+        # The arc, thin, and its row of holes under it: one dashed circle each.
+        out.append('  <g class="horizon-layer">')
+        out.append(f'    <circle cx="{CX:g}" cy="{CY:.1f}" r="{r:g}" fill="none" '
+                   f'stroke="var(--field-ink)" stroke-width="1.4" '
+                   f'stroke-opacity="{line_op:g}"/>')
+        out.append(f'    <circle cx="{CX:g}" cy="{CY:.1f}" r="{r - 9:g}" fill="none" '
+                   f'stroke="var(--field-ink)" stroke-width="4.2" '
+                   f'stroke-opacity="{dot_op:g}" stroke-linecap="round" '
+                   f'stroke-dasharray="0.02 {gap:.5f}" '
+                   f'transform="rotate({THETA:.5f} {CX:g} {CY:.1f})"/>')
+        out.append('  </g>')
+    return "\n".join(out)
+
 
 def circle(r, width, opacity, **extra):
     a = "".join(f' {k}="{v}"' for k, v in extra.items())
@@ -112,6 +142,11 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VB_W} {VB_H}"
        so the glow arrives at neither edge of this viewBox and is never cropped
        into a straight line. See the note in make-poster-horizon.py. -->
   <rect width="{VB_W}" height="{VB_H}" fill="url(#poster-glow)"/>
+
+  <!-- The mechanism's plates under the ring: concentric hole rows, each lower
+       and fainter than the one above, which is how the eye reads depth in a
+       stacked machine. See LAYERS in make-poster-horizon.py. -->
+{layer_arcs()}
 
   <!-- The limb itself: four strokes of one circle, widest and faintest first. A
        stacked stroke rather than a blur filter, because a filter's cost and its
@@ -161,6 +196,8 @@ print(f"wash          ends y={gl_top:.0f} to y={gl_bot:.0f}, x={CX - GLOW_R:.0f}
 print(f"              top margin {gl_top:.0f}px, bottom {VB_H - gl_bot:.0f}px, "
       f"sides {CX - GLOW_R:.0f}px")
 print(f"holes         {HOLES} on the full circle, {visible} of them in frame")
+print(f"layers        {len(LAYERS)} plates under the limb, apices at "
+      f"{', '.join(f'y={off}' for off, _, _ in LAYERS)}")
 print(f"pitch         {PITCH:.4f} px   ({360 / HOLES:.4f} deg per slot)")
 print(f"svg           {n:,} bytes")
 print(f"svg gzipped   {len(gzip.compress(svg.encode(), 9)):,} bytes")

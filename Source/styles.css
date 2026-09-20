@@ -886,7 +886,14 @@ h3 {
 }
 .hero .wrap { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .hero h1 { max-width: 16ch; }
-.hero .lede { max-width: 52ch; margin-block-start: 22px; }
+/* The hero's one accent: "what it saw" in azure-lift on the field. It is the
+   h1's phrase and the page's promise, lifted the way the genre lifts its key
+   phrase (Freebuff: "100% free" in green; two other references do the same).
+   --azure-lift is 5.19:1 on the field's brightest stop, AA at this size with
+   room; the light-ground --azure would be 2.9:1 here, which is why the span
+   names the lift token and the print world maps it back. */
+.h1-see { color: var(--azure-lift); }
+.hero .lede { max-width: 44ch; margin-block-start: 22px; }
 .hero .cta { margin-block-start: 32px; }
 .scroll-cue {
   display: inline-flex;

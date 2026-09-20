@@ -877,14 +877,17 @@ def check_7(rep: Report, page: str, css: str) -> None:
 def check_8(rep: Report, page: str) -> None:
     print("\n8  the home page is the new one")
     h1 = re.search(r"<h1[^>]*>(.*?)</h1>", page, re.S | re.I)
-    if not h1 or HOME_MARKER not in h1.group(1):
-        found = re.sub(r"<[^>]+>", "", h1.group(1)).strip()[:60] if h1 else "no <h1>"
+    # The marker is matched against the h1's TEXT: the h1 now carries an inline
+    # span around "what it saw" (the hero's one accent), and a tag is not a
+    # word. Same normalisation the copy gate's extractor uses.
+    h1_text = re.sub(r"<[^>]+>", "", h1.group(1)).strip() if h1 else ""
+    if not h1 or HOME_MARKER not in h1_text:
+        found = h1_text[:60] if h1 else "no <h1>"
         rep.fail("_site/index.html",
                  f"does not carry §1.3's marker. Found: {found!r}. The assembler "
                  f"copied the previous home page.")
     else:
-        rep.ok("_site/index.html carries the new <h1>",
-               re.sub(r"<[^>]+>", "", h1.group(1)).strip())
+        rep.ok("_site/index.html carries the new <h1>", h1_text)
 
 
 def check_9(rep: Report, site: pathlib.Path,

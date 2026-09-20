@@ -18,6 +18,22 @@
        into a straight line. See the note in make-poster-horizon.py. -->
   <rect width="1440" height="520" fill="url(#poster-glow)"/>
 
+  <!-- The mechanism's plates under the ring: concentric hole rows, each lower
+       and fainter than the one above, which is how the eye reads depth in a
+       stacked machine. See LAYERS in make-poster-horizon.py. -->
+  <g class="horizon-layer">
+    <circle cx="720" cy="1000.0" r="962" fill="none" stroke="var(--field-ink)" stroke-width="1.4" stroke-opacity="0.3"/>
+    <circle cx="720" cy="1000.0" r="953" fill="none" stroke="var(--field-ink)" stroke-width="4.2" stroke-opacity="0.16" stroke-linecap="round" stroke-dasharray="0.02 17.00655" transform="rotate(-449.49296 720 1000.0)"/>
+  </g>
+  <g class="horizon-layer">
+    <circle cx="720" cy="1000.0" r="910" fill="none" stroke="var(--field-ink)" stroke-width="1.4" stroke-opacity="0.18"/>
+    <circle cx="720" cy="1000.0" r="901" fill="none" stroke="var(--field-ink)" stroke-width="4.2" stroke-opacity="0.09" stroke-linecap="round" stroke-dasharray="0.02 16.08619" transform="rotate(-449.49296 720 1000.0)"/>
+  </g>
+  <g class="horizon-layer">
+    <circle cx="720" cy="1000.0" r="840" fill="none" stroke="var(--field-ink)" stroke-width="1.4" stroke-opacity="0.1"/>
+    <circle cx="720" cy="1000.0" r="831" fill="none" stroke="var(--field-ink)" stroke-width="4.2" stroke-opacity="0.045" stroke-linecap="round" stroke-dasharray="0.02 14.84726" transform="rotate(-449.49296 720 1000.0)"/>
+  </g>
+
   <!-- The limb itself: four strokes of one circle, widest and faintest first. A
        stacked stroke rather than a blur filter, because a filter's cost and its
        result both vary by renderer and this has to look identical everywhere. -->

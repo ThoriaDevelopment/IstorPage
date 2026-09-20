@@ -220,9 +220,7 @@ be wrong.
 ║                                                                    ║
 ║                 It shows you what it saw.                          ║  94px, GFS Didot, 1.06
 ║                                                                    ║
-║   A hundred pages to get through and one question. Istor reads the  ║  21px, --measure
-║   documents you give it, answers from them, and shows you the       ║
-║   passage behind every claim, and it says so when it cannot.        ║
+║        Local. Offline. Every claim points at its passage.            ║  one line, genre rule
 ║                                                                    ║
 ║      [ Follow the build ]    See the evidence ⌄                    ║  azure pill + scroll cue
 ║                                                                    ║
@@ -236,7 +234,13 @@ be wrong.
 
 The hero **is** the product doing something, so there is no separate "product demo" section — the
 genre's usual second act is folded into the first. The headline is v1's, unchanged: six words, the
-page's own `<title>`, and the most distinctive sentence the brand owns.
+page's own `<title>`, and the most distinctive sentence the brand owns — and its key phrase,
+"what it saw", now carries the page's one accent (`--azure-lift` on the field, 5.19:1; the light
+`--azure` would be 2.9:1 here), the way the genre lifts its key phrase. The lede is **one line**:
+"Local. Offline. Every claim points at its passage." It replaced 42 words that read as a seven-line
+wall at phone width; the genre's subheads run one line (Freebuff's is six words), the full value
+proposition is acts 2 and 3's job, and the new line's last clause is act 3's own headline, so the
+vocabulary stays the page's.
 
 **The left rail is a real navigation.** It is a `<nav aria-label="Sections of this page">` carrying
 seven in-page links — What it is, How it answers, The passage, On your machine, The evidence,
@@ -428,7 +432,11 @@ immediately before the poster so the etymology is the last thing read before the
   2. **`.poster-horizon`** — an arc spanning `100vw` whose **apex is the wordmark's baseline**,
      `0.889` of the mark's own box, measured from the font's metric box and holding within a pixel
      from 390 to 1920. Its beads sit among the letters' feet and its arc passes through them, so the
-     mark is *occluded* rather than placed on top of the artwork;
+     mark is *occluded* rather than placed on top of the artwork. Under the limb, **three concentric
+     plates** (2026-09-20): hole rows at radii −38, −90 and −160 from the limb's, each lower and
+     fainter than the one above, one dashed circle each, still all 355. The mechanism's stacked
+     plates, as the depth cue both reference closes use (Freebuff's cloud banks, Tempo's
+     atmosphere against the limb), in the poster's own material rather than a borrowed landscape;
   3. **the replica window**, then the act's `h2` and CTA, then `.reading`.
 
 **The occlusion is the point, and it inverts the genre.** The reference sites put their artwork in

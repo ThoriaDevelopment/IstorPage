@@ -471,7 +471,15 @@ def splice_includes() -> None:
 
     if "<!--#include" in text:
         raise BuildError("an include marker survived splicing — unknown include name?")
-    if MARKER not in text:
+    # The marker is matched against the page's TEXT, not its markup: the h1
+    # now carries an inline span around "what it saw" (the hero's one accent),
+    # and a raw-substring match would reject the page for its own typography.
+    # Stripping tags is what verify-copy.py's extractor does for the same
+    # reason -- block tags become newlines, inline tags vanish -- so this strip
+    # is the same normalisation the copy gate already trusts. A marker is a
+    # contiguous phrase a reader sees, and a reader does not see tags.
+    marker_text = re.sub(r"<[^>]+>", "", text)
+    if MARKER not in marker_text:
         raise BuildError(
             f"the spliced page does not contain its marker string {MARKER!r}.\n"
             "       That string is what verify-links.py checks for in _site/, so\n"
@@ -503,7 +511,11 @@ def copy_library() -> int:
         copy_tree(LEGACY / name, SITE / name)
     for name in LIBRARY_ROOT_FILES:
         copy_file(LEGACY / name, SITE / name)
-    if (SITE / "index.html").read_text(encoding="utf-8").find(MARKER) < 0:
+    # Same text-level match as the splice check above: the h1 carries an
+    # inline span, and the guard asks about the page's words, not its tags.
+    built_text = re.sub(r"<[^>]+>", "",
+                        (SITE / "index.html").read_text(encoding="utf-8"))
+    if built_text.find(MARKER) < 0:
         raise BuildError("the library overwrote the new home page")
     return len(pages)
 
