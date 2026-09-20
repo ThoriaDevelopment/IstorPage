@@ -1116,7 +1116,15 @@
         var turn = Math.round(Math.min(1, window.scrollY / heroBottom) * 80) / 10;
         if (turn !== heroTurn) {
           heroTurn = turn;
-          gearA.setAttribute('transform', 'rotate(' + turn + ' 720 720)');
+          // Wheel A's pivot comes from the drawing, exactly as the pinions'
+          // do. The first version hardcoded 720 720, the viewBox centre,
+          // while the wheel's own centre sits at y=545: a 175-unit axis error
+          // that translated the wheel ~24 units at the hero's full 8 degrees,
+          // which is nearly two teeth of slip at the mesh points. The pinions
+          // never had this bug because they always read their own.
+          var ax = gearA.getAttribute('data-gear-cx');
+          var ay = gearA.getAttribute('data-gear-cy');
+          gearA.setAttribute('transform', 'rotate(' + turn + ' ' + ax + ' ' + ay + ')');
           for (var g = 0; g < gearsB.length; g++) {
             var cx = gearsB[g].getAttribute('data-gear-cx');
             var cy = gearsB[g].getAttribute('data-gear-cy');
