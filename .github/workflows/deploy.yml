@@ -24,6 +24,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Assert that every figure is what its generator writes
+        run: python Source/tools/verify-figures.py
+
       - name: Assemble the site
         run: python Source/tools/build-site.py
 

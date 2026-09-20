@@ -128,10 +128,15 @@ The timer is the reliable mode. Freebuff does not currently expose a documented 
 ## Building it
 
     python Source/tools/build-site.py      # Source/ + Assets/ + OldVersion/ -> _site/
+    python Source/tools/verify-figures.py  # the seven generated figures, against their generators
     python Source/tools/verify-budget.py   # every asserted byte size
     python Source/tools/verify-links.py    # every link in the artifact
     python Source/tools/verify-copy.py     # the humanizer pass, and the release-claim rule
     python -m http.server --directory _site 8080
+
+Artwork is generated and committed rather than stored, so the seven SVGs in `Source/figures/` are
+rebuilt by `verify-figures.py` and compared to what is in the repository. It restores the working
+tree whatever it finds, so it is safe to run in the middle of an edit.
 
 Two generators write into the carried library, and both are idempotent and checkable, so a new page
 is one command each rather than 75 hand edits:

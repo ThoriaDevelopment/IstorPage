@@ -30,6 +30,7 @@ ring of 355 with one hole marked rather than two rings drawn side by side.
 
 import gzip
 import math
+from pathlib import Path
 
 VB_W, VB_H = 594, 440    # the reading column's measure, and the header block's height
 CX, CY = 297.0, 360.0    # centre pushed below the frame so only the upper plate shows
@@ -92,8 +93,12 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VB_W} {VB_H}"
 </svg>
 '''
 
-out = "../figures/calendar-ring.svg"
-with open(out, "w", encoding="utf-8", newline="\n") as f:
+# Anchored to this file rather than to the shell's directory. This wrote to
+# "../figures/" until 2026-09-20, which resolves correctly only when the tool is
+# run from Source/tools and, from the repository root the docstring names, lands in
+# the repository's PARENT: outside the project, on a path nobody would look at.
+OUT = Path(__file__).resolve().parent.parent / "figures" / "calendar-ring.svg"
+with open(OUT, "w", encoding="utf-8", newline="\n") as f:
     f.write(svg)
 
 n = len(svg.encode())
@@ -105,4 +110,4 @@ print(f"354 vs 355    {per_354:.4f} deg per hole vs {per_355:.4f} "
 print(f"rotation      {THETA:.4f} deg to bring hole {HOLES} to 12 o'clock")
 print(f"svg           {n:,} bytes")
 print(f"svg gzipped   {len(gzip.compress(svg.encode(), 9)):,} bytes")
-print(f"written       {out}")
+print(f"written       {OUT.relative_to(OUT.parents[2])}")

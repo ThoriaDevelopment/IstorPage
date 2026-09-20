@@ -1346,12 +1346,27 @@ The build gates are re-baselined **by measurement, never transcription** — the
 | `totals.phone_1x` / `retina_2x` | re-baselined over 9 exhibits: **194,064 B** / **388,356 B**, and again on 2026-09-19 over 9 exhibits **plus 4 phone crops** at **237,991 B** / **500,885 B** — the inventory grows while what a device *downloads* shrinks, because those four exhibits now serve a narrower crop below 430px |
 | `totals.exports_all_*` | **renamed `exports_all_36`** and the `.png` suffix dropped from the sum, because PNG left the shipped set; **renamed again to `exports_all`** when the phone crops took the set from 36 files to 52 and the number in the name stopped being true |
 | `ARTIFACT_FILES` | re-baselined to **138** (the whole +18 is 9 exhibits × 4 files against 3 × 6), then to **154** on 2026-09-19 (+16 = 4 phone crops × 4 files), then to **156** (+the generated library index, +`/theme.js`). Stays exact: it caught stray screenshots twice |
+| `verify-figures.py` **(new tool, 2026-09-20)** | regenerates all seven figures in `Source/figures/` and compares each to the committed file **by bytes**, restoring the working tree whatever the comparison says, then runs each generator's own `--self-test` where it has one. 9 checks. The claim in `SITE_BUILD_PLAN.md` that `verify-budget.py` catches a stale regeneration was only half true: it catches a stale figure that moves the page's total past a ceiling, which is a much larger event than a figure three hundred bytes out of date, and this repository generates its artwork rather than storing it. It also fixed two generators that wrote to `../figures/`, a path that is right only when the tool is run from `Source/tools` and, from the repository root their own docstrings name, resolves to the repository's **parent** |
 | `verify-copy.py` **(new tool)** | Stage 9's checks 10 and 11: the humanizer pass as a rule rather than a memory, and §10.4's release-claim rule in both prose and tables. Both run a positive control before they trust their own silence, and an allow-list entry that stops matching fails the build |
 | **`composition` (new)** | asserts the page has **≥ 10 sections, ≥ 4 distinct composition classes, ≥ 1 sticky element, ≥ 1 `<details>`, and ≤ 1 display-size element** |
 
 That last gate is the point. v1 had 53 assertions and none could see that the page was nine identical
 sections. **A composition gate is what would have caught it**, and it is the only gate here that
 asserts the *design* rather than the bytes.
+
+**Every figure in `Source/figures/` now has to be what its generator writes today.** Seven SVGs on
+this page are generated, committed and inlined into the document, and each one carries a "do not
+hand-edit" comment inside it that nothing checked. That failed twice in one session, both times
+caught by luck: a hero placement that was edited in the generator and not in the figure, and a plate
+whose box widths came from a measurement the shipped figure did not have. `verify-figures.py` closes
+it, in the four steps a gate needs. It runs each generator in place; compares by **bytes**, because
+`read_text()`/`write_text()` translate newlines and a CRLF copy of the right drawing compares equal to
+a fresh LF one, which is the lesson `make-icon-sprite.py` learned first; **restores the working tree
+whatever the comparison said**, including uncommitted work, because a check that leaves the workspace
+modified is a check nobody runs twice; and runs each generator's `--self-test`, so the invariant tests
+travel with the gate instead of living in whoever remembers them. It was shown failing before it was
+trusted, on both branches: a figure with one byte appended (reported at the exact offset) and a figure
+removed from the tree (reported as uncommitted, since the build inlines what it expects to find).
 
 **The artifact total is a report and no longer a stale one.** 4.12 MiB was written before the
 article navigation and the directory's find control landed, and nothing asserted it, which is how a

@@ -57,6 +57,7 @@ screen reader loses the composition and nothing else.
 """
 
 import gzip
+from pathlib import Path
 
 # --- the wide plate, read left to right -------------------------------------
 
@@ -180,12 +181,17 @@ tall += tall_entry(T_ROWS[2], "ἵστωρ", "greek · a witness", cls="etym-nam
                    size=40, lift=14, rule=True)
 tall += '</svg>\n'
 
+# Anchored to this file rather than to the shell's directory: this wrote to
+# "../figures/" until 2026-09-20, which is right only from Source/tools and, from
+# the repository root the docstring names, lands in the repository's parent.
+FIG = Path(__file__).resolve().parent.parent / "figures"
 for name, svg in (("etymology", wide), ("etymology-tall", tall)):
-    out = "../figures/%s.svg" % name
+    out = FIG / ("%s.svg" % name)
     with open(out, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(svg)
     print("%-16s %5d bytes  (%d gzipped)  -> %s"
-          % (name, len(svg.encode()), len(gzip.compress(svg.encode(), 9)), out))
+          % (name, len(svg.encode()), len(gzip.compress(svg.encode(), 9)),
+             out.relative_to(out.parents[2])))
 
 print("wide rows     %s" % ", ".join("%g" % y for y in rows()))
 print("wide pitch    %g px between branches" % ROW_PITCH)
