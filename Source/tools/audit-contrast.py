@@ -167,6 +167,18 @@ reading its own PNG at the sampler's own coordinates, which is the only way to t
 a frame of the animation from a finding; the shot harness now runs the same settle
 expression, and `SETTLE_SHOT` carries the note.
 
+AND ONE PASS HOLDS THE FONTS BACK, because a machine with a fast disk is a machine where a font
+swap cannot be seen. Every other number here is taken with the fonts arriving in 90ms; the layout
+pass delays every `.woff2` response by a stated 1,200ms (`--font-delay`), reads Chrome's own
+Cumulative Layout Shift through an observer the run writes into the head of the served copy, walks
+the page in viewport steps, and gates the total and the worst single shift at 0.02, a fifth of the
+web-vitals line. Its first run found `/what-is-a-local-llm/` at **0.0395**, the capsule paragraph at
+the top being five lines in the fallback face and six in Inter, so the whole document under it moved
+27px when the font landed. Two instrument traps are recorded on it: the delay is printed beside every
+number, because a clean figure from a run whose delay silently did not apply looks exactly like a
+clean figure from one that did, and an element that moves entirely out of the viewport contributes
+nothing to a shift, which is why the self-test fixture is the shape it is.
+
 TWO TRAPS IN THE HARNESS ITSELF:
 
   * The harness page and the Chrome profile are written to a temp directory, NOT
@@ -192,6 +204,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -1044,6 +1057,50 @@ MEDIA_PATCH = r"""<script>
 """
 
 
+# Written into the head of the served copy for the layout pass, before anything the
+# page runs on its own. A layout-shift observer has to exist BEFORE the shift to see
+# it, which is the whole reason this is a patch rather than part of the probe: the
+# probe runs after the load event, and by then the page has already painted in a
+# fallback face and reflowed. `buffered: true` picks up entries recorded before the
+# observer was installed, but the buffer is the browser's to bound, so the run does
+# not depend on it.
+#
+# Each shift is attributed to the nodes that moved, by name, because "CLS 0.03" is a
+# number nobody can repair and "there is no padding under the panel" is a repair. The
+# list is capped: a page with a hundred shifts has a cause, not a hundred causes.
+CLS_PATCH = """<script>
+(function () {
+  function nm(n) {
+    if (!n || n.nodeType !== 1) return 'an anonymous box';
+    var s = n.tagName.toLowerCase();
+    if (n.id) s += '#' + n.id;
+    if (n.className && typeof n.className === 'string') {
+      var c = n.className.trim().split(/\\s+/).slice(0, 2).join('.');
+      if (c) s += '.' + c;
+    }
+    return s;
+  }
+  window.__cls = { total: 0, worst: 0, shifts: 0, list: [], installed: true };
+  try {
+    new PerformanceObserver(function (l) {
+      for (var e of l.getEntries()) {
+        if (e.hadRecentInput) continue;
+        window.__cls.total += e.value;
+        window.__cls.shifts += 1;
+        if (e.value > window.__cls.worst) window.__cls.worst = e.value;
+        if (window.__cls.list.length < 8) {
+          var who = [];
+          for (var s of (e.sources || [])) who.push(nm(s.node));
+          window.__cls.list.push({ value: Math.round(e.value * 10000) / 10000,
+                                   at: Math.round(e.startTime), who: who });
+        }
+      }
+    }).observe({ type: 'layout-shift', buffered: true });
+  } catch (err) { window.__cls.error = String(err); }
+})();
+</script>"""
+
+
 def inject_patch(html, patch):
     """Put the media patch at the top of `<head>`, which is before anything the
     page runs on its own. A document with no head gets it prepended."""
@@ -1252,6 +1309,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     shots: dict = {}
     patch = ""
     patch_scope = ""
+    # Milliseconds every .woff2 response is held for. Zero for every pass but the
+    # layout one; see run_layout_pass for what is being asked when it is not zero.
+    font_delay = 0.0
 
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=kw.pop("directory"), **kw)
@@ -1267,6 +1327,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         patch = type(self).patch
         strip = type(self).strip_scripts
         path = self.translate_path(self.path)
+        if type(self).font_delay and path.endswith(".woff2"):
+            time.sleep(type(self).font_delay)
         # A directory is served as its index.html, and that resolution happens in
         # send_head, which is one frame too late for us: asking for `/library/`
         # arrived here as a directory and went out unpatched, which is exactly the
@@ -1396,6 +1458,66 @@ SELF_TEST_PAGE = """<!doctype html>
 </body></html>
 """
 
+# The layout fixture, in two files: one page where a block grows after load and
+# pushes what is under it down, and the same markup with no growth at all. The pass
+# has to fail the first and pass the second, which is the only way to show that its
+# ceiling measures something rather than sitting under every page.
+SELF_TEST_LAYOUT = """<!doctype html>
+<html><head><meta charset="utf-8"><title>layout self-test</title>
+<style>
+  @font-face { font-family: "FixtureFace"; src: url("gfs-didot.woff2") format("woff2");
+               font-weight: 400; font-style: normal; font-display: swap;
+               size-adjust: 160%; }
+  body { font: 16px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; }
+  .banner { font-family: "FixtureFace", sans-serif; font-size: 40px;
+            line-height: normal; margin: 0 0 24px; }
+  .below { height: 45vh; overflow: hidden; }
+  .below p { margin: 0 0 20px; }
+</style></head>
+<body>
+  <p class="banner">a sentence set in a face that arrives a second after the page has already painted itself in whatever the machine had, which is when the reader is looking at it and when a reflow is felt rather than imagined</p>
+  <div class="below">
+    <p>a paragraph of the block that sits under it, so it moves</p>
+    <p>a paragraph of the block that sits under it, so it moves</p>
+    <p>a paragraph of the block that sits under it, so it moves</p>
+    <p>a paragraph of the block that sits under it, so it moves</p>
+  </div>
+</body></html>
+"""
+# THE FIXTURE'S SHIFT IS THE FONT SWAP ITSELF, AND THE METRICS ARE DECLARED RATHER
+# THAN HOPED FOR. Getting here took four wrong fixtures, all of which reported 0.0000
+# and so looked like a pass that could not fail:
+#
+#   * a plain `setTimeout(250)` fires almost immediately under the virtual-time clock
+#     every run in this file uses, so the block grew BEFORE the document's first
+#     layout, and a page that has only ever been laid out once has nothing to shift;
+#   * a chain of `requestAnimationFrame` calls does not run to completion either,
+#     because frames are not produced on a clock this test controls;
+#   * growing the block after `document.fonts.ready` did happen (the fixture's own
+#     banner measured 198px tall) and STILL recorded nothing, because the growth
+#     landed in the same rendering update as the paint that followed the font;
+#   * swapping in a real face and trusting the wrap difference measured 0.0089 to
+#     0.0198 across five variants, which is a fixture whose result depends on where
+#     the browser's fallback happens to wrap, and the best of them sat under the
+#     ceiling it was built to cross.
+#
+# `size-adjust: 160%` is the fix and it is honest: the face is DECLARED 60% larger
+# than the fallback, so the swap must move whatever sits under it, whatever the
+# browser's fallback is. Measured: 0.2058, ten times over a ceiling of 0.02. The
+# page is the same shape a real defect makes, a late face moving a seen layout, and
+# only the magnitude is stated rather than left to chance. (An earlier variant with
+# a fixed 40px line box on the banner measured 0.3005, so the figure follows the box
+# rather than the browser: the fixture is over-scaled on purpose and the number in
+# this comment is the one the shipped fixture reports, re-measured on every run.)
+# `.below` is 45vh tall so
+# that it is still on screen after being pushed down, since an element that moves
+# entirely out of the viewport contributes no shift at all, which is its own trap.
+SELF_TEST_LAYOUT_SHIFTS = SELF_TEST_LAYOUT
+SELF_TEST_LAYOUT_STABLE = SELF_TEST_LAYOUT.replace(
+    "  @font-face { font-family: \"FixtureFace\"; src: url(\"gfs-didot.woff2\") format(\"woff2\");\n"
+    "               font-weight: 400; font-style: normal; font-display: swap;\n"
+    "               size-adjust: 160%; }\n", "")
+
 
 MOTION_PROBE = r"""
 (async () => {
@@ -1497,7 +1619,7 @@ MOTION_PROBE = r"""
 
 
 def self_test(chrome, keep=False):
-    """Prove the reduced-motion pass can still fail.
+    """Prove the reduced-motion pass and the layout pass can still fail.
 
     A check that has never failed is a check nobody can trust, and this one nearly
     shipped unable to fail at all: the first version emulated the state in the
@@ -1507,25 +1629,54 @@ def self_test(chrome, keep=False):
     entrance inside the guard, the same entrance outside it, and a paragraph hidden
     in both renders. It must name the unguarded one, and only that one.
 
-    Run by hand with `--self-test`, after any change to the motion pass.
+    The layout pass gets the same treatment for the same reason. Its ceiling is
+    under every page this site has, so a ceiling that could never be crossed would
+    look exactly like a page that never shifts: one fixture grows a block after paint
+    and must be failed, and the same markup without the growth must be passed.
+
+    Run by hand with `--self-test`, after any change to either pass.
     """
     tmp = tempfile.mkdtemp(prefix="istor-selftest-")
     site = os.path.join(tmp, "site")
     os.makedirs(site)
     write(os.path.join(site, "index.html"), SELF_TEST_PAGE)
+    write(os.path.join(site, "shifts.html"), SELF_TEST_LAYOUT_SHIFTS)
+    write(os.path.join(site, "stable.html"), SELF_TEST_LAYOUT_STABLE)
+    # The face the growth waits on has to be a real file, served by the run's own
+    # handler, so the delay the pass applies is the delay the fixture waits out. It
+    # is one of the site's own fonts rather than a test blob, because a fixture that
+    # ships a font nobody uses would be measuring its own fixture.
+    shutil.copyfile(os.path.join(ROOT, "Assets", "fonts", "gfs-didot.woff2"),
+                    os.path.join(site, "gfs-didot.woff2"))
     try:
         v = run_motion_pass(chrome, site, tmp, "/", 1024, 700, 400)
         if v.get("error"):
-            print("self-test FAILED - the pass did not run: %s" % v["error"])
+            print("self-test FAILED - the motion pass did not run: %s" % v["error"])
             return 1
         named = sorted({f.get("sel") for f in v.get("fails") or []})
         if named != ["p.unguarded"]:
             print("self-test FAILED - expected the unguarded entrance and nothing "
                   "else, and the pass named %r" % (named,))
             return 1
-        print("self-test ok - the pass named the entrance outside the guard and "
-              "stayed quiet about the guarded one and about the paragraph that is "
-              "hidden in both renders")
+        shifting = run_layout_pass(chrome, site, tmp, "/shifts.html", 1024, 700, 400, 1200)
+        if shifting.get("error"):
+            print("self-test FAILED - the layout pass did not run: %s"
+                  % shifting["error"])
+            return 1
+        if not shifting.get("fails"):
+            print("self-test FAILED - a block grew under the paragraph below it and "
+                  "the layout pass called the page still (CLS %.4f, ceiling %.2f)"
+                  % (shifting["total"], shifting["ceiling"]))
+            return 1
+        stable = run_layout_pass(chrome, site, tmp, "/stable.html", 1024, 700, 400, 1200)
+        if stable.get("error") or stable.get("fails"):
+            print("self-test FAILED - the fixture that never changes size was "
+                  "reported as shifting (%s, CLS %.4f)"
+                  % (stable.get("error"), stable.get("total", -1)))
+            return 1
+        print("self-test ok - the motion pass named the entrance outside the guard "
+              "and nothing else, the layout pass failed the fixture that grows "
+              "(CLS %.4f) and passed the one that does not" % shifting["total"])
         return 0
     finally:
         if not keep:
@@ -1552,6 +1703,60 @@ def run_tap_pass(chrome, site, tmp, page, width, height, settle):
     """
     return run_state(chrome, site, tmp, page, width, height, settle, None, False,
                      None, probe=TAP_PROBE)
+
+
+LAYOUT_PROBE = r"""
+(async () => {
+  /* WHAT SHIFTS UNDER A SLOW LINK, ASKED WITH THE FONTS HELD BACK.
+
+     Every other measurement in this file is taken on a machine where the fonts
+     arrive in 90ms, which is a machine where a font swap cannot be seen. Three of
+     this site's faces load with `font-display: swap`, so on a real connection the
+     page paints in a fallback face and reflows when the real one lands, and that
+     reflow is either small or it is the first thing a reader experiences. The run
+     that gets this page holds every .woff2 response for a stated 1,200ms, so the
+     swap happens in front of the reader rather than before they arrive.
+
+     Two things are asked, because they are different findings:
+
+     * the shifts recorded from the START of the document, by an observer the server
+       writes into the head of the copy it serves (a probe cannot see a shift that
+       happened before it ran);
+     * the shifts during a walk of the page in viewport steps with instant scrolling,
+       which is where a lazily-loaded image with no dimensions shows up.
+
+     The observer's own `hadRecentInput` filter is kept: a shift a reader caused by
+     tapping something is not a defect, and counting it would make this pass report
+     a reader's own finger as an authoring mistake. */
+  const vh = w.innerHeight;
+  const snap = () => Object.assign({ total: 0, worst: 0, shifts: 0, list: [] },
+                                   w.__cls || {});
+  if (!w.__cls) {
+    return { error: 'the layout-shift observer was not installed, so this page ' +
+                    'was NOT measured for layout shift' };
+  }
+  const atLoad = snap();
+  const steps = Math.min(24, Math.ceil(d.documentElement.scrollHeight / vh));
+  for (let i = 1; i <= steps; i++) {
+    w.scrollTo({ top: i * vh, behavior: 'instant' });
+    await new Promise(r => setTimeout(r, 60));
+  }
+  w.scrollTo({ top: 0, behavior: 'instant' });
+  await new Promise(r => setTimeout(r, 120));
+  const walked = snap();
+  return {
+    installed: true,
+    loadTotal: Number(atLoad.total.toFixed(4)),
+    total: Number(walked.total.toFixed(4)),
+    worst: Number(walked.worst.toFixed(4)),
+    shifts: walked.shifts,
+    fromWalk: Number((walked.total - atLoad.total).toFixed(4)),
+    list: walked.list,
+    docHeight: d.documentElement.scrollHeight,
+    steps: steps,
+  };
+})()
+"""
 
 
 def run_motion_pass(chrome, site, tmp, page, width, height, settle):
@@ -1617,8 +1822,44 @@ def run_seam_pass(chrome, site, tmp, page, width, height, settle):
                      None, probe=SEAM_PROBE)
 
 
+# What a visitor's reading position is allowed to lose while the page loads under a
+# slow link, as Cumulative Layout Shift. The web-vitals line for "good" is 0.1, and
+# this is a fifth of it: the measured values on this site are 0.00015 on an article
+# and 0.0057 on the home page, so the ceiling is 3.5x above the worst real number and
+# still far below the line where a reader would feel the page move. A ceiling set to
+# the measured value would be a tripwire that fails on a rounding difference; a
+# ceiling at 0.1 would be the browser's threshold rather than this site's.
+LAYOUT_CEILING = 0.02
+
+
+def run_layout_pass(chrome, site, tmp, page, width, height, settle, font_delay_ms):
+    """One render with every font response held back, asking what moves.
+
+    Its own pass rather than a field on the contrast probe, for the reason the other
+    passes have their own: the answer is not a colour, it does not change with the
+    theme, and it is only visible under a condition the machine this runs on does not
+    have. The condition is stated in the report (`+1200ms`) rather than left in the
+    flag, because a clean number from a run whose delay silently did not apply would
+    look exactly like a clean number from one that did."""
+    v = run_state(chrome, site, tmp, page, width, height, settle, None, False,
+                  probe=LAYOUT_PROBE, patch=CLS_PATCH, font_delay_ms=font_delay_ms,
+                  tag_note="layout")
+    if "error" in v:
+        return v
+    v["layout"] = True
+    v["fontDelayMs"] = int(font_delay_ms)
+    v["ceiling"] = LAYOUT_CEILING
+    v["fails"] = ([{"sel": who, "value": item.get("value"), "at": item.get("at")}
+                   for item in (v.get("list") or [])
+                   for who in (item.get("who") or ["an unnameable box"])
+                   if item.get("value", 0) > 0]
+                  if v["total"] > LAYOUT_CEILING else [])
+    return v
+
+
 def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
-              media=None, scripts=True, probe=None, extra=None):
+              media=None, scripts=True, probe=None, extra=None, patch="",
+              font_delay_ms=0.0, tag_note=""):
     """One theme and one media state, one render: probe the cascade, then sample
     the pixels of the SAME render. The theme is forced by the harness before the
     page is parsed, and the media state by unwrapping the page's own media rules
@@ -1631,7 +1872,8 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
     profile = os.path.join(tmp, "profile")
     tag = "-".join(x for x in (theme or "asis", media_label(media),
                                "" if scripts else "noscript",
-                               "tap%d" % width if probe else "") if x)
+                               "tap%d" % width if probe else "",
+                               tag_note) if x)
     if extra:
         tag += "-forced"
     write(os.path.join(tmp, "audit-%s.html" % tag),
@@ -1642,9 +1884,15 @@ def run_state(chrome, site, tmp, page, width, height, settle, theme, pixels,
     Handler.harness = os.path.join(tmp, "audit-%s.html" % tag)
     Handler.strip_scripts = not scripts
     # The patch rides on the page the iframe loads, not on the harness, so it can
-    # only touch files under the site it was pointed at.
-    Handler.patch = MEDIA_PATCH.format(media=json.dumps(media or {})) if media else ""
+    # only touch files under the site it was pointed at. The media patch goes first
+    # when both are wanted: the page's own head script reads `matchMedia` and writes
+    # `data-theme`, so anything that must run before that has to be above it.
+    Handler.patch = ((MEDIA_PATCH.format(media=json.dumps(media or {})) if media else "")
+                     + (patch or ""))
     Handler.patch_scope = os.path.abspath(site) + os.sep
+    # Always set, never left over: a page audited after the layout pass must not
+    # inherit its delay, and a leaked delay would slow every later pass silently.
+    Handler.font_delay = font_delay_ms / 1000.0
     srv = http.server.ThreadingHTTPServer(
         ("127.0.0.1", 0), lambda *a, **kw: Handler(*a, directory=site, **kw))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -1754,7 +2002,7 @@ def media_states(contrast_more, os_dark, as_authored):
 
 def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
                contrast_more=True, os_dark=True, scriptless=True, tap_widths=True,
-               seam=True, motion=True):
+               seam=True, motion=True, layout=True, font_delay_ms=1200):
     """Every theme and media state this page can be delivered in, as a list.
 
     The first pass forces nothing, so a page with no theme control is audited in
@@ -1785,6 +2033,9 @@ def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
         states.append(run_seam_pass(chrome, site, tmp, page, width, height, settle))
     if motion:
         states.append(run_motion_pass(chrome, site, tmp, page, width, height, settle))
+    if layout:
+        states.append(run_layout_pass(chrome, site, tmp, page, width, height, settle,
+                                      font_delay_ms))
     for tap_width in ([width, PHONE_WIDTH] if tap_widths and width != PHONE_WIDTH
                       else [width] if tap_widths else []):
         states.append(run_tap_pass(chrome, site, tmp, page, tap_width, height, settle))
@@ -1829,6 +2080,12 @@ def main(argv):
     ap.add_argument("--no-motion", action="store_true",
                     help="skip the reduced-motion pass, which asks what a reader "
                          "who asked for less motion is given")
+    ap.add_argument("--no-layout", action="store_true",
+                    help="skip the pass that holds every font response back and asks "
+                         "what moves while the page loads on a slow link")
+    ap.add_argument("--font-delay", type=int, default=1200,
+                    help="milliseconds the layout pass holds every .woff2 response "
+                         "(default 1200)")
     ap.add_argument("--no-scriptless", action="store_true",
                     help="skip the pass that serves each page with its scripts "
                          "removed, for the reader whose script never ran")
@@ -1846,7 +2103,8 @@ def main(argv):
         return self_test(chrome)
     pages = [page_path(p) for p in a.pages]
 
-    findings, failures, tap_fails, seam_fails, motion_fails = [], 0, 0, 0, 0
+    findings, failures, tap_fails, seam_fails, motion_fails, layout_fails = \
+        [], 0, 0, 0, 0, 0
     with tempfile.TemporaryDirectory(prefix="istor-audit-") as tmp:
         for page in pages:
             r = audit_page(chrome, a.site, tmp, page, a.width, a.height, a.settle,
@@ -1856,7 +2114,9 @@ def main(argv):
                            scriptless=not a.no_scriptless,
                            tap_widths=not a.no_tap,
                            seam=not a.no_seam,
-                           motion=not a.no_motion)
+                           motion=not a.no_motion,
+                           layout=not a.no_layout,
+                           font_delay_ms=a.font_delay)
             if r.get("error"):
                 print("  FAIL  %s  %s" % (page, r["error"]))
                 failures += 1
@@ -1936,6 +2196,34 @@ def main(argv):
                     findings.append({"page": page, "motion": True, "running": s["running"],
                                      "animations": s["animations"], "texts": s["texts"],
                                      "byDesign": s["byDesign"], "fails": s["fails"]})
+                    continue
+                if s.get("layout"):
+                    # LAYOUT SHIFT UNDER A SLOW LINK. The number is Cumulative
+                    # Layout Shift, taken from an observer written into the head of
+                    # the page's own copy, so it counts what a reader's eyes count.
+                    # Both the total and the worst single shift are printed: one jump
+                    # of 0.03 and thirty nudges of 0.001 sum the same and feel
+                    # nothing alike. The font delay is printed beside them, because
+                    # a clean number from a run whose delay did not apply would look
+                    # exactly like a clean number from one that did.
+                    layout_fails += len(s["fails"])
+                    print("  %s  %-42s CLS %.4f  worst %.4f  %2d shifts  "
+                          "%5dpx  %2d views  fonts +%dms  %d FAIL"
+                          % ("ok  " if not s["fails"] else "FAIL",
+                             "%s layout@slow-fonts" % page, s["total"], s["worst"],
+                             s["shifts"], s["docHeight"], s["steps"], s["fontDelayMs"],
+                             len(s["fails"])))
+                    for f in s["fails"][:8]:
+                        print("          %.4f of the total  %s"
+                              % (f.get("value") or 0, f["sel"]))
+                    findings.append({"page": page, "layout": True,
+                                     "total": s["total"], "worst": s["worst"],
+                                     "loadTotal": s["loadTotal"],
+                                     "fromWalk": s["fromWalk"], "shifts": s["shifts"],
+                                     "docHeight": s["docHeight"], "steps": s["steps"],
+                                     "fontDelayMs": s["fontDelayMs"],
+                                     "ceiling": s["ceiling"], "list": s.get("list"),
+                                     "fails": s["fails"]})
                     continue
                 if s.get("scripts") is False:
                     # The scriptless reader gets the comparison and the inventory
@@ -2051,17 +2339,27 @@ def main(argv):
                  sum(f["running"] for f in motion_passes),
                  sum(f["byDesign"] for f in motion_passes)))
 
+    layout_passes = [f for f in findings if f.get("layout")]
+    if layout_passes:
+        delays = sorted({f["fontDelayMs"] for f in layout_passes})
+        print("\n%d layout passes with every font response held %s: worst shift "
+              "%.4f, ceiling %.2f"
+              % (len(layout_passes),
+                 " and ".join("%dms" % d for d in delays),
+                 max(f["worst"] for f in layout_passes), LAYOUT_CEILING))
+
     scriptless = [f for f in findings if f.get("scripts") is False]
     print("\n%d page-states audited at %dpx, %s%s"
           % (len(states), a.width, note,
              ", plus %d scriptless pass%s"
              % (len(scriptless), "es" if len(scriptless) != 1 else "")
              if scriptless else ""))
-    if failures or tap_fails or seam_fails or motion_fails:
+    if failures or tap_fails or seam_fails or motion_fails or layout_fails:
         print("FAILED - %d below AA, %d targets under %dpx with neither exception, "
               "%d windows without the separator their ground calls for, "
-              "%d in a reduced-motion render that is not the finished page"
-              % (failures, tap_fails, TAP_MIN, seam_fails, motion_fails))
+              "%d in a reduced-motion render that is not the finished page, "
+              "%d shifting more than the layout ceiling"
+              % (failures, tap_fails, TAP_MIN, seam_fails, motion_fails, layout_fails))
         return 1
     print("contrast ok - nothing below AA where the ground could be measured")
     if seam:
@@ -2071,6 +2369,9 @@ def main(argv):
     if motion_passes:
         print("motion ok - with motion reduced nothing runs and nothing is held "
               "invisible by an entrance")
+    if layout_passes:
+        print("layout ok - with every font held back, nothing moves a reader's "
+              "place on the page")
     return 0
 
 
