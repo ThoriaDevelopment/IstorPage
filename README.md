@@ -221,7 +221,8 @@ commit as the change that moved it, never by transcribing a figure from another 
 One tool is deliberately **not** in that list, because CI installs nothing and this needs Chrome:
 
     python Source/tools/audit-contrast.py  # every text element against WCAG AA, in both themes,
-                                           # every control against WCAG 2.5.8 target size
+                                           # every control against WCAG 2.5.8 target size, and
+                                           # every text's RENDERED size at 13 widths
 
 Run it by hand after touching a colour token, a ground or a face. It renders each page in a sized
 iframe, walks it in viewport-sized steps, prints every element below AA with its measured colours,

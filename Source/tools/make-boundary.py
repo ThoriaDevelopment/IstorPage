@@ -28,12 +28,15 @@ accent and its single assertion. Everything else is `--rule` for the frame and
 `--ink`/`--ink-2` for what is named, so the eye reads the crossing first and the
 contents second, in that order, which is the order the act answers in.
 
-TWO VARIANTS, and the tall one is a different diagram rather than a squashed
-copy of the wide one: the same three nodes read downward, and the wire leaves
-through the TOP of the boundary instead of the side, so the phone keeps the
-outside/inside reading that is the whole point. Same reason the etymology plate
-and the exhibits art-direct their phone crops: a diagram is not exempt from the
-width it is read at.
+THREE VARIANTS, and each one is a different diagram rather than a squashed copy:
+WIDE puts the stack beside the wall, MID keeps the row and moves the stack above
+it, TALL reads the three nodes downward with the wire leaving the top. They exist
+because the plate's type is in user units and therefore scales with the figure,
+which the 2026-09-20 type sweep measured: the wide drawing is 704 units across, so
+at a 641px viewport its glosses rendered at 9.4px and at 768, a tablet in
+portrait, at 10.8. The site's floor is 11. Same reason the etymology plate and
+the exhibits art-direct their phone crops: a diagram is not exempt from the width
+it is read at.
 """
 
 import math
@@ -78,12 +81,32 @@ MEASURED = {
     ("off until you turn it on", 11.5): 116.3,
     ("no account, no key", 11.5): 103.8,
     ("your machine", 12.5): 83.7,
+    # The tall plate's own step, measured at the sizes T_TALL_* below. The phone
+    # column is narrower than the drawing, so this variant's type has to be bigger
+    # in user units to land at the same pixels -- which is why the tall plate's
+    # boxes are wider than the wide plate's for the same words.
+    ("your library", 17.0): 91.9,
+    ("the documents you gave it", 13.5): 170.1,
+    ("istor", 17.0): 35.7,
+    ("search, reading and answers", 13.5): 184.2,
+    ("ollama or llama.cpp", 17.0): 156.2,
+    ("the model you choose", 13.5): 142.4,
+    ("web research", 17.0): 109.2,
+    ("off until you turn it on", 13.5): 146.4,
+    ("no account, no key", 13.5): 131.0,
 }
 
 # What the layout is allowed to assume: how much air a label keeps inside its box,
 # the gap between boxes, and how much room the widest outside string needs from the
 # right edge of the plate.
-PAD, GAP, EDGE = 12.0, 22.0, 8.0
+# The row's air. PAD is what a label keeps inside its own box and GAP is between
+# boxes; both came DOWN on 2026-09-20 (12 and 22 to 10 and 18) for a measured
+# reason rather than a taste one: the plate's type is in user units, so the whole
+# figure's legibility is set by how wide it is in those units, and the wide
+# composition could not be read at 1:1 in any column narrower than ~630px. Ten
+# units of air around a label is not tight -- the box is 62 tall and the type is
+# 15 -- and it buys the mid variant its 1:1 width.
+PAD, GAP, EDGE = 10.0, 18.0, 8.0
 PAD_ROW = 14.0        # air between the boundary's walls and the first/last box
 LABEL_GAP = 10.0      # between the wire's head and the label stack beside it
 
@@ -95,6 +118,14 @@ T_SUB = 11.5
 T_LABEL = 12.5
 T_NOTE = 11.5
 TALL_BW = 328.0  # the tall boundary's width, quoted here so self_test() can use it
+# The tall plate's type, one step up from the wide plate's. Measured off the
+# rendered page on 2026-09-20: at a 320px viewport the tall plate renders at 0.824
+# of its user units, where the wide plate's 15/11.5 land at 12.4 and 9.5px. 17 and
+# 13.5 land at 14.0 and 11.1, and at 390px and wider, where the plate is 1:1, the
+# plate simply reads a step larger than the desktop one, which is what a phone
+# wants from a diagram drawn in a 340-unit column.
+T_TALL_NODE = 17.0
+T_TALL_SUB = 13.5
 
 
 def tw(s, size):
@@ -197,19 +228,37 @@ def cross(cx, cy, size=7.0):
             f'M{cx + size:.1f} {cy - size:.1f} L{cx - size:.1f} {cy + size:.1f}"/>')
 
 
-def wide(W=736.0, H=250.0):
-    """736x250: the three nodes in a row, the wire leaving the top and turning.
+def row_widths():
+    """The three box widths, and the boundary that holds them with its own air.
 
-    Every x in here is derived from the measured text widths above, so the figure
-    is sized by its labels rather than the labels being squeezed into a guess. The
-    outer edges then follow: the row plus its padding is the boundary, and what is
-    left of the plate is where the wire leaves and the outside node sits. W is a
-    parameter only so self_test() can ask for a plate that has to be refused.
+    The wall is the row plus PAD_ROW at each end, and the boxes are the measured
+    labels plus PAD: the figure's width is arithmetic on its text, which is why a
+    third variant is a rearrangement rather than a rescale.
     """
     widths = [max(tw(title, T_NODE), tw(sub, T_SUB)) + PAD * 2
               for title, sub in INSIDE]
-    row = sum(widths) + GAP * 2
+    return widths, sum(widths) + GAP * 2 + PAD_ROW * 2
+
+
+def wide_width():
+    """Everything the wide plate needs: wall, wire, stack beside it, and edge."""
+    _, bw = row_widths()
+    return 6.0 + bw + LABEL_GAP + max(tw(OUTSIDE, T_NODE), tw(CROSS, T_SUB)) + EDGE
+
+
+def wide(W=None, H=250.0):
+    """The three nodes in a row, the wire leaving the top, the stack beside it.
+
+    Every x in here is derived from the measured text widths above, so the figure
+    is sized by its labels rather than the labels being squeezed into a guess, and
+    W defaults to the width the content actually needs: a viewBox with slack in it
+    is a figure that scales down for no reason, and scaling down is what makes a
+    diagram's type unreadable. W is a parameter only so self_test() can ask for a
+    plate that has to be refused.
+    """
+    W = wide_width() if W is None else W
     bx, by, bh = 6.0, 40.0, 150.0
+    widths, row = row_widths()
     # The row keeps PAD_ROW from the walls rather than the PAD a label keeps from
     # its box: the boundary's own label sits in the header band above the row, so
     # nothing here needs to clear it, and every unit spent on that air is a unit the
@@ -257,6 +306,53 @@ def wide(W=736.0, H=250.0):
     return W, H, body
 
 
+def mid():
+    """The three nodes in a row, the stack ABOVE the wall. Why a third one:
+
+    Measured, not assumed. The wide plate is 704 units of drawing, so in a column
+    narrower than that it scales down and its type scales with it: at a 641px
+    viewport its 15px names render at 12.3 and its 11.5px glosses at 9.4, and at
+    768, which is a tablet in portrait, 10.8. The page's floor for anything a
+    reader has to read is 11. The tall plate is legible at those widths but it is
+    the COLUMN composition, and a 340-wide column drawing in a 720-wide one is a
+    stamp in a field, so the row stays a row and the one part that needed the wall's
+    flank moves above it. The wire could not follow it up and then turn: it leaves
+    the app's top edge and rises, which is the tall plate's arrangement borrowed
+    whole, and the cross stays on the wall where the wire pierces it.
+    """
+    _, bw = row_widths()
+    W, H = 6.0 + bw + 6.0, 300.0
+    widths, _ = row_widths()
+    bx, by, bh = 6.0, 96.0, 150.0
+    cy = by + bh / 2 + 6
+    stack_x = bx + PAD_ROW + widths[0] / 2 + GAP + widths[1] / 2
+    stack = max(tw(OUTSIDE, T_NODE), tw(CROSS, T_SUB))
+    for label, size in ((OUTSIDE, T_NODE), (CROSS, T_SUB), (NOTE, T_NOTE)):
+        if not fits_width(label, size, bw):
+            raise SystemExit(f"make-boundary: {label!r} is {tw(label, size):.1f} wide on "
+                             f"a {bw:.0f} boundary; the mid plate cannot hold it.")
+    body = [rounded(bx, by, bw, bh, 18, "bnd-line"),
+            f'<text class="bnd-label" x="{bx + 18:.1f}" y="{by + 22:.1f}">{BOUNDARY}</text>']
+    xs = [bx + PAD_ROW + widths[0] / 2]
+    for i in range(1, 3):
+        xs.append(xs[-1] + widths[i - 1] / 2 + GAP + widths[i] / 2)
+    for (title, sub), x, w in zip(INSIDE, xs, widths):
+        body += node(x, cy, w, 62.0, title, sub, T_NODE, T_SUB)
+    for i in range(2):
+        body.append(arrow(xs[i] + widths[i] / 2 + 6, cy, xs[i + 1] - widths[i + 1] / 2 - 6, cy))
+    # The stack sits above the wire's head, which is above the wall's top edge, so
+    # outside is still outside at every width -- the one relationship the figure has.
+    body.append(arrow(xs[1], cy - 31.0, xs[1], 52.0))
+    body.append(cross(xs[1], by))
+    body.append(f'<text class="bnd-outside" x="{stack_x:.1f}" y="16.0" '
+                f'text-anchor="middle" font-size="{T_NODE}">{OUTSIDE}</text>')
+    body.append(f'<text class="bnd-sub" x="{stack_x:.1f}" y="35.0" '
+                f'text-anchor="middle" font-size="{T_SUB}">{CROSS}</text>')
+    body.append(f'<text class="bnd-claim" x="{bx:.1f}" y="{H - 16:.1f}" '
+                f'font-size="{T_NOTE}">{NOTE}</text>')
+    return W, H, body
+
+
 def tall():
     """340x430: the same three nodes downward, the wire leaving the top."""
     W, H = 340.0, 430.0
@@ -265,25 +361,25 @@ def tall():
             f'<text class="bnd-label" x="{bx + 16:.1f}" y="{by + 24:.1f}">{BOUNDARY}</text>']
     rows = [by + 74.0, by + 168.0, by + 262.0]
     for (title, sub), y in zip(INSIDE, rows):
-        w = min(bw - 36.0, max(tw(title, T_NODE), tw(sub, T_SUB)) + PAD * 2)
-        body += node(bx + bw / 2, y, w, 62.0, title, sub, T_NODE, T_SUB)
+        w = min(bw - 36.0, max(tw(title, T_TALL_NODE), tw(sub, T_TALL_SUB)) + PAD * 2)
+        body += node(bx + bw / 2, y, w, 62.0, title, sub, T_TALL_NODE, T_TALL_SUB)
     for i in range(2):
         body.append(arrow(bx + bw / 2, rows[i] + 31.0, bx + bw / 2, rows[i + 1] - 33.0))
     # The wire leaves the boundary's TOP: outside is above, inside is below, which
     # is the one relationship the figure has to keep at every width. Its labels are
     # centred on the same axis as the boxes, so everything here shares one centre.
-    for label, size in ((OUTSIDE, T_NODE), (CROSS, T_SUB), (NOTE, T_NOTE)):
+    for label, size in ((OUTSIDE, T_TALL_NODE), (CROSS, T_TALL_SUB), (NOTE, T_TALL_SUB)):
         if not fits_width(label, size, bw):
             raise SystemExit(f"make-boundary: {label!r} is {tw(label, size):.1f} wide on "
                              f"a {bw:.0f} boundary; the tall plate cannot hold it.")
     body.append(arrow(bx + bw / 2, by - 4.0, bx + bw / 2, 56.0))
     body.append(cross(bx + bw / 2, by))
     body.append(f'<text class="bnd-outside" x="{bx + bw / 2:.1f}" y="26.0" '
-                f'text-anchor="middle" font-size="{T_NODE}">{OUTSIDE}</text>')
+                f'text-anchor="middle" font-size="{T_TALL_NODE}">{OUTSIDE}</text>')
     body.append(f'<text class="bnd-sub" x="{bx + bw / 2:.1f}" y="46.0" '
-                f'text-anchor="middle" font-size="{T_SUB}">{CROSS}</text>')
+                f'text-anchor="middle" font-size="{T_TALL_SUB}">{CROSS}</text>')
     body.append(f'<text class="bnd-claim" x="{bx + bw / 2:.1f}" y="{H - 12:.1f}" '
-                f'text-anchor="middle" font-size="{T_NOTE}">{NOTE}</text>')
+                f'text-anchor="middle" font-size="{T_TALL_SUB}">{NOTE}</text>')
     return W, H, body
 
 
@@ -336,10 +432,11 @@ def self_test():
     refuses("fits_width() refuses a string wider than the plate it sits on",
             lambda: fits_width("your library", T_NODE, 60.0) or _raise("it fit"))
     allows("fits_width() allows the outside stack on the tall plate",
-           lambda: fits_width(OUTSIDE, T_NODE, TALL_BW) or _raise("it did not fit"))
+           lambda: fits_width(OUTSIDE, T_TALL_NODE, TALL_BW) or _raise("it did not fit"))
     refuses("wide() refuses a plate too narrow to run the wire outside the row",
             lambda: wide(W=560.0))
     allows("wide() builds the shipped plate", lambda: wide())
+    allows("mid() builds the shipped plate", lambda: mid())
     allows("tall() builds the shipped plate", lambda: tall())
 
     bad = [name for name, ok in checks if not ok]
@@ -361,6 +458,12 @@ def main():
           "inside a boundary labelled your machine, and the only wire leaving it, web "
           "research, is crossed out and marked off until you turn it on. No account, "
           "no key.")
+    W, H, body = mid()
+    write("mid", W, H, body,
+          "The same diagram for a narrower column: your library, istor, and ollama or "
+          "llama.cpp inside a boundary labelled your machine, and web research above "
+          "it as the only wire leaving, crossed out and marked off until you turn it "
+          "on. No account, no key.")
     W, H, body = tall()
     write("tall", W, H, body,
           "The same diagram read downward: your library, istor, and ollama or llama.cpp "

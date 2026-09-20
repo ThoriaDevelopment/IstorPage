@@ -477,14 +477,25 @@ to a single line (*"Four of the seven answers below are the same answer, and thi
 the plate now carries the rest. That sentence is the only part of the idea the drawing cannot show,
 which is the division of labour the whole page is built on.
 
-Generated, like the ring and the plate before it: `Source/tools/make-boundary.py` writes
-`Source/figures/boundary-wide.svg` (736×250, 2,259 B) and `boundary-tall.svg` (340×430, 2,295 B),
-and both are inlined into the page rather than fetched. Two variants again, and the tall one is a
-different diagram: the same three nodes read downward, and the wire leaves through the **top** of the
-boundary with the outside stack above it, so a phone keeps the one relationship the figure exists to
-show. Both variants sit on `--rule` for the frame and the wire, `--card` inside the boxes,
-`--ink` for what is named and `--ink-2` for every gloss, and enter on the standard `.reveal` panel
-treatment.
+Generated, like the ring and the plate before it: `Source/tools/make-boundary.py` writes three
+variants and all three are inlined rather than fetched — `boundary-wide.svg` (704×250, 2,259 B),
+`boundary-mid.svg` (576×300, 2,308 B) and `boundary-tall.svg` (340×430, 2,295 B). **Three, and the
+third one came out of a measurement rather than a taste call.** The plate's type is in user units, so
+it scales with the figure: the wide drawing is 704 units across, and at a 641px viewport its 11.5px
+glosses rendered at 9.4 and at 768, a tablet in portrait, at 10.8. The type-floor pass found it (see
+§5.1). The fix could not be a font-size step, because the labels sit in boxes sized from their own
+measured widths and bigger type would run out of them, and it could not be the tall plate, because a
+340-wide drawing in a 720-wide column is a stamp in a field. So the row stays a row and the one part
+that needed the wall's flank moves above it: MID keeps the three nodes side by side and puts the
+outside stack over the wall, which brings the drawing's own width down to 576 and makes it 1:1 in
+the whole band. The tall plate's type also steps UP in user units (17 and 13.5 against the wide
+plate's 15 and 11.5), because a phone column is narrower than the drawing and the rendered size is
+what matters.
+
+The three are different diagrams rather than one drawing at three sizes: the stack sits beside the
+wall, then above it, then the nodes read downward with the stack still above. All three sit on
+`--rule` for the frame and the wire, `--card` inside the boxes, `--ink` for what is named and
+`--ink-2` for every gloss, and enter on the standard `.reveal` panel treatment.
 
 **What the first version got wrong, because it is the kind of mistake that ships.** Every node label
 was drawn from its box's centre with no anchor set, so the wider of each name/gloss pair ran out
@@ -919,6 +930,21 @@ Freebuff (3.0×) are the two that feel most web-default.** v1 topped out at 68px
 | `--t-h2` | **34px** | section headings (genre 25–31) |
 | `--t-display` | **`clamp(56px, 7.4vw, 94px)`** | **used exactly once — the hero** |
 
+**And a floor under the bottom of it: nothing a reader has to read renders under 11px, at any width
+from 320 to 1440.** That is not a WCAG number — WCAG sets a contrast ratio, not a size — it is this
+site's own, and it is a rule about *rendered* pixels rather than declared sizes, which is what made it
+worth measuring. Every figure on this page draws its type in user units inside an SVG, so the type
+scales with the figure and its rendered size is a different number at every width; nothing had ever
+measured that, and the first sweep found the site's smallest text at **7.66px**: the ring's `355`
+label in a 390px window, where the plate renders at 0.589 of its units. It also found the boundary
+plate's glosses at **9.0-10.8px** between 641 and 768 and the etymology ledger's at **9.8px** at 320.
+All three are fixed — the ring's label steps up in user units below 560, the boundary plate gained a
+third composition for the middle band, and the etymology's gloss column steps and shifts at 430 — and
+`audit-contrast.py`'s type-floor pass asserts the floor at 13 widths now, so the class of defect is
+measured rather than remembered. 6,489 texts, smallest 11.12px. The pass prints the size it found and
+the count it measured, because its first version was written against the audit harness's own document
+instead of the framed page and reported a clean pass over zero texts.
+
 **Display ÷ body = 94 ÷ 17 = 5.5×.** In the genre's top tier, and reached by *raising the top*, not
 by shrinking the body.
 
@@ -1346,6 +1372,7 @@ The build gates are re-baselined **by measurement, never transcription** — the
 | `totals.phone_1x` / `retina_2x` | re-baselined over 9 exhibits: **194,064 B** / **388,356 B**, and again on 2026-09-19 over 9 exhibits **plus 4 phone crops** at **237,991 B** / **500,885 B** — the inventory grows while what a device *downloads* shrinks, because those four exhibits now serve a narrower crop below 430px |
 | `totals.exports_all_*` | **renamed `exports_all_36`** and the `.png` suffix dropped from the sum, because PNG left the shipped set; **renamed again to `exports_all`** when the phone crops took the set from 36 files to 52 and the number in the name stopped being true |
 | `ARTIFACT_FILES` | re-baselined to **138** (the whole +18 is 9 exhibits × 4 files against 3 × 6), then to **154** on 2026-09-19 (+16 = 4 phone crops × 4 files), then to **156** (+the generated library index, +`/theme.js`). Stays exact: it caught stray screenshots twice |
+| `type floor` **(new pass, 2026-09-20)** | walks **13 widths from 320 to 1440** and asserts that nothing a reader has to read renders under **11px**, multiplying each text's size by the scale of the SVG it sits inside, because a plate's type is in user units and its computed `font-size` is not the number a reader gets. 6,489 texts. It found the site's smallest text at **7.66px** (the ring's `355` at a 390px window), the boundary plate's glosses at **9.0-10.8** between 641 and 768 and the etymology ledger's at **9.8** at 320; all three are fixed. Its own first version measured the audit harness's document instead of the framed page and passed over **zero** texts, which is why the line prints the count it measured |
 | `verify-figures.py` **(new tool, 2026-09-20)** | regenerates all seven figures in `Source/figures/` and compares each to the committed file **by bytes**, restoring the working tree whatever the comparison says, then runs each generator's own `--self-test` where it has one. 9 checks. The claim in `SITE_BUILD_PLAN.md` that `verify-budget.py` catches a stale regeneration was only half true: it catches a stale figure that moves the page's total past a ceiling, which is a much larger event than a figure three hundred bytes out of date, and this repository generates its artwork rather than storing it. It also fixed two generators that wrote to `../figures/`, a path that is right only when the tool is run from `Source/tools` and, from the repository root their own docstrings name, resolves to the repository's **parent** |
 | `verify-copy.py` **(new tool)** | Stage 9's checks 10 and 11: the humanizer pass as a rule rather than a memory, and §10.4's release-claim rule in both prose and tables. Both run a positive control before they trust their own silence, and an allow-list entry that stops matching fails the build |
 | **`composition` (new)** | asserts the page has **≥ 10 sections, ≥ 4 distinct composition classes, ≥ 1 sticky element, ≥ 1 `<details>`, and ≤ 1 display-size element** |

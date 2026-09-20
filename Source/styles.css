@@ -1383,6 +1383,22 @@ h3 {
 
 .plate { position: relative; padding-block: 32px 20px; }
 .plate > svg { display: block; width: 118%; max-width: none; height: auto; margin-inline: -9%; }
+
+/* The ring is ONE drawing scaled by its column, so its single label is the site's
+   smallest type at phone widths unless it steps up in user units. Measured, from
+   the ring's own scale at each width and from audit-contrast.py's type-floor pass:
+   the svg renders 280/350/432/576 px wide at 320/390/480/640, so at its authored
+   13 units the `355` label lands at 6.1/7.7/9.5/12.6 px. 24 units below 430 and 17
+   below 560 hold it between 11.3 and 17.4 across the range, and 320 is the
+   narrowest window the site is built for. Each step also lifts the label clear of
+   its own tick: the type grows around its centre, and 24 units would otherwise put
+   the digits' feet through the tick's head. */
+@media (max-width: 560px) {
+  .ring-claim text { font-size: 17px; transform: translateY(-4px); }
+}
+@media (max-width: 430px) {
+  .ring-claim text { font-size: 24px; transform: translateY(-11px); }
+}
 /* The clearance above the copy is MEASURED, twice over, and both times what it
    has to clear is geometry rather than taste.
 
@@ -1514,6 +1530,24 @@ h3 {
 .etym-node { fill: var(--ink-3); }
 .etym-claim { stroke: var(--azure); stroke-width: 1.5; fill: none; }
 
+/* The ledger's gloss column steps up where the plate is scaled down, which is the
+   same measurement the ring's label and the tall boundary plate take. This plate
+   renders 308px wide at 390 and 241 at 320, so its 13px glosses land at 12.5 and
+   9.8. Sixteen units below 430 puts them at 12.1 at the narrowest window and 16 at
+   390, and the column moves 22 units left to pay for the 34 units the type takes:
+   the widest gloss ends 11 units from the plate's right edge and still 18 clear of
+   the word column, both measured off the rendered page rather than assumed. */
+@media (max-width: 430px) {
+  .etym-tall .etym-gloss { font-size: 16px; transform: translateX(-22px); }
+  /* And the Greek name comes down from 40 to 34 for the same reason it came down
+     from 44 to 40 once already: the gloss column has moved 22 units left, and at
+     44 units this row's name ran 3.8 units INTO it, which is the one collision the
+     plate cannot survive -- the name of the tool touching the words that gloss it.
+     Measured after: a 12-unit gap on that row, and every gloss 37 or more units
+     from the plate's right edge. */
+  .etym-tall .etym-name { font-size: 34px; }
+}
+
 /* ---------------------------------------------------------------------------
    14f · The boundary plate, in the questions act.
 
@@ -1527,17 +1561,20 @@ h3 {
    The node boxes take --card so they read as objects on --paper; the wires and the
    frame are --rule and --ink-3, and only the cross is --azure.
 
-   Two variants and the SWAP is at 640, the same breakpoint as the etymology plate
-   and for the same reason. Measured: at 641 the column gives the wide plate 577px,
-   where its 15px names render at 11.8 and its 11.5px glosses at 9.0. At 640 and
-   below the tall plate is 1:1 (15 and 11.5) down to a 400px viewport, and at 340,
-   the narrowest width the site supports, it is 13.2 and 10.1. The tall plate is a
-   different drawing, not a squashed one: the same three nodes read downward and the
-   wire leaves the top, so "outside" stays outside.
+   THREE VARIANTS, and the reason is measured type rather than taste. The plate's
+   labels are in user units, so they scale with the figure, and the sweep that
+   measures rendered type across widths (audit-contrast.py, the type-floor pass)
+   found the wide drawing's 704 units rendering its 11.5px glosses at 9.4px in a
+   641px viewport and at 10.8 in 768. The site's floor is 11. So: WIDE above 800,
+   MID 641-800, TALL 640 and below, and each one is 1:1 in its band instead of
+   being a shrunken copy. The three are different drawings, not one drawing at
+   three sizes: the stack sits beside the wall, then above it, then the nodes read
+   downward and the stack stays above. "Outside" stays outside at every width.
    --------------------------------------------------------------------------- */
-.boundary { max-width: 736px; margin-block-end: 44px; }
+.boundary { max-width: 704px; margin-block-end: 44px; }
 .boundary .boundary-plate { display: block; }
-.bnd-wide { max-width: 736px; }
+.bnd-wide { max-width: 704px; }
+.bnd-mid { max-width: 576px; }
 .bnd-tall { max-width: 340px; }
 .bnd-line, .bnd-box { fill: none; stroke: var(--rule); }
 .bnd-box { fill: var(--card); }
@@ -1556,9 +1593,23 @@ h3 {
   font-size: var(--t-sm);
   text-wrap: pretty;
 }
-.bnd-tall { display: none; }
-@media (max-width: 640px) {
+.bnd-mid, .bnd-tall { display: none; }
+
+/* The wall's own label is the last text on this page that needed a step, and it
+   needs it at the very bottom end: the tall plate renders at 0.873 of its units at
+   360 and 0.824 at 320, where its authored 13px label lands at 11.35 and 10.71.
+   Sixteen units holds it at 14 and 12. It is a header label rather than a box
+   label, so it is free to step on its own: it sits in the plate's top band, 19
+   units clear of the first box, and it ends 197 units short of the wall. */
+@media (max-width: 360px) {
+  .bnd-label { font-size: 16px; }
+}
+@media (max-width: 800px) {
   .bnd-wide { display: none; }
+  .bnd-mid { display: block; }
+}
+@media (max-width: 640px) {
+  .bnd-mid { display: none; }
   .bnd-tall { display: block; }
 }
 

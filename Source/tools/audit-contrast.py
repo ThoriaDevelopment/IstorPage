@@ -1822,6 +1822,114 @@ def run_seam_pass(chrome, site, tmp, page, width, height, settle):
                      None, probe=SEAM_PROBE)
 
 
+# The floor under any text a reader has to read, in CSS pixels, and the widths it
+# is asserted at. 11 is not a WCAG number -- WCAG sets a ratio, not a size -- it is
+# the site's own floor: the smallest text that is not a graphic is the 11.5px gloss
+# inside a plate, and this pass exists because the TYPE IN EVERY FIGURE ON THIS PAGE
+# IS IN USER UNITS, so it scales with its container and its rendered size is a
+# different number at every width. Nothing measured that. On 2026-09-20 this sweep
+# found the site's smallest text at 7.66px: the ring's `355` label in a 390px
+# window, where the plate renders at 0.589 of its units. It also found the boundary
+# plate's glosses at 9.0 to 10.8 between 641 and 768, and the etymology ledger's at
+# 9.8 at 320. All three are fixed in styles.css and in the plate's own generator,
+# and the numbers are in the comments where the fixes are.
+#
+# 320 is the narrowest window in the list on purpose: it is the smallest screen this
+# site has to survive rather than the one it is designed for, and asserting there is
+# what found the label that only broke below 430.
+TYPE_FLOOR = 11.0
+TYPE_WIDTHS = (320, 360, 390, 430, 480, 560, 640, 700, 768, 800, 900, 1024, 1440)
+
+
+# Rendered type size, which for SVG text is NOT `font-size`: the element's own size
+# is in user units and the user unit is scaled by the viewBox. Walking up to the
+# nearest rendered <svg> and multiplying by its scale is what turns "13" into the
+# number a reader gets, and skipping the walk is why a sweep that reads computed
+# font-size reports a clean bill of health for a plate whose glosses are 9px.
+#
+# `d` and `w` are the framed page's document and window -- the harness binds them
+# (see the note above the harness) -- and NOT this file's own `document`. The first
+# version of this probe used the global names and measured the audit's own harness:
+# 0 texts at every width, on every page, reported as a clean pass. That is the
+# failure mode a pass like this has, and the reason its line prints the count it
+# measured rather than only the verdict.
+TYPE_PROBE = r"""
+(function () {
+  function scaleOf(el) {
+    var n = el, s = 1;
+    while (n && n !== d.documentElement) {
+      if (n.tagName && n.tagName.toLowerCase() === 'svg') {
+        var r = n.getBoundingClientRect();
+        var vb = (n.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+        if (r.width && vb.length === 4 && vb[2]) s *= r.width / vb[2];
+      }
+      n = n.parentElement;
+    }
+    return s;
+  }
+  function name(el) {
+    var s = el.tagName.toLowerCase();
+    if (el.className && typeof el.className === 'string')
+      s += '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.');
+    return s;
+  }
+  var floor = __FLOOR__, seen = 0, below = [], lowest = null;
+  var all = [].slice.call(d.querySelectorAll('body *'));
+  all.forEach(function (el) {
+    if (el.children.length) return;
+    var t = (el.textContent || '').trim();
+    if (!t) return;
+    if (el.closest('[hidden]')) return;
+    var cs = w.getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden') return;
+    var r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var own = parseFloat(cs.fontSize) || 0;
+    if (!own) return;
+    var px = +(own * scaleOf(el)).toFixed(2);
+    seen++;
+    if (!lowest || px < lowest.px) lowest = { px: px, text: t.slice(0, 30), sel: name(el) };
+    if (px < floor) below.push({ px: px, text: t.slice(0, 40), sel: name(el) });
+  });
+  return { seen: seen, lowest: lowest, below: below };
+})()
+"""
+
+
+def run_type_pass(chrome, site, tmp, page, height, settle, widths=TYPE_WIDTHS):
+    """One render per width, asking what size the type actually renders at.
+
+    Its own pass, and the only pass in this tool that walks widths rather than
+    themes: a colour is a fact about the cascade, which one render settles, and a
+    rendered size is a fact about layout, which moves with every width. The finding
+    names the width it happened at, because "a plate's glosses are 9px" is not
+    actionable and "at 641" is.
+    """
+    below, seen, lowest, failed = [], 0, None, []
+    for width in widths:
+        v = run_state(chrome, site, tmp, page, width, height, settle, None, False,
+                      probe=TYPE_PROBE.replace("__FLOOR__", repr(TYPE_FLOOR)),
+                      tag_note="type%d" % width)
+        if "error" in v:
+            failed.append({"width": width, "error": v["error"]})
+            continue
+        seen += v.get("seen") or 0
+        low = v.get("lowest") or {}
+        if low and (not lowest or low.get("px", 999) < lowest.get("px", 999)):
+            lowest = dict(low, width=width)
+        for item in v.get("below") or []:
+            below.append(dict(item, width=width, height=height))
+    return {
+        "type": True,
+        "widths": list(widths),
+        "floor": TYPE_FLOOR,
+        "seen": seen,
+        "lowest": lowest,
+        "below": below,
+        "fails": below + failed,
+    }
+
+
 # What a visitor's reading position is allowed to lose while the page loads under a
 # slow link, as Cumulative Layout Shift. The web-vitals line for "good" is 0.1, and
 # this is a fifth of it: the measured values on this site are 0.00015 on an article
@@ -2002,7 +2110,8 @@ def media_states(contrast_more, os_dark, as_authored):
 
 def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
                contrast_more=True, os_dark=True, scriptless=True, tap_widths=True,
-               seam=True, motion=True, layout=True, font_delay_ms=1200):
+               seam=True, motion=True, layout=True, type_floor=True,
+               font_delay_ms=1200):
     """Every theme and media state this page can be delivered in, as a list.
 
     The first pass forces nothing, so a page with no theme control is audited in
@@ -2036,6 +2145,8 @@ def audit_page(chrome, site, tmp, page, width, height, settle, pixels=True,
     if layout:
         states.append(run_layout_pass(chrome, site, tmp, page, width, height, settle,
                                       font_delay_ms))
+    if type_floor:
+        states.append(run_type_pass(chrome, site, tmp, page, height, settle))
     for tap_width in ([width, PHONE_WIDTH] if tap_widths and width != PHONE_WIDTH
                       else [width] if tap_widths else []):
         states.append(run_tap_pass(chrome, site, tmp, page, tap_width, height, settle))
@@ -2083,6 +2194,10 @@ def main(argv):
     ap.add_argument("--no-layout", action="store_true",
                     help="skip the pass that holds every font response back and asks "
                          "what moves while the page loads on a slow link")
+    ap.add_argument("--no-type-floor", action="store_true",
+                    help="skip the pass that walks widths and asks what size every "
+                         "text actually renders at, including text inside a scaled "
+                         "SVG, where the computed font-size is not the answer")
     ap.add_argument("--font-delay", type=int, default=1200,
                     help="milliseconds the layout pass holds every .woff2 response "
                          "(default 1200)")
@@ -2105,6 +2220,7 @@ def main(argv):
 
     findings, failures, tap_fails, seam_fails, motion_fails, layout_fails = \
         [], 0, 0, 0, 0, 0
+    type_fails = 0
     with tempfile.TemporaryDirectory(prefix="istor-audit-") as tmp:
         for page in pages:
             r = audit_page(chrome, a.site, tmp, page, a.width, a.height, a.settle,
@@ -2116,6 +2232,7 @@ def main(argv):
                            seam=not a.no_seam,
                            motion=not a.no_motion,
                            layout=not a.no_layout,
+                           type_floor=not a.no_type_floor,
                            font_delay_ms=a.font_delay)
             if r.get("error"):
                 print("  FAIL  %s  %s" % (page, r["error"]))
@@ -2175,6 +2292,34 @@ def main(argv):
                     findings.append({"page": page, "tap": True, "width": s["width"],
                                      "targets": s["targets"], "under": s["under"],
                                      "inline": s["inline"], "spaced": s["spaced"],
+                                     "fails": s["fails"]})
+                    continue
+                if s.get("type"):
+                    # TYPE FLOOR. A rendered size is not a colour and not a ratio: it
+                    # is the one property of this page that a plate's own user units
+                    # put under the reader, and it moves with every width rather than
+                    # with the theme. The line names the smallest text found and where,
+                    # because a pass that only says "clean" cannot tell the next person
+                    # how close it was.
+                    type_fails += len(s["fails"])
+                    low = s.get("lowest") or {}
+                    print("  %s  %-42s %3d widths  %4d texts  smallest %.2fpx at %dpx "
+                          "%s  %d FAIL"
+                          % ("ok  " if not s["fails"] else "FAIL",
+                             "%s type floor" % page, len(s["widths"]), s["seen"],
+                             low.get("px") or 0, low.get("width") or 0,
+                             "(%s)" % low.get("sel") if low.get("sel") else "",
+                             len(s["fails"])))
+                    for f in s["fails"][:8]:
+                        if "error" in f:
+                            print("          %dpx: %s" % (f["width"], f["error"]))
+                        else:
+                            print("          %.2fpx (floor %.1f) at %dpx  %s  %r"
+                                  % (f["px"], s["floor"], f["width"], f["sel"],
+                                     f["text"]))
+                    findings.append({"page": page, "type": True,
+                                     "widths": s["widths"], "floor": s["floor"],
+                                     "seen": s["seen"], "lowest": low,
                                      "fails": s["fails"]})
                     continue
                 if s.get("motion"):
@@ -2348,18 +2493,31 @@ def main(argv):
                  " and ".join("%dms" % d for d in delays),
                  max(f["worst"] for f in layout_passes), LAYOUT_CEILING))
 
+    type_passes = [f for f in findings if f.get("type")]
+    if type_passes:
+        small = [f["lowest"]["px"] for f in type_passes if f.get("lowest")]
+        print("\n%d type-floor passes at %s: %d texts measured, smallest %.2fpx, "
+              "floor %.1fpx"
+              % (len(type_passes),
+                 ", ".join(str(w) for w in sorted(type_passes[0]["widths"])),
+                 sum(f["seen"] for f in type_passes),
+                 min(small) if small else 0, TYPE_FLOOR))
+
     scriptless = [f for f in findings if f.get("scripts") is False]
     print("\n%d page-states audited at %dpx, %s%s"
           % (len(states), a.width, note,
              ", plus %d scriptless pass%s"
              % (len(scriptless), "es" if len(scriptless) != 1 else "")
              if scriptless else ""))
-    if failures or tap_fails or seam_fails or motion_fails or layout_fails:
+    if (failures or tap_fails or seam_fails or motion_fails or layout_fails
+            or type_fails):
         print("FAILED - %d below AA, %d targets under %dpx with neither exception, "
               "%d windows without the separator their ground calls for, "
               "%d in a reduced-motion render that is not the finished page, "
-              "%d shifting more than the layout ceiling"
-              % (failures, tap_fails, TAP_MIN, seam_fails, motion_fails, layout_fails))
+              "%d shifting more than the layout ceiling, "
+              "%d texts under the %.0fpx type floor"
+              % (failures, tap_fails, TAP_MIN, seam_fails, motion_fails, layout_fails,
+                 type_fails, TYPE_FLOOR))
         return 1
     print("contrast ok - nothing below AA where the ground could be measured")
     if seam:
@@ -2372,6 +2530,10 @@ def main(argv):
     if layout_passes:
         print("layout ok - with every font held back, nothing moves a reader's "
               "place on the page")
+    if type_passes:
+        print("type ok - nothing a reader has to read renders under %.0fpx, at any "
+              "width from %d to %d"
+              % (TYPE_FLOOR, min(TYPE_WIDTHS), max(TYPE_WIDTHS)))
     return 0
 
 

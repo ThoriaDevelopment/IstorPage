@@ -45,7 +45,7 @@ FIGURES = HERE.parent / "figures"
 # The outputs are listed rather than discovered: a generator that quietly stops
 # writing one variant should say so here, not pass because nothing looked for it.
 GENERATORS: list[tuple[str, tuple[str, ...], bool]] = [
-    ("make-boundary.py", ("boundary-wide.svg", "boundary-tall.svg"), True),
+    ("make-boundary.py", ("boundary-wide.svg", "boundary-mid.svg", "boundary-tall.svg"), True),
     ("make-calendar-ring.py", ("calendar-ring.svg",), False),
     ("make-etymology.py", ("etymology.svg", "etymology-tall.svg"), False),
     ("make-hero-gears.py", ("hero-gears.svg",), True),
