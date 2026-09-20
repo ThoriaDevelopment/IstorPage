@@ -265,11 +265,15 @@ prints it as the Saros cycle's length; 48 is the count of the wheel that drives 
 reconstruction, so the numbers came from the same place the prose did.
 
 The band's geometry is arithmetic rather than arrangement, and the interesting part is what it
-refuses: the pinions' centres sit at y = 240 in the drawing so that neither wheel is cut by the
+refuses. The pinions' centres sit at y = 240 in the drawing so that neither wheel is cut by the
 container's own box, because a layer's edge cuts a circle into a straight chord and a gear with a
-flat side is a bug that looks like a style. The great wheel is centred 300px below the band, so it
-runs off the page's edge exactly where the page ends, and the window's plate takes its crown: the
-product occludes the world, which is the same move as the close's poster, in the other direction.
+flat side is a bug that looks like a style. The great wheel's pitch radius is 505, which puts its
+crown at y = 40 — exactly the window's bottom edge, because 40 is `--world-overlap`, and the generator
+READS that token out of the stylesheet rather than repeating it: two numbers that must agree can only
+be one. Tangent is the point. The wheel's top meets the plate's edge, so the product touches the world
+without either cutting the other, and the wheel then runs off the page's own bottom edge, which is
+where a world should end. (The first placement put the crown 110px lower and a shot showed what that
+looks like: a wheel floating under a plate, unrelated to it. One number, and it is the whole effect.)
 
 The teeth are a **dash pattern**, not 223 paths: `stroke-dasharray` on a circle stroked at the tooth's
 depth is what a cut tooth is, and it costs 90 bytes a wheel where the paths would have cost about 9 KB

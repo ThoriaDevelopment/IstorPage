@@ -34,27 +34,30 @@ OBSERVED, and it is recorded here because the file's own rule is that choices
 get written down.
 
 THE COMPOSITION IS ARITHMETIC, so that nothing is cropped by accident. The
-viewBox is 1440x420. The great wheel is centred at (720, 720), well below the
-band, so its crown is the highest thing in the drawing and the wheel runs off
-the page's own bottom edge: the field's bottom edge is the page's edge, which is
-where a world should end. Its pitch radius is set from the module rather than
-guessed, so the pinions' radius follows from their tooth count:
+viewBox is 1440x420. The great wheel's CROWN is placed exactly at y = 40, which
+is where the window's bottom edge lands: 40 is `--world-overlap` in
+styles.css, and this file READS THAT TOKEN rather than repeating it, because two
+numbers that must agree can only be one. Tangent is the point: the wheel's top
+meets the plate's edge, so the product touches the world without either one
+cutting the other, and the wheel then runs off the page's own bottom edge, which
+is where a world should end.
 
-    pitch        P  = 2*pi*R1/N1            = 2*pi*570/223 = 16.0625
-    pinion       R2 = N2*P/(2*pi)  = 48*P/(2*pi)          = 122.72
-    centre distance d = R1 + R2                            = 692.72
-    crown            = C1.y - R1 = 720 - 570               = 150  (in band)
-    exits bottom at  x = 720 +/- sqrt(R1^2 - (720-420)^2)  = 236 and 1204
+    crown            = OVERLAP                        = 40  (the plate's edge)
+    pitch        P   = 2*pi*R1/N1 = 2*pi*505/223      = 14.2289
+    pinion       R2  = N2*P/(2*pi) = 48*P/(2*pi)      = 108.71
+    centre           = C1.y - R1 = 545 - 505          = 545, i.e. R1 + OVERLAP
+    centre distance  = R1 + R2                        = 613.71
+    exits bottom at  x = 720 +/- sqrt(505^2 - 125^2)  = 230.7 and 1209.3
 
 The pinions are placed by requiring their centres to sit at y = 240: high enough
-that a 122.72 radius is fully inside the band (no straight chord cut across a
+that a 108.71 radius is fully inside the band (no straight chord cut across a
 wheel, which is what a layer's own box does to anything that overflows it), and
 low enough that they meet the great wheel on its flanks rather than at its
 crown, where a meshing wheel would have to sit above the band. Solving for that
-y gives sin(theta) = (720-240)/692.72, so:
+y gives sin(theta) = (545-240)/613.71, so:
 
-    theta = 43.90 deg,  C2 = (720 -/+ 499.48, 240) = (220.5, 240) and (1219.5, 240)
-    mesh points          (309.0, 325.1) and (1131.0, 325.1)
+    theta = 29.81 deg,  C2 = (720 -/+ 532.6, 240) = (187.4, 240) and (1252.6, 240)
+    mesh points          (281.8, 294.0) and (1158.2, 294.0)
 
 THE TEETH ARE A DASH PATTERN, AND THAT IS THE WHOLE BYTE ARGUMENT. 223 teeth as
 223 <path> elements is about 9 KB of coordinates for one wheel; the same teeth as
@@ -78,20 +81,41 @@ figure switches with the page's grounds like every other generated plate.
 """
 
 import math
+import re
 import sys
 from pathlib import Path
 
-OUT = Path(__file__).resolve().parent.parent / "figures" / "hero-gears.svg"
+HERE = Path(__file__).resolve().parent
+OUT = HERE.parent / "figures" / "hero-gears.svg"
+CSS = HERE.parent / "styles.css"
 
 W, H = 1440.0, 420.0          # the band, in SVG units; matches --world-h's ceiling
 
 N1 = 223                      # the mechanism's largest gear
 N2 = 48                       # the wheel that drives it in the reconstruction
-R1 = 570.0                    # pitch radius, chosen so the crown lands in the band
+R1 = 505.0                    # pitch radius, from the crown's placement below
 P = 2 * math.pi * R1 / N1     # the module: every wheel shares it
 R2 = N2 * P / (2 * math.pi)
-C1 = (720.0, 720.0)           # the great wheel's centre, below the band
 PINION_Y = 240.0              # pinion centres, so neither wheel is cut by the box
+
+
+def world_overlap():
+    """`--world-overlap` out of styles.css, in pixels.
+
+    The crown is placed against this number, so the file reads it instead of
+    repeating it. A hardcoded 40 here would be a second copy of a token that
+    moves: the failure mode is a wheel hanging three pixels off the plate's edge,
+    which looks like a drawing that was eyeballed, because it would have been.
+    """
+    text = CSS.read_text(encoding="utf-8")
+    m = re.search(r"--world-overlap:\s*(\d+(?:\.\d+)?)px", text)
+    if not m:
+        raise SystemExit(f"no --world-overlap found in {CSS}")
+    return float(m.group(1))
+
+
+OVERLAP = world_overlap()
+C1 = (720.0, R1 + OVERLAP)    # so the crown's top is the window's bottom edge
 
 TOOTH = P * 0.5               # half the pitch: square-cut, and the gap is the rest
 DEPTH = P * 0.75              # radial tooth height, under the pitch, as cut bronze is
@@ -241,13 +265,20 @@ def main():
         # The sum must be the same at every angle, because that is the alignment
         # the teeth interleave on. The second run flips the pinion's sense and
         # must move it, or the first run is measuring nothing.
+        # Compared modulo the pitch, because the sum lives on a circle: two
+        # phases a hair either side of 0/one full pitch are the same alignment,
+        # and a bare `set()` calls them different. That is the same trap as
+        # reading a clock's 11:59 and 12:01 as two hours apart.
+        def drift(values):
+            return max(abs(((v - values[0] + P / 2) % P) - P / 2) for v in values)
+
         angles = (0, 2, 4, 8)
-        base = [round(mesh_check(t)[2], 6) for t in angles]
-        wrong = [round(mesh_check(t, sense=1.0)[2], 6) for t in angles]
-        assert len(set(base)) == 1, f"mesh phase drifts across rotation: {base}"
-        assert len(set(wrong)) > 1, "the flipped rotation did not move the phase"
-        print(f"self-test ok - mesh sum {base[0]:.2f} held at 0/2/4/8 deg, "
-              f"and the wrong sense moved it to {wrong[-1]:.2f}")
+        base = [mesh_check(t)[2] for t in angles]
+        wrong = [mesh_check(t, sense=1.0)[2] for t in angles]
+        assert drift(base) < 1e-9, f"mesh phase drifts across rotation: {base}"
+        assert drift(wrong) > 0.1, "the flipped rotation did not move the phase"
+        print(f"self-test ok - mesh sum held to {drift(base):.2e} of a pitch at "
+              f"0/2/4/8 deg, and the wrong sense moved it to {wrong[-1]:.2f}")
 
     OUT.write_bytes(svg.encode("utf-8"))
     print(f"{OUT.relative_to(OUT.parents[2])} written: {len(svg)} B")
