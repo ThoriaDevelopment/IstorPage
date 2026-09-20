@@ -1212,6 +1212,52 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', function () { measure(); onScroll(); });
     window.addEventListener('pageshow', onScroll);
+
+    // M15 · the worlds answer the pointer, not only the scroll. Each drawing
+    // is a transparent SVG over a CSS ground, so a few pixels of drift reveal
+    // no edge - the depth is differential motion: the machine leans WITH the
+    // pointer the way a distant layer does when the head moves, while
+    // everything the reader reads stays fixed, which is what
+    // keeps the words the subject. The two wheels of each world move as ONE
+    // element (a mesh with slop is a broken mesh), the pointer sets a target
+    // that a lerp chases, and the chase stops - the rAF is not left running
+    // when the drift has settled, because an idle page has no business
+    // waking the compositor. Reduced motion never gets this far: `reduced`
+    // has already nulled both worlds, so there is nothing to attach to.
+    // Pointer gating is EVENT-level, not device-level: the §16 rule bans
+    // runtime sniffing ("the lighter build stays declared in media queries,
+    // never sniffed at run time"), so no pointer media query is evaluated
+    // here - a pointermove event carries its own pointerType, and skipping
+    // touch is reading the event the way a keyboard shortcut reads its key.
+    // It also keeps a tap's synthetic move from shoving the machine about.
+    if (world || closeWorld) {
+      var drift = { x: 0, y: 0, tx: 0, ty: 0, raf: 0 };
+      var driftStep = function () {
+        drift.raf = 0;
+        drift.x += (drift.tx - drift.x) * 0.08;
+        drift.y += (drift.ty - drift.y) * 0.08;
+        if (world) {
+          world.style.transform = 'translate(' + drift.x.toFixed(2) + 'px,' + drift.y.toFixed(2) + 'px)';
+        }
+        // The close's container centres itself with translateX(-50%); the JS
+        // transform replaces the CSS one, so that half is carried here.
+        if (closeWorld) {
+          closeWorld.style.transform = 'translateX(-50%) translate(' +
+            (drift.x * 0.7).toFixed(2) + 'px,' + (drift.y * 0.5).toFixed(2) + 'px)';
+        }
+        if (Math.abs(drift.tx - drift.x) + Math.abs(drift.ty - drift.y) > 0.1) {
+          drift.raf = requestAnimationFrame(driftStep);
+        }
+      };
+      window.addEventListener('pointermove', function (e) {
+        if (e.pointerType === 'touch') return;
+        // +-10px of x, +-6 of y: enough that the eye catches the machine
+        // moving, not enough that it reads as the page being loose.
+        drift.tx = (e.clientX / window.innerWidth - 0.5) * 20;
+        drift.ty = (e.clientY / window.innerHeight - 0.5) * 12;
+        if (!drift.raf) drift.raf = requestAnimationFrame(driftStep);
+      }, { passive: true });
+    }
   }
 
   var ask = document.querySelector('.hero .ask');   // M9
