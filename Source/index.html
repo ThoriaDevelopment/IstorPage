@@ -234,16 +234,15 @@
 <section class="act" id="how-it-answers">
   <div class="wrap split">
     <div class="body">
-      <h2>It checks what you already gave it, before it looks anywhere else.</h2>
+      <h2>It checks what you already gave it.</h2>
 
-      <p>Before it answers, Istor decides whether the documents in your library already settle the
-        question. If they do, it answers from them and never goes online, which is why the tool
-        works with the network unplugged, and why it still works when the connection is there but you
-        would rather it stayed quiet.</p>
+      <p>Before it looks anywhere else. If the documents in your library already settle the
+        question, Istor answers from them and never goes online: the tool works unplugged, and
+        stays quiet when you ask it to.</p>
 
-      <p>The model making that decision is the small one. Istor runs two: the smaller, heavily
-        instructed model is asked the cheap question first (<i>is this already answered here?</i>),
-        so the better model can be slow, and can be right.</p>
+      <p>The decision is the small model's. Istor runs two, and the cheap question goes first
+        (<i>is this already answered here?</i>), so the better model can be slow, and can be
+        right.</p>
     </div>
 
     <div class="field reveal">
@@ -286,23 +285,20 @@
     <div class="body">
       <h2>Every claim points at a passage.</h2>
 
-      <p>Istor writes a citation into the answer, and the app resolves it to a passage in a source
-        you own or a page it actually fetched. So a number in the answer is never attached to a
-        source that isn't there. Two failures go away: it will not invent a fact, and it will not
-        tell you something does not exist because it falls outside a training cutoff.</p>
+      <p>Every citation resolves to a passage in a source you own or a page it actually fetched.
+        Two failures go away: it will not invent a fact, and it will not tell you something does
+        not exist because a training cutoff ended.</p>
 
-      <p>There is a third case, and it is the interesting one. Sometimes the answering model writes a
-        good answer and forgets to cite as it goes. Rather than make you wait while a slower model
-        redoes the work, Istor sends the small model to fit a citation quickly, and marks what it
-        fitted: <strong>Unverified, check the source.</strong></p>
+      <p>Sometimes the model writes a good answer and forgets to cite as it goes. Istor sends the
+        small model to fit a citation quickly, and marks what it fitted:
+        <strong>Unverified, check the source.</strong></p>
       <!-- The app prints this label with an em dash between its halves
            (Istor, src/components/CitedAnswer.tsx). The site prints a comma:
            no em dash appears anywhere a visitor can see. Same words, same
            meaning, still quoted rather than paraphrased. -->
 
-      <p>That word is not a guess about whether the claim is true. It says which of the two models
-        put the number there, and it tells you to go and look, which is the whole habit this tool is
-        trying to build.</p>
+      <p>That word is not a guess about truth. It names the model that put the number there, and
+        it tells you to go and look.</p>
     </div>
 
     <div class="field reveal">
@@ -336,12 +332,12 @@
     <div class="body">
       <h2>You can watch it decide.</h2>
 
-      <p>Open the disclosure above any answer and you can read what it did: the reasoning, then the
-        passages it pulled, each with the source it came from. It is the same evidence the answer
-        rests on, in the product's own words.</p>
+      <p>Open the disclosure above any answer and read what it did: the reasoning, then the
+        passages it pulled, each with its source. It is the evidence the answer rests on, in the
+        product's own words.</p>
 
-      <p>When the gate sends it out to the web, you watch that happen too, domain by domain, as
-        each page is fetched and read.</p>
+      <p>When the gate sends it to the web, you watch that too, domain by domain, as each page
+        is fetched and read.</p>
     </div>
 
     <div class="field reveal">
@@ -375,14 +371,12 @@
     <div class="body">
       <h2>It marks what nobody knows yet.</h2>
 
-      <p>Ask Istor something genuinely unsettled and it will not tidy it up for you. The number of
-        holes in the Antikythera mechanism's calendar ring has been argued over for a century; the
-        app answers with the dispute intact, row by row, rather than picking the likelier figure and
-        moving on.</p>
+      <p>Ask it something genuinely unsettled and it will not tidy it up. The calendar ring's hole
+        count has been argued over for a century; the app answers with the dispute intact, row by
+        row, rather than picking the likelier figure and moving on.</p>
 
-      <p>That is the same discipline as the citation mark, pointed at a different problem. One says
-        <i>here is which model put this number here</i>. The other says <i>here is what nobody
-        knows yet</i>.</p>
+      <p>Same discipline as the citation mark, pointed elsewhere. One says <i>here is which model
+        put this number here</i>. The other says <i>here is what nobody knows yet</i>.</p>
     </div>
 
     <div class="field reveal">

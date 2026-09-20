@@ -112,13 +112,11 @@ can do that better than a video: the product moving on the page, with no player 
 sites).
 
 The genre's other rule is headline length, **3–7 words**. Measured on the built page, the ten real
-headlines run **6, 12, 6, 5, 6, 3, 5, 3, 6, 4** words; the remaining two "headings" are a section
-label ("Questions") and a word being defined ("ἵστωρ"), where a word count does not apply. **Act 2
-is the one that breaks the rule**: "It checks what you already gave it, before it looks anywhere
-else." is two clauses where every other headline is one, and it is the first headline a reader meets
-after the hero. Recorded here as a measured defect rather than accepted: the fix is the split every
-other act already uses, its second clause moving into the lede, and it is the next copy change rather
-than a thing to forget.
+headlines run **6, 6, 6, 5, 6, 3, 5, 3, 6, 4** words; the remaining two "headings" are a section
+label ("Questions") and a word being defined ("ἵστωρ"), where a word count does not apply. Act 2's
+twelve-word headline was the one that broke the rule, and its fix (2026-09-20) is the split every
+other act already uses: the headline is "It checks what you already gave it." and its second clause
+opens the lede as "Before it looks anywhere else."
 
 Compositions are named **C1–C5** and defined in §3. The page alternates them deliberately — the
 report ranks alternation **#12**, and notes that Gemini Notebook, competent and entirely
@@ -142,7 +140,7 @@ review for a week as one that kept it.
 |---|---|---|---|---|---|
 | — | nav — `#nav` | — | sticky bar, 1px hairline on scroll | paper | — |
 | 1 | hero — `#what-it-is` | It shows you what it saw. | **C1** field-full | teal | the app window as a live **DOM replica**, animated |
-| 2 | the gate — `#how-it-answers` | It checks what you already gave it, before it looks anywhere else. | **C2** split, field **right** | paper + teal | `exhibit-10` |
+| 2 | the gate — `#how-it-answers` | It checks what you already gave it. | **C2** split, field **right** | paper + teal | `exhibit-10` |
 | 3 | the passage — `#the-passage` | Every claim points at a passage. | **C2** split, field **left** | paper + teal | `exhibit-11`, the witness |
 | 4 | the reading — no id | You can watch it decide. | **C2** split, field **right** | paper + teal | `exhibit-12` |
 | 5 | the dispute — no id | It marks what nobody knows yet. | **C2** split, field **left** | paper + teal | `exhibit-13` |
