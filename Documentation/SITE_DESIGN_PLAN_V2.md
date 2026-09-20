@@ -143,7 +143,7 @@ review for a week as one that kept it.
 | 2 | the gate — `#how-it-answers` | It checks what you already gave it. | **C2** split, field **right** | paper + teal | `exhibit-10` |
 | 3 | the passage — `#the-passage` | Every claim points at a passage. | **C2** split, field **left** | paper + teal | `exhibit-11`, the witness |
 | 4 | the reading — no id | You can watch it decide. | **C2** split, field **right** | paper + teal | the live reading log (DOM) |
-| 5 | the dispute — no id | It marks what nobody knows yet. | **C2** split, field **left** | paper + teal | `exhibit-13` |
+| 5 | the dispute — no id | It marks what nobody knows yet. | **C2** split, field **left** | paper + teal | the live dispute table (DOM, 2026-09-21) |
 | 6 | the machine — `#on-your-machine` | On your machine. | **C3** diptych, one inset field | paper + teal | `exhibit-14` + `exhibit-15` |
 | 7 | the workspace — `#the-library` | The library is the interface. | **C4** band | teal | `exhibit-16` + `exhibit-17` |
 | 8 | the stop — `#where-it-stops` | Where it stops. | plate, drawing bleeds, no window | paper | the calendar-ring plate, generated |
@@ -997,7 +997,7 @@ text and its act's claim is that you watch it happen.
 | `exhibit-10` | it answers from what you gave it | `Black/Question1.png` |
 | `exhibit-11` | every claim points at a passage | `Black/verifiedsource.png` |
 | `exhibit-12` | you can watch it decide | **DOM replica** — the log transcribed from `Black/FetchingPages.png` |
-| `exhibit-13` | it keeps the disagreements | `Black/Question2.png` or `viewingnote-editingsource.png` |
+| `exhibit-13` | it keeps the disagreements | **DOM replica** (2026-09-21) — the table transcribed from `Black/Question2.png`; crop line parked in make-exhibits.py |
 | `exhibit-14` | no network, no keys | `Black/settingsresearch.png` |
 | `exhibit-15` | it runs on your machine | `White/settingsmodels.png` |
 | `exhibit-16` | the library | `Black/Sourcesfullscreenmain.png` |
@@ -1606,7 +1606,7 @@ starting points, not a substitute for measuring.
 | `exhibit-10` | `Black/Question1.png` | centre pane, ≈1242×880 | 621×440 | question + full answer; the "Thoughts ⌄" collapse carries the gate story |
 | `exhibit-11` | `Black/verifiedsource.png` | `1242x900+318+88` | 621×450 | crop A; `+318+150` starts on the answer and drops the bubble |
 | ~~`exhibit-12`~~ | `Black/FetchingPages.png` | *retired 2026-09-20* | — | its log is DOM now (§2.5); the crop line is parked in make-exhibits.py |
-| `exhibit-13` | `Black/viewingnote-editingsource.png` | `720x940+500+60` | 360×470 | crop B; portrait. Three-pane split — do not use the default |
+| ~~`exhibit-13`~~ | `Black/Question2.png` | *retired 2026-09-21* | — | its table is DOM now (§2.5); the crop line is parked in make-exhibits.py |
 | `exhibit-14` | `Black/settingsresearch.png` | `800x568+560+226` | 400×284 | crop C; modal pixel-for-pixel, no dimmed background |
 | `exhibit-15` | `White/settingsmodels.png` | modal bounds — **measure at build** | ≈400×300 | the modal is content-sized; measure as crop C was |
 | `exhibit-16` | `Black/Sourcesfullscreenmain.png` | `1918x620+0+44` | 959×310 | crop E; full window width, because the list is the point |

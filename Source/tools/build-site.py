@@ -103,12 +103,16 @@ ASSETS_PUBLISHED = {
 # for the crop bounds and for why each is crop_px / 2 CSS px. The page carries
 # nine exhibits, not eight: act 4's is the DOM reading log, which is not an export
 # and therefore not in this list.
+# exhibit-13-dispute RETIRED 2026-09-21: act 5's table is a DOM replica now, the
+# second exhibit to make that move (see the markup note in act 5). A table locked
+# in pixels is invisible to a screen reader and unsearchable; its copy was
+# transcribed from the capture before the crop was dropped, so nothing was lost
+# but the bytes. Restore the line and regenerate if a bitmap is ever wanted.
 EXPORTS = [
     "exhibit-10-gate",
     "exhibit-10-gate-phone",
     "exhibit-11-citations",
     "exhibit-11-citations-phone",
-    "exhibit-13-dispute",
     "exhibit-14-research",
     "exhibit-15-models",
     "exhibit-16-library",

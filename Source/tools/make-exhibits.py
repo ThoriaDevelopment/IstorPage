@@ -74,8 +74,12 @@ EXHIBITS = [
     # transcribed into the page from this capture before the crop was dropped, so
     # nothing was lost but the bytes. Regenerate with the line above restored if a
     # future act ever needs the capture as a bitmap again.
-    ("exhibit-13-dispute", "Black/Question2.png", "860x960+540+44",
-     "the twelve-row disputed-claims table, kept rather than resolved"),
+    # exhibit-13-dispute RETIRED 2026-09-21, the second exhibit to become DOM
+    # (after exhibit-12): act 5's table is now a transcribed replica in the page.
+    # A table in pixels cannot be read by a screen reader or searched. Restore
+    # this line and rerun if a bitmap is ever wanted again.
+    # ("exhibit-13-dispute", "Black/Question2.png", "860x960+540+44",
+    #  "the twelve-row disputed-claims table, kept rather than resolved"),
     ("exhibit-14-research", "Black/settingsresearch.png", "800x568+560+226",
      "Web research off, keyless scrape, no API keys"),
     ("exhibit-15-models", "White/settingsmodels.png", "793x460+560+20",

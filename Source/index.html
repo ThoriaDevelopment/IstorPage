@@ -469,13 +469,57 @@
 
     <div class="field reveal">
       <figure class="exhibit">
-        <picture>
-          <source type="image/avif" srcset="/img/exhibit-13-dispute.avif 1x, /img/exhibit-13-dispute@2x.avif 2x">
-          <source type="image/webp" srcset="/img/exhibit-13-dispute.webp 1x, /img/exhibit-13-dispute@2x.webp 2x">
-          <img src="/img/exhibit-13-dispute.webp" srcset="/img/exhibit-13-dispute.webp 1x, /img/exhibit-13-dispute@2x.webp 2x"
-               width="430" height="480" loading="lazy" decoding="async"
-               alt="A table of what is still disputed about the Antikythera mechanism, with an Issue column, a Status column and twelve rows. The date of construction is known only as a range, 150 to 100 BC. The gear count is “at least 30” and the exact count is uncertain. The number of holes in the calendar ring is 354 or 355, with 354 far more probable than 360. The inventor is either Archimedes or Hipparchus. The remaining eight rows ask whether the device qualifies as a computer, a calculator, a clock, a calendar, a planetary calculator, a solar calendar, a lunar calendar or a solar lunar calendar, and every one of them is marked as a debated term.">
-        </picture>
+        <!-- THE DISPUTE TABLE IS DOM, NOT A CAPTURE - the second exhibit to make
+             that move (exhibit-12 became the reading log one act earlier, and for
+             the same reason the log's note records: this act's claim is that the
+             app keeps the dispute intact, and a bitmap keeps it at image
+             resolution, invisible to a screen reader and unsearchable by the
+             reader it is about). The pane below is transcribed from the
+             exhibit-13 capture line for line - the twelve rows, the statuses
+             exactly as the app prints them, and the answer's own closing line,
+             which is this act's thesis in the product's words. The crop cut the
+             answer's opening; the leading ellipsis marks it, as the log's note
+             established. The window bar's count is the session's library size,
+             as the capture shows it. -->
+        <div class="win win-dispute">
+          <div class="win-bar">
+            <span class="win-mark">ἵστωρ<span class="mark-dot">.</span></span>
+            <span class="win-count">10 sources</span>
+          </div>
+
+          <div class="pane pane-dispute">
+            <p class="dispute-cut" aria-hidden="true">…</p>
+            <ul class="dispute-lead">
+              <li>It tracks the Metonic cycle (19 solar years, about 235 lunar months)</li>
+              <li>It incorporates the Egyptian calendar alongside the Greek zodiac</li>
+            </ul>
+            <p class="dispute-attr-head">Historical attribution:</p>
+            <p class="dispute-attr">Associated with either Archimedes or Hipparchus</p>
+
+            <p class="dispute-title">What Is Still Disputed</p>
+            <table class="dispute-table">
+              <thead>
+                <tr><th scope="col">Issue</th><th scope="col">Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Exact date of construction</td><td>Only a range (150-100 BC) is known</td></tr>
+                <tr><td>Exact number of gears</td><td>“At least 30”: the exact count is uncertain</td></tr>
+                <tr><td>Exact number of holes in the calendar ring</td><td>354 or 355 (354 is far more probable than 360)</td></tr>
+                <tr><td>Identity of the inventor</td><td>Archimedes or Hipparchus, both candidates</td></tr>
+                <tr><td>Whether it qualifies as a “computer”</td><td>The term is debated</td></tr>
+                <tr><td>Whether it qualifies as a “calculator”</td><td>The term is debated</td></tr>
+                <tr><td>Whether it qualifies as a “clock”</td><td>The term is debated</td></tr>
+                <tr><td>Whether it qualifies as a “calendar”</td><td>The term is debated</td></tr>
+                <tr><td>Whether it qualifies as a “planetary calculator”</td><td>The term is debated</td></tr>
+                <tr><td>Whether it qualifies as a “solar calendar”</td><td>The term is debated</td></tr>
+                <tr><td>Whether it qualifies as a “lunar calendar”</td><td>The term is debated</td></tr>
+                <tr><td>Whether it qualifies as a “solar-lunar calendar”</td><td>The term is debated</td></tr>
+              </tbody>
+            </table>
+            <p class="dispute-close">The device is widely regarded as a technological marvel, but
+              the precise classification and attribution remain subjects of scholarly debate.</p>
+          </div>
+        </div>
         <figcaption>Twelve rows, each printed with a status rather than a settled answer. The hole
           count is the row the next section is about.</figcaption>
       </figure>

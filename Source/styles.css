@@ -184,6 +184,10 @@
   --pane-lift: #111620;   /* the centre column, at its top-centre    */
   --fill:      rgb(255 255 255 / 0.11);   /* bubble, rail filters    */
   --fill-card: rgb(255 255 255 / 0.15);   /* the witness popover     */
+  --fill-row:  rgb(255 255 255 / 0.05);   /* the dispute table's zebra band, sampled
+                                             off the exhibit-13 capture: the app
+                                             stripes its rows at about half the
+                                             bubble fill */
   --ink:       #E5E8EE;
   --ink-2:     #8B9199;
   --ink-3:     #6E747C;
@@ -612,6 +616,45 @@ h3 {
   border-block-end: 1.5px solid var(--ink-3);
   transform: rotate(-45deg);
 }
+.win-dispute { width: min(var(--win-sm), 100%); }
+.pane-dispute {
+  padding: 18px 20px 20px;
+  font-size: var(--t-sm);
+  line-height: 1.5;
+}
+/* The leading ellipsis marks the crop: the capture's answer opened above what
+   the pane keeps, exactly as the readlog's markdown prefixes established. */
+.dispute-cut { color: var(--ink-3); margin-block: 0 6px; }
+.dispute-lead { margin: 0; padding: 0; list-style: none; }
+.dispute-lead li { padding-block: 2px; }
+.dispute-attr-head { margin-block: 10px 0; color: var(--ink-2); }
+.dispute-attr { margin-block: 0; }
+/* The app prints its pane headings as bold Title Case lines (the capture's
+   "What Is Still Disputed"); the replica carries the same weight, not an
+   invented style. */
+.dispute-title {
+  margin-block: 18px 8px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.dispute-table { width: 100%; border-collapse: collapse; }
+.dispute-table th {
+  text-align: left;
+  font-weight: 400;
+  color: var(--ink-3);
+  padding: 6px 8px;
+  background: var(--fill);
+  border-block-end: 1px solid var(--rule);
+}
+.dispute-table tbody tr:nth-child(odd) { background: var(--fill-row); }
+.dispute-table td {
+  padding: 6px 8px;
+  border-block-end: 1px solid var(--rule);
+  color: var(--ink-2);
+  vertical-align: top;
+}
+.dispute-table td:first-child { color: var(--ink); padding-inline-end: 16px; }
+.dispute-close { margin-block: 14px 0; color: var(--ink-2); }
 .readlog-head,
 .readlog-body { margin: 0; padding-inline-start: 22px; }
 .readlog-head { color: var(--ink-2); }

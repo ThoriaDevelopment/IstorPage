@@ -1,13 +1,13 @@
 {
   "_comment": "The budget has two tiers. Tier 1, EXACT: the per-file asset manifest and the artifact file count. These stay exact because they catch mechanical accidents rather than content: a regenerated crop, a re-subset font, a stray screenshot left in _site/ (that has happened twice), a file the build no longer emits. A file whose bytes moved is a file someone replaced; a count that moved is a file added or lost. Tier 2, CEILINGS: the document and the library. index_html_bytes, inline_js_bytes, library page_bytes and library index_bytes are generous ceilings rather than exact values, decided 2026-09-20: content moves every night this site is worked on, and an exact assertion on content forces a re-baseline into every commit, which stops being information and becomes a step. A ceiling at a round multiple of the current figure still catches the incidents the budget exists for: a generator gone wrong (a page set tripling overnight), a copy deck pasted twice, a script that doubles. Work under a ceiling ships without touching this file; work over one is a decision made on purpose, and the ceiling moves with its reason in the same commit. The gzip ceiling is a round 32 KiB against about 20.2 KiB measured: the compressor spread is around 50 B, so the ceiling carries many creative additions before it needs a decision of its own. History of every earlier re-baseline lives in git history on this file.",
   "totals": {
-    "_note": "The payload SITE_DESIGN_PLAN_V2.md §12.1 prints as 452 KB / 704 KB of exhibits. The plan's table is an estimate carried from the specification; these are the measured values, and on 2026-09-19 the plan's table was re-baselined to match them — the two are one commit. phone_1x is the 1x ASSET payload (exports + ground + the three fonts) and deliberately excludes the document, which is asserted separately under `document` below. RE-BASELINED AGAIN 2026-09-19, for the phone crops: phone_1x 194,064 to 237,991 (+43,927), retina_2x 388,356 to 500,885 (+112,529), and `exports_all_36` becomes `exports_all`, because the set is now 52 files rather than 36 and a key that counts is a key that lies if it keeps its old name. These are the sums of the files the artifact actually carries, recomputed by verify-budget.py rather than typed, and they rise because four exhibits gained a second, genuinely different crop — not because anything got heavier. THEY FALL on 2026-09-20 for the opposite reason: exhibit-12 retired, because act 4's exhibit is a live DOM replica now, so eight export files left the set (phone_1x -20,271, retina_2x -58,123, exports_all -185,174). The capture itself is not lost; its log was transcribed into the page, and make-exhibits.py records the line to restore if a bitmap is ever wanted again. A phone now requests the 600px crop in place of the 1200px one for those four, so what a device downloads falls while the set's total rises; the totals are an inventory, not a transfer size, and that was already true of phone_1x before today.",
-    "phone_1x": 217720,
-    "retina_2x": 442762,
-    "exports_all": 1367342,
+    "_note": "The payload SITE_DESIGN_PLAN_V2.md §12.1 prints as 452 KB / 704 KB of exhibits. The plan's table is an estimate carried from the specification; these are the measured values, and on 2026-09-19 the plan's table was re-baselined to match them — the two are one commit. phone_1x is the 1x ASSET payload (exports + ground + the three fonts) and deliberately excludes the document, which is asserted separately under `document` below. RE-BASELINED AGAIN 2026-09-19, for the phone crops: phone_1x 194,064 to 237,991 (+43,927), retina_2x 388,356 to 500,885 (+112,529), and `exports_all_36` becomes `exports_all`, because the set is now 52 files rather than 36 and a key that counts is a key that lies if it keeps its old name. These are the sums of the files the artifact actually carries, recomputed by verify-budget.py rather than typed, and they rise because four exhibits gained a second, genuinely different crop — not because anything got heavier. THEY FALL on 2026-09-20 for the opposite reason: exhibit-12 retired, because act 4's exhibit is a live DOM replica now, so eight export files left the set (phone_1x -20,271, retina_2x -58,123, exports_all -185,174). The capture itself is not lost; its log was transcribed into the page, and make-exhibits.py records the line to restore if a bitmap is ever wanted again. A phone now requests the 600px crop in place of the 1200px one for those four, so what a device downloads falls while the set's total rises; the totals are an inventory, not a transfer size, and that was already true of phone_1x before today. THEY FALL AGAIN on 2026-09-21: exhibit-13 retired, act 5's dispute table now a DOM replica (the second exhibit to make that move), so four export files left the set (phone_1x -14,085, retina_2x -33,680, exports_all -130,225). The table was transcribed from the capture before the crop was dropped; make-exhibits.py records the line to restore.",
+    "phone_1x": 203635,
+    "retina_2x": 409082,
+    "exports_all": 1237117,
     "components": {
-      "bitmaps_1x": 152581,
-      "bitmaps_2x": 377623,
+      "bitmaps_1x": 138496,
+      "bitmaps_2x": 343943,
       "ground_tile": 451,
       "fonts_3": 64688
     }
@@ -35,10 +35,6 @@
     "/img/exhibit-11-citations-phone.webp": 18878,
     "/img/exhibit-11-citations-phone@2x.avif": 35384,
     "/img/exhibit-11-citations-phone@2x.webp": 61084,
-    "/img/exhibit-13-dispute.avif": 14085,
-    "/img/exhibit-13-dispute.webp": 19772,
-    "/img/exhibit-13-dispute@2x.avif": 33680,
-    "/img/exhibit-13-dispute@2x.webp": 62688,
     "/img/exhibit-14-research.avif": 5291,
     "/img/exhibit-14-research.webp": 5572,
     "/img/exhibit-14-research@2x.avif": 13051,

@@ -87,9 +87,11 @@ LIBRARY_STYLES_BYTES = 56514          # 50,980 to 55,112 on 2026-09-20: the
                                       # 56,514 the same night: cross-document view
                                       # transitions join the two worlds, wordmark
                                       # named on both sides
-ARTIFACT_FILES = 148                  # 138 + the four phone crops' 16 files + the library
+ARTIFACT_FILES = 144                  # 138 + the four phone crops' 16 files + the library
                                       # index, less exhibit-12's eight retired exports
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
+                                      # - 4 on 2026-09-21: exhibit-13 retired, act 5's table
+                                      # now a DOM replica (the second exhibit to make that move)
 
 # Check 8's marker. If the assembler ever globs OldVersion/ instead of copying by
 # allowlist, the previous home page ships at this path and every other check here
@@ -640,14 +642,15 @@ def check_5(rep: Report, page: str) -> None:
     else:
         rep.ok(f"{len(classes)} compositions in use", ", ".join(sorted(classes)))
 
-    # Nine exhibits, of which eight are captures. Act 4's is the DOM reading log
-    # since 2026-09-20, so this asserts BOTH halves rather than lowering the
-    # count: eight <picture> elements, and the live log that replaced the ninth.
-    # A count alone would let the replacement slide back to a bitmap unnoticed,
-    # which is the one thing this pair of checks exists to prevent.
+    # Nine exhibits, of which seven are captures. Act 4's is the DOM reading log
+    # since 2026-09-20 and act 5's is the DOM dispute table since 2026-09-21, so
+    # this asserts ALL halves rather than lowering the count: seven <picture>
+    # elements, and the two live replicas that replaced the others. A count alone
+    # would let a replacement slide back to a bitmap unnoticed, which is the one
+    # thing this set of checks exists to prevent.
     pictures = len(re.findall(r"<picture\b", body, re.I))
-    if pictures < 8:
-        rep.fail("exhibit count", f"{pictures} <picture> elements — §6 ships eight captures")
+    if pictures < 7:
+        rep.fail("exhibit count", f"{pictures} <picture> elements — §6 ships seven captures")
     else:
         rep.ok(f"{pictures} exhibits", "§6's capture set is present")
     if 'class="win win-readlog"' not in body:
@@ -655,6 +658,11 @@ def check_5(rep: Report, page: str) -> None:
                                     "page's second DOM replica, not a capture")
     else:
         rep.ok("the reading log", "act 4's exhibit is the live log, not a bitmap")
+    if 'class="win win-dispute"' not in body:
+        rep.fail("the dispute table", "act 5's live table is missing — §6.2 ships it as the "
+                                      "page's third DOM replica, not a capture")
+    else:
+        rep.ok("the dispute table", "act 5's exhibit is the live table, not a bitmap")
 
     # v1 shipped the FAQ as a plain <dl> and wrote a comment explaining that an
     # accordion "would hide precisely the answers this audience came for". Every
