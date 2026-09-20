@@ -1292,10 +1292,22 @@
   if (reveals.length && !reduced) {
     var io = new IntersectionObserver(function (entries) {
       for (var i = 0; i < entries.length; i++) {
-        if (entries[i].isIntersecting) {
-          entries[i].target.classList.remove('is-cold');
-          io.unobserve(entries[i].target);
+        if (!entries[i].isIntersecting) continue;
+        var block = entries[i].target;
+        // M16 · a block with several arriving pieces plays them in ORDER, not
+        // as one simultaneous fade - the pair's two windows arrive one-two,
+        // a grid of cards cascades - which is the reference sites' signature
+        // move (items appear before other items appear). 90ms of step reads
+        // as sequence; 200+ reads as lag. The delay is inline on each
+        // transitioning descendant, set in document order at the moment the
+        // block fires, so single-piece blocks are untouched and the reverse
+        // transition never exists: is-cold is never re-added after this.
+        var pieces = block.querySelectorAll('.win, .exhibit img, .etymology');
+        for (var k = 0; k < pieces.length; k++) {
+          pieces[k].style.transitionDelay = (k * 90) + 'ms';
         }
+        block.classList.remove('is-cold');
+        io.unobserve(block);
       }
     }, { rootMargin: '0px 0px -12% 0px' });
 
