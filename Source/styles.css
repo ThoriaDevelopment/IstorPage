@@ -131,6 +131,11 @@
      ground differs — a dark shadow over paper reads as a hole. */
   --shadow-field: 0 24px 60px rgb(4 10 12 / 0.45);
   --shadow-paper: 0 18px 44px rgb(16 24 27 / 0.14);
+  /* The same two, at the M8b hover lift: closer, darker, the object risen 4px.
+     Tokens because every colour on this page is one, which is a gate, not a
+     preference. */
+  --shadow-field-lift: 0 34px 70px rgb(4 10 12 / 0.52);
+  --shadow-paper-lift: 0 26px 54px rgb(16 24 27 / 0.19);
 
   /* the faces. Two families, two stacks. */
   --sans:  Inter, -apple-system, "Segoe UI", system-ui, sans-serif;
@@ -1408,6 +1413,24 @@ h3 {
      well would draw a second, faster motion over the first. */
   .ask-chip { transition: color 160ms var(--ease), border-color 160ms var(--ease),
                          background-color 160ms var(--ease); }
+
+  /* M8b · The object lift. The exhibits and the two replicas are the product
+     sitting on a surface, and the reference genre answers a pointer on them
+     the way any physical object answers a touch: it leans. 4px of rise and a
+     shadow that comes down harder and closer reads as depth, not as a button;
+     a scale() here would say "clickable", which a screenshot is not. 260ms is
+     twice the other interaction transitions because a heavy object moves
+     slower than a colour. Text captions stay still; the lift is the window's
+     alone. The separator rule is untouched -- the seam stays 1px -- so the
+     separator measurement in audit-contrast.py is unaffected. */
+  .exhibit img, .exhibit picture > img { transition: transform 260ms var(--ease),
+                                     box-shadow 260ms var(--ease); }
+  .field .exhibit:hover img { transform: translateY(-4px);
+    box-shadow: var(--shadow-field-lift); }
+  .act .exhibit:hover img { transform: translateY(-4px);
+    box-shadow: var(--shadow-paper-lift); }
+  .poster .win { transition: transform 260ms var(--ease), box-shadow 260ms var(--ease); }
+  .poster .win:hover { transform: translateY(-4px); }
 
   /* M2 · The hero sequence, performed once, in the order the product works:
      question -> thinking -> answer -> citations. It RESTS; it does not loop.
