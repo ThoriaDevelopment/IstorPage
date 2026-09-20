@@ -398,7 +398,13 @@
         <div class="win win-readlog">
           <div class="win-bar">
             <span class="win-mark">ἵστωρ<span class="mark-dot">.</span></span>
-            <span class="win-count">0 sources</span>
+            <!-- The authored count is the FINISHED one, like every other
+                 authored state here: no script and reduced motion both leave
+                 the log complete, so "0 sources" would be the one lie on the
+                 window. When the reveal fires (M17, in the script) the count
+                 steps back to zero and counts up in step with the rows'
+                 ticks, and lands on this same text. -->
+            <span class="win-count">4 sources</span>
           </div>
 
           <div class="pane pane-readlog">
@@ -1307,6 +1313,23 @@
           pieces[k].style.transitionDelay = (k * 90) + 'ms';
         }
         block.classList.remove('is-cold');
+        // M17 · the reading log's counter counts. The rows' entrance is M13,
+        // CSS delays measured from this same moment (is-cold leaving), so the
+        // count steps at each TICK's delay - 300/440/580/720 - because the
+        // counter is the fetches finishing, not the rows appearing. The last
+        // step is the authored text, so the end state is identical whichever
+        // path the reader took here. A timer chain, not an interval: four
+        // writes, then nothing lives on.
+        var count = block.querySelector('.win-readlog .win-count');
+        if (count) {
+          var steps = [300, 440, 580, 720];
+          for (var s = 0; s < steps.length; s++) {
+            var n = s + 1;
+            setTimeout(function (el, txt) {
+              return function () { el.textContent = txt; };
+            }(count, n === 1 ? '1 source' : n + ' sources'), steps[s]);
+          }
+        }
         io.unobserve(block);
       }
     }, { rootMargin: '0px 0px -12% 0px' });
