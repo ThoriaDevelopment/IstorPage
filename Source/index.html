@@ -1095,6 +1095,35 @@
      should still get a window it can ask things. Everything below the guard is
      motion, and motion is the one thing on this page that may be absent.
 
+     M18 · THE MECHANISM ANSWERS THE HAND. The page's own claim about the hero is
+     that its ground is a place and not a backdrop, and a place can be touched.
+     Until now the world only answered the scroll: eight degrees across the whole
+     hero. Now the reader can take hold of the great wheel and turn it, and it
+     keeps turning when let go, because a mechanism that stops dead under the
+     hand is a picture of one. Three decisions:
+
+       * The angle is the pointer's own motion AROUND the wheel's pivot, so the
+         wheel turns the way a wheel turns rather than the way a slider slides.
+         The pivot is read from the drawing and projected with getScreenCTM, so
+         there is no second copy of the viewBox's geometry in the script - the
+         same rule the rotation itself follows.
+       * The scroll and the hand are two inputs into ONE writer. Two writers
+         would be two sources of truth for one angle, and the first thing to
+         disagree would be the mesh: the pinion's angle is the RATIO at every
+         angle, so the interleave the generator solved for holds under a turn
+         from the hand exactly as it holds under a turn from the scroll.
+       * Mouse and pen only, and never under reduced motion (which has already
+         nulled the world above). A touch drag is the reader scrolling; taking
+         it would be the one rude thing this page could do. Text, links and the
+         window are excluded by selector, so the prose stays selectable and
+         every control still clicks - the machine is turned on the ground
+         around them. The cursor is the only affordance, and it is the honest
+         one: a hand where a hand works. Momentum is capped at 200 deg/s and
+         halves every 160ms, so a hard flick carries the wheel about 46 degrees
+         and settles in under a second: this is a world behind the page's own
+         headline, and a thing that keeps spinning in the reader's peripheral
+         vision stops being a place and starts being a toy.
+
      WHY THESE NOTES LIVE HERE, and it is a rule now rather than a preference.
      The plan's §7 sets a budget for shipped JS, and comments inside `<script>`
      ship: 1,118 B of prose was arriving with the document and being parsed as
@@ -1160,6 +1189,30 @@
     var closeTop = 0;
     var closeRange = 1;
     var heroTurn = -1;
+    var heroScrollTurn = 0, heroDragTurn = 0;
+    // M18 · the one writer for the hero's angle, whatever moved it. Wheel A's
+    // pivot comes from the drawing, exactly as the pinions' do. The first
+    // version hardcoded 720 720, the viewBox centre, while the wheel's own
+    // centre sits at y=545: a 175-unit axis error that translated the wheel ~24
+    // units at the hero's full 8 degrees, which is nearly two teeth of slip at
+    // the mesh points. The pinions never had this bug because they always read
+    // their own. The pinion keeps the RATIO at every angle, so a turn from the
+    // hand holds the interleave exactly as a turn from the scroll does.
+    var writeHero = function () {
+      if (!gearA) return;
+      var turn = Math.round((heroScrollTurn + heroDragTurn) * 10) / 10;
+      if (turn === heroTurn) return;
+      heroTurn = turn;
+      var ax = gearA.getAttribute('data-gear-cx');
+      var ay = gearA.getAttribute('data-gear-cy');
+      gearA.setAttribute('transform', 'rotate(' + turn + ' ' + ax + ' ' + ay + ')');
+      for (var g = 0; g < gearsB.length; g++) {
+        var cx = gearsB[g].getAttribute('data-gear-cx');
+        var cy = gearsB[g].getAttribute('data-gear-cy');
+        gearsB[g].setAttribute('transform',
+          'rotate(' + (-turn * RATIO) + ' ' + cx + ' ' + cy + ')');
+      }
+    };
     var heroBottom = 0, railLinks = [], railTops = [], railCurrent = null;
     var measure = function () {
       if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
@@ -1208,26 +1261,12 @@
       // M14 · eight degrees of the great wheel across the whole hero, which is
       // 37 of the pinion's 48 teeth: one whole turn of the reader's scroll moves
       // the mechanism about a fifth of how far the real wheel turns in a year.
+      // M18 adds a second input, the reader's own hand, so the two are summed
+      // and written by ONE function: two writers would be two sources of truth
+      // for the same angle, and the first thing to disagree would be the mesh.
       if (gearA && heroBottom > 0) {
-        var turn = Math.round(Math.min(1, window.scrollY / heroBottom) * 80) / 10;
-        if (turn !== heroTurn) {
-          heroTurn = turn;
-          // Wheel A's pivot comes from the drawing, exactly as the pinions'
-          // do. The first version hardcoded 720 720, the viewBox centre,
-          // while the wheel's own centre sits at y=545: a 175-unit axis error
-          // that translated the wheel ~24 units at the hero's full 8 degrees,
-          // which is nearly two teeth of slip at the mesh points. The pinions
-          // never had this bug because they always read their own.
-          var ax = gearA.getAttribute('data-gear-cx');
-          var ay = gearA.getAttribute('data-gear-cy');
-          gearA.setAttribute('transform', 'rotate(' + turn + ' ' + ax + ' ' + ay + ')');
-          for (var g = 0; g < gearsB.length; g++) {
-            var cx = gearsB[g].getAttribute('data-gear-cx');
-            var cy = gearsB[g].getAttribute('data-gear-cy');
-            gearsB[g].setAttribute('transform',
-              'rotate(' + (-turn * RATIO) + ' ' + cx + ' ' + cy + ')');
-          }
-        }
+        heroScrollTurn = Math.round(Math.min(1, window.scrollY / heroBottom) * 80) / 10;
+        writeHero();
       }
 
       // M14b · one degree of the crown across the poster's whole scroll range,
@@ -1307,6 +1346,75 @@
         drift.ty = (e.clientY / window.innerHeight - 0.5) * 12;
         if (!drift.raf) drift.raf = requestAnimationFrame(driftStep);
       }, { passive: true });
+    }
+
+    // M18 · the mechanism answers the hand. The reasoning, the gating and the
+    // design position are in the markup note that precedes the script; what
+    // ships here is the mechanism itself: one writer for the angle, the
+    // pointer's own motion around the drawing's pivot, momentum that decays.
+    var heroSvg = world && world.querySelector('svg');
+    var heroHero = world && world.closest('.hero');
+    if (heroSvg && gearA && heroHero) {
+      var turning = false, spinVel = 0, spinRaf = 0, lastAngle = 0, lastTime = 0;
+      var pivot = function () {
+        var m = heroSvg.getScreenCTM();
+        var cx = +gearA.getAttribute('data-gear-cx');
+        var cy = +gearA.getAttribute('data-gear-cy');
+        return { x: m.a * cx + m.c * cy + m.e, y: m.b * cx + m.d * cy + m.f };
+      };
+      var spinStep = function (now) {
+        spinRaf = 0;
+        var dt = lastTime ? Math.min(64, now - lastTime) : 16;
+        lastTime = now;
+        heroDragTurn += spinVel * dt / 1000;
+        spinVel *= Math.pow(0.5, dt / 160);   // half the speed every 160ms
+        writeHero();
+        if (Math.abs(spinVel) > 1.5) spinRaf = requestAnimationFrame(spinStep);
+      };
+      var stopSpin = function () {
+        if (spinRaf) cancelAnimationFrame(spinRaf);
+        spinRaf = 0;
+        lastTime = 0;
+      };
+      var onTurnMove = function (e) {
+        var p = pivot();
+        var a = Math.atan2(e.clientY - p.y, e.clientX - p.x) * 180 / Math.PI;
+        var d = a - lastAngle;
+        if (d > 180) d -= 360;   // the wrap at the pivot: a step, not a spin
+        if (d < -180) d += 360;
+        lastAngle = a;
+        heroDragTurn += d;
+        var now = e.timeStamp || performance.now();
+        var dt = Math.max(8, now - lastTime);
+        lastTime = now;
+        spinVel = Math.max(-200, Math.min(200, d / dt * 1000));
+        writeHero();
+      };
+      var onTurnUp = function (e) {
+        if (!turning) return;
+        turning = false;
+        heroHero.classList.remove('is-turning');
+        window.removeEventListener('pointermove', onTurnMove);
+        window.removeEventListener('pointerup', onTurnUp);
+        window.removeEventListener('pointercancel', onTurnUp);
+        lastTime = 0;
+        if (Math.abs(spinVel) > 1.5) spinRaf = requestAnimationFrame(spinStep);
+      };
+      heroHero.addEventListener('pointerdown', function (e) {
+        if (e.pointerType === 'touch' || e.button) return;
+        if (e.target.closest('a, button, .win, p, h1, li')) return;   // their pointer
+        var p = pivot();
+        turning = true;
+        stopSpin();
+        spinVel = 0;
+        lastAngle = Math.atan2(e.clientY - p.y, e.clientX - p.x) * 180 / Math.PI;
+        lastTime = e.timeStamp || performance.now();
+        heroHero.classList.add('is-turning');
+        window.addEventListener('pointermove', onTurnMove, { passive: true });
+        window.addEventListener('pointerup', onTurnUp, { passive: true });
+        window.addEventListener('pointercancel', onTurnUp, { passive: true });
+      });
+      window.addEventListener('blur', onTurnUp, { passive: true });   // the lost release
     }
   }
 

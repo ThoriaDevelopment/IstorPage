@@ -264,6 +264,16 @@ def main(argv: list[str]) -> int:
     # being the act index, the reading log and the hero's mechanism). Its history
     # as an exact assertion, and the 1,250 B of `//` prose that made it exist, is
     # in git; the ceiling keeps catching script that doubles.
+    #
+    # 2026-09-21, and the ceiling earned its keep: the script had grown to
+    # 16,117 B against this 16,384 B ceiling, 267 B of headroom, and 7,144 B of
+    # those bytes were whole-line `//` comments — prose parsed as script on every
+    # phone, in the one channel whose own docstring says the reasoning is "worth
+    # keeping and not worth posting". `inline_js()` in build-site.py now strips
+    # them on the way in, as its two siblings strip the stylesheet's and the
+    # markup's, and the shipped script is 12,671 B of behavior. The ceiling stays
+    # where it was: it was never the problem, and behavior that doubles still
+    # trips it.
     told_js = budget["document"].get("inline_js_bytes_ceiling")
     blocks = re.findall(r"<script>(.*?)</script>", html.decode("utf-8"), re.S)
     js = sum(len(b.encode()) for b in blocks)

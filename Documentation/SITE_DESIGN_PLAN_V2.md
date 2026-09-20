@@ -1058,6 +1058,19 @@ written: the rail's current-section tracking (M1c), the close's parallax (M6), t
 ceiling being re-derived, and it is recorded rather than smoothed: the ceiling (16,384 B) has been
 catching growth rather than holding a measurement.**
 
+**2026-09-21: the ceiling caught it, and the diagnosis was the one this section had already made
+once.** By the night's end the shipped script measured **16,117 B against the 16,384 B ceiling — 267 B
+of headroom — and 7,144 B of those bytes were whole-line `//` comments**: prose parsed as script on
+every phone, in the exact channel that had produced the 1,250 B the note above the script was written
+about. The rule was applied to the prose that existed then and not to the prose added since. The fix is
+the third instance of an existing one: `inline_js()` in `build-site.py` strips whole-line comments on
+the way in, as `inline_css()` strips the stylesheet's and `inline_markup()` the markup's, with the same
+contract asserted on its own output and a second, independent line-filter implementation required to
+agree with the regex before the build proceeds. Shipped script: **12,671 B of behavior**, ceiling
+unchanged at 16,384 B — it was never the problem, and behavior that doubles still trips it. Momentum
+for the hero's mechanism (M18) then fit under it, which is the point of a ceiling: it made the prose
+question unavoidable instead of deferring it by 267 B.
+
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
 

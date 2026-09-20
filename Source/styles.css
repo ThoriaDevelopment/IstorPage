@@ -1072,6 +1072,11 @@ h3 {
   height: var(--world-h);
   pointer-events: none;
 }
+/* M18's cursor, and the only affordance the turn gets: a hand where a hand
+   works. It is set on the hero rather than on the drawing because the drawing
+   is `pointer-events: none` and the reader takes hold of the ground around the
+   window, which is what the JS filters for. */
+.hero.is-turning, .hero.is-turning * { cursor: grabbing; }
 .hero-world svg { display: block; width: 100%; height: 100%; }
 /* Three inks, and all three are the field's own tokens. The teeth carry the
    lightest weight because there are 223 of them: at full strength they would be

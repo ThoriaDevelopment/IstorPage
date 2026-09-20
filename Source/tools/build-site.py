@@ -331,6 +331,10 @@ def inline_css(text: str) -> str:
     return header.rstrip() + "\n" + rest
 
 
+# A whole-line `//` comment: blank space to the line's end, then nothing else.
+# Anchored, so it can only ever match a line that is entirely comment.
+_JS_LINE_COMMENT = re.compile(r"^[ \t]*//[^\n]*(?:\n|$)", re.M)
+
 _HTML_COMMENT = re.compile(r"<!--.*?-->", re.S)
 
 # A hand-authored page's own two comment channels, which `inline_markup` cannot
@@ -360,6 +364,68 @@ def lean_page(text: str) -> str:
         return match.group(1) + body + match.group(3)
 
     return _SCRIPT_BODY.sub(lean, _STYLE_BODY.sub(lean, text))
+
+
+def inline_js(text: str) -> str:
+    """The document's script as it ships: with no whole-line `//` comment in it.
+
+    The same rule as its two siblings, applied to the third channel. `inline_css`
+    strips the stylesheet's comments and `inline_markup` the markup's, both on the
+    argument that the reasoning is "worth keeping and not worth posting" — and
+    the script kept posting it. Measured 2026-09-21: 93 whole-line `//` comments,
+    **7,144 B of the 19,815 B** the document shipped, parsed as script on every
+    phone that opened the page. What surfaced it was the ceiling in
+    budget.json: the shipped script had grown to 16,117 B against a 16,384 B
+    ceiling — 267 B of headroom — while 36% of it was prose, and the next
+    feature could not be added without either moving the prose or lying about
+    the ceiling. Both channels' docstrings already say where the answer is.
+
+    WHOLE-LINE COMMENTS ONLY, and that is the safety argument rather than an
+    unfinished job: a line whose first non-blank characters are `//` cannot
+    contain code, so removing it cannot change what the script does. Trailing
+    comments are left alone because they would require knowing whether a `//`
+    sits inside a string literal or a URL, which is a parser's question. This
+    script has no template literal and no string spanning lines — the backtick
+    count of its shipped code is asserted below to be zero, which is what proves
+    no line INSIDE a string could have been mistaken for a comment, and what
+    fails this build loudly if a future edit introduces one.
+
+    Nothing is lost. Every comment stays in `Source/index.html` one file away,
+    where the person editing it reads it, and the arguments the script used to
+    carry are in the page's markup notes — the channel that was already carrying
+    the long form of every one of them.
+    """
+    def lean(match: re.Match) -> str:
+        body = match.group(2)
+        stripped = _JS_LINE_COMMENT.sub("", body)
+        # Two independent implementations of the same deletion, and they must
+        # agree: the regex above, and a line filter below that knows nothing
+        # about anchoring. Where the budget keeps two byte witnesses over one
+        # artifact for exactly this reason, one transform of the shipper's input
+        # gets the same treatment — a size check cannot see a line of code
+        # swallowed, and a difference here means one of the two is wrong.
+        by_lines = "".join(
+            line + "\n" for line in body.split("\n")
+            if not line.lstrip().startswith("//"))
+        if _lean(stripped) != _lean(by_lines):
+            raise BuildError(
+                "inline_js's two removals disagree — the anchor and the line "
+                "filter do not mean the same thing, and one of them is eating "
+                "the other's code"
+            )
+        # No backtick may remain in the shipped CODE: a template literal can span
+        # lines, and a `//` inside one is not a comment, so this strip is only
+        # safe while every backtick lives on a comment line. If a future edit
+        # needs one, extend this function rather than deleting the check.
+        if "`" in stripped:
+            raise BuildError(
+                "inline_js found a backtick outside a whole-line comment: it "
+                "cannot tell a `//` inside a string from a comment, so the "
+                "strip has to stop and be taught about strings instead"
+            )
+        return match.group(1) + stripped + match.group(3)
+
+    return _SCRIPT_BODY.sub(lean, text)
 
 
 def inline_markup(text: str) -> str:
@@ -512,7 +578,10 @@ def splice_includes() -> None:
             "       losing it here means losing the guard against publishing the\n"
             "       previous home page."
         )
-    write_text_lf(page, inline_markup(text))
+    # Three comment channels, one rule, and the third was added last: the
+    # stylesheet's, the markup's, and now the script's. See inline_js for what
+    # surfaced it (a 267 B margin under the script's own ceiling, 36% of it prose).
+    write_text_lf(page, inline_js(inline_markup(text)))
 
 
 def splice_library_includes() -> int:
