@@ -1035,7 +1035,13 @@ h3 {
   display: flex;
   align-items: baseline;
   gap: 16px;
-  padding-block: 22px;
+  /* The questions are the act's content, and the genre sizes FAQ questions at
+     its body-plus scale (Gamma 20px, Tempo 22px), not at 17px body. 21px with
+     the serif's contrast at the chevron keeps the row readable as a headline
+     rather than as a form label; the chevron's 9px box is unchanged so the
+     target-size audit still measures what it measured. */
+  font-size: 21px;
+  padding-block: 26px;
   cursor: pointer;
   font-weight: 600;
   list-style: none;
@@ -1049,6 +1055,8 @@ h3 {
   border-bottom: 2px solid var(--ink-3);
   transform: translateY(-3px) rotate(45deg);
   flex: none;
+  /* Centred against the 21px question line rather than the old 17px baseline. */
+  margin-block-start: 4px;
 }
 .qa details[open] summary::after { transform: translateY(1px) rotate(225deg); }
 .qa .qa-body { padding-block: 0 26px; max-width: var(--measure); color: var(--ink-2); }
