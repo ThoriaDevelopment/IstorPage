@@ -59,8 +59,10 @@ SOURCE = HERE.parent           # IstorPage/Source
 ROOT = HERE.parents[1]         # IstorPage/
 BRAND = ROOT / "Assets" / "brand"
 
-EYE = BRAND / "istor-eye.svg"
+EYE = BRAND / "istor-eye.svg"          # the app's eye: superseded for the tab, kept for reference
 PAGE = BRAND / "istor-page.svg"
+GEAR = BRAND / "istor-gear.svg"        # the mechanism, small slot: the ico
+GEAR_LG = BRAND / "istor-gear-lg.svg"  # the mechanism, large slot: touch + icon.svg
 
 OUT_ICO = SOURCE / "favicon.ico"
 OUT_SVG = SOURCE / "icon.svg"
@@ -143,12 +145,12 @@ def dark_block() -> str:
 
 
 def build_icon_svg() -> str:
-    svg = PAGE.read_text(encoding="utf-8")
+    svg = GEAR_LG.read_text(encoding="utf-8")
     if "<style" in svg:
-        sys.exit("error: istor-page.svg already has a <style>; this script adds one")
+        sys.exit("error: the gear master already has a <style>; this script adds one")
     if VAR.search(svg) is None:
         sys.exit(
-            "error: istor-page.svg has no var() contract left. Either the mark was\n"
+            "error: the gear master has no var() contract left. Either the mark was\n"
             "       flattened to literals upstream, or the naming changed. The dark\n"
             "       block below is keyed on those property names."
         )
@@ -187,19 +189,24 @@ def rasterize(inkscape: str, svg_text: str, size: int, out: pathlib.Path,
 
 def build(inkscape: str, magick: str, into: pathlib.Path) -> dict[str, pathlib.Path]:
     """Write the three outputs into `into`. Returns {name: path}."""
-    eye = literalize(EYE.read_text(encoding="utf-8"))
-    page = literalize(PAGE.read_text(encoding="utf-8"))
+    # The mechanism, not the eye: the site argues from the Antikythera
+    # mechanism and the tab showed a document. Same var() contract, so
+    # literalize() and the dark block work verbatim. istor-page.svg keeps the
+    # apple-touch slot's SHAPE only in the sense that the large gear master
+    # replaces it here; the eye/page masters stay in Assets for the app.
+    gear = literalize(GEAR.read_text(encoding="utf-8"))
+    gear_lg = literalize(GEAR_LG.read_text(encoding="utf-8"))
 
     pngs = []
     for size in ICO_SIZES:
         png = into / f"favicon-{size}.png"
-        rasterize(inkscape, eye, size, png, flatten_white=False, magick=magick)
+        rasterize(inkscape, gear, size, png, flatten_white=False, magick=magick)
         pngs.append(png)
     ico = into / "favicon.ico"
     run([magick, *[str(p) for p in pngs], str(ico)])
 
     touch = into / "apple-touch-icon.png"
-    rasterize(inkscape, page, TOUCH_SIZE, touch, flatten_white=True, magick=magick)
+    rasterize(inkscape, gear_lg, TOUCH_SIZE, touch, flatten_white=True, magick=magick)
 
     icon = into / "icon.svg"
     # Bytes, not text: `write_text` translates "\n" to os.linesep and this file

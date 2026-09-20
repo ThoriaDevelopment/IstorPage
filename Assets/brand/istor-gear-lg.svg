@@ -1,8 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
-<style>
-  svg{--mark-paper:#FFFFFF;--mark-ink:#171717;--mark-iris:#F2726F;--mark-pupil:#D93A3A}
-  @media (prefers-color-scheme: dark){svg{--mark-paper:#0B0C0F;--mark-ink:#E5E8EE;--mark-iris:#4DA3FF;--mark-pupil:#0073E6}}
-</style>
   <!-- Istor · the mechanism (large, >= 48 px slot)
        The site's crown: the wheel the page opens, closes and argues from.
        Counts are the ones that READ at raster size (16 and 8: the

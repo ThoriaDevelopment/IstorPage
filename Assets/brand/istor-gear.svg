@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
+  <!-- Istor · the mechanism (small, <= 32 px slot)
+       The site's crown: the wheel the page opens, closes and argues from.
+       Counts are the ones that READ at raster size (16 and 8: the
+       calendar ring's family and the hero drive's 3:1 step, stepped down to
+       what survives 16px - 24 pitched the teeth 1.9 units apart and they
+       merged into a solid ring, measured on the raster). The REAL drive is
+       223:48. One module: the pinion's radius is N*P/2pi from the
+       wheel's own, the centre distance is the sum, and the phases are solved
+       so a wheel tooth meets a pinion gap at the contact. Same var() contract
+       as istor-page.svg; mark-accent takes the iris slot's meaning and is
+       spent on the pinion, the moving part. -->
+  <g fill="none" stroke="var(--mark-ink, #171717)"
+     stroke-width="4.5" stroke-linecap="round">
+    <circle cx="30.00" cy="34.00" r="23.00"/>
+    <path d="M33.68 37.68L44.85 48.85 M26.32 37.68L15.15 48.85 M26.32 30.32L15.15 19.15 M33.68 30.32L44.85 19.15"/>
+    <path d="M44.72 17.65L47.67 14.38 M49.86 24.53L53.83 22.63 M51.97 32.85L56.36 32.62 M50.74 41.34L54.89 42.81 M46.35 48.72L49.62 51.67 M39.47 53.86L41.37 57.83 M31.15 55.97L31.38 60.36 M22.66 54.74L21.19 58.89 M15.28 50.35L12.33 53.62 M10.14 43.47L6.17 45.37 M8.03 35.15L3.64 35.38 M9.26 26.66L5.11 25.19 M13.65 19.28L10.38 16.33 M20.53 14.14L18.63 10.17 M28.85 12.03L28.62 7.64 M37.34 13.26L38.81 9.11"/>
+    <path d="M33.68 37.68L44.85 48.85 M26.32 37.68L15.15 48.85 M26.32 30.32L15.15 19.15 M33.68 30.32L44.85 19.15"/>
+    <circle cx="30.00" cy="34.00" r="4.6" fill="var(--mark-accent, #F2726F)" stroke="none"/>
+  </g>
+</svg>
