@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 292" width="340" height="292" role="img" aria-label="The same 4-billion-parameter model at three precisions: 8 gigabytes at full precision, 4 at Q8, about 2.5 at Q4. Bar lengths are the true proportions." focusable="false" data-variant="tall" data-generated-by="Source/tools/make-quant-ladder.py - do not hand-edit">
+<text x="6" y="26" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">a 4B model, one file per rung</text>
+<text x="20" y="44.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--ink)" text-anchor="start" font-weight="600">FP16</text>
+<text x="320" y="44.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="end">16 bit</text>
+<rect x="20" y="52.0" width="232.0" height="30.0" fill="var(--ink)" fill-opacity="0.22" stroke="var(--hairline)" stroke-width="1"/>
+<text x="262.0" y="72.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)" text-anchor="start" font-weight="600">8 GB</text>
+<text x="20" y="126.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--ink)" text-anchor="start" font-weight="600">Q8_0</text>
+<text x="320" y="126.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="end">8 bit</text>
+<rect x="20" y="134.0" width="116.0" height="30.0" fill="var(--ink)" fill-opacity="0.22" stroke="var(--hairline)" stroke-width="1"/>
+<text x="146.0" y="154.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)" text-anchor="start" font-weight="600">4 GB</text>
+<text x="20" y="208.0" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--witness)" text-anchor="start" font-weight="600">Q4_K_M</text>
+<text x="320" y="208.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="end">4 bit</text>
+<rect x="20" y="216.0" width="72.5" height="30.0" fill="var(--ink)" fill-opacity="0.22" stroke="var(--hairline)" stroke-width="1"/>
+<text x="102.5" y="236.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--witness)" text-anchor="start" font-weight="600">~2.5 GB</text>
+<text x="6" y="284" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">bar lengths are the files' true proportions</text>
+</svg>

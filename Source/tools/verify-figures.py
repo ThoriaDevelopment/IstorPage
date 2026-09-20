@@ -51,6 +51,8 @@ GENERATORS: list[tuple[str, tuple[str, ...], bool]] = [
     ("make-hero-gears.py", ("hero-gears.svg",), True),
     ("make-close-gears.py", ("close-gears.svg",), True),
     ("make-poster-horizon.py", ("poster-horizon.svg",), False),
+    ("make-gguf-anatomy.py", ("gguf-anatomy-wide.svg", "gguf-anatomy-tall.svg"), True),
+    ("make-quant-ladder.py", ("quant-ladder-wide.svg", "quant-ladder-tall.svg"), True),
 ]
 
 
