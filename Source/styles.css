@@ -1210,6 +1210,41 @@ h3 {
    The scrollbar makes 100vw a little wider than the page, which the poster's
    overflow:hidden crops, and it costs nothing that matters: the arc leaves the
    frame at the same place the eye sees it leave. */
+/* The close's world. The figure is width-fitted, so 640 user units show as 640px
+   on desktop: the pinion lands at 1:1, its teeth the same pitch the hero's
+   render at. The 640 width (not the wrap's 1240) is the drawing's choice - one
+   train wide - and `100%` is the phone, where the same train narrows and the
+   crown keeps its three-sided bleed. The band hangs below the field's end into
+   the dark under the page; the poster's overflow-hidden is what crops it, and
+   nothing here may clip it sooner. */
+.close-world {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(640px, 100%);
+  height: auto;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+.close-world svg { display: block; width: 100%; height: auto; }
+/* Three inks, the field's own tokens, the hero's idiom: teeth lightest (223 of
+   them are a texture at full strength), the band faint, rims and spokes as
+   hairlines. The PINION is the exception - full strength, primary ink - because
+   it is the one wheel entirely inside the field, and the one element the eye
+   is asked to read as the subject rather than as ground. */
+.close-world .cg-tooth { fill: none; stroke: var(--field-ink-2); opacity: 0.40; }
+.close-world .cg-band  { fill: none; stroke: var(--field-ink-2); opacity: 0.07; }
+.close-world .cg-rim,
+.close-world .cg-face  { fill: none; stroke: var(--field-ink-2); opacity: 0.26; }
+.close-world [data-close-b] .cg-tooth,
+.close-world [data-close-b] .cg-band,
+.close-world [data-close-b] .cg-rim,
+.close-world [data-close-b] .cg-face {
+  stroke: var(--field-ink);
+  opacity: 1;
+}
+
 .poster-horizon {
   position: absolute;
   left: 50%;

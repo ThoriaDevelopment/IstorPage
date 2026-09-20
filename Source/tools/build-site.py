@@ -155,6 +155,7 @@ INCLUDES = {
     "etymology":      (SOURCE / "figures" / "etymology.svg",      "svg"),
     "etymology-tall": (SOURCE / "figures" / "etymology-tall.svg", "svg"),
     "hero-gears":     (SOURCE / "figures" / "hero-gears.svg",     "svg"),
+    "close-gears":    (SOURCE / "figures" / "close-gears.svg",    "svg"),
     "boundary-wide":  (SOURCE / "figures" / "boundary-wide.svg",  "svg"),
     "boundary-mid":   (SOURCE / "figures" / "boundary-mid.svg",   "svg"),
     "boundary-tall":  (SOURCE / "figures" / "boundary-tall.svg",  "svg"),

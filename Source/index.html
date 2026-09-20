@@ -806,6 +806,12 @@
      saw" means — the product occludes the brand.
      ===================================================================== -->
 <section class="poster">
+  <!-- The close's world. The hero's mechanism opens the page; this is the same
+       machine closing it, arriving from off-page: a crown cut by the poster's
+       top edge, a pinion riding inside it, both hanging below the field's end
+       drawn in the field's own ink. Its pivot data (data-close-cx/cy) is read
+       by the page's script, as the hero's is. -->
+  <div class="close-world"><!--#include close-gears--></div>
   <div class="wrap">
     <!-- Inside the mark, not the poster: see the note on .poster-horizon. Its
          position is a fraction of this paragraph's own box, so it has to have
@@ -1068,10 +1074,35 @@
     // radii the generator used: R = N*P/(2*pi), so R cancels the shared module.
     // Written as counts rather than as radii so the two files cannot disagree.
     var RATIO = 223 / 48;
+    // M14b · the close's world. The same machine returns at the page's end and
+    // turns across the poster's scroll range, one slow degree - the ending is a
+    // settling, not a second performance. Internal gearing: the close's pinion
+    // rides inside its crown, so it turns the SAME way at 223:60, the inverse of
+    // the hero's external pair, and the dash phases the generator solved hold
+    // only at that relation. Pivots come from the drawing, as the hero's do.
+    var closeWorld = reduced ? null : document.querySelector('.close-world');
+    var closeA = closeWorld && closeWorld.querySelector('[data-close-a]');
+    var closeB = closeWorld ? closeWorld.querySelector('[data-close-b]') : null;
+    var CLOSE_RATIO = 223 / 60;
+    var closeTurn = -1;
+    // The poster element is queried HERE, inside this scope, not left to the
+    // M6 block 150 lines down: measure() runs once immediately after this, and
+    // a `var poster` that only assigns later would leave closeTop at 0 and
+    // closeRange at 1 forever - the train would render its last frame instead
+    // of sweeping. The M6 block declares its own poster and they are the same
+    // node; two names for one element beat a load-order trap.
+    var closePoster = document.querySelector('.poster');
+    var closeTop = 0;
+    var closeRange = 1;
     var heroTurn = -1;
     var heroBottom = 0, railLinks = [], railTops = [], railCurrent = null;
     var measure = function () {
       if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
+      if (closePoster) {
+        var box = closePoster.getBoundingClientRect();
+        closeTop = box.top + window.scrollY;
+        closeRange = Math.max(1, box.height - window.innerHeight);
+      }
       railLinks = [];
       railTops = [];
       if (!rail) return;
@@ -1130,6 +1161,27 @@
             var cy = gearsB[g].getAttribute('data-gear-cy');
             gearsB[g].setAttribute('transform',
               'rotate(' + (-turn * RATIO) + ' ' + cx + ' ' + cy + ')');
+          }
+        }
+      }
+
+      // M14b · one degree of the crown across the poster's whole scroll range,
+      // the pinion 223/60 of that the same way. Rounding to a tenth keeps the
+      // attribute writes as rare as the hero's; the range is clamped to 1 so a
+      // poster shorter than the viewport cannot divide by zero.
+      if (closeA && closeRange > 0) {
+        var cturn = Math.round(Math.min(1, Math.max(0,
+          (window.scrollY - closeTop) / closeRange)) * 10) / 10;
+        if (cturn !== closeTurn) {
+          closeTurn = cturn;
+          var cax = closeA.getAttribute('data-close-cx');
+          var cay = closeA.getAttribute('data-close-cy');
+          closeA.setAttribute('transform', 'rotate(' + cturn + ' ' + cax + ' ' + cay + ')');
+          if (closeB) {
+            var cbx = closeB.getAttribute('data-close-cx');
+            var cby = closeB.getAttribute('data-close-cy');
+            closeB.setAttribute('transform',
+              'rotate(' + (cturn * CLOSE_RATIO) + ' ' + cbx + ' ' + cby + ')');
           }
         }
       }
