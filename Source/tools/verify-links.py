@@ -917,6 +917,79 @@ def check_8(rep: Report, page: str) -> None:
         rep.ok("_site/index.html carries the new <h1>", h1_text)
 
 
+def check_gears(rep: Report, page: str) -> None:
+    """The worlds turn now, and this is what has to stay true for them to mesh.
+
+    Two facts live in two places and nothing else joins them. The DRAWINGS
+    declare the tooth counts they were generated from (data-gear-a="223",
+    data-gear-b="48-left"), and the SCRIPT declares the ratios it applies as the
+    reader turns them (var RATIO = 223 / 48). Regenerate a drawing with a
+    different count and the script keeps driving the old ratio - the mesh grinds
+    at every angle, silently, with every other gate green. That is the failure
+    class this file exists for, and the script's own comment already claims the
+    fix: the counts are "written as counts rather than as radii so the two files
+    cannot disagree". This is the assertion that makes the claim true.
+
+    The second clause is the same argument one step on. The script rotates each
+    group about ITS OWN data-*-cx/cy, read from the drawing, so a group that
+    loses those attributes writes rotate(x NaN NaN) and the world stops turning
+    with no error raised anywhere: the rAF keeps running and the attribute keeps
+    being set, to nonsense. A pivot that cannot be parsed is that bug caught at
+    build time.
+    """
+    print("\nthe two worlds")
+
+    def counts(attr: str) -> list[int]:
+        return [int(v) for v in re.findall(attr + r"=\"(\d+)", page)]
+
+    worlds = (
+        ("hero", counts("data-gear-a"), counts("data-gear-b"),
+         r"var RATIO = (\d+) / (\d+)"),
+        ("close", counts("data-close-a"), counts("data-close-b"),
+         r"var CLOSE_RATIO = (\d+) / (\d+)"),
+    )
+    for name, wheels, pinions, script_re in worlds:
+        if not wheels or not pinions:
+            rep.fail(f"the {name}'s gear train",
+                     "no data-* tooth counts in the drawing: the script cannot "
+                     "be checked against it, and something stopped emitting them")
+            continue
+        declared = (wheels[0], pinions[0])
+        if len(set(wheels)) != 1 or len(set(pinions)) != 1:
+            rep.fail(f"the {name}'s gear train",
+                     f"its groups disagree with each other: {wheels} / {pinions}. "
+                     "One train, one tooth count per gear.")
+            continue
+        script = re.search(script_re, page)
+        if not script:
+            rep.fail(f"the {name}'s ratio",
+                     "the script no longer declares its ratio in the form this "
+                     "check reads — teach it the new form, do not drop the check")
+            continue
+        told = (int(script.group(1)), int(script.group(2)))
+        if told != declared:
+            rep.fail(f"the {name}'s ratio is the drawing's",
+                     f"the script drives {told[0]}:{told[1]} and the drawing was "
+                     f"generated from {declared[0]}:{declared[1]} — every turn "
+                     "would grind at every angle")
+        else:
+            rep.ok(f"the {name}'s ratio is the drawing's",
+                   f"{declared[0]}:{declared[1]}, declared on both sides")
+
+    bad = []
+    for tag in re.findall(r"<g\b[^>]*data-(?:gear|close)-[ab][^>]*>", page):
+        for axis in ("cx", "cy"):
+            if not re.search(r'data-(?:gear|close)-' + axis + r'="[-\d.]+"', tag):
+                bad.append(f"{re.search(r'data-(?:gear|close)-[ab][^=]*="[^"]*"', tag).group(0)} "
+                           f"has no data-*-{axis}")
+    if bad:
+        for b in bad[:6]:
+            rep.fail("a turned group's pivot", b + " — the script reads it from the drawing")
+    else:
+        rep.ok("every turned group carries its pivot",
+               "cx and cy, so the rotation cannot be written around NaN")
+
+
 def check_9(rep: Report, site: pathlib.Path,
             docs: dict[pathlib.Path, str]) -> None:
     print("\n9  library integrity")
@@ -1437,6 +1510,7 @@ def main(argv: list[str]) -> int:
     check_6(rep, css)
     check_7(rep, page, css)
     check_8(rep, page)
+    check_gears(rep, page)
     check_9(rep, site, docs)
     library_css = (site / "styles.css").read_text(encoding="utf-8")
     notfound = re.search(r"<style\b[^>]*>(.*?)</style>",
