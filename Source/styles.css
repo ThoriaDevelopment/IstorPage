@@ -1410,6 +1410,31 @@ h3 {
   text-align: center;
   color: var(--azure-lift);
 }
+/* The rim: the letters carry their own ground with them. The crown's tick ring
+   passes at the letters' mid-height in full primary ink - the wheel is the
+   subject and does not dim for the type - so the type brings the separation
+   instead: a halo of the field's own base colour around every glyph, painted by
+   a duplicated layer BEHIND the fill rather than by a stroke on the fill
+   itself. paint-order would say it in one declaration, but only some renderers
+   honour it on HTML text and the ones that do not would eat the stroke into
+   the letterforms; a ::before layer behind degrades to no rim at all. The
+   width is in em, so the rim scales with the mark exactly as the horizon's
+   apex scales with the mark's box. data-mark is the string the paragraph
+   spells, held equal by verify-links, so the halo cannot quietly spell
+   something else. */
+.poster-mark::before {
+  content: attr(data-mark);
+  /* The same string with empty alt text, where the renderer understands it:
+     without it the halo is a second copy of the wordmark in the accessibility
+     tree, and the page's name is read twice. The direct form above stays first
+     so a renderer that drops this one keeps the rim. */
+  content: attr(data-mark) / "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: 0.115em var(--field-base);
+}
 /* Authored in its finished state. This only dims it for a visitor who has not
    scrolled here yet; if the script never runs, the mark is simply already inked.
 
@@ -2552,6 +2577,13 @@ h3 {
   .poster,
   .win {
     background: none;
+  }
+
+  /* The mark's rim is the field's ground by construction, so on paper it is the
+     sheet's. Without this the rim prints as a declared-but-unpainted dark and
+     the halo reads as a smudge under every letter. */
+  .poster-mark::before {
+    -webkit-text-stroke-color: var(--paper);
   }
 
   /* The replica keeps its own block, so it is remapped rather than overridden. */

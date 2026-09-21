@@ -1133,6 +1133,83 @@ def check_gears(rep: Report, page: str) -> None:
                 break
 
 
+def check_poster_mark(rep: Report, page: str, css: str) -> None:
+    """The close's wordmark carries its own ground with it.
+
+    The crown's tick ring passes at the letters' mid-height in full primary ink,
+    because the wheel is the subject and does not dim for the type. The type
+    brings the separation instead: a ::before layer behind the fill, spelled by
+    `content: attr(data-mark)` and stroked in the field's own base colour. That
+    spelling is the coupling this check exists for, because it fails in the
+    worst way a CSS coupling can fail: rename the attribute in either file and
+    `attr()` resolves to nothing, the halo silently disappears, and every other
+    gate stays green while the letters go back to blue-on-pale.
+
+    Three clauses: the paragraph's data-mark is the string the paragraph spells;
+    the stylesheet's halo reads that attribute by name and sits BEHIND the fill
+    (a rim painted over the letters would be the defect it exists to fix); and
+    the print world remaps the stroke to paper, because the rim is the field's
+    ground by construction and the print world strips that ground.
+    """
+    print("\nthe close's rim")
+    mark = re.search(r'<p class="poster-mark"[^>]*>', page)
+    if not mark:
+        rep.fail("the close's rim", "the poster's mark is not in the artifact")
+        return
+    declared = re.search(r'data-mark="([^"]+)"', mark.group(0))
+    body = re.search(r'<p class="poster-mark"[^>]*>(.*?)</p>', page, re.S)
+    if not body:
+        rep.fail("the close's rim", "the mark's body could not be read")
+        return
+    spelled = re.sub(r"<[^>]+>", "", body.group(1)).strip()
+    if not declared:
+        rep.fail("the close's rim",
+                 "the mark carries no data-mark, so the halo's content: attr() "
+                 "resolves to nothing and the rim is silently gone")
+    elif declared.group(1) != spelled:
+        rep.fail("the close's rim",
+                 f"data-mark spells {declared.group(1)!r} and the mark spells "
+                 f"{spelled!r} — the halo would draw the wrong word")
+    else:
+        rep.ok("the close's rim", f"the halo spells what the mark spells: {spelled!r}")
+
+    rule = re.search(r"\.poster-mark::before\s*{([^}]*)}", css)
+    if not rule:
+        rep.fail("the close's rim", "the stylesheet draws no halo for the mark")
+        return
+    block = rule.group(1)
+    if "attr(data-mark)" not in block:
+        rep.fail("the close's rim",
+                 "the halo no longer reads data-mark — renamed on one side of "
+                 "this pair, it disappears without an error anywhere")
+    elif "-webkit-text-stroke" not in block:
+        rep.fail("the close's rim", "the halo layer carries no stroke to draw")
+    elif "z-index: -1" not in block:
+        rep.fail("the close's rim",
+                 "the halo is not behind the fill — a rim painted over the "
+                 "letterforms is the defect it exists to fix")
+    else:
+        rep.ok("the close's rim",
+               "one halo layer, behind the fill, spelled by the attribute it "
+               "shares with the paragraph")
+
+    printed = css[css.index("@media print"):]
+    if "-webkit-text-stroke-color" not in printed:
+        rep.fail("the rim on paper",
+                 "the print world never remaps the stroke, and the rim is the "
+                 "field's ground by construction — a ground that cannot print "
+                 "is not a ground")
+    else:
+        remap = re.search(r"\.poster-mark::before\s*{[^}]*-webkit-text-stroke-color:\s*([^;}]+)",
+                          printed)
+        if not remap or "paper" not in remap.group(1):
+            rep.fail("the rim on paper",
+                     f"the print world remaps the stroke to {remap.group(1).strip()!r} "
+                     "if at all, and it has to be the sheet's own paper")
+        else:
+            rep.ok("the rim on paper", f"the halo prints as {remap.group(1).strip()}")
+
+
 def check_momentum(rep: Report, source: str, page: str) -> None:
     """The numbers the notes quote, recomputed from the constants they describe.
 
@@ -2699,6 +2776,7 @@ def main(argv: list[str]) -> int:
     else:
         source = source_path.read_text(encoding="utf-8")
         check_momentum(rep, source, page)
+        check_poster_mark(rep, page, css)
         # The arrivals' clock is read from the SHIPPED stylesheet, because that is
         # what a reader gets and what the check is about: a rule that lost its clock
         # in `Source/styles.css` would reach the page through the build.
