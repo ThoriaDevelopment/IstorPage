@@ -83,6 +83,24 @@
     <h2>A loop, not a single answer.</h2>
     <p>Ordinary chat is one pass of <a href="/what-is-inference/">inference</a>: question in, answer out, done. An agent inserts a middle. After answering, the model's output can name an action, a piece of software notices, runs it, and hands the result back as more text for the model to read. The model then decides whether the job is finished or another step is needed. Each turn around the loop is still ordinary inference; what makes it agency is that the model's own words choose the next move, instead of a human typing it.</p>
 
+    <figure class="agent-loop reveal">
+      <!--#include agent-loop-wide-->
+      <!--#include agent-loop-tall-->
+      <figcaption>Ordinary chat is the straight line: one pass, question to
+      answer. The agent's path bends that pass through a tool and back into
+      the model, and at the model it decides - call a tool, or the job is
+      done. Each turn around the loop is still ordinary inference.</figcaption>
+      <style>
+        .agent-loop { margin: 2rem auto; max-width: 40rem; }
+        .agent-loop svg { width: 100%; height: auto; display: block; }
+        .agent-loop svg[data-variant="tall"] { display: none; }
+        @media (max-width: 560px) {
+          .agent-loop svg[data-variant="wide"] { display: none; }
+          .agent-loop svg[data-variant="tall"] { display: block; }
+        }
+      </style>
+    </figure>
+
     <h2>What the model needs to act.</h2>
     <p>Three things turn a model into an agent. Tools it may call, described precisely enough that the model knows when each one fits. A set of standing instructions that say what the job is and what is out of bounds, which is the work of a <a href="/what-is-a-system-prompt/">system prompt</a>. And a stopping rule, because a loop that never ends is worse than no loop at all. None of these change what the model knows; they change what its <a href="/what-is-prompt-engineering/">instructions</a> can cause to happen, which is where the engineering effort actually goes. How those tools reach the model has a standard now: <a href="/what-is-mcp/">what MCP is</a> covers the protocol that connects tools to models without custom wiring for each pair.</p>
 

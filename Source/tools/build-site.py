@@ -218,6 +218,8 @@ LIBRARY_INCLUDES = {
     "reading-bar-tall": (SOURCE / "figures" / "reading-bar-tall.svg", "svg"),
     "rerank-flow-wide": (SOURCE / "figures" / "rerank-flow-wide.svg", "svg"),
     "rerank-flow-tall": (SOURCE / "figures" / "rerank-flow-tall.svg", "svg"),
+    "agent-loop-wide": (SOURCE / "figures" / "agent-loop-wide.svg", "svg"),
+    "agent-loop-tall": (SOURCE / "figures" / "agent-loop-tall.svg", "svg"),
     "attention-profile-tall": (SOURCE / "figures" / "attention-profile-tall.svg", "svg"),
     "embedding-map-wide": (SOURCE / "figures" / "embedding-map-wide.svg", "svg"),
     "embedding-map-tall": (SOURCE / "figures" / "embedding-map-tall.svg", "svg"),
