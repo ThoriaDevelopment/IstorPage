@@ -1768,14 +1768,15 @@ The build gates are re-baselined **by measurement, never transcription** — the
 | `verify-figures.py` **(new tool, 2026-09-20)** | regenerates all seven figures in `Source/figures/` and compares each to the committed file **by bytes**, restoring the working tree whatever the comparison says, then runs each generator's own `--self-test` where it has one. 9 checks. The claim in `SITE_BUILD_PLAN.md` that `verify-budget.py` catches a stale regeneration was only half true: it catches a stale figure that moves the page's total past a ceiling, which is a much larger event than a figure three hundred bytes out of date, and this repository generates its artwork rather than storing it. It also fixed two generators that wrote to `../figures/`, a path that is right only when the tool is run from `Source/tools` and, from the repository root their own docstrings name, resolves to the repository's **parent** |
 | `verify-copy.py` **(new tool)** | Stage 9's checks 10 and 11: the humanizer pass as a rule rather than a memory, and §10.4's release-claim rule in both prose and tables. Both run a positive control before they trust their own silence, and an allow-list entry that stops matching fails the build |
 | `audit-motion.py` **(new tool, 2026-09-21)** | drives the page instead of reading it, and asserts **12 claims** about the two worlds: a notched read leaves the wheel where the scroll put it, a page-sized jump is not a gesture, a sustained flick charges it and it coasts and stops, the mesh ratio holds at every one of those moments, the hand turns it, a control keeps its own pointer, a touch is never taken, and with motion reduced the world is never written. A local tool with a non-zero exit, for the same reason `audit-contrast.py` is one. Its `--self-test` builds **five doctored pages** and requires each to fail the claim it breaks. The night's most expensive lesson lives in its docstring: `--virtual-time-budget`, the only thing that makes headless wait for a scenario, produces no animation frames and stalls outright on a page that requests them, so the harness **POSTs its answer back** and Chrome runs in real time |
+| `make-token-rows.py` **(new plate, 2026-09-21)** | the seventh carried page to carry a plate, and it is the one whose claim is a shape: `/what-is-tokenization/` argues in prose that tokens sit between characters and words, so the page now shows the argument. The same sentence cut three ways, **35 pieces by letter, 9 by token, 6 by word**, with each count drawn beside its own row; the row a model reads is the only row in ink and the only one where nothing is unknown, so its one foreign name is marked twice in **the same four letters** - a dashed box in the word row, a bracket under the token row. Two variants like every plate here, swapped by the page's own rule at 560px. **The self-test is where the work went.** Every string is placed by `plan()` before any of it is drawn, so "does a label sit inside the plate" and "does a label sit on another" are questions about data rather than arithmetic buried inside text calls, and the first version was failing both of them: a title running off the narrow plate, and the bracket's label sitting on the row below. **Two defects were found by looking at it rather than by a claim**, both after it passed every check it had: the bracket was a plain horizontal rule five units under the band, which on a page of links reads as an underline, and it began one character cell early, under the gap before the name instead of under the name. Both are fixed and both are now claims - the bracket is compared against the span the two pieces actually occupy **and** against the span the word row's box occupies, because the two rows marking the same four letters is this plate's argument written as arithmetic. Its `--self-test` draws into a **temporary directory**, and that is a lesson rather than a tidy-up: the probes for this plate doctor it, one of those doctored probes ran the drawing's own writer, and the doctored plate it wrote was still in `Source/figures/` for the build to serve. `verify-figures.py` reported it stale exactly as it should. The writer now takes its directory as an argument and the self-test compares the shipped files' bytes before and after it runs, so proving the plate can fail cannot ship the plate that failed. **41 checks** (38 → 41); the plate is registered in the library's include table, so a carried page can carry a figure at all |
 | **`composition` (new)** | asserts the page has **≥ 10 sections, ≥ 4 distinct composition classes, ≥ 1 sticky element, ≥ 1 `<details>`, and ≤ 1 display-size element** |
 
 That last gate is the point. v1 had 53 assertions and none could see that the page was nine identical
 sections. **A composition gate is what would have caught it**, and it is the only gate here that
 asserts the *design* rather than the bytes.
 
-**Every figure in `Source/figures/` now has to be what its generator writes today.** Seven SVGs on
-this page are generated, committed and inlined into the document, and each one carries a "do not
+**Every figure in `Source/figures/` now has to be what its generator writes today.** The plates are
+generated, committed and inlined into the document rather than stored, and each one carries a "do not
 hand-edit" comment inside it that nothing checked. That failed twice in one session, both times
 caught by luck: a hero placement that was edited in the generator and not in the figure, and a plate
 whose box widths came from a measurement the shipped figure did not have. `verify-figures.py` closes
@@ -1787,6 +1788,26 @@ modified is a check nobody runs twice; and runs each generator's `--self-test`, 
 travel with the gate instead of living in whoever remembers them. It was shown failing before it was
 trusted, on both branches: a figure with one byte appended (reported at the exact offset) and a figure
 removed from the tree (reported as uncommitted, since the build inlines what it expects to find).
+
+**A plate is now something a carried page can carry, and eight pages do.** Thirty drawings sit in
+`Source/figures/`; five plates are inlined into `Source/index.html`, and **seven carried pages** carry
+a pair of their own (`what-is-a-context-window`, `what-is-a-gguf`, `what-is-quantization`,
+`what-does-q4-k-m-mean`, `how-much-ram-for-local-ai`, `why-ai-hallucinates-citations`, and the token
+page that joined them on 2026-09-21). The mechanism is the second include table: `LIBRARY_INCLUDES`
+names a figure and `<!--#include name-->` splices it into a page the same way the landing's own
+does, so a page can draw its claim instead of describing it.
+
+**A plate's words are not searchable, and that is measurable.** The index holds a page's title, its
+summary and its headings with each heading's first sentence; **631 characters** for
+`/what-is-tokenization/`, and none of the plate's own lines are among them. Asked for `Rule of thumb`,
+`no entry` or `35 pieces`, the page whose drawing says all three is not a result. The division of
+labour this goal settled on follows from that: the drawing carries the illustration and the one number
+a reader can use, and the sentence that says what the drawing means belongs in the page's prose beside
+it, where it can be searched and where it is read *against* the plate rather than repeated by it. The
+token plate's first version had that backwards: five lines of caveat inside the drawing and a caption
+saying the same thing in five more. The copy gate is a different matter and does read the drawing's
+text (it walks visible text, and an inlined SVG's `<text>` is visible text), which is why the plate's
+few strings are written to the same rules as its page.
 
 **The artifact total is a report and no longer a stale one.** 4.12 MiB was written before the
 article navigation and the directory's find control landed, and nothing asserted it, which is how a
