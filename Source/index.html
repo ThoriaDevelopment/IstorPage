@@ -1194,6 +1194,37 @@
      the one thing M14's mapping is for. The wheel is charged where it can be
      watched being charged; below the hero it is a drawing again, and calm.
 
+     M20 · THE ARRIVAL'S CLOCK IS THE READER'S PACE. Every arrival on this page
+     was timed for a reader who has stopped to look, and the page never asked
+     whether they had. The plate's sequence is two seconds long, the reading log's
+     counter finishes 720ms after its block arrives, and the windows take 700ms to
+     land. Measured against a reader who is still moving, those numbers are wrong:
+     at 1.25 px/ms a flick turns two seconds into 2,500px of travel, so what
+     passes through the viewport is the middle of a sequence and the reader never
+     sees the drawing it was building. The reference sites that do this best are
+     explicit that pace is the signal (a fast scroll gets an abbreviated entrance,
+     a slow one gets the whole thing), and the page already reads pace for the
+     wheel - this is the same reading asked about the other half of the page.
+
+     The mechanism is one custom property. `--arrive` is the family's clock: every
+     duration, delay and stagger in it is written as a multiple of that property,
+     so switching it changes the whole arrival at once and changes nothing about
+     its shape. The script adds `is-quick` (clock .3) when the reader arrived too
+     fast to watch the arrival finish, and the test for that is the inequality
+     rather than a number someone liked: the arrival runs for ARRIVE_MS, so a
+     reader at `pace` px/ms covers pace * ARRIVE_MS / 1000 px meanwhile, and if
+     that is further than the screen the arrival ends off it.
+
+     Three things are deliberately NOT paced. The hero's own sequence (M2) is not
+     an arrival: it plays at load, before the reader has moved, so there is no pace
+     to read and it stays exactly as authored. The pointer-feedback rule (M7's 160ms
+     object response) is about a control answering a hand, not about content
+     arriving. And the CONTENT is never paced, only the clock: the count ends at
+     the same number, the rows end visible, the drawing ends drawn, on both paths.
+     That last one is the claim worth being careful about, so it is asserted by
+     driving both arrivals and comparing the end states (audit-motion.py), not
+     argued from the stylesheet.
+
      WHY THESE NOTES LIVE HERE, and it is a rule now rather than a preference.
      The plan's §7 sets a budget for shipped JS, and comments inside `<script>`
      ship: 1,118 B of prose was arriving with the document and being parsed as
@@ -1300,14 +1331,17 @@
     // strobe. Measured at 60fps, a hard throw at the old 200 deg/s cap advanced
     // 2.11 tooth pitches per frame and 18% of the coast's frames were past a whole
     // tooth. 96 deg/s is 1.60 degrees a frame, which is 0.99 of a tooth, and it
-    // costs a normal reader nothing: the charge from a 3,000 px/s flick is 82 deg/s,
-    // so the only gestures the cap touches are the violent ones it was there to
-    // bound anyway. (A 120Hz display halves the limit; this number is stated for
-    // the rate the page is judged at.)
+    // costs a normal reader nothing: a 3,000 px/s flick is 3 px/ms, which charges
+    // 3 * 22 = 66 deg/s, so the only gestures the cap touches are the violent ones
+    // it was there to bound anyway. (A 120Hz display halves the limit; this number
+    // is stated for the rate the page is judged at.)
     var SPIN_CAP = 96, SPIN_HALF = 160, SPIN_MIN = 1.5;
     // M19's state: the hero's turnable, assigned below once the machinery it
-    // needs exists, and the window of scroll samples the gesture test reads.
-    var heroTurnable = null, fly = [];
+    // needs exists, and the window of scroll samples the gesture test reads. The
+    // last two are M20's: the same buffer read as a plain speed, and when that
+    // reading was taken, because a scroll that has stopped stops sending events
+    // and a stale speed is not a speed.
+    var heroTurnable = null, fly = [], pace = 0, paceAt = -1e9;
     // M18 · the one writer for the hero's angle, whatever moved it. Wheel A's
     // pivot comes from the drawing, exactly as the pinions' do. The first
     // version hardcoded 720 720, the viewBox centre, while the wheel's own
@@ -1419,6 +1453,15 @@
       var spanFly = nowFly - fly[0][0];
       var surge = (fly.length >= 3 && spanFly >= 60)
         ? (yFly - fly[0][1]) / spanFly : 0;
+      // M20 · the same samples, a different question. The flywheel asks whether
+      // the reader made a GESTURE, which is why a teleport must not charge it; the
+      // arrivals below ask only how fast the page is MOVING, because an entrance
+      // the reader is outrunning is an entrance nobody watched, whatever produced
+      // the movement - a key, a wheel notch, a trackpad flick or a browser that
+      // coalesced several scrolls into one delivery. Two reads of one buffer, each
+      // answering what it actually measures.
+      pace = Math.abs(yFly - fly[0][1]) / Math.max(1, spanFly);
+      paceAt = nowFly;
       if (heroTurnable && active !== heroTurnable && window.scrollY < heroBottom
           && (surge > 1 || surge < -1)) {
         heroTurnable.vel = Math.max(-SPIN_CAP, Math.min(SPIN_CAP, surge * 22));
@@ -1640,12 +1683,36 @@
 
   if (!('IntersectionObserver' in window)) return;
 
+  // M20 · the arrival's authored length, in ms: the counter's last step, which is
+  // the longest single delay anywhere in the family. The pacing test measures the
+  // reader's travel over exactly this window, so it is named once and the chain's
+  // own steps are stated against it.
+  var ARRIVE_MS = 720;
+
   var reveals = document.querySelectorAll('.reveal');   // M3 / M5
   if (reveals.length && !reduced) {
     var io = new IntersectionObserver(function (entries) {
       for (var i = 0; i < entries.length; i++) {
         if (!entries[i].isIntersecting) continue;
         var block = entries[i].target;
+        // M20 · THE ARRIVAL'S CLOCK, decided by the reader's own pace. The test
+        // is the inequality rather than a threshold that felt right: the authored
+        // arrival runs for ARRIVE_MS (the counter's last step, the longest thing
+        // in the family), so a reader moving at `pace` px/ms covers pace * ARRIVE_MS
+        // px in that time - and if that is further than the screen, the arrival
+        // finishes off screen. At 900px that is 1.25 px/ms,
+        // which a flick sustains and a notched read never reaches. The speed is
+        // only read if it is recent (`paceAt`, because a stopped scroll sends no
+        // more events and would leave its last speed standing forever) and it is
+        // read here rather than in the handler because this is the only place that
+        // needs it: no second listener, no second source.
+        //
+        // `.is-quick` is the whole interface. The stylesheet scales the family's
+        // clock to .3 off that class, and the two things the script times itself
+        // read the same property rather than repeating the number.
+        var quick = performance.now() - paceAt < 320
+                    && pace * ARRIVE_MS > window.innerHeight;
+        if (quick) block.classList.add('is-quick');
         // M16 · a block with several arriving pieces plays them in ORDER, not
         // as one simultaneous fade - the pair's two windows arrive one-two,
         // a grid of cards cascades - which is the reference sites' signature
@@ -1656,7 +1723,11 @@
         // transition never exists: is-cold is never re-added after this.
         var pieces = block.querySelectorAll('.win, .exhibit img, .etymology');
         for (var k = 0; k < pieces.length; k++) {
-          pieces[k].style.transitionDelay = (k * 90) + 'ms';
+          // The 90ms step is the ordering decision and stays here; the SCALE is
+          // the stylesheet's, read through the same property the durations use,
+          // so a paced arrival compresses its stagger by the same factor instead
+          // of keeping a second clock.
+          pieces[k].style.transitionDelay = 'calc(' + (k * 90) + 'ms * var(--arrive))';
         }
         block.classList.remove('is-cold');
         // M17 · the reading log's counter counts. The rows' entrance is M13,
@@ -1668,12 +1739,17 @@
         // writes, then nothing lives on.
         var count = block.querySelector('.win-readlog .win-count');
         if (count) {
-          var steps = [300, 440, 580, 720];
+          // The counter keeps the rows' clock rather than one of its own: the
+          // scale is read back off the block, which is the only place the number
+          // exists. Writing .3 here as well would be the second copy of a constant
+          // this file keeps having to remove.
+          var scale = parseFloat(getComputedStyle(block).getPropertyValue('--arrive')) || 1;
+          var steps = [300, 440, 580, ARRIVE_MS];
           for (var s = 0; s < steps.length; s++) {
             var n = s + 1;
             setTimeout(function (el, txt) {
               return function () { el.textContent = txt; };
-            }(count, n === 1 ? '1 source' : n + ' sources'), steps[s]);
+            }(count, n === 1 ? '1 source' : n + ' sources'), steps[s] * scale);
           }
         }
         io.unobserve(block);

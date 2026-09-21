@@ -1737,6 +1737,110 @@ def check_12(rep: Report, site: pathlib.Path, library_css: str) -> None:
                  "carries a row of fragment links")
 
 
+def check_arrival_clock(rep: Report, source: str, css: str) -> None:
+    """The arrivals run on one clock, and the page says so in one place.
+
+    M20's mechanism is a single custom property: every duration and delay in the
+    arrival family is written as a multiple of --arrive, and the script switches it
+    on the block when the reader arrived too fast to watch the arrival finish. The
+    behaviour half of that is asserted by audit-motion.py, which drives both paths
+    and compares them. What that cannot see is the SHAPE, and the shape is where
+    this feature breaks quietly:
+
+      * a rule left with a bare duration still animates correctly, it just stops
+        being paced, and no browser test of the fast path would notice;
+      * a script that repeated the multiplier instead of reading the property would
+        pass every behaviour claim until the two numbers drifted apart - the same
+        failure as two copies of the momentum's cap, which this file already checks;
+      * an undefined custom property inside calc() is invalid at computed-value
+        time, which means NO transition rather than a short one, so the default has
+        to resolve everywhere and not only on the blocks that get the class.
+
+    The required expressions below are the family's own timings, each written as a
+    multiple. Naming them rather than counting them is the point: a check that only
+    counted `var(--arrive)` uses would stay green while one rule lost its clock and
+    another gained an extra one.
+    """
+    print("\nthe arrivals' clock")
+
+    default = re.search(r":root\s*\{\s*--arrive:\s*([\d.]+)\s*;\s*\}", css)
+    if not default:
+        rep.fail("the arrival's clock has a default",
+                 "no :root default for --arrive in the shipped stylesheet - an "
+                 "undefined custom property in calc() makes the whole declaration "
+                 "invalid, so a block that misses the class would lose its "
+                 "transition entirely rather than keep the authored one")
+        return
+    if float(default.group(1)) != 1:
+        rep.fail("the arrival's clock has a default",
+                 f"the default is {default.group(1)} where the authored clock is 1")
+    else:
+        rep.ok("the arrival's clock has a default",
+               "--arrive: 1 at :root, so every rule that reads it always resolves")
+
+    quick = re.search(r"\.reveal\.is-quick\s*\{\s*--arrive:\s*([\d.]+)\s*;\s*\}", css)
+    if not quick:
+        rep.fail("the quick clock is a fraction of the authored one",
+                 "no .reveal.is-quick override for --arrive: the class the script "
+                 "adds would change nothing")
+    elif not 0 < float(quick.group(1)) < 1:
+        rep.fail("the quick clock is a fraction of the authored one",
+                 f"--arrive: {quick.group(1)} is not a shortening the class can mean")
+    else:
+        rep.ok("the quick clock is a fraction of the authored one",
+               f"--arrive: {quick.group(1)} for a block the reader arrived at speed")
+
+    # Each of these is one timing in the family, and each is a step that cannot be
+    # scaled without the others. The plate's 2s claim is the longest, the windows'
+    # 700ms is the most common, and the rest are the staggers that make a block read
+    # as a sequence rather than a single fade.
+    required = (("calc(var(--arrive) * 700ms)", "the windows' 700ms entrance"),
+                ("calc(var(--arrive) * 2000ms)", "the plate's 2s claim"),
+                ("calc(var(--arrive) * 1400ms)", "the hole ring's roll"),
+                ("calc(var(--arrive) * 480ms)", "a reading-log row"),
+                ("calc(var(--arrive) * 720ms)", "the last tick's delay"),
+                ("calc(var(--arrive) * 500ms)", "an evidence row"))
+    lost = [name for expr, name in required if expr not in css]
+    if lost:
+        rep.fail("every timing in the family reads the clock",
+                 f"these lost it: {', '.join(lost)} - a bare duration still animates "
+                 "and would silently stop being paced")
+    else:
+        rep.ok("every timing in the family reads the clock",
+               f"{len(required)} named timings, each a multiple of --arrive")
+
+    # One copy of the multiplier, and it is not in the script. The counter is the
+    # one thing the script times itself, and it has to keep the rows' clock, so it
+    # reads the property back rather than repeating the number.
+    if "getPropertyValue('--arrive')" not in source:
+        rep.fail("the counter reads the clock rather than repeating it",
+                 "the script no longer reads --arrive back off the block, so the "
+                 "counter's chain has a timing of its own")
+    elif re.search(r"\*\s*0\.3\b", source):
+        rep.fail("the counter reads the clock rather than repeating it",
+                 "the script multiplies by 0.3 as well, which is two numbers that "
+                 "can drift apart")
+    else:
+        rep.ok("the counter reads the clock rather than repeating it",
+               "the chain's steps are scaled by the property the stylesheet owns")
+
+    # ARRIVE_MS is the arrival's authored length, and it is the counter's last step:
+    # two facts that have to be one fact, since the pacing test measures the reader's
+    # travel over exactly that window.
+    named = re.search(r"var ARRIVE_MS = (\d+);", source)
+    chain = re.search(r"var steps = \[\d+, \d+, \d+, ARRIVE_MS\];", source)
+    used = re.search(r"pace \* ARRIVE_MS > window\.innerHeight", source)
+    if not (named and chain and used):
+        rep.fail("the arrival's length is named once and used where it claims",
+                 "missing: " + ", ".join(n for n, m in
+                 (("the constant", named), ("the chain's last step", chain),
+                  ("the pacing inequality", used)) if not m))
+    else:
+        rep.ok("the arrival's length is named once and used where it claims",
+               f"{named.group(1)}ms is the counter's last step and the window the "
+               "reader's travel is measured over")
+
+
 def main(argv: list[str]) -> int:
     # The Windows console is cp1252 by default, and this file's output is full of
     # section signs and em dashes. Reconfigure rather than strip them: the
@@ -1779,7 +1883,12 @@ def main(argv: list[str]) -> int:
                  f"{source_path} is missing, so nothing compares the code to the "
                  "numbers its notes quote")
     else:
-        check_momentum(rep, source_path.read_text(encoding="utf-8"), page)
+        source = source_path.read_text(encoding="utf-8")
+        check_momentum(rep, source, page)
+        # The arrivals' clock is read from the SHIPPED stylesheet, because that is
+        # what a reader gets and what the check is about: a rule that lost its clock
+        # in `Source/styles.css` would reach the page through the build.
+        check_arrival_clock(rep, source, css)
     check_9(rep, site, docs)
     library_css = (site / "styles.css").read_text(encoding="utf-8")
     notfound = re.search(r"<style\b[^>]*>(.*?)</style>",

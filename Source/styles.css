@@ -1956,6 +1956,36 @@ h3 {
   .hero .win .cite      { animation: pop 280ms 1500ms var(--ease) both; }
   .hero .win .rail      { animation: fade 600ms 900ms var(--ease) both; }
 
+  /* M20 · ONE CLOCK FOR THE ARRIVALS, AND THE READER SETS IT.
+
+     Every arrival on this page has a time written into it: 700ms for a window,
+     90ms of stagger per arriving piece, 480ms per reading-log row, and up to 2s
+     for the plate's claim to land. Those times are right for a reader who has
+     stopped to look and wrong for one who is still moving. At 1.25 px/ms — the
+     pace a flick sustains — the plate's 2s sequence is 2,500px of travel, so it
+     finishes somewhere the reader no longer is, and what passes through the
+     viewport is the middle of a sequence rather than a drawing. A block that is
+     read at speed should arrive at speed.
+
+     So the family's timings are written as multiples of ONE property, and the
+     reader's own pace scales it: `--arrive: 1` is the authored clock, and the
+     block's script switches it to `.3` when the reader arrives too fast to watch
+     the arrival finish. Multiplication is the whole trick, and it is why this is
+     safe: every duration, delay and stagger in the family scales by the same
+     factor, so the SEQUENCE cannot change — the frames still draw before the
+     holes roll, the tick still lands after its row — only the clock moves.
+     Pacing is never allowed to change what arrives or in what order, and that is
+     asserted rather than assumed: audit-motion.py drives both paths and requires
+     the same end state from each.
+
+     It is declared at :root rather than on the block for one reason. Every rule
+     below reads it, and an undefined custom property inside `calc()` makes the
+     whole declaration invalid at computed-value time, which would silently mean
+     NO transition rather than a short one. A default that always resolves cannot
+     do that, and `.reveal.is-quick` overrides it for the block it is on. */
+  :root { --arrive: 1; }
+  .reveal.is-quick { --arrive: 0.3; }
+
   /* M3 · Window entrance. Tempo's reveals are PANEL entrances, not text fades —
      which is the outlier position, and the right one: the generic default is
      fade-and-slide on every section, and putting the motion on the product
@@ -1970,7 +2000,8 @@ h3 {
   .reveal .win,
   .reveal .exhibit img,
   .etymology {
-    transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+    transition: opacity calc(var(--arrive) * 700ms) var(--ease),
+                transform calc(var(--arrive) * 700ms) var(--ease);
   }
   .reveal.is-cold .win,
   .reveal.is-cold .exhibit img,
@@ -1984,12 +2015,13 @@ h3 {
   .confidence-ruler .ruler-fill {
     transform: scaleX(0);
     transform-origin: left center;
-    transition: transform 700ms var(--ease);
+    transition: transform calc(var(--arrive) * 700ms) var(--ease);
   }
   .confidence-ruler .ruler-point {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.6);
-    transition: opacity 280ms var(--ease), transform 700ms var(--ease);
+    transition: opacity calc(var(--arrive) * 280ms) var(--ease),
+                transform calc(var(--arrive) * 700ms) var(--ease);
   }
   .confidence-ruler:not(.is-cold) .ruler-fill { transform: scaleX(1); }
   .confidence-ruler:not(.is-cold) .ruler-point {
@@ -2020,14 +2052,17 @@ h3 {
      700ms. Reduced-motion needs no extra rule: the whole block sits inside
      the no-preference guard. */
   .plate > svg .ring-frame { stroke-dasharray: 1709.0264; stroke-dashoffset: 0;
-                             transition: stroke-dashoffset 900ms var(--ease); }
+                             transition: stroke-dashoffset calc(var(--arrive) * 900ms) var(--ease); }
   .plate > svg .ring-frame + .ring-frame { stroke-dasharray: 1558.23; stroke-dashoffset: 0;
-                             transition: stroke-dashoffset 900ms var(--ease) 120ms; }
-  .plate > svg .ring-holes { transition: stroke-dashoffset 1400ms var(--ease) 700ms; }
+                             transition: stroke-dashoffset calc(var(--arrive) * 900ms) var(--ease)
+                                         calc(var(--arrive) * 120ms); }
+  .plate > svg .ring-holes { transition: stroke-dashoffset calc(var(--arrive) * 1400ms) var(--ease)
+                                           calc(var(--arrive) * 700ms); }
   .plate.is-cold > svg .ring-frame { stroke-dashoffset: 1709.0264; }
   .plate.is-cold > svg .ring-frame + .ring-frame { stroke-dashoffset: 1558.23; }
   .plate.is-cold > svg .ring-holes { stroke-dashoffset: -4.60177; }
-  .plate > svg .ring-claim { transition: opacity 320ms var(--ease) 2000ms; }
+  .plate > svg .ring-claim { transition: opacity calc(var(--arrive) * 320ms) var(--ease)
+                                        calc(var(--arrive) * 2000ms); }
   .plate.is-cold > svg .ring-claim { opacity: 0; transition: none; }
 
   /* M13 · The reading log fills in.
@@ -2042,14 +2077,16 @@ h3 {
      hidden values. The tick is a rotated border box, so its own arrival is opacity
      and its delay is the row's delay plus 300ms -- the fetch finishes, then it is
      marked. */
-  .readlog li { transition: opacity 480ms var(--ease), transform 480ms var(--ease); }
-  .readlog li:nth-child(2) { transition-delay: 140ms; }
-  .readlog li:nth-child(3) { transition-delay: 280ms; }
-  .readlog li:nth-child(4) { transition-delay: 420ms; }
-  .readlog-tick { transition: opacity 260ms var(--ease) 300ms; }
-  .readlog li:nth-child(2) .readlog-tick { transition-delay: 440ms; }
-  .readlog li:nth-child(3) .readlog-tick { transition-delay: 580ms; }
-  .readlog li:nth-child(4) .readlog-tick { transition-delay: 720ms; }
+  .readlog li { transition: opacity calc(var(--arrive) * 480ms) var(--ease),
+                            transform calc(var(--arrive) * 480ms) var(--ease); }
+  .readlog li:nth-child(2) { transition-delay: calc(var(--arrive) * 140ms); }
+  .readlog li:nth-child(3) { transition-delay: calc(var(--arrive) * 280ms); }
+  .readlog li:nth-child(4) { transition-delay: calc(var(--arrive) * 420ms); }
+  .readlog-tick { transition: opacity calc(var(--arrive) * 260ms) var(--ease)
+                                  calc(var(--arrive) * 300ms); }
+  .readlog li:nth-child(2) .readlog-tick { transition-delay: calc(var(--arrive) * 440ms); }
+  .readlog li:nth-child(3) .readlog-tick { transition-delay: calc(var(--arrive) * 580ms); }
+  .readlog li:nth-child(4) .readlog-tick { transition-delay: calc(var(--arrive) * 720ms); }
   .field.is-cold .readlog li { opacity: 0; transform: translateY(10px); }
   .field.is-cold .readlog-tick { opacity: 0; transition: none; }
 
@@ -2060,11 +2097,12 @@ h3 {
      that matters is the one running back to visible, and it reads its timing
      from the state it is transitioning TO. */
   .evidence > div {
-    transition: opacity 500ms var(--ease), transform 500ms var(--ease);
+    transition: opacity calc(var(--arrive) * 500ms) var(--ease),
+                transform calc(var(--arrive) * 500ms) var(--ease);
   }
-  .evidence > div:nth-child(2) { transition-delay: 45ms; }
-  .evidence > div:nth-child(3) { transition-delay: 90ms; }
-  .evidence > div:nth-child(4) { transition-delay: 135ms; }
+  .evidence > div:nth-child(2) { transition-delay: calc(var(--arrive) * 45ms); }
+  .evidence > div:nth-child(3) { transition-delay: calc(var(--arrive) * 90ms); }
+  .evidence > div:nth-child(4) { transition-delay: calc(var(--arrive) * 135ms); }
   .evidence.is-cold > div { opacity: 0; transform: translateY(12px); }
 
   /* M7 · The accordion. <details> cannot animate its own height, so the panel

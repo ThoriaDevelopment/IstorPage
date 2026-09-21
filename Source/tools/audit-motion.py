@@ -52,7 +52,9 @@ waits are the waits a reader's browser would make. That is what makes the coast 
 the settle assertable rather than merely measurable, and it is why this file can
 claim thirteen things where the first draft could honestly claim nine, and a session
 probe has since handed it a fourteenth reason to exist (see the boundary in the
-scenario): a claim list is only worth what the next measurement adds to it.
+scenario): a claim list is only worth what the next measurement adds to it. Eighteen
+now, because the arrival's clock (M20) is behaviour too, and behaviour that is not
+asserted is behaviour that quietly stops working.
 
 IT REUSES `audit-contrast.py` BY PATH. That harness already solves the two hard
 parts of putting a page under a controlled browser: a server that can hand the page
@@ -507,6 +509,85 @@ def check_reduced(doc: dict, failures: list) -> None:
        "after a flick and a drag, and the page still scrolled %s px" % doc.get("scrolled"))
 
 
+# M20 asks a different question again, and it needs two page loads because a reveal
+# fires once and a block is unobserved afterwards: the SAME block is approached
+# slowly in one load and fast in the other, and the two are compared. The block is
+# the reading log's, which has the longest authored chain anywhere in the family
+# (four rows, four ticks and a counter), so a clock change cannot hide in it.
+#
+# What is measured is deliberately split between behaviour and computed style. The
+# behaviour - does the same content arrive either way, and does the counter keep the
+# rows' clock - is driven and observed. The ORDER claim is read off computed
+# delays instead, because order is what multiplication cannot change and asserting
+# it by watching a 2s sequence race would be a test of the machine's frame rate
+# rather than of the page. The static half of that claim (every timing in the
+# family, including the plate's scribe, is written against the same property) is
+# verify-links.py's job, where it costs nothing to check.
+PACE_SCENARIO = r"""
+(async (d, w) => {
+  const WIN = d.querySelector('.win-readlog');
+  if (!WIN) return { error: 'no reading-log block in this document' };
+  const block = WIN.closest('.reveal') || WIN;
+  const rows = Array.from(WIN.querySelectorAll('.readlog li'));
+  const ticks = Array.from(WIN.querySelectorAll('.readlog-tick'));
+  const count = WIN.querySelector('.win-count');
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const step = (dy) => {
+    w.scrollTo({ top: w.scrollY + dy, behavior: 'instant' });
+    w.dispatchEvent(new Event('scroll'));
+  };
+  d.documentElement.style.scrollBehavior = 'auto';
+
+  // Park it just below the fold and let the sample window go quiet, so the
+  // approach below is the only motion in the measurement.
+  const top = block.getBoundingClientRect().top + w.scrollY;
+  w.scrollTo({ top: top - w.innerHeight - 40, behavior: 'instant' });
+  w.dispatchEvent(new Event('scroll'));
+  await wait(900);
+
+  const authored = count ? count.textContent.trim() : null;
+  const t0 = performance.now();
+  const countChanges = [];
+  let seen = authored;
+  const poll = setInterval(function () {
+    if (!count) return;
+    const now = count.textContent.trim();
+    if (now !== seen) {
+      seen = now;
+      countChanges.push(Math.round(performance.now() - t0));
+    }
+  }, 10);
+
+  __APPROACH__
+  await wait(2400);
+  clearInterval(poll);
+
+  const cs = getComputedStyle(block);
+  const row1 = getComputedStyle(rows[0]);
+  const out = {
+    quick: block.classList.contains('is-quick'),
+    stillCold: block.classList.contains('is-cold'),
+    arrive: cs.getPropertyValue('--arrive').trim(),
+    rowDurationMs: row1.transitionDuration,
+    rowDelaysMs: rows.map((r) => getComputedStyle(r).transitionDelay),
+    countChangesMs: countChanges,
+    authoredCount: authored,
+    count: count ? count.textContent.trim() : null,
+    rowsOpacity: rows.map((r) => getComputedStyle(r).opacity).join(','),
+    ticksOpacity: ticks.map((t) => getComputedStyle(t).opacity).join(','),
+    rowsDelayApplied: rows.map((r) => r.style.transitionDelay).join(','),
+    approach: '__HOW__'
+  };
+  return out;
+})(d, w)
+"""
+
+PACE_CALM = PACE_SCENARIO.replace("__HOW__", "slow").replace(
+    "__APPROACH__", "for (let i = 0; i < 16; i++) { step(60); await wait(80); }")
+PACE_FAST = PACE_SCENARIO.replace("__HOW__", "fast").replace(
+    "__APPROACH__", "for (let i = 0; i < 12; i++) { step(220); await wait(16); }")
+
+
 # Each of these makes the page wrong in one way that the behaviour claims to catch,
 # and `--self-test` insists the audit reports exactly that. A gate whose failures
 # were never seen is a gate nobody can trust; this is the copy of that rule the
@@ -543,7 +624,110 @@ SELF_TESTS = [
      [("var world = reduced ? null : document.querySelector('.hero-world');",
        "var world = document.querySelector('.hero-world');")],
      "in the reduced world nothing is written"),
+    # M20's four, each the failure of one of the pacing claims. The first is the
+    # bug this feature actually shipped for one build: px per millisecond divided
+    # by 1000 as if it were px per second, so the inequality was never true and
+    # the whole thing was dead code that looked alive.
+    ("the pacing test divided by 1000, so it can never fire",
+     [("pace * ARRIVE_MS > window.innerHeight",
+       "pace * ARRIVE_MS / 1000 > window.innerHeight")],
+     "a fast arrival gets the arrival's own clock"),
+    ("the quick clock declared but not applied",
+     [("--arrive: 0.3", "--arrive: 1")],
+     "a fast arrival gets the arrival's own clock"),
+    ("the counter left on a clock of its own",
+     [("steps[s] * scale", "steps[s]")],
+     "the counter keeps the rows' clock"),
+    ("the fast path dropping the chain's last step",
+     [("for (var s = 0; s < steps.length; s++)",
+       "for (var s = 0; s < steps.length - (quick ? 1 : 0); s++)")],
+     "the same content arrives either way"),
 ]
+
+# The claims that need the pacing pair of page loads, so the self-test knows which
+# patches have to pay for them.
+PACE_CLAIMS = ("a slow arrival gets the authored clock",
+               "a fast arrival gets the arrival's own clock",
+               "the delays scale with the durations, so the order cannot move",
+               "the same content arrives either way",
+               "the counter keeps the rows' clock")
+
+
+def check_pace(calm: dict, fast: dict, failures: list) -> None:
+    """The arrival's clock, and the one thing pacing must never touch."""
+    def ok(label, good, detail=""):
+        CHECKED[0] += 1
+        print("  %s  %-58s %s" % ("ok  " if good else "FAIL", label, detail))
+        if not good:
+            failures.append(label)
+
+    for name, doc in (("slow", calm), ("fast", fast)):
+        if "error" in doc:
+            ok("the %s approach ran" % name, False, doc["error"])
+            return
+
+    # The decision itself, on both sides of it. The slow path is not decoration:
+    # without it, a page that always arrived at speed would pass the fast claim.
+    ok("a slow arrival gets the authored clock",
+       not calm["quick"] and calm["arrive"] == "1",
+       "--arrive = %s after a %s approach" % (calm["arrive"], calm["approach"]))
+    ok("a fast arrival gets the arrival's own clock",
+       fast["quick"] and fast["arrive"] != "1",
+       "--arrive = %s after a %s approach" % (fast["arrive"], fast["approach"]))
+
+    # The clock is one number multiplied through the family, so a delay cannot
+    # scale without the durations scaling with it, and the ORDER of the delays
+    # cannot move: multiplication is monotonic. Both halves are checked, because
+    # a stylesheet that scaled the durations and left the delays authored would
+    # keep every row arriving 140ms apart inside a 144ms transition.
+    try:
+        factor = float(fast["arrive"]) / float(calm["arrive"])
+    except (TypeError, ValueError, ZeroDivisionError):
+        factor = 0
+    # A computed timing carries one value per transitioned property ("0s, 0s" for
+    # opacity and transform), so only the first of each is read: they are written
+    # from one expression here, and a rule that gave them different delays would be
+    # a different claim than this one.
+    def first_time(v):
+        return float(v.split(",")[0].strip().rstrip("s"))
+
+    calm_d = [first_time(v) for v in calm["rowDelaysMs"]]
+    fast_d = [first_time(v) for v in fast["rowDelaysMs"]]
+    scaled = factor > 0 and all(abs(c * factor - f) < 0.001 for f, c in zip(fast_d, calm_d))
+    ordered = all(b > a for a, b in zip(calm_d, calm_d[1:])) if len(calm_d) > 1 else False
+    ok("the delays scale with the durations, so the order cannot move",
+       scaled and ordered and factor < 1,
+       "factor %.2f, delays %s -> %s, still increasing"
+       % (factor, [round(v * 1000) for v in calm_d], [round(v * 1000) for v in fast_d]))
+
+    # The claim the whole feature has to earn: the CLOCK moved, nothing else did.
+    same = (calm["count"] == fast["count"] and calm["rowsOpacity"] == fast["rowsOpacity"]
+            and calm["ticksOpacity"] == fast["ticksOpacity"]
+            and calm["stillCold"] is False and fast["stillCold"] is False)
+    ok("the same content arrives either way",
+       same,
+       "count %r vs %r, rows %s vs %s, ticks %s vs %s"
+       % (calm["count"], fast["count"], calm["rowsOpacity"], fast["rowsOpacity"],
+          calm["ticksOpacity"], fast["ticksOpacity"]))
+
+    # And the counter is on the same clock rather than one of its own, which is the
+    # failure a second copy of the constant would produce: rows that land on time
+    # with a count that does not.
+    # The counter's own gaps, not its offset: the moment its chain starts depends on
+    # when the browser delivered the intersection, which is the instrument's timing
+    # rather than the page's, while the SPACING between its four writes is the
+    # clock's and nothing else's.
+    def gaps(doc):
+        ts = doc.get("countChangesMs") or []
+        return [b - a for a, b in zip(ts, ts[1:])]
+
+    cg, fg = gaps(calm), gaps(fast)
+    gap_ok = (len(cg) >= 3 and len(fg) == len(cg)
+              and sum(fg) / 3.0 < sum(cg) / 3.0 * 0.6)
+    ok("the counter keeps the rows' clock",
+       gap_ok,
+       "its %d writes came %s ms apart when slow and %s ms apart when fast (scale %.2f)"
+       % (len(cg) + 1, cg, fg, factor))
 
 
 def self_test(chrome, site, width, height, tmp) -> int:
@@ -567,14 +751,26 @@ def self_test(chrome, site, width, height, tmp) -> int:
             html = html.replace(old, new, 1)
         AC.write(page, html)
 
+        # Each patch is checked by the family its claim belongs to and no other; a
+        # self-test that loads four browsers per patch to prove one thing is a
+        # self-test nobody runs. A patch aimed at the wheel is not evidence about
+        # the arrivals, and the reverse.
+        takes_pace = expected in PACE_CLAIMS
         failures: list = []
-        doc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
-                  extra=None, tag="st%d" % i)
-        check(doc, failures)
         reduced_failures: list = []
-        rdoc = run(chrome, broken, tmp, "/", width, height, REDUCED_SCENARIO,
-                   extra=["--force-prefers-reduced-motion"], tag="st%d-reduced" % i)
-        check_reduced(rdoc, reduced_failures)
+        if takes_pace:
+            cdoc = run(chrome, broken, tmp, "/", width, height, PACE_CALM,
+                       extra=None, tag="st%d-calm" % i)
+            fdoc = run(chrome, broken, tmp, "/", width, height, PACE_FAST,
+                       extra=None, tag="st%d-fast" % i)
+            check_pace(cdoc, fdoc, failures)
+        else:
+            doc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
+                      extra=None, tag="st%d" % i)
+            check(doc, failures)
+            rdoc = run(chrome, broken, tmp, "/", width, height, REDUCED_SCENARIO,
+                       extra=["--force-prefers-reduced-motion"], tag="st%d-reduced" % i)
+            check_reduced(rdoc, reduced_failures)
         named = expected in failures or expected in reduced_failures
         print("  %s  %s -> %s" % ("ok  " if named else "FAIL", what,
                                   (", ".join(failures + reduced_failures) or "nothing failed")))
@@ -617,10 +813,16 @@ def main(argv: list[str]) -> int:
         rdoc = run(chrome, a.site, tmp, "/", a.width, a.height, REDUCED_SCENARIO,
                    extra=["--force-prefers-reduced-motion"], tag="reduced")
         check_reduced(rdoc, failures)
+        cdoc = run(chrome, a.site, tmp, "/", a.width, a.height, PACE_CALM,
+                   extra=None, tag="pace-calm")
+        fdoc = run(chrome, a.site, tmp, "/", a.width, a.height, PACE_FAST,
+                   extra=None, tag="pace-fast")
+        check_pace(cdoc, fdoc, failures)
 
         if a.json:
             with open(a.json, "w", encoding="utf-8", newline="\n") as fh:
-                json.dump({"motion": doc, "reduced": rdoc, "failures": failures}, fh, indent=1)
+                json.dump({"motion": doc, "reduced": rdoc, "calm": cdoc, "fast": fdoc,
+                           "failures": failures}, fh, indent=1)
             print("\nfindings written to %s" % a.json)
 
         print()
@@ -629,8 +831,8 @@ def main(argv: list[str]) -> int:
                   % (len(failures), CHECKED[0], "\n  ".join(failures)))
             return 1
         band = "%dpx" % doc["heroBottom"] if isinstance(doc.get("heroBottom"), int) else "not measured"
-        print("motion ok - %d claims about the two worlds, verified by driving the page "
-              "rather than by reading it (hero band %s of %s)"
+        print("motion ok - %d claims about the two worlds and the arrivals, verified by "
+              "driving the page rather than by reading it (hero band %s of %s)"
               % (CHECKED[0], band, doc.get("viewport", "?")))
         return 0
     finally:

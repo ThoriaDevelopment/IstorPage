@@ -1084,8 +1084,8 @@ question unavoidable instead of deferring it by 267 B.
 
 **2026-09-21, later the same night: the strip paid for behavior rather than deferring it.** M18's
 generalization into one factory serving both worlds, and M19's flywheel, brought the shipped script to
-**14,482 B — 1,902 B under the 16,384 B ceiling** (14,351 B before the charge gained its boundary, +
-131 B of shipped behavior and no prose) — so the growth this time was a feature bought with
+**14,919 B — 1,465 B under the 16,384 B ceiling** (14,482 B before M20, +437 B of shipped behavior and
+no prose; 14,351 B before the charge gained its boundary) — so the growth this time was a feature bought with
 prose that had been arriving on every phone to do nothing. The measured behavior behind M19, taken in
 the browser rather than asserted at the time: a sustained throw charges the wheel and it coasts on past
 the gesture before settling, a notched mouse-wheel read moves the wheel to *exactly* the position's
@@ -1109,7 +1109,7 @@ The link gate recomputes what the notes claim from those constants — the flick
 **0.96 s**; the notes said "under a second" at the old cap when the arithmetic gave 1.13 s, which is
 what the clause was written after), both angle mappings (80/10 = 8°, 10/10 = 1°), and now the cap
 against the **tooth count the drawing declares**, read from the built page rather than from a note.
-**83 assertions now**, and the clause was proven failable in twelve dimensions before it shipped: a
+**88 assertions now**, and the clause was proven failable in twelve dimensions before it shipped: a
 tuned cap, a tuned half-life, an inflated sweep, the old settling wording, a changed mapping, a bare
 literal beside a named constant, a deleted note, the old cap restored, a cap one pitch past the limit,
 a wheel regenerated to a different count, and a tooth count removed from either world, each failing by
@@ -1146,6 +1146,44 @@ it was given; what stops is being charged for gestures made somewhere else. The 
 entirely (M14b's ending is a settling). The motion audit asserts the pair directly: the same
 gesture that charges **14.1°** at the hero charges **0.000°** 3,775px down.
 
+**2026-09-21, last of the night: the arrivals keep the reader's own clock (M20).** The wheel became
+pace-aware in M19 and every other arrival on the page was still timed for a reader who had stopped to
+look. The numbers make that concrete: the plate's sequence runs **2s**, the reading log's counter
+finishes **720 ms** after its block arrives, the windows take **700 ms** to land. At the **1.25 px/ms**
+a flick sustains, two seconds is **2,500 px** of travel, so the sequence finishes four screens below
+the reader and what crosses the viewport is its middle. The reference finding that started M19 says the
+same thing from the other side: the best sites treat pace as a signal, an abbreviated entrance for the
+fast scroll and the full one for the slow read.
+
+The mechanism is one number, and that is the design: `--arrive` is declared at `:root` as **1** and
+overridden to **0.3** on a block the script marks `is-quick`, and every duration, delay and stagger in
+the arrival family is written as a multiple of it. Multiplication is why this is safe rather than
+merely convenient: scaling a whole family by one factor cannot reorder it, so the frames still draw
+before the holes roll and the tick still lands after its row, and the content is never paced at all.
+The decision test is the inequality rather than a threshold anyone liked: the arrival runs `ARRIVE_MS`,
+so a reader at `pace` px/ms covers `pace × ARRIVE_MS` in that time, and if that is further than the
+screen the arrival ends off it (&gt;1.25 px/ms at 900px). The speed comes from the *same* sample buffer
+the flywheel reads, because a reader's pace is already measured here once; the difference is the
+question, not the data: the wheel asks whether the reader made a gesture (a teleport must not charge
+it) while the arrivals ask only how fast the page is moving.
+
+Measured by driving both paths, since a reveal fires once and one page load cannot be asked for both:
+the same block arrives with `--arrive: 1` and **480 ms** rows when approached slowly, `is-quick` and
+**0.3** / **144 ms** when flicked at, and the counter's own writes land **140 ms** apart slowly against
+**40 ms** fast - the counter reading the property back rather than repeating 0.3, which is the one
+number in the feature that could have been copied. The end state is identical on both paths (count,
+row opacities, tick opacities), which is the claim the feature has to earn rather than a nice property
+it happens to have.
+
+The audit is **18 claims** now, and the shape of the change is checked statically in `verify-links.py`
+(88 assertions): the `:root` default exists because an undefined custom property inside `calc()` is
+invalid at computed-value time, which means *no* transition rather than a short one; six named timings
+must each still read the clock, since a rule left with a bare duration animates correctly and simply
+stops being paced; and the script must read the property rather than multiplying by 0.3 beside it. Ten
+doctored pages prove the whole thing failable, including the first bug this feature shipped with for
+one build - px per millisecond divided by 1000 as if it were px per second, which made the entire
+feature dead code that looked alive.
+
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
 
@@ -1166,6 +1204,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M14** | **The hero's mechanism** | the reader's own scroll through the hero | 8° of the great wheel, 37° of each pinion | the world turns because the reader moved, not because the page did (§2.2) |
 | **M18** | **Both worlds answer the hand** | dragging the ground (mouse or pen) | live, then momentum ≤96°/s halving every 160ms (one tooth a frame) | §2.2's world is a place, and a place can be taken hold of; one factory, one writer, one ratio |
 | **M19** | **The flywheel** | the speed of the reader's own scroll, read over a window, **while the hero's band is on screen** | charged above 1 px/ms sustained across three samples spanning 60ms+ in a 150ms window; coasts ~14° past the gesture and settles in about a second | the world has mass: the fast gesture is charged and the slow read is left perfectly still (adaptive pace), and the angle keeps meaning the reader's position |
+| **M20** | **The arrivals keep the reader's clock** | the pace the reader arrives at a block with | the family's timings scaled by `--arrive: 0.3` when the arrival would end off screen; the authored clock above 1.25 px/ms | the fast scroll gets an abbreviated entrance and the stopped read gets the whole thing; the order and the content never change |
 
 ### 7.1 M2 — the hero sequence, in detail
 
