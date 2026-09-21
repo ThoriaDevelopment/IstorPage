@@ -1294,6 +1294,33 @@ order, measures the mask's room, re-arms and demands the second arrival, plus a 
 (no cold state on the field at all); five doctors, one per decision; claims 30 -> 36, doctored pages
 21 -> 25. The index grew to **121,099 B / 29,490 gzipped** (92% and 90% of their ceilings).
 
+**2026-09-21, still later: the close keeps the hero's grammar (M24).** M23 gave the page its
+opening; the close then had to answer for itself, because M6 re-inked the wordmark while the
+window, the heading, the paragraph and the CTA sat there already printed - the same refusal
+M23 fixed at the start of the page, now fixed at its end. The cast list is written once, in
+document order, and that list IS the order: mark first (its re-ink is M6's 700ms, now scaled
+by --arrive so the re-ink and the arrivals share one reader), then window, h2, paragraph, CTA
+at the 90ms step M16 reads as sequence. The cold state is structural (boxes hidden, prose
+risen 14px, the window by opacity ALONE because M6's parallax writes an inline transform on
+it and a stylesheet cold-transform there would fight its own tenant), printed posters release
+it explicitly, and a fast approach sets --arrive: 0.3 through is-quick on the section - the
+same pacing interface as every arrival, with the same guarantee: compressed, never reordered.
+
+The feature's real cost was learning what the audit refused to accept twice. The release first
+rode an IntersectionObserver at a fractional threshold, and the audit caught it *alternating*:
+fast approaches delivered, slow approaches on the same build never delivered at all - which is
+precisely the failure the page's own M16 note names ("a feature whose only trigger is an
+observer callback silently does nothing wherever that callback does not arrive"), reproduced
+by the gate that holds the page to it. Five probes later the truth was plain: fractional
+thresholds in this harness deliver for a fast sweep and may never deliver for a slow one, so
+the release now rides the scroll handler M6's parallax already runs, at a measured band (the
+mark 60% up the viewport) that a slow read and a flick both cross. The second lesson is the
+order claim's: the first doctor displaced the cast by one 90ms slot, which lands inside the
+claim's 40ms poll grace half the time - a doctor that only sometimes catches its claim is
+worse than none, so the damage moved to three slots apart, unmissable. Claims 36 -> 42; four
+doctors; the index grew to **122,800 B / 29,766 gzipped** and the inline script past the old
+16 KiB ceiling, re-baselined to 20 KiB with its reason in the same commit.
+
 **2026-09-21, later that day: the library can be searched from inside it (M22).** The directory has
 had a find field since it was built, and it can only find what is on the directory: a reader standing
 on `what-is-a-context-window` who wants `how-to-run-a-model-locally` has to walk back to the door
@@ -1467,6 +1494,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M21** | **The library's blocks arrive** | the block crossing the fold, and the pace the reader fed it | the landing's clock, from the shared script: 700ms authored, 0.3 when the arrival would end off screen | the 78 carried documents get the craft the landing already had, and a reader who asked for less motion is never marked at all |
 | **M22** | **The dwell: stillness is an input** | the reader's stillness in the hero | three tooth-steps of the great wheel (360/223 each, the drawing's own pitch), 4.2s after stillness begins and 2.6s apart, then rest; any scroll restarts the clock, the hand defers it, a hidden tab holds it, reduced motion never arms it | the mechanism is a clockwork, and a clockwork at rest keeps time - the one reference behaviour the page lacked was a world that lives when nothing drives it; the first tooth waits 4.2s because the motion audit's own coast-and-settle windows end at 3.3s, an interlock the audit measures exactly |
 | **M23** | **The hero's own arrival** | first paint (script-armed, released two frames later) | two masked headline lines rising 150/260ms, lede 560ms, CTA 680ms, cue 800ms, world from 0; the order scales with the reader's clock (M20) and never reorders | the genre's staple opening that this page somehow never had: until now the window performed its sequence while the words sat there already printed; the page's first act is to typeset itself, one line after the other |
+| **M24** | **The close keeps the hero's grammar** | the mark reaching 60% up the viewport on the scroll, read by the handler M6's parallax already runs | mark re-inks first (M6's 700ms, now on --arrive), then window, h2, paragraph, CTA at 90ms steps; a fast approach compresses the clock to 0.3 and never reorders | the page closed with a theatre whose cast refused to enter: M6 re-inked the wordmark while the window, prose and CTA sat printed; the same cast arrives in the same order the hero opens with |
 
 ### 7.8 The library's figures
 

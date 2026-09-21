@@ -1470,6 +1470,24 @@ h3 {
   border: 1px solid var(--field-rule);
 }
 .poster .body { position: relative; z-index: 2; max-width: var(--measure); margin: 64px auto 0; text-align: center; }
+/* M24 · the close keeps the hero's grammar. What arrives is the close's cast,
+   not one mark: the mark re-inks (M6) and the window, heading, paragraph and
+   CTA rise behind it, in the order the hero opens with. The cold state here is
+   STRUCTURAL - boxes hidden while they wait - and lives outside the
+   reduced-motion guard for the same reason the hero's mask does: the motion is
+   the guard's business, the waiting is layout. The window arrives by opacity
+   alone, because M6's parallax writes an inline transform on it every scroll
+   and a stylesheet cold-transform would be dead weight the moment the reader
+   moved; the prose has no such tenant and rises 14px, the hero's own step.
+   Delays are not set here: the cast's order is written by the script as one
+   list, so the markup order and the arrival order cannot drift apart. */
+.poster.is-cold .win,
+.poster.is-cold .body > p,
+.poster.is-cold .body .cta,
+.poster.is-cold .body h2 { opacity: 0; }
+.poster.is-cold .body > p,
+.poster.is-cold .body .cta,
+.poster.is-cold .body h2 { transform: translateY(14px); }
 /* Primary ink, not secondary, and the reason is a measurement rather than a
    preference. The horizon is a child of the wordmark, and its halo rises from the
    arc's apex, which at phone widths reaches into the first line of this
@@ -2038,6 +2056,30 @@ h3 {
   .hero.is-cold .scroll-cue { opacity: 0; transform: translateY(14px); }
   .hero.is-cold .hero-world { opacity: 0; transition: none; }
 
+  /* M24 · the close's cast, the motion half of the structural cold state
+     above. The mark keeps M6's 700ms re-ink and gains the family's clock, so
+     the re-ink and the arrivals share one reader; the prose rises on the
+     hero's 700ms window's duration. The one-word turn to watch: the delays
+     come from the script (one list, in cast order, scaled by --arrive), so a
+     stylesheet delay here would be a SECOND order competing with the first. */
+  .poster-mark { transition: color calc(var(--arrive) * 700ms) var(--ease); }
+  .poster .win { transition: opacity calc(var(--arrive) * 700ms) var(--ease); }
+  .poster .body h2,
+  .poster .body > p {
+    transition: opacity calc(var(--arrive) * 700ms) var(--ease),
+                transform calc(var(--arrive) * 700ms) var(--ease);
+  }
+  /* The CTA's list carries its 160ms background channel explicitly, because a
+     transition property does not MERGE across rules: this selector out-specifies
+     the base .cta rule, and a two-channel list here would silently take the
+     hover's 160ms background transition away - the same trap the hero's list
+     names. (The M23 build shipped this exact bug on the hero's CTA once.) */
+  .poster .body .cta {
+    transition: opacity calc(var(--arrive) * 700ms) var(--ease),
+                transform calc(var(--arrive) * 700ms) var(--ease),
+                background-color 160ms var(--ease);
+  }
+
   /* M20 · ONE CLOCK FOR THE ARRIVALS, AND THE READER SETS IT.
 
      Every arrival on this page has a time written into it: 700ms for a window,
@@ -2067,6 +2109,10 @@ h3 {
      do that, and `.reveal.is-quick` overrides it for the block it is on. */
   :root { --arrive: 1; }
   .reveal.is-quick { --arrive: 0.3; }
+  /* M24 · the close speaks the same pacing interface: is-quick on the section
+     (or on the mark, which the script also holds) sets the family's clock for
+     the cast's delays and durations, exactly as it does on a .reveal block. */
+  .poster.is-quick { --arrive: 0.3; }
 
   /* M3 · Window entrance. Tempo's reveals are PANEL entrances, not text fades —
      which is the outlier position, and the right one: the generic default is
@@ -2679,6 +2725,20 @@ h3 {
   .cite-btn {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* M24 · the close's cold state has no print release of its own: a reader who
+     prints from the top of the page never scrolled the cast past its threshold,
+     and a sheet that ends in a blank window and no call to action is not a
+     poster. The mark's cold ink needs no help - print remaps --coral-lift into
+     the print red, which is the state the note on .poster-mark.is-cold chose
+     for paper - but the hidden cast would print as nothing at all. */
+  .poster.is-cold .win,
+  .poster.is-cold .body > p,
+  .poster.is-cold .body .cta,
+  .poster.is-cold .body h2 {
+    opacity: 1;
+    transform: none;
   }
 
   /* A link whose only life was to be clicked says where it went. Inherited

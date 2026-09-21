@@ -13,10 +13,10 @@
     }
   },
   "document": {
-    "_note": "Ceilings, not equalities. index_html_bytes_ceiling 131,072 = a round 128 KiB, re-baselined when M11 and M12 shipped together (78,643 before); still catches a doubling; index_html_gzip_ceiling is a round 32 KiB; inline_js_bytes_ceiling 16,384 = 16 KiB over 5,354 B of shipped script.",
+    "_note": "Ceilings, not equalities. index_html_bytes_ceiling 131,072 = a round 128 KiB, re-baselined when M11 and M12 shipped together (78,643 before); still catches a doubling; index_html_gzip_ceiling is a round 32 KiB; inline_js_bytes_ceiling 20,480 = 20 KiB, re-baselined when M24 shipped (16,384 before, 16,856 measured): the close's cast release rides the scroll handler the wheel and parallax already pay for, and the reasoning above the block is the house's habit for code that could be got wrong twice.",
     "index_html_bytes_ceiling": 131072,
     "index_html_gzip_ceiling": 32768,
-    "inline_js_bytes_ceiling": 16384
+    "inline_js_bytes_ceiling": 20480
   },
   "files": {
     "/img/exhibit-10-gate.avif": 25276,

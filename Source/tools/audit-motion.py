@@ -683,6 +683,144 @@ HERO_SCENARIO = r"""
 """
 
 
+# M24 asks the question the close asks at the page's END, and the hero now
+# answers at its START: what does this moment look like when it arrives? M6
+# re-inked the mark and M14b swept the gears, but the window, the heading, the
+# paragraph and the CTA sat there already printed - the close was a poster with
+# a theatre whose cast refused to enter. The scenario arrives like a reader
+# (parks above the mark's threshold, lets the park's own pace go stale, then
+# approaches on steps that make the pace the quick test reads), records the
+# order the cast first becomes visible in, and reads the arrived state off
+# every member. The same "essentially arrived" predicate M23's order claim
+# learned to use: one shared reading, opacity >= 0.9 and transform within 3px,
+# so no performer is measured by a different ruler than another.
+CLOSE_SCENARIO = r"""
+(async (d, w) => {
+  const poster = d.querySelector('.poster');
+  const mark = d.getElementById('close-mark');
+  const win = poster ? poster.querySelector('.win') : null;
+  const h2 = poster ? poster.querySelector('.body h2') : null;
+  const p = poster ? poster.querySelector('.body > p') : null;
+  const cta = poster ? poster.querySelector('.body .cta') : null;
+  if (!poster || !mark || !win || !h2 || !p || !cta) {
+    return { error: 'the close scenario needs its cast: poster=' + !!poster +
+                    ' mark=' + !!mark + ' win=' + !!win + ' h2=' + !!h2 +
+                    ' p=' + !!p + ' cta=' + !!cta };
+  }
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const step = (dy) => {
+    w.scrollTo({ top: w.scrollY + dy, behavior: 'instant' });
+    w.dispatchEvent(new Event('scroll'));
+  };
+  const ty = (el) => {
+    const m = /matrix\(([^)]+)\)/.exec(getComputedStyle(el).transform);
+    return m ? parseFloat(m[1].split(',')[5]) : 0;
+  };
+  const arrived = (el) => parseFloat(getComputedStyle(el).opacity) >= 0.9
+                       && Math.abs(ty(el)) < 3;
+  // The window is the one cast member measured by OPACITY ALONE. M6's parallax
+  // writes an inline transform on it every scroll, so a transform reading there
+  // measures M6, not M24 - and the stylesheet arrives it by opacity alone for
+  // exactly that reason. One documented exception, not a second ruler by stealth.
+
+  const wasCold = mark.classList.contains('is-cold');
+  const below = mark.getBoundingClientRect().top >= w.innerHeight;
+  if (wasCold) {
+    // Park just above the mark's threshold and let the park's own pace go
+    // stale (the quick test wants the approach, not the positioning), then
+    // arrive like a reader: the approach below is the only motion measured.
+    const top = mark.getBoundingClientRect().top + w.scrollY;
+    w.scrollTo({ top: top - w.innerHeight - 100, behavior: 'instant' });
+    w.dispatchEvent(new Event('scroll'));
+    await wait(500);
+  }
+
+  __APPROACH__
+  const t0 = performance.now();
+  const firsts = {};
+  let seen = { mark: false, win: false, h2: false, p: false, cta: false };
+  const mark2 = (k, ok) => {
+    if (!seen[k] && ok) { seen[k] = true;
+                          firsts[k] = Math.round(performance.now() - t0); }
+  };
+  const poll = setInterval(() => {
+    mark2('mark', !mark.classList.contains('is-cold'));
+    mark2('win', parseFloat(getComputedStyle(win).opacity) >= 0.9);
+    mark2('h2', arrived(h2));
+    mark2('p', arrived(p));
+    mark2('cta', arrived(cta));
+  }, 40);
+
+  await wait(2600);
+  clearInterval(poll);
+  return {
+    armed: wasCold, belowFoldOnLoad: below,
+    firsts: firsts,
+    quick: poster.classList.contains('is-quick'),
+    arrive: getComputedStyle(poster).getPropertyValue('--arrive').trim(),
+    atRest: {
+      mark: !mark.classList.contains('is-cold'),
+      win: parseFloat(getComputedStyle(win).opacity) >= 0.9,
+      h2: arrived(h2), p: arrived(p), cta: arrived(cta),
+    },
+  };
+})(d, w)
+"""
+
+CLOSE_CALM = CLOSE_SCENARIO.replace("__APPROACH__",
+    "for (let i = 0; i < 8; i++) { step(60); await wait(80); }")
+CLOSE_FAST = CLOSE_SCENARIO.replace("__APPROACH__",
+    "for (let i = 0; i < 8; i++) { step(220); await wait(16); }")
+
+
+def check_close(doc: dict, failures: list, fast: bool = False,
+                reduced: bool = False) -> None:
+    """M24's claims, read off the close the way a reader meets it: as a state.
+
+    The reduced run asserts only the reduced claim - the cold state never
+    existed there, so the arrival claims would be checking nothing. The fast
+    run adds the clock claim: the compressed arrival must still end at rest.
+    """
+    def ok(label, good, detail=""):
+        CHECKED[0] += 1
+        print("  %s  %-58s %s" % ("ok  " if good else "FAIL", label, detail))
+        if not good:
+            failures.append(label)
+
+    if "error" in doc:
+        ok("the close's arrival scenario ran", False, doc["error"])
+        return
+    if reduced:
+        r = doc.get("atRest", {})
+        keys = ("mark", "win", "h2", "p", "cta")
+        ok("in the reduced world the close's cast is simply there",
+           doc.get("armed") is False and all(r.get(k) for k in keys),
+           "no cold state on the close (armed=%s), all five readable at rest"
+           % doc.get("armed"))
+        return
+    r = doc.get("atRest", {})
+    keys = ("mark", "win", "h2", "p", "cta")
+    ok("the close's cast arrives with the mark",
+       doc.get("armed") is True and all(r.get(k) for k in keys),
+       "armed on load: %s, at rest: " % doc.get("armed")
+       + ", ".join("%s %s" % (k, "yes" if r.get(k) else "NO") for k in keys))
+    f = doc.get("firsts", {})
+    order = [f.get(k) for k in ("mark", "win", "h2", "p", "cta")]
+    ok("the cast arrives in order: mark, window, h2, paragraph, CTA",
+       all(t is not None for t in order)
+       and all(order[i] <= order[i + 1] + 40 for i in range(4)),
+       "first visible at %s ms on the scenario's own clock (40ms poll grace)"
+       % order)
+    if fast:
+        ok("a fast approach to the close compresses the clock, not the cast",
+           doc.get("quick") is True and doc.get("arrive") == "0.3"
+           and all(r.get(k) for k in keys),
+           "quick=%s, --arrive=%s, all five at rest"
+           % (doc.get("quick"), doc.get("arrive")))
+
+
+
+
 def check_dwell(doc: dict, failures: list) -> None:
     """M22's behaviour, asserted. The tooth is 360/223 and the interlock is
     3.3s: both are held here against the page, not against a note."""
@@ -975,6 +1113,26 @@ PAGE_ARM_COND = "  if (heroField && !reduced) {"
 PAGE_MASK_PAD = ("                   padding-block: 0.14em; margin-block: -0.14em; }")
 PAGE_LEDE_D = "  .hero .lede        { transition-delay: calc(var(--arrive) * 560ms),"
 
+# M24's claim family and its doctors' anchors, quoted from the page itself, on
+# the same contract as M23's: if the page's wording drifts, the doctor FAILS
+# LOUDLY at self-test time rather than passing on a stale anchor. The reduced
+# claim is spelled out so the self-test can drive only the reduced page for it.
+CLOSE_CLAIMS = (
+    "the close's cast arrives with the mark",
+    "the cast arrives in order: mark, window, h2, paragraph, CTA",
+    "a fast approach to the close compresses the clock, not the cast",
+    "in the reduced world the close's cast is simply there",
+)
+CLOSE_REDUCED_CLAIMS = ("in the reduced world the close's cast is simply there",)
+PAGE_CLOSE_RELEASE = ("      mark.classList.remove('is-cold');\n"
+                      "      section.classList.remove('is-cold');")
+PAGE_CLOSE_CAST = ("var cast = [mark, section.querySelector('.win'), section.querySelector('.body h2'),\n"
+                   "                section.querySelector('.body p'), section.querySelector('.body .cta')];")
+PAGE_CLOSE_QUICK = ("        mark.classList.add('is-quick');\n"
+                    "        section.classList.add('is-quick');")
+PAGE_CLOSE_ARM = ("  if (mark && !reduced && mark.getBoundingClientRect().top "
+                  ">= window.innerHeight) {")
+
 SELF_TESTS = [
     # The bug the first window version actually shipped: a window that holds a
     # sample old enough to belong to a different gesture, so a teleport reads as
@@ -1094,10 +1252,39 @@ SELF_TESTS = [
     ("M23 · the arm ignores reduced motion",
      [(PAGE_ARM_COND, "  if (heroField) {"), (PAGE_RELEASE, "      /* doctor: no release */")],
      "in the reduced world the hero never arms its arrival"),
+    # M24's four, each the failure of one of the close's claims. The cold class
+    # goes on the section AND the mark, so the release that forgets the section
+    # leaves the cast hidden forever, and the patch below removes both - the
+    # mark's own ink claim is what catches a partial release the next time the
+    # two classes drift apart.
+    ("M24 · the close's cast is never released",
+     [(PAGE_CLOSE_RELEASE, "          /* doctor: the cast is never released */")],
+     CLOSE_CLAIMS[0]),
+    ("M24 · a cast that arrives out of order",
+     # Two slots of displacement minimum: a one-slot swap lands inside the
+     # order claim's 40ms poll grace half the time, which makes a doctor that
+     # only sometimes catches its claim worse than no doctor at all. win and
+     # cta are three slots apart in the cast, so the swap is unmissable.
+     [(PAGE_CLOSE_CAST,
+       "var cast = [mark, section.querySelector('.body .cta'), "
+       "section.querySelector('.body h2'),\n"
+       "                section.querySelector('.body p'), "
+       "section.querySelector('.win')];")],
+     CLOSE_CLAIMS[1]),
+    ("M24 · the quick clock never reaches the close",
+     [(PAGE_CLOSE_QUICK,
+       "            /* doctor: the quick clock is never applied on the close */")],
+     CLOSE_CLAIMS[2]),
+    ("M24 · the close arms in the reduced world",
+     [(PAGE_CLOSE_ARM, "  if (mark) {")],
+     CLOSE_REDUCED_CLAIMS[0]),
 ]
+
 
 # The claims that need the pacing pair of page loads, so the self-test knows which
 # patches have to pay for them.
+
+
 PACE_CLAIMS = ("a slow arrival gets the authored clock",
                "a fast arrival gets the arrival's own clock",
                "the delays scale with the durations, so the order cannot move",
@@ -1395,10 +1582,13 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
         in_pace = expected in PACE_CLAIMS
         in_dwell = expected in DWELL_CLAIMS
         in_hero = expected in HERO_CLAIMS
+        in_close = expected in CLOSE_CLAIMS
         if ((family == "lib" and not in_lib) or (family == "pace" and not in_pace)
                 or (family == "dwell" and not in_dwell)
                 or (family == "hero" and not in_hero)
-                or (family == "land" and (in_lib or in_pace or in_dwell or in_hero))):
+                or (family == "close" and not in_close)
+                or (family == "land" and (in_lib or in_pace or in_dwell
+                                          or in_hero or in_close))):
             skip += 1
             continue
         broken = os.path.join(tmp, "broken-%d" % i)
@@ -1455,6 +1645,15 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
             hdoc = run(chrome, broken, tmp, "/", width, height, HERO_SCENARIO,
                        extra=None, tag="st%d-hero" % i)
             check_hero(hdoc, failures)
+        elif expected in CLOSE_REDUCED_CLAIMS:
+            xred = run(chrome, broken, tmp, "/", width, height, CLOSE_CALM,
+                       extra=["--force-prefers-reduced-motion"],
+                       tag="st%d-close-red" % i)
+            check_close(xred, failures, reduced=True)
+        elif in_close:
+            xdoc = run(chrome, broken, tmp, "/", width, height, CLOSE_FAST,
+                       extra=None, tag="st%d-close" % i)
+            check_close(xdoc, failures, fast=True)
         elif expected in REDUCED_CLAIMS:
             # Only the reduced page can carry this claim, so only it is driven: the
             # world run would cost a browser and could never report this failure.
@@ -1491,7 +1690,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--json", default="")
     ap.add_argument("--self-test", action="store_true")
     ap.add_argument("--family", default="all",
-                    choices=("all", "land", "hero", "pace", "lib", "dwell"),
+                    choices=("all", "land", "hero", "close", "pace", "lib", "dwell"),
                     help="with --self-test, doctor only one family's pages: the landing's "
                          "world and reduced claims, the hero's arrival, the arrivals' "
                          "pacing pair, or the library's fold test and clock")
@@ -1514,6 +1713,18 @@ def main(argv: list[str]) -> int:
         hdoc = run(chrome, a.site, tmp, "/", a.width, a.height, HERO_SCENARIO,
                    extra=None, tag="hero-arrival")
         check_hero(hdoc, failures)
+        # M24 - the close's arrival, driven on both clocks like the pacing pair,
+        # plus its reduced run: the mark, the window, the prose and the CTA.
+        xdoc = run(chrome, a.site, tmp, "/", a.width, a.height, CLOSE_CALM,
+                   extra=None, tag="close-calm")
+        check_close(xdoc, failures)
+        xfd = run(chrome, a.site, tmp, "/", a.width, a.height, CLOSE_FAST,
+                  extra=None, tag="close-fast")
+        check_close(xfd, failures, fast=True)
+        xred = run(chrome, a.site, tmp, "/", a.width, a.height, CLOSE_CALM,
+                   extra=["--force-prefers-reduced-motion"],
+                   tag="close-reduced")
+        check_close(xred, failures, reduced=True)
         doc = run(chrome, a.site, tmp, "/", a.width, a.height, SCENARIO)
         check(doc, failures)
         rdoc = run(chrome, a.site, tmp, "/", a.width, a.height, REDUCED_SCENARIO,
@@ -1545,7 +1756,8 @@ def main(argv: list[str]) -> int:
         if a.json:
             with open(a.json, "w", encoding="utf-8", newline="\n") as fh:
                 json.dump({"motion": doc, "reduced": rdoc, "calm": cdoc, "fast": fdoc,
-                           "dwell": wdoc,
+                           "dwell": wdoc, "close": xdoc, "closeFast": xfd,
+                           "closeReduced": xred,
                            "library": lcalm, "libraryFast": lfast,
                            "libraryReduced": lred, "failures": failures}, fh, indent=1)
             print("\nfindings written to %s" % a.json)
@@ -1557,8 +1769,8 @@ def main(argv: list[str]) -> int:
             return 1
         band = "%dpx" % doc["heroBottom"] if isinstance(doc.get("heroBottom"), int) else "not measured"
         print("motion ok - %d claims about the two worlds, the landing's arrivals, "
-              "the dwell and the library's, verified by driving the pages rather "
-              "than by reading them (hero band %s of %s)"
+              "the close's, the dwell and the library's, verified by driving the "
+              "pages rather than by reading them (hero band %s of %s)"
               % (CHECKED[0], band, doc.get("viewport", "?")))
         return 0
     finally:

@@ -1280,6 +1280,7 @@
   }
 
   var paintPoster = null;   // M6's parallax; set below, called by the nav's scroll
+  var closeRelease = null;  // M24's cast release; set below, same plumbing
 
   var nav = document.getElementById('nav');   // M1
   if (nav) {
@@ -1573,6 +1574,7 @@
       // M22 · any scroll, from any source, resets the dwell clock.
       dwellArm();
       if (paintPoster) paintPoster();
+      if (closeRelease) closeRelease();   // M24 · the cast rides the scroll
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -1866,19 +1868,50 @@
     });
   }
 
-  var mark = document.getElementById('close-mark');   // M6
+  var mark = document.getElementById('close-mark');   // M6 / M24
   if (mark && !reduced && mark.getBoundingClientRect().top >= window.innerHeight) {
     mark.classList.add('is-cold');
-    var mo = new IntersectionObserver(function (entries) {
-      for (var k = 0; k < entries.length; k++) {
-        if (entries[k].isIntersecting) {
-          mark.classList.remove('is-cold');
-          mo.disconnect();
-          return;
-        }
+    // M24 · the close keeps the hero's grammar. What arrives is not one mark
+    // but the close's own cast, in the same order the hero opens with and the
+    // 90ms step M16 reads as sequence: the mark (re-inking, M6, first), then
+    // the window, the h2, the paragraph, the CTA. The cast list IS the order,
+    // and a selector order that changed would be a redesign the stylesheet
+    // never chose. The section is taken off the mark, not queried above here,
+    // because `poster` is only assigned below this block and a var that
+    // hoists its declaration does not hoist its assignment.
+    var section = mark.closest('.poster');
+    var cast = [mark, section.querySelector('.win'), section.querySelector('.body h2'),
+                section.querySelector('.body p'), section.querySelector('.body .cta')];
+    section.classList.add('is-cold');
+    // M24 · the release rides the scroll, not an observer. The audit earned
+    // this the hard way: an IntersectionObserver delivered its callback for a
+    // fast approach and, on the same build, never delivered it at all for a
+    // slow one - alternating between full-audit passes - on a page whose own
+    // rule (M16's block) is that a feature whose only trigger is an observer
+    // callback silently does nothing wherever that callback does not arrive.
+    // The scroll handler already drives this close every scroll (M6's
+    // parallax); the release is one more branch on plumbing that provably
+    // runs. The band is the one a -40% bottom rootMargin would draw: the cast
+    // arrives when the mark is 60% up the viewport, which a slow read and a
+    // flick both cross.
+    closeRelease = function () {
+      if (mark.getBoundingClientRect().top >= window.innerHeight * 0.6) return;
+      // M20 · the same one clock, read the same way (pace/paceAt, sampled on
+      // every scroll; the 1.25 px/ms inequality is pasted from the M20 block,
+      // not re-derived). is-quick goes on the section because the cast are
+      // its siblings and a property set on one is invisible to the others.
+      if (performance.now() - paceAt < 320 && pace * 720 > window.innerHeight) {
+        mark.classList.add('is-quick');
+        section.classList.add('is-quick');
       }
-    }, { threshold: 0.4 });
-    mo.observe(mark);
+      for (var j = 0; j < cast.length; j++) {
+        if (cast[j]) cast[j].style.transitionDelay =
+          'calc(' + (j * 90) + 'ms * var(--arrive))';
+      }
+      mark.classList.remove('is-cold');
+      section.classList.remove('is-cold');
+      closeRelease = null;   // M16's rule: the reverse transition never exists
+    };
   }
 
   var poster = document.querySelector('.poster');   // M6, second half
