@@ -156,7 +156,11 @@ LIBRARY_TREES = ["assets", "brand"]
 # each, because 75 copies of the same few KB would be megabytes of duplicated
 # bytes and a fix would be 75 edits. Every page names both, and verify-links.py
 # holds the pages and this list to each other.
-LIBRARY_FILES = ["styles.css", "theme.js", "search.js"]
+# temperature-dial.js is the one file that is NOT shared by every page: it drives the
+# slider on /what-is-temperature/ and is loaded by that page alone. It sits in this list
+# rather than in the page's directory for the same reason the others do - one file, one
+# place, one byte count - and verify-links.py holds the pages that name it to this list.
+LIBRARY_FILES = ["styles.css", "theme.js", "search.js", "temperature-dial.js"]
 LIBRARY_ROOT_FILES = ["robots.txt", "08eaa6e8b97d4b94943057b2c49bd712.txt"]
 
 # The three splice sites in Source/index.html. `kind` is only for the error
@@ -211,6 +215,10 @@ LIBRARY_INCLUDES = {
     "token-rows-tall": (SOURCE / "figures" / "token-rows-tall.svg", "svg"),
     "temperature-wide": (SOURCE / "figures" / "temperature-wide.svg", "svg"),
     "temperature-tall": (SOURCE / "figures" / "temperature-tall.svg", "svg"),
+    # The temperature page's slider. Its markup is markup rather than svg, and it is
+    # generated for the same reason the plates are: every width in it, and the table the
+    # script reads, is computed from odds.py, so the control and the plate cannot drift.
+    "temperature-dial": (SOURCE / "temperature-dial.partial", "html"),
 }
 
 # A directory under _site/ that holds an index.html but is not a page.

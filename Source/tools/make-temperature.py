@@ -36,28 +36,29 @@ themes with the page, and the faintest step is checked against the 3:1 a filled 
 carries meaning needs - on both grounds, because half the visitors read the dark theme.
 """
 
-import math
 import re
 import sys
 import tempfile
 from pathlib import Path
+
+# THE ODDS ARE IMPORTED, NOT DECLARED HERE. The page this plate sits on also carries a
+# control the reader can drag, and the control reads a table computed from the same four
+# numbers; two copies of a number are two numbers waiting to differ, so `odds.py` holds
+# them and this file draws them. `verify-links.py` imports the same module for the same
+# reason.
+from odds import (CANDIDATES, DIAL_BAND, DIAL_GAP, DIAL_HEIGHT, LOGITS, SETTINGS,
+                  STOP_STEP, STOPS, shares, softmax, table, widths)
+# Aliased because this file has a plate-shaped `free_width(spec)`: the dial's band is one
+# number, the plate's is a row of them.
+from odds import free_width as free_of_band
 
 OUT = Path(__file__).resolve().parent.parent / "figures"
 
 FONTS_MONO = "JetBrains Mono, ui-monospace, Consolas, monospace"
 FONTS_SANS = "Inter, system-ui, sans-serif"
 
-# The four candidates for one next word, in the order a model would rank them, and the
-# odds it holds. THE ORDER IS LOAD-BEARING and asserted: the plate compares the same four
-# words in the same places across three bars, which is only true if the list is sorted
-# once, here, and never again per row.
-WORDS = ("clear", "similar", "mixed", "vague")
-LOGITS = (3.0, 2.6, 2.2, 1.8)
-
-# The settings, in the order they are drawn: the low end the page recommends for factual
-# work, the middle most tools ship, and a high end for drafts. Dividing then normalising
-# is what softmax does, and it is why raising the setting moves share off the first word.
-TEMPERATURES = (0.5, 1.0, 2.0)
+WORDS = CANDIDATES
+TEMPERATURES = SETTINGS
 
 # One colour at four opacities. Not four colours: the point of the ramp is that the four
 # segments are the same kind of thing, and steps of one ink theme with the page.
@@ -99,23 +100,6 @@ TOK_MIST = "var(--mist)"
 THEMES = {"light": {"canvas": "#FFFFFF", "ink": "#171717"},
           "dark": {"canvas": "#0A0A0A", "ink": "#EDEDED"}}
 GRAPHIC_MIN = 3.0    # a filled mark that carries meaning, per the cuts on the token plate
-
-
-def softmax(logits: tuple, temperature: float) -> tuple:
-    """The odds the page is about: divide by the setting, then normalise.
-
-    Written out rather than imported because this file IS the model the drawing claims to
-    be, and the check runs it a second time against the drawing.
-    """
-    scaled = [l / temperature for l in logits]
-    hi = max(scaled)
-    exps = [math.exp(s - hi) for s in scaled]
-    total = sum(exps)
-    return tuple(e / total for e in exps)
-
-
-def shares(temperature: float) -> tuple:
-    return softmax(LOGITS, temperature)
 
 
 # --------------------------------------------------------------------------
@@ -283,6 +267,59 @@ def draw(spec: dict) -> str:
     return "".join(out)
 
 
+DIAL = Path(__file__).resolve().parent.parent / "temperature-dial.partial"
+
+
+def dial_markup() -> str:
+    """The control's markup, with every number in it computed here.
+
+    WHY THE MARKUP IS GENERATED. `/what-is-temperature/` now carries a slider the reader
+    can drag, and the bar under it has to agree with the plate above it at every position
+    on the slider. The script that drives it therefore does NO ARITHMETIC: this file bakes
+    the widths for every position into `data-stops`, and the script looks a row up and
+    writes it out. One implementation of softmax, three callers - the plate draws from it,
+    this table is computed from it, and `verify-links.py` recomputes it against what
+    shipped - which is the only way a reader cannot find a position where the drawing and
+    the prose disagree.
+
+    `hidden` IS AUTHORED RATHER THAN ADDED, and the direction matters: a reader without
+    scripting sees the plate and its caption, which is the whole argument, and never sees a
+    control that would not move. The script is what puts it on the page, and verify-links
+    holds the page to both halves.
+    """
+    import json
+    default = SETTINGS[1]
+    rows = table()
+    segs = ""
+    at = 0.0
+    for j, w in enumerate(widths(default)):
+        segs += ('\n        <rect data-seg="%d" x="%g" y="0" width="%g" height="%g" '
+                 'fill="var(--ink)" fill-opacity="%g" />'
+                 % (j, at, w, DIAL_HEIGHT, RAMP[j]))
+        at += w + DIAL_GAP
+    row = [r for r in rows if abs(r["t"] - default) < 1e-9][0]
+    stops = " ".join('<option value="%g"></option>' % t for t in SETTINGS)
+    return (
+        '<div class="temperature-dial" data-temperature-dial hidden>\n'
+        '  <label class="temperature-dial-head" for="temperature-setting">'
+        'Another setting</label>\n'
+        '  <input id="temperature-setting" type="range" min="%g" max="%g" step="%g" '
+        'value="%g" list="temperature-stops" />\n'
+        '  <datalist id="temperature-stops">%s</datalist>\n'
+        '  <svg class="temperature-dial-bar" viewBox="0 0 %g %g" width="%g" height="%g" '
+        'aria-hidden="true" data-free="%g" data-gap="%g" data-stops=\'%s\'>%s\n'
+        '  </svg>\n'
+        '  <p class="temperature-dial-readout" id="temperature-readout">Setting '
+        '<span data-readout="setting">%s</span>: %s takes '
+        '<span data-readout="top">%.1f%%</span> of the picks, and %s '
+        '<span data-readout="last">%.1f%%</span>.</p>\n'
+        '</div>'
+        % (STOPS[0], STOPS[-1], STOP_STEP, default, stops,
+           DIAL_BAND, DIAL_HEIGHT, DIAL_BAND, DIAL_HEIGHT,
+           free_of_band(), DIAL_GAP, json.dumps(rows, separators=(",", ":")), segs,
+           "%g" % default, CANDIDATES[0], row["top"], CANDIDATES[-1], row["last"]))
+
+
 def write(out: Path = OUT) -> list:
     """Both variants, drawn and written, into `out`.
 
@@ -297,6 +334,13 @@ def write(out: Path = OUT) -> list:
         path.write_bytes(svg.encode("utf-8"))
         written.append((spec, spec["name"], svg, path))
     return written
+
+
+def write_dial() -> str:
+    """The control's markup, written where LIBRARY_INCLUDES looks for it."""
+    markup = dial_markup()
+    DIAL.write_bytes(markup.encode("utf-8"))
+    return markup
 
 
 # --------------------------------------------------------------------------
@@ -541,6 +585,102 @@ def check_legend(spec: dict, name: str, svg: str) -> list:
     return bad
 
 
+def check_dial(markup: str) -> list:
+    """The control's markup is the odds, drawn at the setting it starts on.
+
+    Everything here is a comparison between what shipped and what `odds.py` computes, in
+    the file the PLATE is drawn from: the table the script reads, the four widths the
+    page shows before any script runs, and the two percentages in the sentence under the
+    bar. A table that drifted from the plate would leave a reader able to find a position
+    where the two disagree, which is the one thing this control must not do.
+    """
+    import json
+    bad = []
+    default = SETTINGS[1]
+    rows = [r for r in table() if abs(r["t"] - default) < 1e-9][0]
+
+    # The table the script reads.
+    m = re.search(r"data-stops='([^']+)'", markup)
+    if not m:
+        return ["the control carries no table for the script to read"]
+    try:
+        drawn = json.loads(m.group(1))
+    except ValueError as exc:
+        return ["the control's table is not readable: %s" % exc]
+    if drawn != table():
+        bad.append("the control's table is not what odds.py computes: %d rows on the "
+                   "page and %d in the table" % (len(drawn), len(table())))
+    else:
+        for row in drawn:
+            if abs(sum(row["w"]) - free_of_band()) > 0.05:
+                bad.append("at %s the table's widths add up to %.2f and the band has "
+                           "%.2f for them" % (row["t"], sum(row["w"]), free_of_band()))
+
+    # The bar the page shows before the script runs, which has to be the default row.
+    segs = re.findall(r'<rect data-seg="(\d+)" x="([0-9.]+)" y="0" width="([0-9.]+)" '
+                      r'height="([0-9.]+)" fill="([^"]+)" fill-opacity="([0-9.]+)"',
+                      markup)
+    if len(segs) != len(CANDIDATES):
+        bad.append("the control draws %d segments and there are %d candidates"
+                   % (len(segs), len(CANDIDATES)))
+    else:
+        at = 0.0
+        for j, (_idx, x, w, h, fill, op) in enumerate(segs):
+            if abs(float(w) - rows["w"][j]) > 0.01:
+                bad.append("the drawn segment %d is %s units wide and the table at %s "
+                           "says %.2f" % (j, w, default, rows["w"][j]))
+            if abs(float(x) - at) > 0.01:
+                bad.append("the drawn segment %d starts at %s and the bar has reached "
+                           "%.2f" % (j, x, at))
+            if fill != TOK_INK or abs(float(op) - RAMP[j]) > 0.001:
+                bad.append("the drawn segment %d is %s at %s and the plate's ramp is %s "
+                           "at %.2f" % (j, fill, op, TOK_INK, RAMP[j]))
+            if abs(float(h) - DIAL_HEIGHT) > 0.01:
+                bad.append("the drawn segment %d is %s units tall" % (j, h))
+            at += float(w) + DIAL_GAP
+
+    # The sentence under the bar, which is the control's accessible read-out.
+    for key, want in (("setting", "%g" % default),
+                      ("top", "%.1f%%" % rows["top"]),
+                      ("last", "%.1f%%" % rows["last"])):
+        span = re.search(r'data-readout="%s">([^<]*)<' % key, markup)
+        if not span:
+            bad.append("the sentence under the bar has no %s in it" % key)
+        elif span.group(1) != want:
+            bad.append("the sentence says %s is %r and the table says %r"
+                       % (key, span.group(1), want))
+    for word, what in ((CANDIDATES[0], "the first candidate"),
+                       (CANDIDATES[-1], "the last candidate")):
+        if word not in markup:
+            bad.append("the sentence under the bar does not name %s" % what)
+
+    # And the things that make it a control rather than a picture: reachable settings, and
+    # hidden until a script is there to move it.
+    rng = re.search(r'type="range" min="([0-9.]+)" max="([0-9.]+)" step="([0-9.]+)" '
+                    r'value="([0-9.]+)"', markup)
+    if not rng:
+        bad.append("the control's slider has no range on it")
+    else:
+        lo, hi, step, value = (float(v) for v in rng.groups())
+        if lo > min(SETTINGS) or hi < max(SETTINGS):
+            bad.append("the slider runs %g to %g and the plate draws settings out to %g "
+                       "to %g" % (lo, hi, min(SETTINGS), max(SETTINGS)))
+        if abs(step - STOP_STEP) > 1e-9:
+            bad.append("the slider steps by %g and the table is every %g"
+                       % (step, STOP_STEP))
+        if abs(value - default) > 1e-9:
+            bad.append("the slider starts at %g and the drawn bar is the table's %g"
+                       % (value, default))
+    if 'data-temperature-dial hidden' not in markup:
+        bad.append("the control is not authored hidden, so a reader without a script "
+                   "would meet a control that cannot move")
+    m = re.search(r'data-free="([0-9.]+)"', markup)
+    if not m or abs(float(m.group(1)) - free_of_band()) > 0.01:
+        bad.append("the bar declares %s units of free width and the table divides %g"
+                   % (m.group(1) if m else "no", free_of_band()))
+    return bad
+
+
 def check_inside(spec: dict, name: str) -> list:
     bad = []
     for label, x0, x1, top, bottom in boxes(spec):
@@ -667,7 +807,8 @@ def self_test() -> int:
     bad = []
     rendered = {}
     shipped = {p: (p.read_bytes() if p.is_file() else None)
-               for p in (OUT / "temperature-wide.svg", OUT / "temperature-tall.svg")}
+               for p in (OUT / "temperature-wide.svg", OUT / "temperature-tall.svg",
+                         DIAL)}
     scratch = tempfile.TemporaryDirectory()
     for spec, name, svg, path in write(Path(scratch.name)):
         rendered[name] = svg
@@ -686,6 +827,10 @@ def self_test() -> int:
         if not path.is_file():
             bad.append("%s: nothing was written to %s" % (name, path))
     scratch.cleanup()
+    # The control's markup is checked against the odds rather than against the drawing: it
+    # is the second thing made of these numbers, and the page ships it every night.
+    markup = dial_markup()
+    bad += check_dial(markup)
     # The two variants make the same claims: a phone that got a different chart than a
     # desktop is the failure the two-variant rule exists for.
     if len(rendered) == 2:
@@ -705,6 +850,17 @@ def self_test() -> int:
         if not caught:
             bad.append("the self-test cannot catch %s: %s passed on a doctored plate"
                        % (what, check.__name__))
+    # The control gets the same treatment: a table a hair off the widths the page shows, a
+    # control that is not hidden, and a slider that cannot reach a setting the plate draws.
+    for what, doctored in (
+            ("a table that does not match the page's own bar",
+             markup.replace('"w":[121.45,81.41,54.57,36.58]', '"w":[121.45,81.41,54.57,30]')),
+            ("a control a reader without a script would meet",
+             markup.replace('data-temperature-dial hidden', 'data-temperature-dial')),
+            ("a slider that cannot reach the plate's high setting",
+             markup.replace('max="2"', 'max="1.5"'))):
+        if not check_dial(doctored):
+            bad.append("the self-test cannot catch %s" % what)
     # THE SELF-TEST WROTE NOTHING INTO THE TREE, which is the failure the token plate made:
     # read the bytes back rather than trust the scratch directory.
     for path, was in shipped.items():
@@ -723,8 +879,9 @@ def self_test() -> int:
           "raising the setting flattens the odds in both directions, the ramp is one ink "
           "at four steps and the faintest clears 3:1 on both grounds, the key is the "
           "chart, every label is inside the plate and none sits on another, both variants "
-          "make the same claims, no hex colour, and each of the six doctors is caught by "
-          "the claim it breaks")
+          "make the same claims, no hex colour, the control's table and its own bar are "
+          "the odds at the setting it starts on and its slider reaches every setting the "
+          "plate draws, and each of the nine doctors is caught by the claim it breaks")
     return 0
 
 
@@ -733,6 +890,8 @@ def main(argv: list) -> int:
         return self_test()
     for _spec, _name, svg, path in write():
         print("%s  %s B" % (path.name, format(len(svg.encode("utf-8")), ",")))
+    markup = write_dial()
+    print("%s  %s B" % (DIAL.name, format(len(markup.encode("utf-8")), ",")))
     return 0
 
 

@@ -39,33 +39,40 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-FIGURES = HERE.parent / "figures"
+SOURCE = HERE.parent
+FIGURES = SOURCE / "figures"
+
+# Outputs are named as paths from `Source/`, not as bare file names, and the reason is the
+# dial: a generator writes one file that is not a figure and does not live in figures/
+# (`temperature-dial.partial`, spliced into a carried page by the build). One rule for
+# every output is cheaper to read than a rule with an exception on the end of it.
 
 # Each generator, the figures it owns, and its self-test flag where it has one.
 # The outputs are listed rather than discovered: a generator that quietly stops
 # writing one variant should say so here, not pass because nothing looked for it.
 GENERATORS: list[tuple[str, tuple[str, ...], bool]] = [
-    ("make-boundary.py", ("boundary-wide.svg", "boundary-mid.svg", "boundary-tall.svg"), True),
-    ("make-calendar-ring.py", ("calendar-ring.svg",), False),
-    ("make-etymology.py", ("etymology.svg", "etymology-tall.svg"), False),
-    ("make-hero-gears.py", ("hero-gears.svg",), True),
-    ("make-close-gears.py", ("close-gears.svg",), True),
-    ("make-poster-horizon.py", ("poster-horizon.svg",), False),
-    ("make-gguf-anatomy.py", ("gguf-anatomy-wide.svg", "gguf-anatomy-tall.svg"), True),
-    ("make-citation-anatomy.py", ("citation-anatomy-wide.svg", "citation-anatomy-tall.svg"), True),
-    ("make-context-window.py", ("context-window-wide.svg", "context-window-tall.svg"), True),
-    ("make-group-marks.py", ("group-mark-what-it-is.svg",
-                             "group-mark-how-it-works-and-why-it-behaves-that-way.svg",
-                             "group-mark-how-to-do-it.svg",
-                             "group-mark-whether-it-can.svg",
-                             "group-mark-using-it-for-your-own-work.svg",
-                             "group-mark-compared-with-other-tools.svg",
-                             "group-mark-the-project-log.svg"), True),
-    ("make-quant-ladder.py", ("quant-ladder-wide.svg", "quant-ladder-tall.svg"), True),
-    ("make-ram-budget.py", ("ram-budget-wide.svg", "ram-budget-tall.svg"), True),
-    ("make-q4km-anatomy.py", ("q4km-anatomy-wide.svg", "q4km-anatomy-tall.svg"), True),
-    ("make-token-rows.py", ("token-rows-wide.svg", "token-rows-tall.svg"), True),
-    ("make-temperature.py", ("temperature-wide.svg", "temperature-tall.svg"), True),
+    ("make-boundary.py", ("figures/boundary-wide.svg", "figures/boundary-mid.svg", "figures/boundary-tall.svg"), True),
+    ("make-calendar-ring.py", ("figures/calendar-ring.svg",), False),
+    ("make-etymology.py", ("figures/etymology.svg", "figures/etymology-tall.svg"), False),
+    ("make-hero-gears.py", ("figures/hero-gears.svg",), True),
+    ("make-close-gears.py", ("figures/close-gears.svg",), True),
+    ("make-poster-horizon.py", ("figures/poster-horizon.svg",), False),
+    ("make-gguf-anatomy.py", ("figures/gguf-anatomy-wide.svg", "figures/gguf-anatomy-tall.svg"), True),
+    ("make-citation-anatomy.py", ("figures/citation-anatomy-wide.svg", "figures/citation-anatomy-tall.svg"), True),
+    ("make-context-window.py", ("figures/context-window-wide.svg", "figures/context-window-tall.svg"), True),
+    ("make-group-marks.py", ("figures/group-mark-what-it-is.svg",
+                             "figures/group-mark-how-it-works-and-why-it-behaves-that-way.svg",
+                             "figures/group-mark-how-to-do-it.svg",
+                             "figures/group-mark-whether-it-can.svg",
+                             "figures/group-mark-using-it-for-your-own-work.svg",
+                             "figures/group-mark-compared-with-other-tools.svg",
+                             "figures/group-mark-the-project-log.svg"), True),
+    ("make-quant-ladder.py", ("figures/quant-ladder-wide.svg", "figures/quant-ladder-tall.svg"), True),
+    ("make-ram-budget.py", ("figures/ram-budget-wide.svg", "figures/ram-budget-tall.svg"), True),
+    ("make-q4km-anatomy.py", ("figures/q4km-anatomy-wide.svg", "figures/q4km-anatomy-tall.svg"), True),
+    ("make-token-rows.py", ("figures/token-rows-wide.svg", "figures/token-rows-tall.svg"), True),
+    ("make-temperature.py", ("figures/temperature-wide.svg", "figures/temperature-tall.svg",
+                           "temperature-dial.partial"), True),
 ]
 
 
@@ -107,7 +114,7 @@ def main() -> int:
         #    including uncommitted work, which is the normal state of this repo.
         before = {}
         for name in outputs:
-            path = FIGURES / name
+            path = SOURCE / name
             before[name] = path.read_bytes() if path.is_file() else None
 
         if has_self_test:
@@ -126,7 +133,7 @@ def main() -> int:
 
         # 3. Compare and restore, per output.
         for name in outputs:
-            path = FIGURES / name
+            path = SOURCE / name
             old = before[name]
             new = path.read_bytes() if path.is_file() else None
             if new is None:

@@ -2111,6 +2111,48 @@ a { color: inherit; }
   font-size: 0.75rem;
 }
 
+/* ── the temperature page's slider ─────────────────────────────────
+   The library's one control a reader can drag, and the only place a page of
+   prose here answers back. It sits under the plate whose odds it moves, in the
+   plate's own vocabulary: the ramps are the same four steps of --ink, the
+   sentence under the bar is --mist like every secondary line on the site, and
+   the boundary an input needs takes --ink rather than a hairline, since WCAG
+   asks 3:1 of a control's edge and this stylesheet's hairlines are deliberately
+   barely there (--hairline is 1.1:1 on the light canvas). `accent-color` carries
+   the platform's own slider: it themes in both worlds with no vendor CSS, and it
+   keeps the focus ring, the keyboard behaviour and the touch target that the
+   browser already gets right.
+
+   Authored `hidden` in the markup and unhidden by /temperature-dial.js, for the
+   reason the index's find field is: a reader without scripting should meet the
+   plate and its caption, which is the whole argument, rather than a slider that
+   cannot move. The `[hidden]` guard is not decoration - the rule below sets a
+   margin, and a stray `display` would beat the attribute.
+
+   Nothing here animates, which is a decision and not an omission: the bars are
+   the answer rather than a transition to one, and a reader dragging the slider
+   should see the number the setting produces the moment they produce it. That
+   also keeps this control out of the reduced-motion question entirely. */
+.temperature-dial { margin: 1.5rem auto 0; max-width: 40rem; }
+.temperature-dial[hidden] { display: none; }
+.temperature-dial-head {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin-bottom: 0.5rem;
+}
+.temperature-dial input[type="range"] {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.55rem;
+  accent-color: var(--ink);
+}
+.temperature-dial-bar { display: block; width: 100%; height: auto; margin: 0 0 0.6rem; }
+.temperature-dial-readout { margin: 0; color: var(--mist); font-size: 0.9rem; }
+
 @media (max-width: 720px) {
   .page-head-in, .page-foot-in { padding-left: 1.25rem; padding-right: 1.25rem; }
   .page { padding: 2.5rem 1.25rem 3.5rem; }
@@ -2177,6 +2219,9 @@ a { color: inherit; }
      directory is for. The hint goes with it, since it describes a keystroke. */
   .index-find,
   .index-jump,
+  /* A slider cannot be dragged on paper, so the page prints the plate and its
+     caption, which is the argument, and leaves the instrument out. */
+  .temperature-dial,
   /* A control that opens a dialog over the page has nothing to do on a sheet of
      paper either, and the dialog itself is never in the printed document: it is
      created when a reader opens it. */

@@ -32,6 +32,10 @@
   <link rel="stylesheet" href="/styles.css" />
   <script src="/theme.js" defer></script>
   <script src="/search.js" defer></script>
+  <!-- The slider under the odds plate. This page is the only one that names it, and
+       verify-links.py holds the page and /temperature-dial.js to each other: a page with
+       the control and no script would ship a slider that cannot move. -->
+  <script src="/temperature-dial.js" defer></script>
 </head>
 <body>
 
@@ -101,6 +105,8 @@
         .temperature-odds [data-variant="tall"] { display: block; }
       }
     </style>
+
+    <!--#include temperature-dial-->
 
     <h2>Low for facts, higher for drafts.</h2>
     <p>The setting follows the job. Summarizing a paper, pulling claims out of a report, answering questions over retrieved passages: these want low temperature, because you care that the answer matches the sources and not that it surprised you. Brainstorming names, exploring openings for a piece, trying alternate phrasings: these are where a higher temperature earns its keep, since the point is to see wordings the top pick would never give you. Research tools that ground answers in your documents tend to sit at the low end for exactly that reason; the fix for wrong answers is <a href="/how-to-stop-ai-hallucinating/">structure and sources</a>, not the dial.</p>

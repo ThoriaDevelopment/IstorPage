@@ -86,7 +86,7 @@ LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
-LIBRARY_STYLES_BYTES = 67945          # 50,980 to 55,112 on 2026-09-20: the
+LIBRARY_STYLES_BYTES = 70301          # 50,980 to 55,112 on 2026-09-20: the
                                       # metric-matched fallback faces and the
                                       # measurement that chose them, so the swap
                                       # does not move the page on a slow link;
@@ -108,8 +108,13 @@ LIBRARY_STYLES_BYTES = 67945          # 50,980 to 55,112 on 2026-09-20: the
                                       # own type and grounds, and the four
                                       # measured ratios that chose the mark's
                                       # colour over the accent it was drawn in,
-                                      # which verify-links recomputes
-ARTIFACT_FILES = 146                  # 138 + the four phone crops' 16 files + the library
+                                      # which verify-links recomputes;
+                                      # 70,301 later that day: the temperature
+                                      # page's slider, one component — the
+                                      # control's own type, its platform accent
+                                      # and the guard that keeps it off the
+                                      # printed sheet
+ARTIFACT_FILES = 147                  # 138 + the four phone crops' 16 files + the library
                                       # index, less exhibit-12's eight retired exports
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
                                       # - 4 on 2026-09-21: exhibit-13 retired, act 5's table
@@ -117,6 +122,10 @@ ARTIFACT_FILES = 146                  # 138 + the four phone crops' 16 files + t
                                       # + 2 on 2026-09-21: /search.js and /search-index.json,
                                       # the patch of library a reader can search from
                                       # any page in it
+                                      # + 1 on 2026-09-21: /temperature-dial.js, the
+                                      # temperature page's control — the first file
+                                      # here that is one page's rather than every
+                                      # page's, which is why the budget names it
 
 # Check 8's marker. If the assembler ever globs OldVersion/ instead of copying by
 # allowlist, the previous home page ships at this path and every other check here
@@ -2296,6 +2305,181 @@ def check_11(rep: Report, site: pathlib.Path, library_css: str) -> None:
                f"{len(roles)} roles, same values")
 
 
+def check_13(rep: Report, site: pathlib.Path, docs: dict,
+             library_css: str) -> None:
+    """The temperature page's slider: the page and the script, and one set of odds.
+
+    The library's only control a reader can drag, and the only page here that answers
+    back. Five things have to hold, and each of them is about two files that cannot
+    see each other:
+
+    * **The page carries both halves.** The control is authored `hidden` and the
+      script is what unhides it, so a page that lost the script ships a slider that
+      cannot move, and a page without the markup leaves a script with nothing to
+      drive. Only this page carries either, which is asserted: a copy pasted onto
+      another page would be a control whose bar has no plate above it.
+    * **The table the script reads is what `odds.py` computes**, recomputed here from
+      the module the plate above it is drawn from. The script does no arithmetic on
+      purpose, which is what makes this the only thing standing between the two.
+    * **The bar the page shows before any script runs** is the table's row for the
+      setting the slider starts on, and its widths add up to the free width the bar
+      declares. That is what a reader gets in the second before the script arrives.
+    * **The slider reaches the settings the plate draws.** A control that cannot get
+      to a setting drawn above it is a picture of a control.
+    * **The stylesheet draws the classes the markup uses** and takes the whole thing
+      off the printed page. A rename on one side of that pair ships an unstyled
+      widget, which is a failure neither file can see alone.
+
+    What is NOT claimed: that the script moves the bar. That is behaviour, and
+    behaviour is measured in a browser rather than read out of a file.
+    """
+    print("\n13  the temperature page's slider")
+    page_path = site / "what-is-temperature" / "index.html"
+    if not page_path.is_file():
+        rep.fail("the slider", "/what-is-temperature/index.html is missing")
+        return
+    html = page_path.read_text(encoding="utf-8")
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("odds", SOURCE / "tools" / "odds.py")
+        assert spec and spec.loader
+        odds = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(odds)
+    except Exception as exc:                       # noqa: BLE001 - reported, not raised
+        rep.fail("the slider", f"the odds module could not be loaded: {exc}")
+        return
+    carriers = [p for p, text in docs.items() if "data-temperature-dial" in text]
+    # The script TAG, not the string: the stylesheet's own comment names this file
+    # (it explains what unhides the control), and a check reading the bare name
+    # reported the stylesheet as a page that loads it.
+    namers = [p for p, text in docs.items()
+              if re.search(r'<script[^>]+src="/temperature-dial\.js"', text)]
+    if carriers != [page_path]:
+        rep.fail("the slider's home",
+                 f"{len(carriers)} pages carry the control and one should: "
+                 f"{', '.join(str(p) for p in carriers) or 'none at all'}")
+    elif namers != [page_path]:
+        rep.fail("the slider and its script",
+                 f"the control is on one page and the script is named by {len(namers)} "
+                 f"({', '.join(str(p) for p in namers) or 'none'}) — a control with no "
+                 "script is a slider that cannot move")
+    else:
+        rep.ok("the control and its script",
+               "one page carries both, and /temperature-dial.js is what drives it")
+
+
+    # The table, recomputed from the module the plate is drawn from. This is the whole
+    # coupling: the script reads these numbers and does nothing to them.
+    table = odds.table()
+    # The control's markup, from its opening tag rather than from the attribute that
+    # names it: that attribute sits after the container's own class, and starting the
+    # slice on it left the container's class outside every question asked below.
+    at = html.index("data-temperature-dial")
+    blob = html[html.rindex("<", 0, at):]
+    found = re.search(r"data-stops='([^']+)'", blob)
+    if not found:
+        rep.fail("the slider's table", "the control carries no table for the script to read")
+    else:
+        try:
+            shipped = json.loads(found.group(1))
+        except ValueError as exc:
+            shipped = None
+            rep.fail("the slider's table", f"the table is not readable: {exc}")
+        if shipped is not None and shipped == table:
+            rep.ok(f"the slider's table",
+                   f"{len(table)} positions, {odds.STOPS[0]:g} to {odds.STOPS[-1]:g}, "
+                   "recomputed from odds.py")
+        elif shipped is not None:
+            rep.fail("the slider's table",
+                     "the page's table is not what odds.py computes")
+
+    # The bar a reader sees before the script arrives, which is the table's default row.
+    row = [r for r in table if abs(r["t"] - odds.SETTINGS[1]) < 1e-9][0]
+    segs = re.findall(r'<rect data-seg="(\d+)" x="([0-9.]+)" y="0" width="([0-9.]+)" '
+                      r'height="([0-9.]+)" fill="([^"]+)" fill-opacity="([0-9.]+)"', blob)
+    free = float(re.search(r'data-free="([0-9.]+)"', blob).group(1))
+    if len(segs) != len(odds.CANDIDATES):
+        rep.fail("the slider's bar",
+                 f"{len(segs)} segments are drawn for {len(odds.CANDIDATES)} candidates")
+    elif any(abs(float(w) - row["w"][j]) > 0.01 for j, (_i, _x, w, _h, _f, _o)
+             in enumerate(segs)):
+        rep.fail("the slider's bar",
+                 f"the drawn widths are not the table's row for {odds.SETTINGS[1]:g}")
+    elif abs(sum(row["w"]) - free) > 0.05:
+        rep.fail("the slider's bar",
+                 f"the widths add up to {sum(row['w']):.2f} and the bar declares "
+                 f"{free:.2f} of free width")
+    else:
+        rep.ok("the slider's bar",
+               f"the odds at {odds.SETTINGS[1]:g} with no script at all")
+
+    # The reach: every setting the plate above it draws, in the table's own steps.
+    rng = re.search(r'type="range" min="([0-9.]+)" max="([0-9.]+)" step="([0-9.]+)" '
+                    r'value="([0-9.]+)"', blob)
+    if not rng:
+        rep.fail("the slider's reach", "the control has no range on it")
+    else:
+        lo, hi, step, value = (float(v) for v in rng.groups())
+        if lo > min(odds.SETTINGS) or hi < max(odds.SETTINGS):
+            rep.fail("the slider's reach",
+                     f"it runs {lo:g} to {hi:g} and the plate draws settings out to "
+                     f"{min(odds.SETTINGS):g} and {max(odds.SETTINGS):g}")
+        elif abs(step - odds.STOP_STEP) > 1e-9:
+            rep.fail("the slider's reach",
+                     f"it steps by {step:g} and the table is every {odds.STOP_STEP:g}")
+        elif abs(value - odds.SETTINGS[1]) > 1e-9:
+            rep.fail("the slider's reach",
+                     f"it starts at {value:g} and the drawn bar is the table's "
+                     f"{odds.SETTINGS[1]:g}")
+        else:
+            rep.ok("the slider's reach",
+                   f"{lo:g} to {hi:g} by {step:g}, which covers every setting the "
+                   "plate draws and starts on the drawn one")
+
+
+    # Hidden, and the sentence naming the two candidates a reader watches.
+    if "data-temperature-dial hidden" not in html:
+        rep.fail("the slider's arrival",
+                 "the control is not authored hidden — a reader without a script would "
+                 "meet a slider that cannot move")
+    else:
+        rep.ok("the slider's arrival",
+               "authored hidden, so the script is what puts it on the page")
+    for word, what in ((odds.CANDIDATES[0], "the likeliest candidate"),
+                       (odds.CANDIDATES[-1], "the least likely one")):
+        span = re.search(r'data-readout="(%s)">([^<]*)<' % (
+            "top" if word == odds.CANDIDATES[0] else "last"), html)
+        if not span or word not in html:
+            rep.fail("the slider's sentence",
+                     f"the read-out does not name {what}, so the bar has no legend")
+            break
+    else:
+        rep.ok("the slider's sentence",
+               f"names {odds.CANDIDATES[0]} and {odds.CANDIDATES[-1]}, the two ends of "
+               "the bar")
+
+    # The stylesheet draws it, and takes it off the paper.
+    # Read as a list of names rather than as an attribute holding one name: the
+    # container carries its class beside `data-temperature-dial`, and a pattern
+    # requiring the quote right after the name reported three of the four classes
+    # while the page was correct.
+    classes = sorted({c for attr in re.findall(r'class="([^"]*temperature-dial[^"]*)"', blob)
+                      for c in attr.split()})
+    missing = [c for c in classes if f".{c}" not in library_css]
+    if missing:
+        rep.fail("the slider's styling",
+                 f"{', '.join(missing)} is in the markup and not in the stylesheet")
+    else:
+        rep.ok("the slider's styling",
+               f"{len(classes)} classes drawn by /styles.css")
+    printed = library_css[library_css.index("@media print"):]
+    if ".temperature-dial" not in printed:
+        rep.fail("the slider on paper",
+                 "the print world still carries a control nobody can drag")
+    else:
+        rep.ok("the slider on paper", "the print block leaves the instrument out")
+
+
 def check_12(rep: Report, site: pathlib.Path, library_css: str) -> None:
     """The directory's two ways between its seventy-five entries.
 
@@ -2526,6 +2710,7 @@ def main(argv: list[str]) -> int:
     check_10(rep, css, library_css, notfound.group(1) if notfound else "")
     check_11(rep, site, library_css)
     check_12(rep, site, library_css)
+    check_13(rep, site, docs, library_css)
     check_library_arrivals(rep, site, docs)
     check_page_marks(rep, site, docs)
     check_search(rep, site, docs)

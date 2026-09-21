@@ -68,7 +68,7 @@ DUPLICATED = [
 # /theme.js: the library's theme control is one shared file rather than a script
 # copied into each of the 75 pages, which is the only shape that keeps a fix to
 # it a one-file edit.
-ARTIFACT_FILES = 146                  # + the generated library index; 8 fewer since
+ARTIFACT_FILES = 147                  # + the generated library index; 8 fewer since
                                       # exhibit-12 retired its exports (2026-09-20);
                                       # 4 fewer since exhibit-13 did the same (2026-09-21),
                                       # act 5's table now a DOM replica; +2 on
