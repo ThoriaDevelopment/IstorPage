@@ -1319,6 +1319,18 @@
     // here - a pointermove event carries its own pointerType, and skipping
     // touch is reading the event the way a keyboard shortcut reads its key.
     // It also keeps a tap's synthetic move from shoving the machine about.
+    // M18's predicate, defined once and read by both of its users: the
+    // pointerdown that starts a turn, and the hover state that says one is
+    // possible here. One predicate because two would drift, and the hand would
+    // end up appearing where the hand does not work. Excluded by selector are
+    // the things with their own pointer: links, buttons, the window, and the
+    // prose, which stays selectable.
+    var heroGround = world ? world.closest('.hero') : null;
+    var overGround = function (target) {
+      return !!(heroGround && target && heroGround.contains(target) &&
+                !target.closest('a, button, .win, p, h1, li'));
+    };
+    var groundShown = false;
     if (world || closeWorld) {
       var drift = { x: 0, y: 0, tx: 0, ty: 0, raf: 0 };
       var driftStep = function () {
@@ -1345,6 +1357,15 @@
         drift.tx = (e.clientX / window.innerWidth - 0.5) * 20;
         drift.ty = (e.clientY / window.innerHeight - 0.5) * 12;
         if (!drift.raf) drift.raf = requestAnimationFrame(driftStep);
+        // The turn, announced before it is taken: the same predicate M18's
+        // pointerdown reads, so the hand appears exactly where a turn would
+        // start and nowhere else. Written only on a change, so a moving pointer
+        // costs no DOM work when the answer is the same as the last frame's.
+        var ground = overGround(e.target);
+        if (heroGround && ground !== groundShown) {
+          groundShown = ground;
+          heroGround.classList.toggle('is-turnable', ground);
+        }
       }, { passive: true });
     }
 
@@ -1353,7 +1374,7 @@
     // ships here is the mechanism itself: one writer for the angle, the
     // pointer's own motion around the drawing's pivot, momentum that decays.
     var heroSvg = world && world.querySelector('svg');
-    var heroHero = world && world.closest('.hero');
+    var heroHero = heroGround;
     if (heroSvg && gearA && heroHero) {
       var turning = false, spinVel = 0, spinRaf = 0, lastAngle = 0, lastTime = 0;
       var pivot = function () {
@@ -1394,6 +1415,9 @@
         if (!turning) return;
         turning = false;
         heroHero.classList.remove('is-turning');
+        // The pointer is still wherever the release happened, and the next
+        // move re-answers the hover question; clearing here would flicker.
+
         window.removeEventListener('pointermove', onTurnMove);
         window.removeEventListener('pointerup', onTurnUp);
         window.removeEventListener('pointercancel', onTurnUp);
@@ -1402,7 +1426,7 @@
       };
       heroHero.addEventListener('pointerdown', function (e) {
         if (e.pointerType === 'touch' || e.button) return;
-        if (e.target.closest('a, button, .win, p, h1, li')) return;   // their pointer
+        if (!overGround(e.target)) return;   // their pointer, or not the ground
         var p = pivot();
         turning = true;
         stopSpin();
