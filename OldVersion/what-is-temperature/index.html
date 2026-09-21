@@ -83,6 +83,25 @@
     <h2>A dial over the odds.</h2>
     <p>Every step of <a href="/what-is-inference/">inference</a> ends the same way: the model has produced a probability for each word in its vocabulary, and something has to pick one. Temperature reshapes that list before the pick. Near zero, the choice is almost always the top candidate, so the same question gets nearly the same answer twice. Raised, the odds flatten, and less likely candidates start winning slots. Nothing is added to or removed from the model's knowledge in either case; only the picking changes.</p>
 
+    <figure class="temperature-odds reveal">
+      <!--#include temperature-wide-->
+      <!--#include temperature-tall-->
+      <figcaption>One list of odds, reshaped three ways. The same four candidates sit in
+      every bar and nothing is added to what the model knows, so what a high setting buys
+      is variety in the wording: the first bar is nearly decided, and the last spreads its
+      picks across all four.</figcaption>
+    </figure>
+    <style>
+      .temperature-odds { margin: 2rem auto; max-width: 40rem; }
+      .temperature-odds svg { width: 100%; height: auto; display: block; }
+      .temperature-odds [data-variant="tall"] { display: none; }
+      .temperature-odds figcaption { margin-top: 0.75rem; color: var(--mist); font-size: 0.9rem; }
+      @media (max-width: 560px) {
+        .temperature-odds [data-variant="wide"] { display: none; }
+        .temperature-odds [data-variant="tall"] { display: block; }
+      }
+    </style>
+
     <h2>Low for facts, higher for drafts.</h2>
     <p>The setting follows the job. Summarizing a paper, pulling claims out of a report, answering questions over retrieved passages: these want low temperature, because you care that the answer matches the sources and not that it surprised you. Brainstorming names, exploring openings for a piece, trying alternate phrasings: these are where a higher temperature earns its keep, since the point is to see wordings the top pick would never give you. Research tools that ground answers in your documents tend to sit at the low end for exactly that reason; the fix for wrong answers is <a href="/how-to-stop-ai-hallucinating/">structure and sources</a>, not the dial.</p>
 

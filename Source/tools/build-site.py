@@ -209,6 +209,8 @@ LIBRARY_INCLUDES = {
     "q4km-anatomy-tall": (SOURCE / "figures" / "q4km-anatomy-tall.svg", "svg"),
     "token-rows-wide": (SOURCE / "figures" / "token-rows-wide.svg", "svg"),
     "token-rows-tall": (SOURCE / "figures" / "token-rows-tall.svg", "svg"),
+    "temperature-wide": (SOURCE / "figures" / "temperature-wide.svg", "svg"),
+    "temperature-tall": (SOURCE / "figures" / "temperature-tall.svg", "svg"),
 }
 
 # A directory under _site/ that holds an index.html but is not a page.
