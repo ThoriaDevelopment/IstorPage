@@ -376,7 +376,7 @@ def build() -> str:
         present.append((heading, len(items)))
         sections += [
             "",
-            f'    <section class="index-group" id="{anchor(heading)}">',
+            f'    <section class="index-group reveal" id="{anchor(heading)}">',
             f"      <h2>{html.escape(heading)} ({len(items)})</h2>",
             f'      <p class="index-blurb">{html.escape(blurb)}</p>',
             '      <ul class="index-list">',

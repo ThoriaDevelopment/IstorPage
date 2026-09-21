@@ -1184,6 +1184,62 @@ doctored pages prove the whole thing failable, including the first bug this feat
 one build - px per millisecond divided by 1000 as if it were px per second, which made the entire
 feature dead code that looked alive.
 
+**2026-09-21, the same morning: the library's blocks arrive too (M21).** M20 gave the landing's
+arrivals the reader's own clock and left the other 78 documents strictly position-driven: their
+figures and index groups appeared when they crossed the fold, at whatever speed the reader crossed
+it. What the library was missing was not the animation. `.enter` and `.reveal` had been in its
+stylesheet since it was written, with a comment claiming the element was authored visible and the
+script switched the hidden state on - and the code did the opposite: the base rules *were* the hidden
+state, no script ever existed, and the classes could not be triggered by anything. The fix is the
+smallest one that makes the comment true: the stylesheet's base rules become the finished page, the
+shared script adds `is-cold` to a block only when it sits below the fold at the moment the script
+runs, and the same `--arrive` multiplier M20 multiplies through the landing's family now multiplies
+through the library's. The fold test is why this is safe for a reader whose script runs at all, and
+the pace inequality is the same inequality rather than a second one: the arrival runs `ARRIVE_MS`, so
+a reader at `pace` px/ms covers `pace × ARRIVE_MS` in that time, and if that is further than the
+screen the arrival ends off it.
+
+The shape of the library is what made this a decision rather than a copy. Its 76 documents share one
+stylesheet and one script (`/styles.css`, `/theme.js`) while the landing inlines both, so the landing's
+inlined copy is not the library's to reuse and the two run beside each other rather than through each
+other - checked, not assumed: the landing requests no stylesheet and loads no shared script, so no page
+carries two scripts that could both mark the same block. Reduced motion is a separate answer here and a
+larger one: under `prefers-reduced-motion: reduce` the script returns before anything is marked, so the
+authored page *is* the finished page and a reader who asked for less motion is never shown a document
+with pieces of it missing. Measured on the built index at 1440×900: **6 of 7** groups sit below the
+fold and are cold while the seventh, at 630px, is not; the block that waits is cold at **opacity 0**
+and displaced **14px**; the same block arrives at `--arrive: 1` / **0.7s** when approached at a
+reading pace and `--arrive: 0.3` / **0.21s** when flicked at, with **7 links** and every list
+opacity identical either way, the transform back to `none`; and with motion reduced the run reports
+**0 cold, 0 quick, 0 hidden**.
+
+The gates grew with it. The motion audit is **24 claims** now (was 18), five of them the library's own
+and one its reduced run, driven on `/library/`; `verify-links.py` is **93 assertions** (was 88) and
+holds the four facts no single browser run can see - that no marker is authored hidden in the markup
+(the failure the stylesheet's comment names, and the one a hand-edited page would reintroduce), that
+every page carrying a marker loads a script that could mark it (the landing inlines its own), that
+the script's `ARRIVE_MS` and the stylesheet's transition are the same 
+number in two files, and that the family's other timings still read the clock; and the self-test is
+**15 doctored pages**, now runnable a family at a time. That last change was forced by the clock: the
+landing's six patches took over nine minutes once each one paid for two browsers, so a patch now loads
+only the page that can catch it - **78 seconds** for the landing family, 58 for the pacing pair, 48
+for the library. The library's five patches are the fold test dropped, the inequality divided by 1000,
+the quick clock declared but not applied, the hidden rule dropped, and the reduced-motion guard removed;
+the second is in the list because the landing shipped that exact bug for one build in a copy of the
+expression the library was about to repeat.
+
+The shared files are exact-tiered in `budget.json` and were re-baselined on purpose: `/styles.css`
+**56,514 to 58,263 B** and `/theme.js` **3,924 to 7,665 B**, most of the script's growth being the
+reasoning that chose the mechanism, which is this repository's habit for code that could be got wrong
+twice. Two instrument failures are worth keeping: the first probe of this feature went through a
+harness that answers under Chrome's *virtual-time* clock, which does not deliver IntersectionObserver
+notifications, and it reported a block sitting fully in view (top 400 of a 900px viewport) staying cold
+for three seconds - a page cannot be that broken, and the harness said so in its own docstring; and the
+second probe measured the one group that was *correctly* not cold, so both of its paths proved nothing.
+A third failure was a gate catching this change rather than a bug: the index's jump-row check required
+the group sections' class attribute to hold exactly `index-group`, and reported all seven groups as
+missing the moment a `reveal` marker joined the list. The class list is a list.
+
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
 
@@ -1205,6 +1261,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M18** | **Both worlds answer the hand** | dragging the ground (mouse or pen) | live, then momentum ≤96°/s halving every 160ms (one tooth a frame) | §2.2's world is a place, and a place can be taken hold of; one factory, one writer, one ratio |
 | **M19** | **The flywheel** | the speed of the reader's own scroll, read over a window, **while the hero's band is on screen** | charged above 1 px/ms sustained across three samples spanning 60ms+ in a 150ms window; coasts ~14° past the gesture and settles in about a second | the world has mass: the fast gesture is charged and the slow read is left perfectly still (adaptive pace), and the angle keeps meaning the reader's position |
 | **M20** | **The arrivals keep the reader's clock** | the pace the reader arrives at a block with | the family's timings scaled by `--arrive: 0.3` when the arrival would end off screen; the authored clock above 1.25 px/ms | the fast scroll gets an abbreviated entrance and the stopped read gets the whole thing; the order and the content never change |
+| **M21** | **The library's blocks arrive** | the block crossing the fold, and the pace the reader fed it | the landing's clock, from the shared script: 700ms authored, 0.3 when the arrival would end off screen | the 78 carried documents get the craft the landing already had, and a reader who asked for less motion is never marked at all |
 
 ### 7.8 The library's figures
 

@@ -76,7 +76,7 @@
     <h2>Why local AI leans on it.</h2>
     <p>The compression is what makes the local story arithmetic that works. At 4 bit precision a parameter takes about half a byte, so a 2 billion parameter model fits near 1.5 GB and a 4 billion parameter model near 2.5 GB, which is what lets <a href="/run-research-ai-gtx-1650/">a GTX 1650's 4 GB of VRAM</a> carry a model and still leave room for the <a href="/what-is-a-context-window/">context window</a> around it. Without quantization, local research tools would need workstation hardware, and <a href="/does-local-ai-need-a-gpu/">the GPU question</a> would have a very different answer. The smaller file pays a second dividend: less arithmetic per step means faster generation, which is why quantization shows up in <a href="/what-is-tokens-per-second/">generation speed</a> and not only in memory.</p>
 
-    <figure class="quant-ladder">
+    <figure class="quant-ladder reveal">
       <!--#include quant-ladder-wide-->
       <!--#include quant-ladder-tall-->
       <figcaption>The same 4-billion-parameter model, three files. Every step

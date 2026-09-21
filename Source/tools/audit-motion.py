@@ -3,7 +3,17 @@
 
     python Source/tools/audit-motion.py
     python Source/tools/audit-motion.py --self-test
+    python Source/tools/audit-motion.py --self-test --family lib
     python Source/tools/audit-motion.py --json findings.json
+
+The self-test doctors fifteen pages in three families - the landing's world and
+reduced claims, the arrivals' pacing pair, and the library's fold test and clock -
+and `--family` runs one of them. The flag exists because the whole set takes a
+quarter of an hour once each patch has to be driven on the page that can catch it,
+and a self-test that long stops being run; a family is between forty and eighty
+seconds. A patch pays for one page load per browser it needs and no others: a world
+claim is not evidence about the reduced page, and the library's claims are about a
+different document entirely.
 
 WHY THIS EXISTS. Three things are now true of the two worlds and none of them was
 asserted by anything. The pinion's ratio against the drawings, the momentum's
@@ -53,8 +63,10 @@ the settle assertable rather than merely measurable, and it is why this file can
 claim thirteen things where the first draft could honestly claim nine, and a session
 probe has since handed it a fourteenth reason to exist (see the boundary in the
 scenario): a claim list is only worth what the next measurement adds to it. Eighteen
-now, because the arrival's clock (M20) is behaviour too, and behaviour that is not
-asserted is behaviour that quietly stops working.
+when the arrivals' clock (M20) joined it and twenty-four when the library's own
+arrivals did (M21), because behaviour that is not asserted is behaviour that quietly
+stops working - and the library is a different page on different files, where none of
+the landing's claims would move if its fold test or its pace sample disappeared.
 
 IT REUSES `audit-contrast.py` BY PATH. That harness already solves the two hard
 parts of putting a page under a controlled browser: a server that can hand the page
@@ -642,6 +654,36 @@ SELF_TESTS = [
      [("for (var s = 0; s < steps.length; s++)",
        "for (var s = 0; s < steps.length - (quick ? 1 : 0); s++)")],
      "the same content arrives either way"),
+    # M21's five, each the failure of one of the library's claims. The patches name
+    # their own file and URL, because these live in the SHARED `/theme.js` and
+    # `/styles.css` that every library document loads rather than in the landing's
+    # inlined pair - so a patch here is a patch of what the library actually runs.
+    #
+    # The second is worth naming: the landing's pacing shipped for one build with
+    # `px per millisecond` divided by 1000 as if it were `px per second`, and the
+    # library's copy of the same inequality could repeat that bug without any landing
+    # claim moving, which is precisely why the library needs its own claims.
+    ("the library marked every block cold, including the one being read",
+     [("if (el.getBoundingClientRect().top < window.innerHeight) continue;", "")],
+     "the library hides only what is below the fold", ("theme.js", "/library/")),
+    ("the library's pacing test divided by 1000, so it can never fire",
+     [("pace * ARRIVE_MS > window.innerHeight) {",
+       "pace * ARRIVE_MS / 1000 > window.innerHeight) {")],
+     "a fast arrival gets the library's own clock", ("theme.js", "/library/")),
+    ("the library's quick clock declared but not applied",
+     [(".reveal.is-quick { --arrive: 0.3; }", ".reveal.is-quick { --arrive: 1; }")],
+     "a fast arrival gets the library's own clock", ("styles.css", "/library/")),
+    # The class and the rule are two copies of one fact, so the interesting failure is
+    # the class arriving on a block the stylesheet no longer hides: everything looks
+    # correct in the markup and the page simply never shows an arrival.
+    ("the library's hidden state dropped, so a waiting block is visible",
+     [(".reveal.is-cold { opacity: 0; transform: translateY(14px); }",
+       ".reveal.is-cold { transform: translateY(14px); }")],
+     "a block that waits is hidden while it waits", ("styles.css", "/library/")),
+    ("the library marked and observed a page with motion reduced",
+     [("if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: "
+       "reduce)').matches) return;", "")],
+     "in the reduced world the library marks nothing", ("theme.js", "/library/")),
 ]
 
 # The claims that need the pacing pair of page loads, so the self-test knows which
@@ -730,54 +772,285 @@ def check_pace(calm: dict, fast: dict, failures: list) -> None:
        % (len(cg) + 1, cg, fg, factor))
 
 
-def self_test(chrome, site, width, height, tmp) -> int:
+# M21 is the library's arrivals, and this is a different question rather than a
+# second run of M20. The library is a set of documents sharing one stylesheet and one
+# script (`/styles.css` and `/theme.js`) while the landing inlines both, so what has to
+# hold here is three facts a shared file makes easy to lose: the fold test decides what
+# gets hidden, the reader's pace picks the clock, and a reader who asked for less
+# motion gets a page that was never marked at all.
+#
+# The library index is the page used, because its seven blocks come from a generator
+# rather than from hand-authored markup, and the block measured is the first one that
+# was COLD AT LOAD - found rather than fixed, so the run does not depend on which group
+# happens to sit below the fold at the width it is given. It is also required to be
+# taller than one fast step: a block shorter than a step can be entered and left
+# between two frames, which would make the fast claim a measurement of this machine's
+# frame rate instead of the page's behaviour.
+LIB_SCENARIO = r"""
+(async (d, w) => {
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const groups = Array.from(d.querySelectorAll('.reveal'));
+  if (!groups.length) return { error: 'no .reveal blocks on this page' };
+  const at = groups.map((el) => {
+    const r = el.getBoundingClientRect();
+    return { top: Math.round(r.top), h: Math.round(r.height),
+             cold: el.classList.contains('is-cold') };
+  });
+  const target = groups.find((el) => el.classList.contains('is-cold'));
+  if (!target) return { error: 'nothing was cold at load, so this run would measure nothing' };
+  if (target.getBoundingClientRect().height < 260)
+    return { error: 'the block below the fold is shorter than one fast step, so the ' +
+                    'fast approach could pass it without a frame in between' };
+  d.documentElement.style.scrollBehavior = 'auto';
+  const step = (dy) => {
+    w.scrollTo({ top: w.scrollY + dy, behavior: 'instant' });
+    w.dispatchEvent(new Event('scroll'));
+  };
+  const top = target.getBoundingClientRect().top + w.scrollY;
+  w.scrollTo({ top: top - w.innerHeight - 40, behavior: 'instant' });
+  w.dispatchEvent(new Event('scroll'));
+  await wait(900);
+  const p = getComputedStyle(target);
+  const parked = { cold: target.classList.contains('is-cold'), opacity: p.opacity,
+                   transform: p.transform, duration: p.transitionDuration,
+                   arrive: p.getPropertyValue('--arrive').trim() };
+  const items = Array.from(target.querySelectorAll('li'));
+  const atRest = items.slice(0, 3).map((l) => getComputedStyle(l).opacity).join(',');
+  __APPROACH__
+  await wait(1400);
+  const cs = getComputedStyle(target);
+  return {
+    approach: '__HOW__', vh: w.innerHeight, groups: at, parked: parked,
+    quick: target.classList.contains('is-quick'),
+    stillCold: target.classList.contains('is-cold'),
+    arrive: cs.getPropertyValue('--arrive').trim(),
+    duration: cs.transitionDuration, opacity: cs.opacity, transform: cs.transform,
+    items: items.length,
+    itemsOpacity: items.slice(0, 3).map((l) => getComputedStyle(l).opacity).join(','),
+    itemOpacityAtRest: atRest,
+    y: Math.round(w.scrollY)
+  };
+})(d, w)
+"""
+
+LIB_CALM = LIB_SCENARIO.replace("__HOW__", "slow").replace(
+    "__APPROACH__", "for (let i = 0; i < 16; i++) { step(60); await wait(80); }")
+LIB_FAST = LIB_SCENARIO.replace("__HOW__", "fast").replace(
+    "__APPROACH__", "for (let i = 0; i < 12; i++) { step(220); await wait(16); }")
+
+# The reduced-motion question, asked of the library's own blocks. There is no gesture
+# to drive here: the claim is that the script's guard returns before anything is
+# marked, so the authored page is the finished page and the reader who asked for less
+# motion is never shown a page with pieces of it missing.
+LIB_REDUCED_SCENARIO = r"""
+(async (d, w) => {
+  const groups = Array.from(d.querySelectorAll('.reveal'));
+  if (!groups.length) return { error: 'no .reveal blocks on this page' };
+  const ops = groups.map((el) => getComputedStyle(el).opacity);
+  return {
+    blocks: groups.length,
+    cold: groups.filter((el) => el.classList.contains('is-cold')).length,
+    quick: groups.filter((el) => el.classList.contains('is-quick')).length,
+    hidden: ops.filter((o) => parseFloat(o) < 0.99).length,
+    arrive: getComputedStyle(groups[0]).getPropertyValue('--arrive').trim(),
+    reduce: w.matchMedia('(prefers-reduced-motion: reduce)').matches
+  };
+})(d, w)
+"""
+
+# The claims the reduced-motion load is the only one that can carry. A world claim is
+# not evidence about the reduced page and the reverse, so the self-test pays for the
+# load that can catch its patch and no other: a self-test that loads two browsers per
+# patch to prove one thing is a self-test nobody runs.
+REDUCED_CLAIMS = ("in the reduced world nothing is written",)
+
+# The claims that need the library's pair of page loads.
+LIB_CLAIMS = ("the library hides only what is below the fold",
+              "a block that waits is hidden while it waits",
+              "a slow arrival gets the library's authored clock",
+              "a fast arrival gets the library's own clock",
+              "the same content arrives either way the reader came")
+LIB_REDUCED_CLAIMS = ("in the reduced world the library marks nothing",)
+
+
+def check_library(calm: dict, fast: dict, failures: list) -> None:
+    """What the library hides, on whose clock it arrives, and that it arrives at all."""
+    def ok(label, good, detail=""):
+        CHECKED[0] += 1
+        print("  %s  %-58s %s" % ("ok  " if good else "FAIL", label, detail))
+        if not good:
+            failures.append(label)
+
+    for name, doc in (("slow", calm), ("fast", fast)):
+        if "error" in doc:
+            ok("the library's %s approach ran" % name, False, doc["error"])
+            return
+
+    # The fold test is what makes this safe for a reader whose script runs at all:
+    # marking everything would hide the block they are already looking at, and marking
+    # nothing would leave the library as it was - a page of text with no arrivals.
+    # Both directions are read off the same list, because a run that hid nothing and a
+    # run that hid everything are the two ways this can be wrong.
+    vh = calm["vh"]
+    below = [g for g in calm["groups"] if g["top"] >= vh]
+    above = [g for g in calm["groups"] if g["top"] < vh]
+    wrong = [g for g in below if not g["cold"]] + [g for g in above if g["cold"]]
+    ok("the library hides only what is below the fold",
+       bool(below) and not wrong,
+       "%d of %d blocks sit below the fold and are cold, %d sit above it and are not%s"
+       % (len(below), len(calm["groups"]), len(above),
+          "" if above else " - nothing sat above the fold at this width, so that half "
+                           "of the claim was not exercised"))
+
+    # Cold has to mean hidden. The class and the rule are written twice on purpose (the
+    # script for pages that load it, the stylesheet for pages that do not), which is
+    # exactly the shape in which one of the two copies goes missing.
+    ok("a block that waits is hidden while it waits",
+       calm["parked"]["cold"] and float(calm["parked"]["opacity"]) < 0.5,
+       "parked 40px below the fold it is cold %s at opacity %s, %s"
+       % (calm["parked"]["cold"], calm["parked"]["opacity"],
+          calm["parked"]["transform"]))
+
+    def first_time(v):
+        return float(v.split(",")[0].strip().rstrip("s"))
+
+    ok("a slow arrival gets the library's authored clock",
+       not calm["quick"] and calm["arrive"] == "1"
+       and not calm["stillCold"] and float(calm["opacity"]) > 0.99,
+       "--arrive = %s, %s, arrived at opacity %s"
+       % (calm["arrive"], calm["duration"], calm["opacity"]))
+
+    # The inequality is the whole feature, and it is checked from both sides: the fast
+    # path has to be quicker AND has to finish, since an arrival that outran itself
+    # would leave the block half-drawn at the bottom of the screen.
+    ok("a fast arrival gets the library's own clock",
+       fast["quick"] and fast["arrive"] != "1"
+       and first_time(fast["duration"]) < first_time(calm["duration"]) * 0.6
+       and not fast["stillCold"] and float(fast["opacity"]) > 0.99,
+       "--arrive = %s, %s against the authored %s, arrived at opacity %s"
+       % (fast["arrive"], fast["duration"], calm["duration"], fast["opacity"]))
+
+    same = (calm["items"] == fast["items"]
+            and calm["itemsOpacity"] == fast["itemsOpacity"]
+            and calm["transform"] == "none" and fast["transform"] == "none")
+    ok("the same content arrives either way the reader came",
+       same,
+       "%d links either way, opacity %s against %s, transform %s against %s"
+       % (calm["items"], calm["itemsOpacity"], fast["itemsOpacity"],
+          calm["transform"], fast["transform"]))
+
+
+def check_library_reduced(doc: dict, failures: list) -> None:
+    """The library under `prefers-reduced-motion`, where the arrivals do not exist."""
+    def ok(label, good, detail=""):
+        CHECKED[0] += 1
+        print("  %s  %-58s %s" % ("ok  " if good else "FAIL", label, detail))
+        if not good:
+            failures.append(label)
+
+    if "error" in doc:
+        ok("the library's reduced run ran", False, doc["error"])
+        return
+    if not doc.get("reduce"):
+        ok("the reduced world was forced", False,
+           "the media query did not match, so the forced switch did not take and "
+           "nothing here was measured")
+        return
+    ok("in the reduced world the library marks nothing",
+       doc["cold"] == 0 and doc["quick"] == 0 and doc["hidden"] == 0
+       and doc["blocks"] > 0 and doc["arrive"] == "1",
+       "%d blocks, %d cold, %d quick, %d hidden, --arrive = %s"
+       % (doc["blocks"], doc["cold"], doc["quick"], doc["hidden"], doc["arrive"]))
+
+
+def self_test(chrome, site, width, height, tmp, family="all") -> int:
     print("self-test: %d doctored pages, each of which must fail one named claim"
           % len(SELF_TESTS))
     worst = 0
-    for i, (what, edits, expected) in enumerate(SELF_TESTS):
+    # Which family of page loads a patch has to pay for, so this can be run a third at
+    # a time: it grew past ten minutes otherwise, and a self-test nobody runs because
+    # it takes a quarter of an hour is a self-test that stops being evidence. The
+    # family is read off the claim the patch is declared to break, so a new patch
+    # cannot forget to declare one.
+    lib_claims = LIB_CLAIMS + LIB_REDUCED_CLAIMS
+    skip = 0
+    for i, entry in enumerate(SELF_TESTS):
+        what, edits, expected = entry[0], entry[1], entry[2]
+        # A patch names the built file it doctors and the page to drive, because they
+        # are not always the landing's: the library's behaviour lives in the shared
+        # `/theme.js` and `/styles.css`, and its claims are about `/library/`.
+        rel, url = entry[3] if len(entry) > 3 else ("index.html", "/")
+        in_lib = expected in lib_claims
+        in_pace = expected in PACE_CLAIMS
+        if ((family == "lib" and not in_lib) or (family == "pace" and not in_pace)
+                or (family == "land" and (in_lib or in_pace))):
+            skip += 1
+            continue
         broken = os.path.join(tmp, "broken-%d" % i)
         if os.path.isdir(broken):
             shutil.rmtree(broken)
         shutil.copytree(site, broken)
-        page = os.path.join(broken, "index.html")
-        html = open(page, encoding="utf-8").read()
+        patched = os.path.join(broken, rel)
+        if not os.path.isfile(patched):
+            print("  FAIL  %s: %s is not a file in the built site, so the self-test "
+                  "is checking nothing" % (what, rel))
+            worst = 1
+            continue
+        html = open(patched, encoding="utf-8").read()
         missing = [old for old, _ in edits if old not in html]
         if missing:
-            print("  FAIL  %s: the text it patches is not in the built page (%r), so the "
-                  "self-test is checking nothing" % (what, missing[0]))
+            print("  FAIL  %s: the text it patches is not in %s (%r), so the "
+                  "self-test is checking nothing" % (what, rel, missing[0]))
             worst = 1
             continue
         for old, new in edits:
             html = html.replace(old, new, 1)
-        AC.write(page, html)
+        AC.write(patched, html)
 
         # Each patch is checked by the family its claim belongs to and no other; a
         # self-test that loads four browsers per patch to prove one thing is a
         # self-test nobody runs. A patch aimed at the wheel is not evidence about
         # the arrivals, and the reverse.
-        takes_pace = expected in PACE_CLAIMS
         failures: list = []
         reduced_failures: list = []
-        if takes_pace:
+        if in_lib:
+            if expected in LIB_REDUCED_CLAIMS:
+                rlib = run(chrome, broken, tmp, url, width, height,
+                           LIB_REDUCED_SCENARIO,
+                           extra=["--force-prefers-reduced-motion"],
+                           tag="st%d-lib-red" % i)
+                check_library_reduced(rlib, failures)
+            else:
+                cdoc = run(chrome, broken, tmp, url, width, height, LIB_CALM,
+                           extra=None, tag="st%d-lib-calm" % i)
+                fdoc = run(chrome, broken, tmp, url, width, height, LIB_FAST,
+                           extra=None, tag="st%d-lib-fast" % i)
+                check_library(cdoc, fdoc, failures)
+        elif in_pace:
             cdoc = run(chrome, broken, tmp, "/", width, height, PACE_CALM,
                        extra=None, tag="st%d-calm" % i)
             fdoc = run(chrome, broken, tmp, "/", width, height, PACE_FAST,
                        extra=None, tag="st%d-fast" % i)
             check_pace(cdoc, fdoc, failures)
+        elif expected in REDUCED_CLAIMS:
+            # Only the reduced page can carry this claim, so only it is driven: the
+            # world run would cost a browser and could never report this failure.
+            rdoc = run(chrome, broken, tmp, "/", width, height, REDUCED_SCENARIO,
+                       extra=["--force-prefers-reduced-motion"], tag="st%d-reduced" % i)
+            check_reduced(rdoc, reduced_failures)
         else:
             doc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
                       extra=None, tag="st%d" % i)
             check(doc, failures)
-            rdoc = run(chrome, broken, tmp, "/", width, height, REDUCED_SCENARIO,
-                       extra=["--force-prefers-reduced-motion"], tag="st%d-reduced" % i)
-            check_reduced(rdoc, reduced_failures)
         named = expected in failures or expected in reduced_failures
         print("  %s  %s -> %s" % ("ok  " if named else "FAIL", what,
                                   (", ".join(failures + reduced_failures) or "nothing failed")))
         if not named:
             worst = 1
     if worst == 0:
-        print("self-test ok - every doctored page is caught by the claim it breaks")
+        print("self-test ok - every doctored page is caught by the claim it breaks"
+              + (" (%d outside the %s family were skipped)" % (skip, family)
+                 if skip else ""))
     return worst
 
 
@@ -794,6 +1067,10 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--height", type=int, default=900)
     ap.add_argument("--json", default="")
     ap.add_argument("--self-test", action="store_true")
+    ap.add_argument("--family", default="all", choices=("all", "land", "pace", "lib"),
+                    help="with --self-test, doctor only one family's pages: the landing's "
+                         "world and reduced claims, the arrivals' pacing pair, or the "
+                         "library's fold test and clock")
     a = ap.parse_args(argv)
 
     if not os.path.isdir(a.site):
@@ -804,7 +1081,7 @@ def main(argv: list[str]) -> int:
     tmp = tempfile.mkdtemp(prefix="istor-motion-")
     try:
         if a.self_test:
-            return self_test(chrome, a.site, a.width, a.height, tmp)
+            return self_test(chrome, a.site, a.width, a.height, tmp, a.family)
 
         print("the mechanism, driven: %s at %dpx" % (a.site, a.width))
         failures: list = []
@@ -818,11 +1095,24 @@ def main(argv: list[str]) -> int:
         fdoc = run(chrome, a.site, tmp, "/", a.width, a.height, PACE_FAST,
                    extra=None, tag="pace-fast")
         check_pace(cdoc, fdoc, failures)
+        # The library is a different page on a different pair of shared files, so it is
+        # driven rather than inferred from the landing's behaviour: nothing about the
+        # landing's arrivals would move if `/theme.js` lost its fold test.
+        lcalm = run(chrome, a.site, tmp, "/library/", a.width, a.height, LIB_CALM,
+                    extra=None, tag="lib-calm")
+        lfast = run(chrome, a.site, tmp, "/library/", a.width, a.height, LIB_FAST,
+                    extra=None, tag="lib-fast")
+        check_library(lcalm, lfast, failures)
+        lred = run(chrome, a.site, tmp, "/library/", a.width, a.height,
+                   LIB_REDUCED_SCENARIO,
+                   extra=["--force-prefers-reduced-motion"], tag="lib-reduced")
+        check_library_reduced(lred, failures)
 
         if a.json:
             with open(a.json, "w", encoding="utf-8", newline="\n") as fh:
                 json.dump({"motion": doc, "reduced": rdoc, "calm": cdoc, "fast": fdoc,
-                           "failures": failures}, fh, indent=1)
+                           "library": lcalm, "libraryFast": lfast,
+                           "libraryReduced": lred, "failures": failures}, fh, indent=1)
             print("\nfindings written to %s" % a.json)
 
         print()
@@ -831,8 +1121,9 @@ def main(argv: list[str]) -> int:
                   % (len(failures), CHECKED[0], "\n  ".join(failures)))
             return 1
         band = "%dpx" % doc["heroBottom"] if isinstance(doc.get("heroBottom"), int) else "not measured"
-        print("motion ok - %d claims about the two worlds and the arrivals, verified by "
-              "driving the page rather than by reading it (hero band %s of %s)"
+        print("motion ok - %d claims about the two worlds, the landing's arrivals and "
+              "the library's, verified by driving the pages rather than by reading "
+              "them (hero band %s of %s)"
               % (CHECKED[0], band, doc.get("viewport", "?")))
         return 0
     finally:

@@ -85,7 +85,7 @@ LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
-LIBRARY_STYLES_BYTES = 56514          # 50,980 to 55,112 on 2026-09-20: the
+LIBRARY_STYLES_BYTES = 58263          # 50,980 to 55,112 on 2026-09-20: the
                                       # metric-matched fallback faces and the
                                       # measurement that chose them, so the swap
                                       # does not move the page on a slow link;
@@ -93,7 +93,11 @@ LIBRARY_STYLES_BYTES = 56514          # 50,980 to 55,112 on 2026-09-20: the
                                       # its text selection, light and dark chips;
                                       # 56,514 the same night: cross-document view
                                       # transitions join the two worlds, wordmark
-                                      # named on both sides
+                                      # named on both sides;
+                                      # 58,263 the next morning: the library's
+                                      # blocks arrive on the landing's clock, one
+                                      # multiplier in this shared stylesheet and
+                                      # the fold test in the shared script
 ARTIFACT_FILES = 144                  # 138 + the four phone crops' 16 files + the library
                                       # index, less exhibit-12's eight retired exports
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
@@ -1482,6 +1486,135 @@ def media_block(css: str, query: str) -> str:
     return css[m.end():i - 1]
 
 
+def check_library_arrivals(rep: Report, site: pathlib.Path, docs: dict) -> None:
+    """The library's arrivals, checked where driving a page cannot reach.
+
+    M21 gives every library document the arrivals the landing has, out of a stylesheet
+    and a script those documents share rather than the landing's inlined pair.
+    audit-motion.py drives that: a cold block below the fold, the reader's pace choosing
+    between the authored length and the shorter one, and a reduced-motion run where
+    nothing is marked. Four facts sit outside any single run of it:
+
+      * a marker authored into the HTML would hide real content from a reader whose
+        script never runs, which is the failure this feature's own comment names and
+        the one a hand-edited page would reintroduce;
+      * the script measures the reader's travel over the arrival's authored length
+        while the stylesheet animates for it, so one number lives in two files and no
+        browser notices when they drift apart;
+      * a page that marks a block and never loads the script has arrivals that cannot
+        happen, and it looks exactly like a page that has none;
+      * the rest of the family - a grid's staggered items are the library's own - has
+        to keep reading the clock, because a rule left with a bare duration still
+        animates and would silently stop being paced.
+    """
+    print("\nthe library's arrivals")
+    css = docs.get(site / "styles.css")
+    # theme.js is read from disk rather than from `docs`, which holds the pages and the
+    # stylesheets; the script is the third file this feature depends on.
+    script_path = site / "theme.js"
+    script = script_path.read_text(encoding="utf-8") if script_path.is_file() else None
+    if css is None or script is None:
+        rep.fail("the library's arrivals ship at all",
+                 "styles.css or theme.js is missing from the built site, and every "
+                 "library document links both")
+        return
+
+    marked: list[pathlib.Path] = []
+    authored: list[str] = []
+    for p in sorted(docs):
+        if p.suffix.lower() not in (".html", ".htm"):
+            continue
+        classes = re.findall(r'class="([^"]*)"', docs[p])
+        if not any(re.search(r"\b(reveal|enter)\b", c) for c in classes):
+            continue
+        marked.append(p)
+        if any(re.search(r"\bis-cold\b", c) for c in classes):
+            authored.append(str(p.relative_to(site)))
+
+    if not marked:
+        rep.fail("no marker is authored hidden",
+                 "no built page carries a reveal or enter marker at all, so the library "
+                 "has the arrivals' machinery and nothing to arrive")
+    elif authored:
+        rep.fail("no marker is authored hidden",
+                 f"{len(authored)} page(s) author `is-cold` in the markup "
+                 f"({', '.join(authored[:3])}) - the class is the script's to add, and "
+                 "authored it hides content from a reader whose script never runs")
+    else:
+        rep.ok("no marker is authored hidden",
+               f"{len(marked)} marked pages, none of them carrying `is-cold` in the "
+               "markup: the hidden state is only ever switched on by the script")
+
+    # The landing is the one marked page that does not load the shared script, because
+    # it inlines its own copy of the behaviour; that copy has to be there, since a
+    # marker it could never mark would leave the landing's arrivals unreachable.
+    stranded = [str(p.relative_to(site)) for p in marked
+                if "theme.js" not in docs[p]
+                and not (p == site / "index.html" and "is-cold" in docs[p])]
+    if stranded:
+        rep.fail("every page that marks a block can arrive",
+                 f"{len(stranded)} marked page(s) load no script that could ever mark "
+                 f"them: {', '.join(stranded[:3])} - their arrivals cannot happen, and "
+                 "they look exactly like pages that have none")
+    else:
+        rep.ok("every page that marks a block can arrive",
+               f"{len(marked)} marked pages: {len(marked) - 1} load /theme.js and the "
+               "landing inlines its own copy of the same behaviour")
+
+    # One number, two files: the script's window for the reader's travel and the
+    # stylesheet's transition have to be the same length, or the pacing test measures a
+    # window the arrival does not use.
+    named = re.search(r"var ARRIVE_MS = (\d+);", script)
+    entrance_rule = re.search(r"\.enter,\s*\.reveal\s*\{([^}]*)\}", css, re.S)
+    entrance = (re.search(r"calc\(var\(--arrive\) \* (\d+)ms\)", entrance_rule.group(1))
+                if entrance_rule else None)
+    if not (named and entrance):
+        rep.fail("the library's length is one number in two files",
+                 "missing: " + ", ".join(n for n, m in
+                 (("the script's ARRIVE_MS", named),
+                  ("the .enter/.reveal transition", entrance_rule),
+                  ("its length as a multiple of the clock", entrance)) if not m))
+    elif named.group(1) != entrance.group(1):
+        rep.fail("the library's length is one number in two files",
+                 f"the script measures {named.group(1)}ms and the transition runs "
+                 f"{entrance.group(1)}ms, so the reader's pace is tested against a "
+                 "window the arrival does not use")
+    else:
+        rep.ok("the library's length is one number in two files",
+               f"theme.js's ARRIVE_MS and the .enter/.reveal transition are both "
+               f"{named.group(1)}ms")
+
+    root = re.search(r":root\s*\{[^}]*?--arrive:\s*([\d.]+)\s*;", css, re.S)
+    quick = re.search(r"\.reveal\.is-quick\s*\{[^}]*?--arrive:\s*([\d.]+)", css, re.S)
+    if not root or float(root.group(1)) != 1:
+        rep.fail("the library's clock resolves everywhere",
+                 "no `--arrive: 1` at :root in the library's stylesheet - an undefined "
+                 "custom property inside calc() makes the declaration invalid, so a "
+                 "marker that missed the class would lose its transition entirely")
+    elif not quick or not 0 < float(quick.group(1)) < 1:
+        rep.fail("the library's clock resolves everywhere",
+                 ".reveal.is-quick does not set --arrive to a fraction of the authored "
+                 "clock, so the class the script adds would change nothing")
+    else:
+        rep.ok("the library's clock resolves everywhere",
+               f"--arrive: 1 at :root, and {quick.group(1)} for a block the reader "
+               "arrived at speed")
+
+    # Named, not counted: a check that only counted `var(--arrive)` uses would stay
+    # green while one rule lost its clock and another gained an extra one.
+    required = (("calc(var(--arrive) * 700ms)", "the entrance itself"),
+                ("calc(var(--arrive) * 80ms)", "a grid item's stagger"),
+                ("calc(var(--arrive) * 160ms)", "the grid's third item"))
+    lost = [name for expr, name in required if expr not in css]
+    if lost:
+        rep.fail("every timing in the library's family reads the clock",
+                 f"these lost it: {', '.join(lost)} - a bare duration still animates "
+                 "and would silently stop being paced")
+    else:
+        rep.ok("every timing in the library's family reads the clock",
+               f"{len(required)} named timings, each a multiple of --arrive")
+
+
 def check_10(rep: Report, page_css: str, library_css: str,
              notfound_css: str = "") -> None:
     """The two promises a stylesheet makes to a reader nobody sees.
@@ -1697,7 +1830,12 @@ def check_12(rep: Report, site: pathlib.Path, library_css: str) -> None:
         return
     html = page.read_text(encoding="utf-8")
 
-    ids = set(re.findall(r'<section class="index-group" id="([^"]+)"', html))
+    # The class list is read as a list: the generator marks these groups with one
+    # extra class for their arrival, and a pattern requiring the attribute to hold
+    # exactly "index-group" would report every group as missing while the page was
+    # perfectly correct.
+    ids = set(re.findall(r'<section class="[^"]*\bindex-group\b[^"]*" id="([^"]+)"',
+                         html))
     nav = re.search(r'(<nav class="index-jump"[^>]*>)(.*?)</nav>', html, re.S)
     hrefs = set(re.findall(r'href="#([^"]+)"', nav.group(2))) if nav else set()
     if not nav:
@@ -1896,6 +2034,7 @@ def main(argv: list[str]) -> int:
     check_10(rep, css, library_css, notfound.group(1) if notfound else "")
     check_11(rep, site, library_css)
     check_12(rep, site, library_css)
+    check_library_arrivals(rep, site, docs)
     check_newlines(rep, site)
 
     print()

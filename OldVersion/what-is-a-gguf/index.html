@@ -73,7 +73,7 @@
     <h2>One file, everything included.</h2>
     <p>Before GGUF, running an open model meant collecting the weights, the tokenizer files, and the configuration separately, and hoping the versions matched. GGUF folds all of it into one binary: the <a href="/what-does-7b-mean/">weights</a>, the architecture description, the tokenizer, and the prompt template the model was trained with. The self-containment is what makes local distribution workable, since a model becomes a file you can copy between machines, back up like any document, and load with <a href="/what-is-a-local-llm/">whatever local runtime you use</a>. The files are possible because the model creators publish their weights; <a href="/what-is-open-weight/">what open-weight means</a> covers that side of the exchange.</p>
 
-    <figure class="gguf-anatomy">
+    <figure class="gguf-anatomy reveal">
       <!--#include gguf-anatomy-wide-->
       <!--#include gguf-anatomy-tall-->
       <figcaption>The file's order is fixed by the format; the widths are not to

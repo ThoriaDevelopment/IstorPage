@@ -90,3 +90,77 @@
     else if (mq.addListener) mq.addListener(follow);   /* Safari < 14 */
   }
 })();
+
+/* ── the arrivals (M21) ───────────────────────────────────────────────────────
+ *
+ * The stylesheet carried `.enter` and `.reveal` since the library was built, and
+ * for the same reason the theme control was needed: the classes described an
+ * arrival nothing could trigger. No library page was ever wired to them, which is
+ * why the fix is here rather than in 78 carried pages - this file is the only
+ * shared behaviour every page already loads.
+ *
+ * FOUR DECISIONS, in the same shape as the theme control's above:
+ *
+ * 1. AUTHORED VISIBLE, HIDDEN BY SCRIPT. A block is marked `.is-cold` only if it
+ *    is below the fold when the script runs, so a reader with no script sees the
+ *    finished page and a reader who loads mid-page sees the part they landed on.
+ *    The stylesheet's rule and this one are the same rule written twice, which is
+ *    the failure this file's sibling note in the landing's markup keeps naming; it
+ *    is written twice deliberately, because here the CSS must be safe for pages
+ *    that never load this file.
+ *
+ * 2. ONE CLOCK, AND THE READER'S PACE SETS IT. `--arrive` is the library's single
+ *    multiplier (styles.css declares it), and this script adds `.is-quick` to a
+ *    block when the reader arrived too fast to watch an arrival finish. The test
+ *    is the landing's inequality rather than a threshold picked by feel: the
+ *    authored arrival runs ARRIVE_MS, so a reader moving at `pace` px/ms covers
+ *    pace * ARRIVE_MS px meanwhile, and if that is further than the screen the
+ *    arrival ends off it. Measured, then stated: at 900px this is 1.29 px/ms, which
+ *    a flick sustains and a notched read never reaches.
+ *
+ * 3. THE SAME SAMPLE WINDOW AS THE LANDING. 150ms of scroll samples, trimmed by
+ *    TIME (a window that can hold a stale sample is not a window), with the reading
+ *    stamped so a stopped scroll cannot leave its last speed standing forever. One
+ *    question - how fast is the page moving - and no second listener.
+ *
+ * 4. REDUCED MOTION IS NOT PACE. Under `prefers-reduced-motion: reduce` nothing is
+ *    marked and nothing is observed: the arrivals do not exist, the authored page
+ *    is the finished page, and the stylesheet's own reduced-motion block is a
+ *    second guard for a page that somehow arrived cold.
+ */
+(function () {
+  var blocks = document.querySelectorAll('.enter, .reveal');
+  if (!blocks.length) return;
+  if (!('IntersectionObserver' in window)) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var ARRIVE_MS = 700;   /* the longest authored arrival in this library */
+  var fly = [], pace = 0, paceAt = -1e9;
+
+  addEventListener('scroll', function () {
+    var now = performance.now(), y = window.scrollY;
+    fly.push([now, y]);
+    while (fly.length && now - fly[0][0] > 150) fly.shift();
+    pace = Math.abs(y - fly[0][1]) / Math.max(1, now - fly[0][0]);
+    paceAt = now;
+  }, { passive: true });
+
+  var io = new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (!entries[i].isIntersecting) continue;
+      var block = entries[i].target;
+      if (performance.now() - paceAt < 320 && pace * ARRIVE_MS > window.innerHeight) {
+        block.classList.add('is-quick');
+      }
+      block.classList.remove('is-cold');
+      io.unobserve(block);
+    }
+  }, { rootMargin: '0px 0px -12% 0px' });
+
+  for (var i = 0; i < blocks.length; i++) {
+    var el = blocks[i];
+    if (el.getBoundingClientRect().top < window.innerHeight) continue;
+    el.classList.add('is-cold');
+    io.observe(el);
+  }
+})();

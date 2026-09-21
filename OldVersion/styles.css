@@ -111,6 +111,18 @@
 :root {
   color-scheme: light dark;
 
+  /* The arrivals' clock, declared once for the whole library. It is not a theme
+     token and it does not change between themes: it is the multiplier every
+     duration in the arrival family is written against, and the shared script
+     switches it to .3 when a reader arrives at a block too fast to watch the
+     arrival finish. The landing page declares the same default and the same
+     quick value, and verify-links.py holds the two files to each other, because
+     two halves of one site with clocks that drift apart is the incoherence this
+     is here to prevent. An undefined custom property inside calc() would make a
+     declaration invalid at computed-value time, which means NO transition rather
+     than a short one, so the default has to resolve everywhere. */
+  --arrive: 1;
+
   /* grounds (light) */
   --canvas: #FFFFFF;
   --subtle: #FAFAFA;
@@ -533,8 +545,12 @@ a { color: inherit; }
   margin-top: 3.5rem;
 }
 
-.loop-grid > article.reveal:nth-child(3n + 2) { transition-delay: 0.08s; }
-.loop-grid > article.reveal:nth-child(3n)     { transition-delay: 0.16s; }
+.loop-grid > article.reveal:nth-child(3n + 2) {
+  transition-delay: calc(var(--arrive) * 80ms);
+}
+.loop-grid > article.reveal:nth-child(3n) {
+  transition-delay: calc(var(--arrive) * 160ms);
+}
 
 .loop-icon {
   width: 2.5rem;
@@ -1384,30 +1400,31 @@ a { color: inherit; }
   text-decoration: none;
 }
 
-/* ── scroll reveal (classes are applied by script.js only, so the
-   page renders fully with JavaScript disabled) ─────────────────── */
+/* ── the arrivals (M21) ──────────────────────────────────────────
 
-.enter {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
-}
+   This block used to hide its element at rest and wait for an `on` class from
+   a `script.js` that was never shipped, under a comment promising that the page
+   "renders fully with JavaScript disabled". The comment described the right rule
+   and the code did the opposite: anything carrying `.enter` or `.reveal` would
+   have been invisible with nothing on the page able to fix it. The names now
+   follow the rule the comment claimed and the landing page already keeps - the
+   element is AUTHORED VISIBLE, the shared script switches the hidden state ON
+   (`.is-cold`), and a reader whose script never ran sees the finished page rather
+   than its gaps.
 
-.enter.on {
-  opacity: 1;
-  transform: none;
-}
-
+   The clock is the landing's as well: every duration here is a multiple of
+   `--arrive`, and the script sets it to .3 on a block the reader outran. One
+   multiplier means the whole arrival shortens together, so this can never reorder
+   anything or change what arrives - only how long it takes. */
+.enter,
 .reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+  transition: opacity calc(var(--arrive) * 700ms) var(--ease-out),
+              transform calc(var(--arrive) * 700ms) var(--ease-out);
 }
-
-.reveal.on {
-  opacity: 1;
-  transform: none;
-}
+.enter.is-cold  { opacity: 0; transform: translateY(12px); }
+.reveal.is-cold { opacity: 0; transform: translateY(14px); }
+.enter.is-quick,
+.reveal.is-quick { --arrive: 0.3; }
 
 /* ── breathing on the mark (the only ambient motion) ───────────── */
 
