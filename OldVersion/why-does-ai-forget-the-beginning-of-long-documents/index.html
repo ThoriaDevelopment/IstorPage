@@ -86,6 +86,25 @@
     <h2>Attention is not uniform.</h2>
     <p>Attending to context is a weighting, not a recording. Every token gets some weight, but the weights are not equal, and in long inputs the middle of the text tends to be read least reliably, with the end strongest because it sits nearest the answer being written. This is sometimes called the lost-in-the-middle pattern, and it is a property of how attention distributes over long spans, not a bug a setting removes. It is also why a model can quote a document's conclusion accurately while <a href="/what-is-ai-hallucination/">filling an early chapter's detail with a confident guess</a>: the material was in the window, and still effectively unread.</p>
 
+    <figure class="attention-profile reveal">
+      <!--#include attention-profile-wide-->
+      <!--#include attention-profile-tall-->
+      <figcaption>The same 24-passage document, twice. With the whole document in the
+      window, an early chapter's passage gets a third of the weight the end gets; with
+      retrieval, the four passages that bear on the question fill a window short enough
+      that nothing in it is half-read. The shape is the argument, not a measurement of
+      any one model.</figcaption>
+      <style>
+        .attention-profile { margin: 2rem auto; max-width: 40rem; }
+        .attention-profile svg { width: 100%; height: auto; display: block; }
+        .attention-profile svg[data-variant="tall"] { display: none; }
+        @media (max-width: 560px) {
+          .attention-profile svg[data-variant="wide"] { display: none; }
+          .attention-profile svg[data-variant="tall"] { display: block; }
+        }
+      </style>
+    </figure>
+
     <h2>Why retrieval is the fix.</h2>
     <p>If reading everything makes parts of it unread, read less and read it well. That is what <a href="/what-is-rag/">retrieval-augmented generation</a> does: the document is split into passages at natural boundaries, and for each question only the handful that bear on it are placed in front of the model, where attention is sharpest. The <a href="/how-document-chunking-works/">passage boundaries decide whether those pieces make sense cold</a>, and the citations let you check the answer against the exact text it came from. A question answered from a handful of well-chosen passages beats a question answered from everything, half-attended.</p>
 

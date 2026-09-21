@@ -213,6 +213,8 @@ LIBRARY_INCLUDES = {
     "q4km-anatomy-tall": (SOURCE / "figures" / "q4km-anatomy-tall.svg", "svg"),
     "token-rows-wide": (SOURCE / "figures" / "token-rows-wide.svg", "svg"),
     "token-rows-tall": (SOURCE / "figures" / "token-rows-tall.svg", "svg"),
+    "attention-profile-wide": (SOURCE / "figures" / "attention-profile-wide.svg", "svg"),
+    "attention-profile-tall": (SOURCE / "figures" / "attention-profile-tall.svg", "svg"),
     "temperature-wide": (SOURCE / "figures" / "temperature-wide.svg", "svg"),
     "temperature-tall": (SOURCE / "figures" / "temperature-tall.svg", "svg"),
     # The temperature page's slider. Its markup is markup rather than svg, and it is
