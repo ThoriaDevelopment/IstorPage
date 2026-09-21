@@ -1090,6 +1090,34 @@ the browser rather than asserted: a ~3,000 px/s throw charges about 10° and coa
 before it settles, a notched mouse-wheel read of 1,600 px of page moves the wheel to *exactly* the
 position's angle (0.00° of drift), and the pinion's ratio held at −4.6458 through the whole coast.
 
+**2026-09-21, last: the momentum's three constants are named once, and the notes are checked against
+them.** `SPIN_CAP = 200`, `SPIN_HALF = 160`, `SPIN_MIN = 1.5` now sit in one place, read by the hand,
+the release and the flywheel, because three inputs writing their own literals is how one of them gets
+tuned alone. The link gate recomputes what the notes claim from those constants — the flick's sweep
+(v₀h/ln2 = 46.2°, and the note says about 46), the settling time (200 → 1.5 deg/s at a 160 ms half-life
+is **1.13 s**, and the notes now say *about* a second rather than *under* one, which is what they said
+until the arithmetic was checked), and both angle mappings (80/10 = 8°, 10/10 = 1°). **81 assertions
+now**, and the clause was proven failable in seven dimensions before it shipped: a tuned cap, a tuned
+half-life, an inflated sweep, the old settling wording, a changed mapping, a bare literal beside a named
+constant, and a deleted note each fail by name.
+
+**Testing the flywheel turned up a design flaw rather than a code one.** Speed measured *per event*
+cannot tell a flick from a teleport: a mouse wheel hands over its whole 100px notch as one event, and so
+does a PageDown, and so does a browser that coalesced several scrolls into a single delivery, and each
+of those read as a fast gesture while the reader was making none. The first gate to be written read an
+instantaneous speed and charged every one of them; the second decayed the speed by elapsed time, which
+still charged a single 500px delivery. The third reads the speed over a **window of real time** and
+requires **continued motion** in it: three samples spanning at least 60ms inside a 150ms window, so
+only a stream of events (a trackpad flick, a wheel thrown hard) sustains, while a notch, a key or a
+coalesced jump fails the test. The measured behaviour, driven through the handler with controlled
+timings because this machine's compositor coalesces and stalls scroll events: a notched read of 600px
+and two page-sized jumps move the wheel **0.00° beyond the position's angle**, and a sustained flick
+charges ~10° and coasts, with the pinion's ratio held at −4.6458 at every sample. The gate fails in the
+safe direction, which is the property worth naming: when the input is ambiguous the wheel is calm.
+Writing it also caught a bug in its own window: trimming samples by count kept one old enough to belong
+to a different gesture under the window's floor, and two page-sized jumps 400ms apart read as
+1.75 px/ms of continued motion and charged 11°.
+
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
 
@@ -1109,7 +1137,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M13** | **The reading log fills in** | act 4 enters | 140ms apart, ticks last | the act's claim is that you watch it read (§7.6) |
 | **M14** | **The hero's mechanism** | the reader's own scroll through the hero | 8° of the great wheel, 37° of each pinion | the world turns because the reader moved, not because the page did (§2.2) |
 | **M18** | **Both worlds answer the hand** | dragging the ground (mouse or pen) | live, then momentum ≤200°/s halving every 160ms | §2.2's world is a place, and a place can be taken hold of; one factory, one writer, one ratio |
-| **M19** | **The flywheel** | the speed of the reader's own scroll | charged above ~350 px/s, coasts ~13° and settles inside a second | the world has mass: the fast gesture is charged and the slow read is left perfectly still (adaptive pace) |
+| **M19** | **The flywheel** | the speed of the reader's own scroll, read over a window | charged above 1 px/ms sustained across three samples spanning 60ms+ in a 150ms window; coasts ~11° at a 3,000 px/s throw and settles in about a second | the world has mass: the fast gesture is charged and the slow read is left perfectly still (adaptive pace) |
 
 ### 7.1 M2 — the hero sequence, in detail
 

@@ -75,6 +75,12 @@ NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 NOT_AN_ARTICLE = {"library"}
 LIBRARY_TOC = NOT_A_PAGE | NOT_AN_ARTICLE
 
+# The authored page, as a path from the repo root. Every other check in this file
+# reads the ARTIFACT; the momentum clause reads the SOURCE, because the notes that
+# quote the mechanism's constants are markup comments and `inline_markup()` strips
+# them on the way into the build. Prose in the source, behavior in the artifact.
+SOURCE = pathlib.Path("Source")
+
 LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
@@ -1085,6 +1091,127 @@ def check_gears(rep: Report, page: str) -> None:
                 break
 
 
+def check_momentum(rep: Report, source: str) -> None:
+    """The numbers the notes quote, recomputed from the constants they describe.
+
+    Every other clause in this file compares one artifact against another. This
+    one compares the PAGE against its own account of itself, which is the only
+    promise in the project that nothing was checking: the notes above the script
+    say the wheel's speed is capped at 200 deg/s and halves every 160ms, that a
+    hard flick carries it about 46 degrees and settles in about a second, and
+    that the hero's scroll maps to eight degrees of the great wheel. Every one of
+    those is arithmetic on constants in the file below them, and every one of
+    them can quietly become a lie the moment somebody tunes the motion.
+
+    It already had. The notes said a flick "settles in under a second" while the
+    arithmetic says 1.13s: cap 200 deg/s decaying to the 1.5 deg/s settle
+    threshold at a 160ms half-life. That is the whole point of the check, and it
+    is checked rather than eyeballed: the constants are named once in the script,
+    the quoted numbers are read out of the prose, and the derived quantities are
+    computed here. If the prose changes shape the check fails and says so rather
+    than passing silently, which is how the ratio clause behaves too.
+    """
+    print("\nthe momentum the notes quote")
+
+    named = re.search(r"var SPIN_CAP = ([\d.]+), SPIN_HALF = ([\d.]+), SPIN_MIN = ([\d.]+);",
+                      source)
+    if not named:
+        rep.fail("the momentum is named once",
+                 "the script no longer declares SPIN_CAP/SPIN_HALF/SPIN_MIN in the "
+                 "form this check reads — teach it the new form, do not drop the check")
+        return
+    cap, half, floor = (float(g) for g in named.groups())
+    rep.ok("the momentum is named once",
+           f"cap {cap:g} deg/s, half-life {half:g}ms, settled under {floor:g} deg/s")
+
+    # One cap and one half-life, used by every input. A second literal is how two
+    # inputs start disagreeing about how fast the same wheel may turn.
+    bare = [lit for lit in ("Math.max(-200", "Math.min(200", "dt / 160", "> 1.5")
+            if lit in source.replace(named.group(0), "")]
+    if bare:
+        rep.fail("no second copy of a constant",
+                 f"the script still writes {bare} beside the named values, so one "
+                 "input can be tuned and the other not")
+    else:
+        rep.ok("no second copy of a constant",
+               "every clamp and half-life reads SPIN_CAP / SPIN_HALF / SPIN_MIN")
+
+    # The phrase wraps in the source, so the whitespace is written as whitespace
+    # rather than as a space: a note that reflows must not read as a deleted note.
+    quoted = re.findall(r"capped at ([\d.]+) deg/s and\s+halv\w*\s+every ([\d.]+)ms", source)
+    if len(quoted) < 2:
+        rep.fail("the notes quote the code's momentum",
+                 f"{len(quoted)} note(s) state the cap and half-life where two should "
+                 "(M18's for the hand, M19's for the flywheel) — either a note lost "
+                 "the numbers or changed their wording past what this check reads")
+    else:
+        wrong = [(c, h) for c, h in quoted if (float(c), float(h)) != (cap, half)]
+        if wrong:
+            rep.fail("the notes quote the code's momentum",
+                     f"the notes say {wrong} while the code says {cap:g} deg/s halving "
+                     f"every {half:g}ms — a reader would be told the wrong wheel")
+        else:
+            rep.ok("the notes quote the code's momentum",
+                   f"{len(quoted)} notes state {cap:g} deg/s and {half:g}ms, as the code does")
+
+    # The sweep of a capped flick: the integral of v0 * 2^-(t/h) is v0*h/ln2.
+    sweep = cap * (half / 1000) / math.log(2)
+    said = re.findall(r"about ([\d.]+) degrees", source)
+    if not said:
+        rep.fail("the flick's sweep is the arithmetic's own",
+                 "no note states the sweep in the form this check reads")
+    elif abs(float(said[0]) - sweep) > 1:
+        rep.fail("the flick's sweep is the arithmetic's own",
+                 f"the note says about {said[0]} degrees and the constants give "
+                 f"{sweep:.1f} — {cap:g} deg/s halving every {half:g}ms")
+    else:
+        rep.ok("the flick's sweep is the arithmetic's own",
+               f"{cap:g} x {half / 1000:g}s / ln2 = {sweep:.1f}, and the note says about {said[0]}")
+
+    # Settling: how long the cap takes to fall to the settle threshold. The note
+    # said "under a second" until this clause was written; it is 1.13s.
+    settle = (half / 1000) * math.log(cap / floor, 2)
+    if re.search(r"settles (?:in |inside )?under a second", source):
+        rep.fail("settling takes the time the note claims",
+                 f"a note promises under a second and the constants give {settle:.2f}s "
+                 f"({cap:g} deg/s to {floor:g} deg/s at a {half:g}ms half-life)")
+    elif not re.search(r"settles (?:in |inside )about a second", source):
+        rep.fail("settling takes the time the note claims",
+                 "no note states the settling time in the form this check reads")
+    else:
+        rep.ok("settling takes the time the note claims",
+               f"{cap:g} deg/s to {floor:g} deg/s at a {half:g}ms half-life is "
+               f"{settle:.2f}s, which is the about a second the notes say")
+
+    # The two angle mappings, against the notes that state them in words.
+    words = {w: i for i, w in enumerate(
+        ("zero", "one", "two", "three", "four", "five", "six",
+         "seven", "eight", "nine", "ten", "eleven", "twelve"), 0)}
+    for label, expr, said_re, said in (
+            ("the hero's scroll maps to the degrees its note states",
+             r"window.scrollY / heroBottom\) \* (\d+)\) / 10",
+             r"eight\s+degrees\s+across the whole", "eight"),
+            ("the poster's scroll maps to the degrees its note states",
+             r"closeTop\) / closeRange\)\) \* (\d+)\) / 10",
+             r"one\s+(?:slow\s+)?degree\s+(?:of the crown\s+)?across the poster's",
+             "one")):
+        m = re.search(expr, source)
+        if not m:
+            rep.fail(label,
+                     "the mapping no longer has the form this check reads — teach "
+                     "it the new form, do not drop the check")
+            continue
+        degrees = float(m.group(1)) / 10
+        if not re.search(said_re, source):
+            rep.fail(label, f'the note no longer states "{said}" in words')
+        elif abs(degrees - words[said]) > 1e-9:
+            rep.fail(label,
+                     f"the mapping is {degrees:g} degrees and the note says {said}")
+        else:
+            plural = "degree" if degrees == 1 else "degrees"
+            rep.ok(label, f"{m.group(1)}/10 = {degrees:g} {plural}, and the note says {said}")
+
+
 def check_9(rep: Report, site: pathlib.Path,
             docs: dict[pathlib.Path, str]) -> None:
     print("\n9  library integrity")
@@ -1606,6 +1733,13 @@ def main(argv: list[str]) -> int:
     check_7(rep, page, css)
     check_8(rep, page)
     check_gears(rep, page)
+    source_path = SOURCE / "index.html"
+    if not source_path.is_file():
+        rep.fail("the notes can be read at all",
+                 f"{source_path} is missing, so nothing compares the code to the "
+                 "numbers its notes quote")
+    else:
+        check_momentum(rep, source_path.read_text(encoding="utf-8"))
     check_9(rep, site, docs)
     library_css = (site / "styles.css").read_text(encoding="utf-8")
     notfound = re.search(r"<style\b[^>]*>(.*?)</style>",

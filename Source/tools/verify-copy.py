@@ -119,19 +119,16 @@ TELLS: dict[str, list[str]] = {
 # Hits that are in the copy on purpose. Keyed by (group, the matched text) and
 # pointing at the one page it is allowed on, so a second use of the same phrase
 # anywhere else still fails.
-ALLOWED: dict[tuple[str, str], tuple[str, str]] = {
-    ("vocabulary", "leverage"): (
-        "what-is-prompt-engineering",
-        "\"real leverage over the shape of an answer and no leverage over its "
-        "truth\": the concrete noun, not the corporate verb, and the repetition "
-        "is the sentence's whole construction",
-    ),
-    ("negative-parallelism", "more than just"): (
-        "what-is-a-gguf",
-        "\"encodes more than just the bit depth\": a quantity the code carries, "
-        "not the \"more than just a tool, it is\" device the skill names",
-    ),
-}
+#
+# Two entries lived here until 2026-09-21 and were dropped, which is the point of
+# insisting that an entry MATCH: both excused a phrase that was later rewritten,
+# so leaving them would have kept a licence open for a hit no longer present. The
+# lesson is that an allow-list is a licence with an expiry, and the expiry is the
+# text itself: "real leverage over the shape of an answer" (the concrete noun,
+# not the corporate verb) and "encodes more than just the bit depth" (a quantity
+# the code carries) both became plainer sentences, and the entries had nothing
+# left to excuse.
+ALLOWED: dict[tuple[str, str], tuple[str, str]] = {}
 
 # ------------------------------------------------- check 11: the release claims
 # §10.4, executable. Deliberately narrow: an openness term in the same SENTENCE
