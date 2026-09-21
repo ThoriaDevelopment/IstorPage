@@ -83,6 +83,24 @@
     <h2>Text as coordinates.</h2>
     <p>A computer cannot compare two paragraphs directly, but it can compare two lists of numbers without effort. An embedding model reads a passage and outputs one such list, often several hundred values long, chosen so that meaning maps to position: two passages about the same finding land near each other even if one says efficacy and the other says how well it worked. Nothing magical sits in the numbers. They are the residue of a model trained on enormous amounts of text, and their nearness is a usable stand-in for sameness of subject.</p>
 
+    <figure class="embedding-map reveal">
+      <!--#include embedding-map-wide-->
+      <!--#include embedding-map-tall-->
+      <figcaption>The same library, drawn as positions. Two passages about one finding
+      sit nearest each other while saying different words; keywords reach the note
+      that shares the wording, and nearness reaches the subject across it. The
+      positions are the argument, not a model's own coordinates.</figcaption>
+      <style>
+        .embedding-map { margin: 2rem auto; max-width: 40rem; }
+        .embedding-map svg { width: 100%; height: auto; display: block; }
+        .embedding-map svg[data-variant="tall"] { display: none; }
+        @media (max-width: 560px) {
+          .embedding-map svg[data-variant="wide"] { display: none; }
+          .embedding-map svg[data-variant="tall"] { display: block; }
+        }
+      </style>
+    </figure>
+
     <h2>Why search needs them.</h2>
     <p>Keyword search has an honest strength and an honest limit. It never misses an exact term, and it cannot see a paraphrase. Ask about drug safety while a paper says adverse events, and keywords return nothing while the meaning sits right there; search built on this trick is called <a href="/what-is-semantic-search/">semantic search</a>, and it is the other half of the pairing. This is why <a href="/what-is-rag/">retrieval-augmented generation</a> systems run both searches together: keywords for the terms you actually used, embeddings for the ones you did not. The store that files those embeddings and answers the near-neighbor question is <a href="/what-is-a-vector-database/">a vector database</a>, which on a personal scale is smaller and simpler than the name sounds. In Istor the two searches are blended, so a quoted phrase still finds its source and a reworded concept still finds its passage.</p>
 
