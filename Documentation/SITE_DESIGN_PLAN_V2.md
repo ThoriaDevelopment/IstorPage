@@ -284,6 +284,17 @@ M14 drives — so the mechanism is a geared drawing and not a drawing of gears. 
 --self-test` asserts the invariant at 0°, 2°, 4° and 8° and asserts that flipping the pinion's sense
 breaks it, because a check that cannot fail is not a check.
 
+**The direction is asserted too, and from the drawing rather than from the script.** The generator's
+self-test proves its own arithmetic with a flipped sense; nothing until now connected the *script's*
+operator to the kind of pair the drawing holds. `verify-links.py` measures it from the figure: pitch
+radii from the tooth circles the generator drew, centre distance from the pivots it placed, so a pair
+sits either at R₁+R₂ (external, the pinions turning opposite ways) or at R₁−R₂ (internal, turning the
+same way). The hero measures 613.70 = 505.00 + 108.70 and the close 526.28 = 720.00 − 193.72, which is
+why the first world's pinions are negated in the script and the second's are not. Flip either sign, or
+move either pivot so the pair is neither mesh, and the build fails by name. The witness is a file the
+script never writes, so it is a second opinion and not a restatement — and a turn the reader can take to
+any angle makes it load-bearing rather than decorative.
+
 **Two pinions ride one wheel, and that is the drawing's choice rather than a claim about the train.**
 Nothing on the page says which wheel drives which, the figure carries no title, no caption and
 `aria-hidden`, and it is the one place in this artwork that is arranged rather than observed. The

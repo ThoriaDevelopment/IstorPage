@@ -46,6 +46,7 @@ from __future__ import annotations
 import html as htmllib
 import importlib.util
 import pathlib
+import math
 import re
 import sys
 import unicodedata
@@ -936,6 +937,24 @@ def check_gears(rep: Report, page: str) -> None:
     with no error raised anywhere: the rAF keeps running and the attribute keeps
     being set, to nonsense. A pivot that cannot be parsed is that bug caught at
     build time.
+
+    The third clause is the direction, and it is the one clause whose two
+    witnesses are genuinely independent. WHICH WAY does the pinion turn? The
+    script answers with an operator: the hero's pinions ride OUTSIDE the great
+    wheel so their rotation is negated (-turn * RATIO), while the close's pinion
+    rides INSIDE its crown and turns the same way (turn * CLOSE_RATIO). Nothing
+    checked that. Flip either sign and the drawing still renders, the ratio
+    still matches, the pivots still parse, and every gate stays green while one
+    of the two worlds visibly grinds against its teeth.
+
+    The witness is the drawing's own geometry, which cannot be told to lie: two
+    meshing gears with the same module have pitch radii in their tooth counts'
+    proportions, so a pair either sits at R1+R2 (external: they touch, turning
+    opposite ways) or at R1-R2 (internal: one runs inside the other, turning the
+    same way). That is measured here from the tooth circles the generator drew
+    and the pivots it placed, and the script's sign has to agree with it. This
+    is why the clause is worth its bytes: the geometry is not restating the
+    script, it is a second opinion from a file the script never writes.
     """
     print("\nthe two worlds")
 
@@ -988,6 +1007,82 @@ def check_gears(rep: Report, page: str) -> None:
     else:
         rep.ok("every turned group carries its pivot",
                "cx and cy, so the rotation cannot be written around NaN")
+
+    # ---- the direction, measured from the drawing and compared to the operator.
+    # Every group has to be MEASURABLE, not merely present. A group whose tooth
+    # circle goes missing is dropped from the comparison below, and with two
+    # pinions in the hero the other one would keep the check passing while one
+    # of them stopped being looked at at all - the exact shape of a check that
+    # cannot fail. So an unmeasurable group is a failure in its own right.
+    groups: dict[tuple[str, str], list[tuple[float, float, float]]] = {}
+    unmeasured: list[str] = []
+    for m in re.finditer(r"<g\b([^>]*data-(gear|close)-([ab])=\"[^\"]*\"[^>]*)>(.*?)</g>",
+                         page, re.S):
+        attrs, family, which, body = m.group(1), m.group(2), m.group(3), m.group(4)
+        cx = re.search(r'data-(?:gear|close)-cx="([-\d.]+)"', attrs)
+        cy = re.search(r'data-(?:gear|close)-cy="([-\d.]+)"', attrs)
+        tooth = re.search(r'<circle\b[^>]*class="(?:gear|cg)-tooth"[^>]*\br="([\d.]+)"', body)
+        label = re.search(r'data-(?:gear|close)-[ab]="[^"]*"', attrs).group(0)
+        if not (cx and cy and tooth):
+            unmeasured.append(label)
+            continue
+        groups.setdefault((family, which), []).append(
+            (float(cx.group(1)), float(cy.group(1)), float(tooth.group(1))))
+    for label in unmeasured:
+        rep.fail(f"the pitch circle of {label}",
+                 "the group has no tooth circle (or no pivot) to take a pitch "
+                 "radius from, so which way it turns cannot be checked")
+
+    # (script's ratio name, the negated form, the same-direction form)
+    operators = {
+        "hero": ("RATIO", r"-\s*turn \* RATIO", r"(?<![-\w])turn \* RATIO"),
+        "close": ("CLOSE_RATIO", r"-\s*turn \* CLOSE_RATIO", r"(?<![-\w])turn \* CLOSE_RATIO"),
+    }
+    for world, family in (("hero", "gear"), ("close", "close")):
+        big = groups.get((family, "a"), [])
+        small = groups.get((family, "b"), [])
+        if not big or not small:
+            rep.fail(f"the {world}'s mesh direction",
+                     "a group has no tooth circle to measure a pitch radius from, so "
+                     "which way its pinion turns cannot be checked")
+            continue
+        r1 = big[0][2]
+        for (x1, y1, _) in big:
+            for (x2, y2, r2) in small:
+                d = math.hypot(x2 - x1, y2 - y1)
+                external, internal = abs(d - (r1 + r2)), abs(d - (r1 - r2))
+                if min(external, internal) > 0.5:
+                    rep.fail(f"the {world}'s mesh is a mesh",
+                             f"the pivots are {d:.2f} apart while the pitch radii say "
+                             f"{r1 + r2:.2f} (external) or {r1 - r2:.2f} (internal) - "
+                             "neither, so one of the two moved without the other")
+                    break
+                kind = "external" if external < internal else "internal"
+                name, negated_re, same_re = operators[world]
+                negated = bool(re.search(negated_re, page))
+                same = bool(re.search(same_re, page))
+                if not (negated or same):
+                    rep.fail(f"the {world}'s mesh direction",
+                             f"the script no longer writes its pinion's turn in the form "
+                             f"this check reads (a `turn * {name}` term) - teach it the "
+                             "new form, do not drop the check")
+                    break
+                wants_negated = kind == "external"
+                if negated != wants_negated:
+                    rep.fail(f"the {world}'s pinion turns the way its geometry says",
+                             f"the drawing measures an {kind} mesh ({d:.2f} = "
+                             f"{r1:.2f} {'+' if wants_negated else '-'} {r2:.2f}), which "
+                             + ("turns the pinion the OPPOSITE way" if wants_negated
+                                else "turns the pinion the SAME way")
+                             + ", and the script "
+                             + ("turns it" if negated else "does not turn it")
+                             + " that way: one of the two worlds would grind")
+                else:
+                    rep.ok(f"the {world}'s pinion turns the way its geometry says",
+                           f"{kind}: {d:.2f} = {r1:.2f} "
+                           f"{'+' if wants_negated else '-'} {r2:.2f}, and the script "
+                           + ("negates" if negated else "does not negate") + " the ratio")
+                break
 
 
 def check_9(rep: Report, site: pathlib.Path,
