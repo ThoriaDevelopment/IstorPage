@@ -75,7 +75,14 @@
   <div class="hero-world"><!--#include hero-gears--></div>
 
   <div class="wrap">
-    <h1>It shows you <span class="h1-see">what it saw</span>.</h1>
+    <!-- M23 · The masked line reveal. The span is the mask (overflow clip), the
+         inner blocks the two lines that rise into it, one after the other. The
+         break is the one the 16ch measure already forces at every width ("It
+         shows you" is 12ch; adding "what" exceeds it), so the authored lines and
+         the wrapped rendering agree everywhere. Typed as spans so an h1 keeps
+         only phrasing content inside it. -->
+    <h1><span class="h1-reveal"><span class="h1-line">It shows you</span>
+      <span class="h1-line"><span class="h1-see">what it saw</span>.</span></span></h1>
     <!-- The lede is one line on purpose. The genre's heroes run a 3-7 word
          headline over a subhead of one line (Freebuff's is six words), and the
          full value proposition is acts 2 and 3's job -- it was duplicated here
@@ -1253,6 +1260,24 @@
 <script>
 (function () {
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // M23 · the hero's own arrival. Every other arrival on this page is armed
+  // cold only for blocks BELOW the fold (M3's loop skips anything already on
+  // screen, so no reader ever sees a flash); the hero is above the fold by
+  // definition, so it was the one block that never arrived at all. Its arm
+  // happens HERE, before any other work, so is-cold is on the field before the
+  // first paint and the entrance reads as the page's opening move rather than
+  // a correction. Same authored-visible contract: reduced motion never arms
+  // it, and a reader without script sees the finished hero.
+  var heroField = document.querySelector('.field.hero');
+  if (heroField && !reduced) {
+    heroField.classList.add('is-cold');
+    // Two frames: the first paints the cold state, the second releases it, so
+    // the transition runs from a state the screen has actually shown.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { heroField.classList.remove('is-cold'); });
+    });
+  }
 
   var paintPoster = null;   // M6's parallax; set below, called by the nav's scroll
 

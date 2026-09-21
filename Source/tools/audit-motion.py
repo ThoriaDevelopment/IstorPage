@@ -289,10 +289,13 @@ REDUCED_SCENARIO = r"""
   w.dispatchEvent(new w.PointerEvent('pointermove', { pointerId: 5, pointerType: 'mouse',
     buttons: 1, clientX: cx + 220, clientY: cy + 140, bubbles: true }));
   await wait(200);
+  const line = d.querySelector('.hero .h1-reveal .h1-line');
   return { reduced: w.matchMedia('(prefers-reduced-motion: reduce)').matches,
            worldPresent: true,
            wroteTransform: wheel.hasAttribute('transform'),
-           scrolled: Math.round(w.scrollY) };
+           scrolled: Math.round(w.scrollY),
+           heroColdArmed: hero.classList.contains('is-cold'),
+           lineAtRest: line ? String(getComputedStyle(line).transform) : 'absent' };
 })(d, w)
 """
 
@@ -569,6 +572,117 @@ DWELL_CLAIMS = [
 ]
 
 
+
+
+# M23 asks the question first paint asks: what does the page's OPENING look
+# like, and can it be broken silently? The window's sequence (M2) was always
+# verified implicitly by the world runs; the hero's words were never verified at
+# all, because before M23 they did not move. The scenario runs in real time like
+# every other one: it reads the arrived state off the words, records the order
+# they first become visible in, measures the mask's room around the line, then
+# re-arms the cold state and demands the arrival happen a second time - a class
+# the page itself re-adds must not be a one-way door.
+HERO_SCENARIO = r"""
+(async (d, w) => {
+  const hero = d.querySelector('.hero');
+  const lines = Array.from(d.querySelectorAll('.hero .h1-reveal .h1-line'));
+  const lede = d.querySelector('.hero .lede');
+  const cta = d.querySelector('.hero .cta');
+  const cue = d.querySelector('.hero .scroll-cue');
+  const world = d.querySelector('.hero-world');
+  if (!hero || !lines.length || !lede || !cta || !cue || !world) {
+    return { error: 'the arrival scenario needs the hero\'s words: hero=' + !!hero +
+                    ' lines=' + lines.length + ' lede=' + !!lede + ' cta=' + !!cta +
+                    ' cue=' + !!cue + ' world=' + !!world };
+  }
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const state = () => {
+    const s = (el) => {
+      const cs = getComputedStyle(el);
+      return { op: cs.opacity, tf: cs.transform };
+    };
+    return { line1: s(lines[0]), line2: s(lines[1]), lede: s(lede),
+             cta: s(cta), cue: s(cue), world: s(world) };
+  };
+  const ty = (st) => {
+    if (st.tf === 'none') return 0;
+    const m = /matrix\(([^)]+)\)/.exec(st.tf);
+    return m ? parseFloat(m[1].split(',')[5]) : 999;
+  };
+  const atRest = (st) => parseFloat(st.op) >= 0.95 && Math.abs(ty(st)) < 2;
+  // Both measures mean the same thing: essentially arrived. An element is
+  // marked at 90% opacity just as a line is marked within 3px of rest -
+  // comparing a line's 97% point against a fade's 50% point would interleave
+  // two performers whose designed order is strict.
+  const visible = (st) => parseFloat(st.op) >= 0.9 && Math.abs(ty(st)) < 3;
+  const lineVisible = visible; // the mask holds a line's opacity at 1, so the
+                               // opacity half is vacuous for it - one shared
+                               // predicate so the measure cannot drift apart
+
+  // The harness has already waited out its settle (700ms), so the entrance is
+  // in flight NOW. Record when each performer first becomes visible; the mask
+  // hides the line's opacity (always 1), so its visibility is the transform.
+  const t0 = performance.now();
+  const firsts = {};
+  let seen = { line1: false, line2: false, lede: false, cta: false, cue: false };
+  const poll = setInterval(() => {
+    const s = state();
+    const mark = (k, ok) => {
+      if (!seen[k] && ok) { seen[k] = true; firsts[k] = Math.round(performance.now() - t0); }
+    };
+    mark('line1', lineVisible(s.line1));
+    mark('line2', lineVisible(s.line2));
+    mark('lede', visible(s.lede));
+    mark('cta', visible(s.cta));
+    mark('cue', visible(s.cue));
+  }, 40);
+
+  await wait(1700);
+  clearInterval(poll);
+  const arrived = state();
+  const mask = d.querySelector('.hero .h1-reveal');
+  const mr = mask.getBoundingClientRect();
+  const room = (el) => {
+    const lr = el.getBoundingClientRect();
+    return { top: Math.round((lr.top - mr.top) * 10) / 10,
+             bottom: Math.round((mr.bottom - lr.bottom) * 10) / 10 };
+  };
+  const result = {
+    arrived: {
+      line1: atRest(arrived.line1), line2: atRest(arrived.line2),
+      lede: atRest(arrived.lede), cta: atRest(arrived.cta), cue: atRest(arrived.cue),
+      world: atRest(arrived.world),
+    },
+    firsts: firsts,
+    maskRoom: { line1: room(lines[0]), line2: room(lines[1]) },
+  };
+
+  // Re-arm the cold state and hold it long enough for the hiding to finish
+  // (the lede's own clock is 560ms of delay plus 560ms of travel; the cue's is
+  // 1360ms), then release and demand the arrival again.
+  hero.classList.add('is-cold');
+  await wait(1450);
+  const cold = state();
+  result.cold = {
+    line1Down: Math.abs(ty(cold.line1)) > 20,
+    line2Down: Math.abs(ty(cold.line2)) > 20,
+    ledeHidden: parseFloat(cold.lede.op) < 0.05,
+    ctaHidden: parseFloat(cold.cta.op) < 0.05,
+    cueHidden: parseFloat(cold.cue.op) < 0.05,
+    worldHidden: parseFloat(cold.world.op) < 0.05,
+  };
+  hero.classList.remove('is-cold');
+  await wait(1500);
+  const back = state();
+  result.restored = {
+    line1: atRest(back.line1), line2: atRest(back.line2), lede: atRest(back.lede),
+    cta: atRest(back.cta), cue: atRest(back.cue),
+  };
+  return result;
+})(d, w)
+"""
+
+
 def check_dwell(doc: dict, failures: list) -> None:
     """M22's behaviour, asserted. The tooth is 360/223 and the interlock is
     3.3s: both are held here against the page, not against a note."""
@@ -624,6 +738,62 @@ SETTLE_MAX = 0.1          # the last write the momentum is allowed to make
 # confident it sounds. A claim that is not counted is a claim that can be deleted
 # without the total moving, which is what the count is for.
 CHECKED = [0]
+
+
+
+
+# M23's claims, and the tuple the doctors read their family from. The reduced
+# world's claim lives in REDUCED_CLAIMS, where the reduced scenario can carry it.
+HERO_CLAIMS = (
+    "the hero's words arrive with the page",
+    "the arrival is ordered: line1, line2, lede, CTA, cue",
+    "the mask leaves the lines room to breathe",
+    "is-cold hides the hero's arrival again",
+    "released, the hero arrives a second time",
+)
+
+
+def check_hero(doc: dict, failures: list) -> None:
+    """M23's claims, read off the hero the way a reader meets it: as a state."""
+    def ok(label, good, detail=""):
+        CHECKED[0] += 1
+        print("  %s  %-58s %s" % ("ok  " if good else "FAIL", label, detail))
+        if not good:
+            failures.append(label)
+
+    if "error" in doc:
+        ok("the arrival scenario ran", False, doc["error"])
+        return
+    a = doc.get("arrived", {})
+    keys = ("line1", "line2", "lede", "cta", "cue", "world")
+    ok("the hero's words arrive with the page",
+       all(a.get(k) for k in keys),
+       "at rest: " + ", ".join("%s %s" % (k, "yes" if a.get(k) else "NO") for k in keys))
+    f = doc.get("firsts", {})
+    order = [f.get(k) for k in ("line1", "line2", "lede", "cta", "cue")]
+    ok("the arrival is ordered: line1, line2, lede, CTA, cue",
+       all(t is not None for t in order)
+       and all(order[i] <= order[i + 1] + 40 for i in range(4)),
+       "first visible at %s ms on the scenario's own clock (40ms poll grace)" % order)
+    m = doc.get("maskRoom", {})
+    tops = [(m.get(k) or {}).get("top", -1) for k in ("line1", "line2")]
+    bottoms = [(m.get(k) or {}).get("bottom", -1) for k in ("line1", "line2")]
+    ok("the mask leaves the lines room to breathe",
+       min(tops) >= 2 and min(bottoms) >= 2,
+       "the lines clear their mask by %s/%s px above and %s/%s px below at rest - "
+       "the y in 'you' paints past the 1.06 line box, so the clip window is "
+       "padded 0.14em for it" % (tops[0], tops[1], bottoms[0], bottoms[1]))
+    c = doc.get("cold", {})
+    ckeys = ("line1Down", "line2Down", "ledeHidden", "ctaHidden", "cueHidden",
+             "worldHidden")
+    ok("is-cold hides the hero's arrival again",
+       all(c.get(k) for k in ckeys),
+       "re-armed: " + ", ".join("%s %s" % (k, "hidden" if c.get(k) else "VISIBLE")
+                                for k in ckeys))
+    r = doc.get("restored", {})
+    ok("released, the hero arrives a second time",
+       all(r.get(k) for k in ("line1", "line2", "lede", "cta", "cue")),
+       "the same words at rest again - is-cold must not be a one-way door")
 
 
 def check(doc: dict, failures: list) -> None:
@@ -702,6 +872,10 @@ def check_reduced(doc: dict, failures: list) -> None:
     ok("in the reduced world nothing is written",
        not doc.get("wroteTransform"),
        "after a flick and a drag, and the page still scrolled %s px" % doc.get("scrolled"))
+    ok("in the reduced world the hero never arms its arrival",
+       not doc.get("heroColdArmed")
+       and doc.get("lineAtRest") in ("none", "matrix(1, 0, 0, 1, 0, 0)"),
+       "no cold state on the field, the headline at rest: %s" % doc.get("lineAtRest"))
 
 
 # M20 asks a different question again, and it needs two page loads because a reveal
@@ -787,6 +961,20 @@ PACE_FAST = PACE_SCENARIO.replace("__HOW__", "fast").replace(
 # and `--self-test` insists the audit reports exactly that. A gate whose failures
 # were never seen is a gate nobody can trust; this is the copy of that rule the
 # build-time tools already keep.
+
+# The M23 doctors' anchors, quoted from the page itself (Source/index.html and
+# Source/styles.css). They are module constants rather than inline literals so a
+# doctor's edit is reviewable against the exact text it patches; if the page's
+# wording drifts, the doctor FAILS LOUDLY at self-test time (the patch's `old`
+# text is not in the built file) rather than passing on stale anchors - which is
+# the same contract the other families' doctors keep by declaring their page.
+PAGE_RELEASE = ("      requestAnimationFrame(function () { "
+                "heroField.classList.remove('is-cold'); });")
+PAGE_COLD_LINE = "  .hero.is-cold .h1-reveal .h1-line { transform: translateY(118%); }"
+PAGE_ARM_COND = "  if (heroField && !reduced) {"
+PAGE_MASK_PAD = ("                   padding-block: 0.14em; margin-block: -0.14em; }")
+PAGE_LEDE_D = "  .hero .lede        { transition-delay: calc(var(--arrive) * 560ms),"
+
 SELF_TESTS = [
     # The bug the first window version actually shipped: a window that holds a
     # sample old enough to belong to a different gesture, so a teleport reads as
@@ -890,6 +1078,22 @@ SELF_TESTS = [
      [("heroTurnable && !active && !document.hidden",
        "heroTurnable && !active")],
      "a hidden tab holds the tick"),
+    ("M23 · the release never happens",
+     [(PAGE_RELEASE, "      /* doctor: the cold state is never released, so the words "
+                "never arrive */")],
+     "the hero's words arrive with the page"),
+    ("M23 · a mask that shaves the descender",
+     [(PAGE_MASK_PAD, "                   padding-block: 0em; margin-block: 0em; }")],
+     "the mask leaves the lines room to breathe", ("index.html", "/")),
+    ("M23 · a lede that arrives out of order",
+     [(PAGE_LEDE_D, "  .hero .lede        { transition-delay: calc(var(--arrive) * 5000ms),")],
+     "the arrival is ordered: line1, line2, lede, CTA, cue", ("index.html", "/")),
+    ("M23 · a cold state that never hides the line",
+     [(PAGE_COLD_LINE, "  .hero.is-cold .h1-reveal .h1-line { transform: translateY(0%); }")],
+     "is-cold hides the hero's arrival again"),
+    ("M23 · the arm ignores reduced motion",
+     [(PAGE_ARM_COND, "  if (heroField) {"), (PAGE_RELEASE, "      /* doctor: no release */")],
+     "in the reduced world the hero never arms its arrival"),
 ]
 
 # The claims that need the pacing pair of page loads, so the self-test knows which
@@ -1068,7 +1272,8 @@ LIB_REDUCED_SCENARIO = r"""
 # not evidence about the reduced page and the reverse, so the self-test pays for the
 # load that can catch its patch and no other: a self-test that loads two browsers per
 # patch to prove one thing is a self-test nobody runs.
-REDUCED_CLAIMS = ("in the reduced world nothing is written",)
+REDUCED_CLAIMS = ("in the reduced world nothing is written",
+                  "in the reduced world the hero never arms its arrival",)
 
 # The claims that need the library's pair of page loads.
 LIB_CLAIMS = ("the library hides only what is below the fold",
@@ -1189,9 +1394,11 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
         in_lib = expected in lib_claims
         in_pace = expected in PACE_CLAIMS
         in_dwell = expected in DWELL_CLAIMS
+        in_hero = expected in HERO_CLAIMS
         if ((family == "lib" and not in_lib) or (family == "pace" and not in_pace)
                 or (family == "dwell" and not in_dwell)
-                or (family == "land" and (in_lib or in_pace or in_dwell))):
+                or (family == "hero" and not in_hero)
+                or (family == "land" and (in_lib or in_pace or in_dwell or in_hero))):
             skip += 1
             continue
         broken = os.path.join(tmp, "broken-%d" % i)
@@ -1244,6 +1451,10 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
             ddoc = run(chrome, broken, tmp, "/", width, height, DWELL_SCENARIO,
                        extra=None, tag="st%d-dwell" % i)
             check_dwell(ddoc, failures)
+        elif in_hero:
+            hdoc = run(chrome, broken, tmp, "/", width, height, HERO_SCENARIO,
+                       extra=None, tag="st%d-hero" % i)
+            check_hero(hdoc, failures)
         elif expected in REDUCED_CLAIMS:
             # Only the reduced page can carry this claim, so only it is driven: the
             # world run would cost a browser and could never report this failure.
@@ -1279,10 +1490,11 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--height", type=int, default=900)
     ap.add_argument("--json", default="")
     ap.add_argument("--self-test", action="store_true")
-    ap.add_argument("--family", default="all", choices=("all", "land", "pace", "lib", "dwell"),
+    ap.add_argument("--family", default="all",
+                    choices=("all", "land", "hero", "pace", "lib", "dwell"),
                     help="with --self-test, doctor only one family's pages: the landing's "
-                         "world and reduced claims, the arrivals' pacing pair, or the "
-                         "library's fold test and clock")
+                         "world and reduced claims, the hero's arrival, the arrivals' "
+                         "pacing pair, or the library's fold test and clock")
     a = ap.parse_args(argv)
 
     if not os.path.isdir(a.site):
@@ -1297,6 +1509,11 @@ def main(argv: list[str]) -> int:
 
         print("the mechanism, driven: %s at %dpx" % (a.site, a.width))
         failures: list = []
+        # M23 - the opening moment, driven. ~5.4s of real time, most of it the
+        # courtesy of letting a re-armed cold state finish hiding.
+        hdoc = run(chrome, a.site, tmp, "/", a.width, a.height, HERO_SCENARIO,
+                   extra=None, tag="hero-arrival")
+        check_hero(hdoc, failures)
         doc = run(chrome, a.site, tmp, "/", a.width, a.height, SCENARIO)
         check(doc, failures)
         rdoc = run(chrome, a.site, tmp, "/", a.width, a.height, REDUCED_SCENARIO,

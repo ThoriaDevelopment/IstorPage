@@ -1097,6 +1097,23 @@ h3 {
   stroke-width: 1;
 }
 .hero h1 { max-width: 16ch; }
+/* M23 · the hero's own arrival. The genre's staple: the headline's lines rise
+   out of their own mask and land as type — the first thing the page does is
+   typeset itself, one line after the other. The SPANS here are structural only
+   (a mask must be a block box, and the h1 keeps only phrasing content inside
+   it); the motion itself lives in §15 inside the no-preference guard, on the
+   reader's clock like every other arrival.
+
+   The mask's clip window is padded 0.14em beyond the 1.06 line box and the
+   padding given back as negative margin: at 1.06, glyphs paint outside the
+   line box (the y in "you" descends below it), so an unpadded mask would
+   shave the descender AT REST. The padding also sets the rise distance: 118%
+   is the smallest whole-percentage translation that puts a line fully below
+   the padded window (1.34em window, 0.14em offset), so the cold state shows
+   nothing and the rise has no sliver to pop from. */
+.hero .h1-reveal { display: block; overflow: hidden;
+                   padding-block: 0.14em; margin-block: -0.14em; }
+.hero .h1-reveal .h1-line { display: block; }
 /* The hero's one accent: "what it saw" in azure-lift on the field. It is the
    h1's phrase and the page's promise, lifted the way the genre lifts its key
    phrase (Freebuff: "100% free" in green; two other references do the same).
@@ -1980,6 +1997,46 @@ h3 {
   /* The chips last, at 1500ms — after the prose that carries them has landed. */
   .hero .win .cite      { animation: pop 280ms 1500ms var(--ease) both; }
   .hero .win .rail      { animation: fade 600ms 900ms var(--ease) both; }
+
+  /* M23 · the hero's own arrival, the other half of the opening moment. The
+     window performs its sequence (M2) and now the WORDS arrive to meet it —
+     the headline rises out of its mask, the lede, CTA and cue rise behind it,
+     and the world fades up under both. The delays are one measured order:
+     window bubble 120ms, line 150ms (the page typesets itself first, the way
+     the genre opens), prose 560ms, CTA 680ms, cue 800ms — and the world runs
+     from 0 because it is the ground, not a performer. M20's reader clock
+     (--arrive) scales the whole order without reordering it, exactly as it
+     scales the M16 staggers. The structural mask itself (the spans, the clip
+     window) sits outside this guard next to .hero h1, because a mask is layout
+     and layout is not motion; only what moves is inside here.
+
+     Same contract as M3: authored visible, `is-cold` armed by the page's script
+     before first paint and released two frames later, so a reader without
+     script sees the finished hero and reduced motion never arms it at all. */
+  .hero .h1-reveal .h1-line {
+    transition: transform calc(var(--arrive) * 680ms) var(--ease);
+  }
+  /* The page's staple move, twice: the first line rises, then the second —
+     110ms of step, the same read-as-sequence interval M16 uses. */
+  .hero .h1-reveal .h1-line:nth-of-type(1) { transition-delay: calc(var(--arrive) * 150ms); }
+  .hero .h1-reveal .h1-line:nth-of-type(2) { transition-delay: calc(var(--arrive) * 260ms); }
+  .hero .lede, .hero .cta, .hero .scroll-cue {
+    transition: opacity calc(var(--arrive) * 560ms) var(--ease),
+                transform calc(var(--arrive) * 560ms) var(--ease),
+                color 160ms var(--ease), background-color 160ms var(--ease);
+  }
+  .hero .lede        { transition-delay: calc(var(--arrive) * 560ms),
+                                   calc(var(--arrive) * 560ms), 0ms; }
+  .hero .cta         { transition-delay: calc(var(--arrive) * 680ms),
+                                   calc(var(--arrive) * 680ms), 0ms; }
+  .hero .scroll-cue  { transition-delay: calc(var(--arrive) * 800ms),
+                                   calc(var(--arrive) * 800ms), 0ms; }
+  .hero-world { transition: opacity 900ms var(--ease); }
+  .hero.is-cold .h1-reveal .h1-line { transform: translateY(118%); }
+  .hero.is-cold .lede,
+  .hero.is-cold .cta,
+  .hero.is-cold .scroll-cue { opacity: 0; transform: translateY(14px); }
+  .hero.is-cold .hero-world { opacity: 0; transition: none; }
 
   /* M20 · ONE CLOCK FOR THE ARRIVALS, AND THE READER SETS IT.
 

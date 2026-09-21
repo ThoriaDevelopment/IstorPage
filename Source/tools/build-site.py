@@ -620,9 +620,11 @@ def splice_includes() -> None:
     # and a raw-substring match would reject the page for its own typography.
     # Stripping tags is what verify-copy.py's extractor does for the same
     # reason -- block tags become newlines, inline tags vanish -- so this strip
-    # is the same normalisation the copy gate already trusts. A marker is a
-    # contiguous phrase a reader sees, and a reader does not see tags.
-    marker_text = re.sub(r"<[^>]+>", "", text)
+    # is the same normalisation the copy gate already trusts. Whitespace is
+    # collapsed too, because a reader does not see source newlines: M23's two
+    # authored headline lines render as one sentence. A marker is a contiguous
+    # phrase a reader sees, and a reader does not see tags or line breaks.
+    marker_text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text))
     if MARKER not in marker_text:
         raise BuildError(
             f"the spliced page does not contain its marker string {MARKER!r}.\n"
@@ -710,9 +712,10 @@ def copy_library() -> int:
     for name in LIBRARY_ROOT_FILES:
         copy_file(LEGACY / name, SITE / name)
     # Same text-level match as the splice check above: the h1 carries an
-    # inline span, and the guard asks about the page's words, not its tags.
-    built_text = re.sub(r"<[^>]+>", "",
-                        (SITE / "index.html").read_text(encoding="utf-8"))
+    # inline span, and the guard asks about the page's words, not its tags or
+    # its source newlines (M23's two authored lines render as one sentence).
+    built_text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ",
+                        (SITE / "index.html").read_text(encoding="utf-8")))
     if built_text.find(MARKER) < 0:
         raise BuildError("the library overwrote the new home page")
     return len(pages)

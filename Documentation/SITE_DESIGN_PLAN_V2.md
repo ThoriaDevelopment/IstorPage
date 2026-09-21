@@ -1259,6 +1259,41 @@ A third failure was a gate catching this change rather than a bug: the index's j
 the group sections' class attribute to hold exactly `index-group`, and reported all seven groups as
 missing the moment a `reveal` marker joined the list. The class list is a list.
 
+**2026-09-21, later still: the hero's own arrival (M23).** The survey of the current award set
+confirmed the staple this page never had: every reference hero lands its headline with a masked line
+reveal, and M2's window performed its whole four-and-a-half-second sequence while the words sat there
+already printed - the page opened with a theatre whose cast refused to enter. M23 is the opening the
+genre expects, in the page's own grammar: the headline is typeset rather than faded, two lines
+("It shows you" / "what it saw.") rising each out of its own clip window at 150 and 260ms - the
+110ms step is M16's read-as-sequence interval, applied to the two halves of one sentence - then the
+lede at 560ms, the CTA at 680ms, the cue at 800ms, and the world fading up from 0 because the world
+is the ground the words land on, not a performer on it. The "what it saw" phrase is the h1's one
+accent, in --azure-lift, the way the genre lifts its key phrase. The whole order runs on M20's
+--arrive clock, so a reader who flicks to the hero gets the same order compressed, never reordered.
+
+Three decisions are worth keeping. **The spans are structural and the motion is not**: a mask must be
+a block box and the h1 may hold only phrasing content, so the clip windows live in the layout layer
+outside the reduced-motion guard while every animation stays inside it - under `prefers-reduced-motion`
+the hero is the finished poster, as everywhere else. **The mask is padded 0.14em with the padding
+given back as negative margin**: at the display size's 1.06 line-height, the y in "you" paints past
+its line box, and an unpadded mask would shave the descender at rest - the audit measures the room
+(left 13.2px, right 112.8px at 1440) rather than trusting the note. **The cold state is armed before
+first paint and released two frames later**, the same contract M3 keeps, so a reader without script
+sees the finished hero and the state is re-armable - the audit re-arms it and demands the second
+arrival, because a one-way door would make the feature untestable and unfixable. The build's two
+sentence-marker guards had to learn to compare rendered text with whitespace collapsed rather than
+source bytes: two lines means a newline inside the h1, and the sentence is still the page's sentence.
+
+The measurement lesson, paid for twice: an *order* claim is only honest when every performer is read
+by the same predicate. The first version marked a line "visible" at 3px from rest and a fade at 50%
+opacity, which interleaved performers whose designed order is strict - 50% of a 560ms fade lands
+before a line's 97%-risen moment even though the fade's delay is 310ms later. The claim now reads
+one shared "essentially arrived" predicate (opacity >= 0.9 and transform within 3px) for every
+performer. audit-motion grows a fifth family: a 5.4s real-time scenario that records the arrival
+order, measures the mask's room, re-arms and demands the second arrival, plus a reduced-world claim
+(no cold state on the field at all); five doctors, one per decision; claims 30 -> 36, doctored pages
+21 -> 25. The index grew to **121,099 B / 29,490 gzipped** (92% and 90% of their ceilings).
+
 **2026-09-21, later that day: the library can be searched from inside it (M22).** The directory has
 had a find field since it was built, and it can only find what is on the directory: a reader standing
 on `what-is-a-context-window` who wants `how-to-run-a-model-locally` has to walk back to the door
@@ -1431,6 +1466,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M20** | **The arrivals keep the reader's clock** | the pace the reader arrives at a block with | the family's timings scaled by `--arrive: 0.3` when the arrival would end off screen; the authored clock above 1.25 px/ms | the fast scroll gets an abbreviated entrance and the stopped read gets the whole thing; the order and the content never change |
 | **M21** | **The library's blocks arrive** | the block crossing the fold, and the pace the reader fed it | the landing's clock, from the shared script: 700ms authored, 0.3 when the arrival would end off screen | the 78 carried documents get the craft the landing already had, and a reader who asked for less motion is never marked at all |
 | **M22** | **The dwell: stillness is an input** | the reader's stillness in the hero | three tooth-steps of the great wheel (360/223 each, the drawing's own pitch), 4.2s after stillness begins and 2.6s apart, then rest; any scroll restarts the clock, the hand defers it, a hidden tab holds it, reduced motion never arms it | the mechanism is a clockwork, and a clockwork at rest keeps time - the one reference behaviour the page lacked was a world that lives when nothing drives it; the first tooth waits 4.2s because the motion audit's own coast-and-settle windows end at 3.3s, an interlock the audit measures exactly |
+| **M23** | **The hero's own arrival** | first paint (script-armed, released two frames later) | two masked headline lines rising 150/260ms, lede 560ms, CTA 680ms, cue 800ms, world from 0; the order scales with the reader's clock (M20) and never reorders | the genre's staple opening that this page somehow never had: until now the window performed its sequence while the words sat there already printed; the page's first act is to typeset itself, one line after the other |
 
 ### 7.8 The library's figures
 
