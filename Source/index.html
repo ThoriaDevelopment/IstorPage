@@ -1100,7 +1100,7 @@
      Until now the world only answered the scroll: eight degrees across the whole
      hero. Now the reader can take hold of the great wheel and turn it, and it
      keeps turning when let go, because a mechanism that stops dead under the
-     hand is a picture of one. Three decisions:
+     hand is a picture of one. Four decisions:
 
        * The angle is the pointer's own motion AROUND the wheel's pivot, so the
          wheel turns the way a wheel turns rather than the way a slider slides.
@@ -1123,6 +1123,15 @@
          and settles in under a second: this is a world behind the page's own
          headline, and a thing that keeps spinning in the reader's peripheral
          vision stops being a place and starts being a toy.
+       * THE CLOSE GETS THE SAME HAND, and that was a decision rather than a
+         symmetry. Its note (M14b) says the ending is "a settling, not a second
+         performance" — and that is still exactly what the PAGE does there: one
+         slow degree across the poster's whole scroll range, unchanged. What is
+         added is the reader's turn, and the distinction is the point. A reader
+         who learns in the hero that this world takes the hand and then finds
+         the same machine, at the end, refusing it would read that refusal as
+         the page having stopped rather than as restraint. The machine is the
+         same one; only the page's own voice at the end is quieter.
 
      WHY THESE NOTES LIVE HERE, and it is a rule now rather than a preference.
      The plan's §7 sets a budget for shipped JS, and comments inside `<script>`
@@ -1179,6 +1188,27 @@
     var closeB = closeWorld ? closeWorld.querySelector('[data-close-b]') : null;
     var CLOSE_RATIO = 223 / 60;
     var closeTurn = -1;
+    var closeScrollTurn = 0, closeDragTurn = 0;
+    // M18's second writer. Same shape as the hero's, and deliberately so: the
+    // reader who learned the world is touchable in the hero meets the same
+    // machine at the end, and a machine that ignores the hand it took is worse
+    // than one that never offered. The PAGE still performs only the one slow
+    // settling degree on scroll - what is added is the reader's own turn.
+    var writeClose = function () {
+      if (!closeA) return;
+      var turn = Math.round((closeScrollTurn + closeDragTurn) * 10) / 10;
+      if (turn === closeTurn) return;
+      closeTurn = turn;
+      var cax = closeA.getAttribute('data-close-cx');
+      var cay = closeA.getAttribute('data-close-cy');
+      closeA.setAttribute('transform', 'rotate(' + turn + ' ' + cax + ' ' + cay + ')');
+      if (closeB) {
+        var cbx = closeB.getAttribute('data-close-cx');
+        var cby = closeB.getAttribute('data-close-cy');
+        closeB.setAttribute('transform',
+          'rotate(' + (turn * CLOSE_RATIO) + ' ' + cbx + ' ' + cby + ')');
+      }
+    };
     // The poster element is queried HERE, inside this scope, not left to the
     // M6 block 150 lines down: measure() runs once immediately after this, and
     // a `var poster` that only assigns later would leave closeTop at 0 and
@@ -1272,22 +1302,13 @@
       // M14b · one degree of the crown across the poster's whole scroll range,
       // the pinion 223/60 of that the same way. Rounding to a tenth keeps the
       // attribute writes as rare as the hero's; the range is clamped to 1 so a
-      // poster shorter than the viewport cannot divide by zero.
+      // poster shorter than the viewport cannot divide by zero. M18's input is
+      // summed here exactly as the hero's is, and written by the same one
+      // writer, for the same reason.
       if (closeA && closeRange > 0) {
-        var cturn = Math.round(Math.min(1, Math.max(0,
+        closeScrollTurn = Math.round(Math.min(1, Math.max(0,
           (window.scrollY - closeTop) / closeRange)) * 10) / 10;
-        if (cturn !== closeTurn) {
-          closeTurn = cturn;
-          var cax = closeA.getAttribute('data-close-cx');
-          var cay = closeA.getAttribute('data-close-cy');
-          closeA.setAttribute('transform', 'rotate(' + cturn + ' ' + cax + ' ' + cay + ')');
-          if (closeB) {
-            var cbx = closeB.getAttribute('data-close-cx');
-            var cby = closeB.getAttribute('data-close-cy');
-            closeB.setAttribute('transform',
-              'rotate(' + (cturn * CLOSE_RATIO) + ' ' + cbx + ' ' + cby + ')');
-          }
-        }
+        writeClose();
       }
 
       if (progress) {
@@ -1319,18 +1340,18 @@
     // here - a pointermove event carries its own pointerType, and skipping
     // touch is reading the event the way a keyboard shortcut reads its key.
     // It also keeps a tap's synthetic move from shoving the machine about.
-    // M18's predicate, defined once and read by both of its users: the
-    // pointerdown that starts a turn, and the hover state that says one is
-    // possible here. One predicate because two would drift, and the hand would
-    // end up appearing where the hand does not work. Excluded by selector are
-    // the things with their own pointer: links, buttons, the window, and the
+    // M18's predicate, defined once and read by three users: each world's
+    // pointerdown, and the hover state that says a turn is possible here. One
+    // predicate because several would drift, and the hand would end up
+    // appearing where the hand does not work. Excluded by selector are the
+    // things with their own pointer: links, buttons, the windows, and the
     // prose, which stays selectable.
     var heroGround = world ? world.closest('.hero') : null;
-    var overGround = function (target) {
-      return !!(heroGround && target && heroGround.contains(target) &&
+    var turnables = [];   // filled by makeTurnable below; read by the hover loop here
+    var overGround = function (ground, target) {
+      return !!(ground && target && ground.contains(target) &&
                 !target.closest('a, button, .win, p, h1, li'));
     };
-    var groundShown = false;
     if (world || closeWorld) {
       var drift = { x: 0, y: 0, tx: 0, ty: 0, raf: 0 };
       var driftStep = function () {
@@ -1361,85 +1382,103 @@
         // pointerdown reads, so the hand appears exactly where a turn would
         // start and nowhere else. Written only on a change, so a moving pointer
         // costs no DOM work when the answer is the same as the last frame's.
-        var ground = overGround(e.target);
-        if (heroGround && ground !== groundShown) {
-          groundShown = ground;
-          heroGround.classList.toggle('is-turnable', ground);
+        for (var tu = 0; tu < turnables.length; tu++) {
+          var t = turnables[tu];
+          var over = overGround(t.ground, e.target);
+          if (over !== t.shown) {
+            t.shown = over;
+            t.ground.classList.toggle('is-turnable', over);
+          }
         }
       }, { passive: true });
     }
 
-    // M18 · the mechanism answers the hand. The reasoning, the gating and the
-    // design position are in the markup note that precedes the script; what
-    // ships here is the mechanism itself: one writer for the angle, the
-    // pointer's own motion around the drawing's pivot, momentum that decays.
-    var heroSvg = world && world.querySelector('svg');
-    var heroHero = heroGround;
-    if (heroSvg && gearA && heroHero) {
-      var turning = false, spinVel = 0, spinRaf = 0, lastAngle = 0, lastTime = 0;
-      var pivot = function () {
-        var m = heroSvg.getScreenCTM();
-        var cx = +gearA.getAttribute('data-gear-cx');
-        var cy = +gearA.getAttribute('data-gear-cy');
-        return { x: m.a * cx + m.c * cy + m.e, y: m.b * cx + m.d * cy + m.f };
-      };
-      var spinStep = function (now) {
-        spinRaf = 0;
-        var dt = lastTime ? Math.min(64, now - lastTime) : 16;
-        lastTime = now;
-        heroDragTurn += spinVel * dt / 1000;
-        spinVel *= Math.pow(0.5, dt / 160);   // half the speed every 160ms
-        writeHero();
-        if (Math.abs(spinVel) > 1.5) spinRaf = requestAnimationFrame(spinStep);
-      };
-      var stopSpin = function () {
-        if (spinRaf) cancelAnimationFrame(spinRaf);
-        spinRaf = 0;
-        lastTime = 0;
-      };
-      var onTurnMove = function (e) {
-        var p = pivot();
-        var a = Math.atan2(e.clientY - p.y, e.clientX - p.x) * 180 / Math.PI;
-        var d = a - lastAngle;
-        if (d > 180) d -= 360;   // the wrap at the pivot: a step, not a spin
-        if (d < -180) d += 360;
-        lastAngle = a;
-        heroDragTurn += d;
-        var now = e.timeStamp || performance.now();
-        var dt = Math.max(8, now - lastTime);
-        lastTime = now;
-        spinVel = Math.max(-200, Math.min(200, d / dt * 1000));
-        writeHero();
-      };
-      var onTurnUp = function (e) {
-        if (!turning) return;
-        turning = false;
-        heroHero.classList.remove('is-turning');
-        // The pointer is still wherever the release happened, and the next
-        // move re-answers the hover question; clearing here would flicker.
-
-        window.removeEventListener('pointermove', onTurnMove);
-        window.removeEventListener('pointerup', onTurnUp);
-        window.removeEventListener('pointercancel', onTurnUp);
-        lastTime = 0;
-        if (Math.abs(spinVel) > 1.5) spinRaf = requestAnimationFrame(spinStep);
-      };
-      heroHero.addEventListener('pointerdown', function (e) {
+    // M18 · the worlds answer the hand. ONE implementation, two worlds: the
+    // hero's great wheel and, at the page's end, the same machine's crown. A
+    // second copy for the close would have been the usual cost of symmetry -
+    // two rAF loops, two momentum curves and two places for the mesh ratio to
+    // be got wrong - so the machinery takes its drawing, its pivot attribute
+    // names and its writer, and knows nothing else about either world.
+    var active = null;   // the one turn in progress, if any
+    var pivotScreen = function (t) {
+      var m = t.svg.getScreenCTM();
+      var cx = +t.wheel.getAttribute(t.cx);
+      var cy = +t.wheel.getAttribute(t.cy);
+      return { x: m.a * cx + m.c * cy + m.e, y: m.b * cx + m.d * cy + m.f };
+    };
+    // The spin takes its world as an argument rather than reading `active`: a
+    // release hands the turn over to momentum and, for one frame, there is no
+    // drag in progress for `active` to name. Bound through a closure because
+    // requestAnimationFrame passes a timestamp and nothing else.
+    var spinStep = function (t, now) {
+      t.raf = 0;
+      var dt = t.time ? Math.min(64, now - t.time) : 16;
+      t.time = now;
+      t.spin(t.vel * dt / 1000);
+      t.vel *= Math.pow(0.5, dt / 160);   // half the speed every 160ms
+      if (Math.abs(t.vel) > 1.5) {
+        t.raf = requestAnimationFrame(function (n) { spinStep(t, n); });
+      }
+    };
+    var stopSpin = function (t) {
+      if (t.raf) cancelAnimationFrame(t.raf);
+      t.raf = 0;
+      t.time = 0;
+    };
+    var onTurnMove = function (e) {
+      var t = active;
+      if (!t) return;
+      var p = pivotScreen(t);
+      var a = Math.atan2(e.clientY - p.y, e.clientX - p.x) * 180 / Math.PI;
+      var d = a - t.last;
+      if (d > 180) d -= 360;   // the wrap at the pivot: a step, not a spin
+      if (d < -180) d += 360;
+      t.last = a;
+      t.spin(d);
+      var now = e.timeStamp || performance.now();
+      var dt = Math.max(8, now - t.time);
+      t.time = now;
+      t.vel = Math.max(-200, Math.min(200, d / dt * 1000));
+    };
+    var onTurnUp = function () {
+      var t = active;
+      if (!t) return;
+      active = null;
+      t.ground.classList.remove('is-turning');
+      if (Math.abs(t.vel) > 1.5) spinStep(t, performance.now());
+      else t.time = 0;
+    };
+    // The listeners are global and routed through `active`, attached once rather
+    // than per turn: one drag exists at a time, and the world it belongs to is
+    // the one the pointer went down on.
+    window.addEventListener('pointermove', onTurnMove, { passive: true });
+    window.addEventListener('pointerup', onTurnUp, { passive: true });
+    window.addEventListener('pointercancel', onTurnUp, { passive: true });
+    window.addEventListener('blur', onTurnUp, { passive: true });   // the lost release
+    var makeTurnable = function (ground, svg, wheel, cx, cy, spin) {
+      if (!ground || !svg || !wheel) return;
+      var t = { ground: ground, svg: svg, wheel: wheel, cx: cx, cy: cy,
+                spin: spin, shown: false, vel: 0, raf: 0, last: 0, time: 0 };
+      turnables.push(t);
+      ground.addEventListener('pointerdown', function (e) {
         if (e.pointerType === 'touch' || e.button) return;
-        if (!overGround(e.target)) return;   // their pointer, or not the ground
-        var p = pivot();
-        turning = true;
-        stopSpin();
-        spinVel = 0;
-        lastAngle = Math.atan2(e.clientY - p.y, e.clientX - p.x) * 180 / Math.PI;
-        lastTime = e.timeStamp || performance.now();
-        heroHero.classList.add('is-turning');
-        window.addEventListener('pointermove', onTurnMove, { passive: true });
-        window.addEventListener('pointerup', onTurnUp, { passive: true });
-        window.addEventListener('pointercancel', onTurnUp, { passive: true });
+        if (!overGround(ground, e.target)) return;   // their pointer, not the ground
+        stopSpin(t);
+        var p = pivotScreen(t);
+        active = t;
+        t.vel = 0;
+        t.last = Math.atan2(e.clientY - p.y, e.clientX - p.x) * 180 / Math.PI;
+        t.time = e.timeStamp || performance.now();
+        ground.classList.add('is-turning');
       });
-      window.addEventListener('blur', onTurnUp, { passive: true });   // the lost release
-    }
+    };
+    makeTurnable(heroGround, world && world.querySelector('svg'), gearA,
+                 'data-gear-cx', 'data-gear-cy',
+                 function (d) { heroDragTurn += d; writeHero(); });
+    makeTurnable(closeWorld && closeWorld.closest('.poster'),
+                 closeWorld && closeWorld.querySelector('svg'), closeA,
+                 'data-close-cx', 'data-close-cy',
+                 function (d) { closeDragTurn += d; writeClose(); });
   }
 
   var ask = document.querySelector('.hero .ask');   // M9

@@ -1079,8 +1079,10 @@ h3 {
    because the drawing is `pointer-events: none` and the reader takes hold of
    the ground around the window. `is-turning` comes second so the closed hand
    wins while the turn is happening. */
-.hero.is-turnable { cursor: grab; }
-.hero.is-turning, .hero.is-turning * { cursor: grabbing; }
+.hero.is-turnable,
+.poster.is-turnable { cursor: grab; }
+.hero.is-turning, .hero.is-turning *,
+.poster.is-turning, .poster.is-turning * { cursor: grabbing; }
 .hero-world svg { display: block; width: 100%; height: 100%; }
 /* Three inks, and all three are the field's own tokens. The teeth carry the
    lightest weight because there are 223 of them: at full strength they would be
