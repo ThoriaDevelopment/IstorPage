@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true" focusable="false" class="group-mark" data-group="whether-it-can" data-generated-by="Source/tools/make-group-marks.py - do not hand-edit">
+<circle cx="24" cy="24" r="10.5" fill="none" stroke="currentColor" stroke-width="2.6"/>
+<circle cx="24" cy="24" r="4.2" fill="none" stroke="currentColor" stroke-width="2.6"/>
+<path d="M24 6.5 V13.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M24 34.5 V41.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6.5 24 H13.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M34.5 24 H41.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

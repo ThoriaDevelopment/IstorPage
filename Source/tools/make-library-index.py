@@ -49,6 +49,7 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+FIGURES = HERE.parent / "figures"
 LEGACY = ROOT / "OldVersion"
 SITE = ROOT / "_site"
 
@@ -292,6 +293,35 @@ def anchor(heading: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", heading.lower()).strip("-")
 
 
+def mark(heading: str) -> str:
+    """The heading's own mark, read from its generator's output and inlined.
+
+    The seven marks are one set drawn by make-group-marks.py, and this function is
+    where the two halves meet: the file is named for the heading's anchor, so a group
+    that was renamed would look for a mark that does not exist and this fails the
+    build rather than shipping a heading with no mark. Inlining rather than linking is
+    the page's own reason: an <img> is isolated from the page's colour, so a mark
+    drawn in currentColor would arrive black.
+    """
+    path = FIGURES / f"group-mark-{anchor(heading)}.svg"
+    if not path.is_file():
+        raise SystemExit(f"make-library-index: no mark for the group {heading!r} - "
+                         f"expected {path}. Run python Source/tools/make-group-marks.py.")
+    return path.read_text(encoding="utf-8").strip() + "\n      "
+
+
+# The mark's own sizing, in the page that uses it. It lives here rather than in
+# /styles.css because the mark is this page's furniture and nothing else draws it,
+# and because the library's stylesheet is an exact-tiered file in budget.json whose
+# bytes should move for reasons a reader can see.
+MARK_CSS = """
+    <style>
+      .index-group h2 { display: flex; align-items: center; gap: 0.6rem; }
+      .group-mark { width: 1.6rem; height: 1.6rem; flex: none; color: var(--mist); }
+      .index-group:hover .group-mark, .index-group:focus-within .group-mark { color: var(--ink); }
+    </style>"""
+
+
 def build() -> str:
     slugs = library_slugs()
     if not slugs:
@@ -377,7 +407,7 @@ def build() -> str:
         sections += [
             "",
             f'    <section class="index-group reveal" id="{anchor(heading)}">',
-            f"      <h2>{html.escape(heading)} ({len(items)})</h2>",
+            f"      <h2>{mark(heading)}{html.escape(heading)} ({len(items)})</h2>",
             f'      <p class="index-blurb">{html.escape(blurb)}</p>',
             '      <ul class="index-list">',
         ]
@@ -410,9 +440,9 @@ def build() -> str:
         "      </ul>",
         "    </nav>",
     ]
-
+    # The marks' own sizing, before the groups that use it.
+    out += [MARK_CSS]
     out += sections
-
     out += [
         "  </main>",
         "",
