@@ -310,15 +310,15 @@ def mark(heading: str) -> str:
     return path.read_text(encoding="utf-8").strip() + "\n      "
 
 
-# The mark's own sizing, in the page that uses it. It lives here rather than in
-# /styles.css because the mark is this page's furniture and nothing else draws it,
-# and because the library's stylesheet is an exact-tiered file in budget.json whose
-# bytes should move for reasons a reader can see.
+# What the mark needs HERE and nowhere else: the heading becomes a flex row so a
+# wrapped title keeps the mark on its first line, and a group under the pointer
+# brightens its mark, which is the directory's one hover. The mark's SIZE and colour
+# are in /styles.css, because 75 carried pages draw the same mark beside their h1.
 MARK_CSS = """
     <style>
       .index-group h2 { display: flex; align-items: center; gap: 0.6rem; }
-      .group-mark { width: 1.6rem; height: 1.6rem; flex: none; color: var(--mist); }
-      .index-group:hover .group-mark, .index-group:focus-within .group-mark { color: var(--ink); }
+      .index-group:hover .group-mark,
+      .index-group:focus-within .group-mark { color: var(--ink); }
     </style>"""
 
 

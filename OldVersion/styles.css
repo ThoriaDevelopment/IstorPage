@@ -1570,6 +1570,29 @@ a { color: inherit; }
   color: var(--ink);
 }
 
+/* The group's mark, drawn by make-group-marks.py and spliced into the title of every
+   carried page (add-page-marks.py) and into the directory's group headings (the index
+   generator). It lives in this shared file rather than in one page's <style> because
+   76 pages draw it: seven marks in the page and seven in the directory are one set,
+   and a rule copied into 75 pages is a rule that stops agreeing within a month. It is
+   currentColor, so it themes, and sized in rem so it follows the reader's own type
+   scale. The negative vertical-align is what keeps a 1.9rem mark sitting on the
+   title's baseline rather than floating above it. */
+.group-mark {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  color: var(--mist);
+  vertical-align: -0.28em;
+}
+
+.page h1 .group-mark {
+  width: 1.9rem;
+  height: 1.9rem;
+  margin-right: 0.4rem;
+  vertical-align: -0.32em;
+}
+
 .page .lede {
   font-size: 1.125rem;
   line-height: 1.6;

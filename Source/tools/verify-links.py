@@ -85,7 +85,7 @@ LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
-LIBRARY_STYLES_BYTES = 58263          # 50,980 to 55,112 on 2026-09-20: the
+LIBRARY_STYLES_BYTES = 59140          # 50,980 to 55,112 on 2026-09-20: the
                                       # metric-matched fallback faces and the
                                       # measurement that chose them, so the swap
                                       # does not move the page on a slow link;
@@ -97,7 +97,11 @@ LIBRARY_STYLES_BYTES = 58263          # 50,980 to 55,112 on 2026-09-20: the
                                       # 58,263 the next morning: the library's
                                       # blocks arrive on the landing's clock, one
                                       # multiplier in this shared stylesheet and
-                                      # the fold test in the shared script
+                                      # the fold test in the shared script;
+                                      # 59,140 the same morning: the seven group
+                                      # marks get their one sizing rule here,
+                                      # because 76 pages draw them and a rule
+                                      # copied into 75 pages stops agreeing
 ARTIFACT_FILES = 144                  # 138 + the four phone crops' 16 files + the library
                                       # index, less exhibit-12's eight retired exports
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
@@ -1486,6 +1490,62 @@ def media_block(css: str, query: str) -> str:
     return css[m.end():i - 1]
 
 
+def check_page_marks(rep: Report, site: pathlib.Path, docs: dict) -> None:
+    """Every carried page wears its own group's mark, and only its own.
+
+    add-page-marks.py puts one include marker in each page's <h1> and the build
+    splices the drawing in, so the built page is where this can be checked: the mark
+    that arrived has to be the one its slug's group claims. Two ways this goes wrong
+    and both look fine on the page a reader lands on: a page added by hand with no
+    marker (it looks like every other page and belongs to no family), and a page whose
+    marker kept an old group after the slug's prefix changed. The mapping is read from
+    the index generator, so it is the same rule the directory uses.
+    """
+    print("\nthe pages' group marks")
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "make_library_index", SOURCE / "tools" / "make-library-index.py")
+        assert spec and spec.loader
+        index = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(index)
+    except Exception as exc:                       # noqa: BLE001 - reported, not raised
+        rep.fail("the library's group marks",
+                 f"make-library-index.py could not be loaded to read the groups: {exc}")
+        return
+
+    missing: list[str] = []
+    wrong: list[str] = []
+    counted = 0
+    for slug in index.library_slugs():
+        page = site / slug / "index.html"
+        if not page.is_file():
+            continue
+        html = docs.get(page)
+        if html is None:
+            continue
+        counted += 1
+        want = index.anchor(index.group_of(slug))
+        head = re.search(r"<h1>(.*?)</h1>", html, re.S)
+        got = re.search(r'class="group-mark"[^>]*data-group="([a-z0-9-]+)"', head.group(1)) \
+            if head else None
+        if not got:
+            missing.append(slug)
+        elif got.group(1) != want:
+            wrong.append(f"{slug} wears {got.group(1)} and belongs to {want}")
+
+    if missing:
+        rep.fail("every carried page wears its group's mark",
+                 f"{len(missing)} page(s) carry none: {', '.join(missing[:4])} - "
+                 "run python Source/tools/add-page-marks.py")
+    elif wrong:
+        rep.fail("every carried page wears its group's mark",
+                 "; ".join(wrong[:3]))
+    else:
+        rep.ok("every carried page wears its group's mark",
+               f"{counted} pages, each with the mark of the group its slug claims")
+
+
 def check_library_arrivals(rep: Report, site: pathlib.Path, docs: dict) -> None:
     """The library's arrivals, checked where driving a page cannot reach.
 
@@ -2035,6 +2095,7 @@ def main(argv: list[str]) -> int:
     check_11(rep, site, library_css)
     check_12(rep, site, library_css)
     check_library_arrivals(rep, site, docs)
+    check_page_marks(rep, site, docs)
     check_newlines(rep, site)
 
     print()

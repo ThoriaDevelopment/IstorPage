@@ -171,6 +171,20 @@ INCLUDES = {
 # page - a dictionary shared by both passes would make the home page fail for
 # a marker it never had.
 LIBRARY_INCLUDES = {
+    # The seven group marks, spliced into every carried page's <h1> and into the
+    # directory's own group headings. They are one file each because they are drawn
+    # once and used 75+ times; the marker in the page is what makes that legal under
+    # the verbatim rule, since a page with no marker is untouched.
+    "group-mark-what-it-is": (SOURCE / "figures" / "group-mark-what-it-is.svg", "svg"),
+    "group-mark-how-it-works-and-why-it-behaves-that-way":
+        (SOURCE / "figures" / "group-mark-how-it-works-and-why-it-behaves-that-way.svg", "svg"),
+    "group-mark-how-to-do-it": (SOURCE / "figures" / "group-mark-how-to-do-it.svg", "svg"),
+    "group-mark-whether-it-can": (SOURCE / "figures" / "group-mark-whether-it-can.svg", "svg"),
+    "group-mark-using-it-for-your-own-work":
+        (SOURCE / "figures" / "group-mark-using-it-for-your-own-work.svg", "svg"),
+    "group-mark-compared-with-other-tools":
+        (SOURCE / "figures" / "group-mark-compared-with-other-tools.svg", "svg"),
+    "group-mark-the-project-log": (SOURCE / "figures" / "group-mark-the-project-log.svg", "svg"),
     "citation-anatomy-wide": (SOURCE / "figures" / "citation-anatomy-wide.svg", "svg"),
     "citation-anatomy-tall": (SOURCE / "figures" / "citation-anatomy-tall.svg", "svg"),
     "context-window-wide": (SOURCE / "figures" / "context-window-wide.svg", "svg"),
