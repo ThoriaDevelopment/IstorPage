@@ -83,6 +83,24 @@
     <h2>The rate you actually feel.</h2>
     <p>A person reads a few hundred words per minute, which lands somewhere near five to ten tokens per second. A model sustaining twenty or thirty is streaming faster than you can read, so the answer feels immediate even though the computation is still unfolding. Below roughly ten, long answers start to drag; below five, the tool feels broken even when nothing is wrong. That reading-speed yardstick is why hardware pages obsess over this number, and why <a href="/run-research-ai-gtx-1650/">an entry-level GPU like a GTX 1650</a> can feel perfectly usable: what matters is clearing the reading bar, not competing with a datacenter.</p>
 
+    <figure class="reading-bar reveal">
+      <!--#include reading-bar-wide-->
+      <!--#include reading-bar-tall-->
+      <figcaption>Four example speeds against the reading bar, and the rate while
+      one answer is written. The bar sits at six pieces per second, inside the
+      five-to-ten a reader needs; what matters is clearing it, not the size of
+      the number above it. The speeds are examples, not measurements.</figcaption>
+      <style>
+        .reading-bar { margin: 2rem auto; max-width: 40rem; }
+        .reading-bar svg { width: 100%; height: auto; display: block; }
+        .reading-bar svg[data-variant="tall"] { display: none; }
+        @media (max-width: 560px) {
+          .reading-bar svg[data-variant="wide"] { display: none; }
+          .reading-bar svg[data-variant="tall"] { display: block; }
+        }
+      </style>
+    </figure>
+
     <h2>What moves the number.</h2>
     <p>Three things dominate. Model size, because each piece requires running the whole model once, so a bigger <a href="/what-does-7b-mean/">parameter count</a> costs speed at the same hardware. Quantization, since a smaller file means less arithmetic per step; the same model at 4 bits runs quicker than at 8. And memory bandwidth, which is why a GPU's speed shows up here more than its raw compute does. As an answer grows, the rate usually drifts down, because each new piece attends to everything written so far. If the number sits below your reading bar, the hardware reasons behind it are on <a href="/why-is-local-ai-slow-on-my-laptop/">why local AI runs slow on a laptop</a>.</p>
 
