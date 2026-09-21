@@ -36,122 +36,7 @@
  */
 (function () {
   'use strict';
-
-  var opener = document.querySelector('[data-search-open]');
-  if (!opener) return;
-
-  var INDEX = '/search-index.json';
-  var SHOWN = 8;            /* rows before the count takes over */
-
-  var records = null;       /* null until the first open */
-  var asked = false;        /* a fetch is in flight */
-  var broke = false;        /* the fetch failed */
-  var kept = '';            /* what was typed last, so reopening continues */
-
-  var dialog = null, field = null, said = null, list = null, foot = null;
-  var total = 0;
-
-  /* The page's own find field, if it has one - the directory does. `/` belongs to
-     it there: the directory's copy invites the reader to press `/` to search the
-     list in front of them, and a palette that hijacked that key would open a
-     second search over the first. The palette keeps Cmd/Ctrl+K and its own link. */
-  var pageFind = document.querySelector('.index-find');
-
-  /* ── the palette's own markup, built once ─────────────────────────────── */
-
-  function build() {
-    if (dialog) return;
-    dialog = document.createElement('dialog');
-    dialog.className = 'palette';
-    dialog.setAttribute('aria-labelledby', 'palette-label');
-
-    var panel = document.createElement('div');
-    panel.className = 'palette-panel';
-
-    var label = document.createElement('label');
-    label.className = 'palette-label';
-    label.id = 'palette-label';
-    label.setAttribute('for', 'palette-field');
-    label.textContent = 'Search the library';
-
-    field = document.createElement('input');
-    field.className = 'palette-field';
-    field.id = 'palette-field';
-    field.type = 'search';
-    field.autocomplete = 'off';
-    field.spellcheck = false;
-    field.placeholder = 'what is a context window';
-
-    said = document.createElement('p');
-    said.className = 'palette-said';
-    said.setAttribute('role', 'status');
-
-    list = document.createElement('ul');
-    list.className = 'palette-results';
-
-    foot = document.createElement('p');
-    foot.className = 'palette-foot';
-
-    panel.appendChild(label);
-    panel.appendChild(field);
-    panel.appendChild(said);
-    panel.appendChild(list);
-    panel.appendChild(foot);
-    dialog.appendChild(panel);
-    document.body.appendChild(dialog);
-
-    field.addEventListener('input', render);
-    field.addEventListener('keydown', fromField);
-    list.addEventListener('keydown', fromResult);
-    /* A click that reaches the dialog itself landed outside the panel: the panel
-       is the only child, and the dialog's own background is transparent. */
-    dialog.addEventListener('click', function (event) {
-      if (event.target === dialog) close();
-    });
-    dialog.addEventListener('close', function () {
-      kept = field.value;
-      opener.setAttribute('aria-expanded', 'false');
-    });
-  }
-
-  /* ── loading ──────────────────────────────────────────────────────────── */
-
-  function load() {
-    if (records || asked) return;
-    asked = true;
-    fetch(INDEX, { credentials: 'same-origin' })
-      .then(function (response) {
-        if (!response.ok) throw new Error(response.status);
-        return response.json();
-      })
-      .then(function (data) {
-        records = data.map(function (record) {
-          record.hay = [record.title, record.summary]
-            .concat(record.lines).join(' ').toLowerCase();
-          return record;
-        });
-        total = records.length;
-        /* `foot` is null until the palette is built, and this runs in a promise: a
-           response that arrived before the dialog existed would take the whole
-           success path down with it and be reported to the reader as a failed
-           load. The audit's own self-test found that by making the fetch early. */
-        if (foot) {
-          foot.textContent = 'Every title, summary and section heading in ' + total +
-            ' pages. Enter opens the first result.';
-        }
-        render();
-      })
-      .catch(function () {
-        broke = true;
-        render();
-      });
-  }
-
-  /* ── matching: the directory's rule, over more text ───────────────────── */
-
-  function wordsOf(query) {
-    return query.toLowerCase().split(/\s+/).filter(Boolean);
-  }
+  /* ── the fold, and the matcher built on it ──────────────────────────── */
 
   /* What a reader typed, and the other spellings of it that count as the same
      word. Every row is a declared ending: `strip` removes one a reader added,
@@ -285,6 +170,144 @@
       if (spansIn(text, list[i], i > 0).length) return list[i];
     }
     return null;
+  }
+
+  /* ── one rule, two searches ──────────────────────────────────────────── */
+
+  /* THE MATCHER IS PUBLISHED HERE, ABOVE THE PALETTE AND ABOVE THE EARLY RETURN
+     BELOW, because it is the library's rule rather than the dialog's. Two searches
+     run on this site: the directory's own find field filters the list in front of
+     the reader, and this dialog searches the other seventy-four pages. They read
+     different text - an entry is its title and summary, the dialog also reads
+     headings and their first lines - and they used to disagree about what a WORD is,
+     in a way a reader meets as a bug: typing "hallucinations" into the directory hid
+     the page called "What is AI hallucination?" while the same word found it here,
+     and on the directory's own corpus the plain rule showed 16 entries for "models"
+     where the fold shows 42.
+
+     So there is one implementation and two callers. The directory's generated find
+     script calls `window.istorMatch(hay, word)` when it exists and keeps its own
+     substring test when it does not, which leaves that field working on a page where
+     this file never loads. The early return below is about the dialog; a page with a
+     find field and no trigger still gets the rule. */
+  window.istorMatch = function (hay, word) {
+    return carriedBy(String(hay), alts(String(word))) !== null;
+  };
+
+  var opener = document.querySelector('[data-search-open]');
+  if (!opener) return;
+
+  var INDEX = '/search-index.json';
+  var SHOWN = 8;            /* rows before the count takes over */
+
+  var records = null;       /* null until the first open */
+  var asked = false;        /* a fetch is in flight */
+  var broke = false;        /* the fetch failed */
+  var kept = '';            /* what was typed last, so reopening continues */
+
+  var dialog = null, field = null, said = null, list = null, foot = null;
+  var total = 0;
+
+  /* The page's own find field, if it has one - the directory does. `/` belongs to
+     it there: the directory's copy invites the reader to press `/` to search the
+     list in front of them, and a palette that hijacked that key would open a
+     second search over the first. The palette keeps Cmd/Ctrl+K and its own link. */
+  var pageFind = document.querySelector('.index-find');
+
+  /* ── the palette's own markup, built once ─────────────────────────────── */
+
+  function build() {
+    if (dialog) return;
+    dialog = document.createElement('dialog');
+    dialog.className = 'palette';
+    dialog.setAttribute('aria-labelledby', 'palette-label');
+
+    var panel = document.createElement('div');
+    panel.className = 'palette-panel';
+
+    var label = document.createElement('label');
+    label.className = 'palette-label';
+    label.id = 'palette-label';
+    label.setAttribute('for', 'palette-field');
+    label.textContent = 'Search the library';
+
+    field = document.createElement('input');
+    field.className = 'palette-field';
+    field.id = 'palette-field';
+    field.type = 'search';
+    field.autocomplete = 'off';
+    field.spellcheck = false;
+    field.placeholder = 'what is a context window';
+
+    said = document.createElement('p');
+    said.className = 'palette-said';
+    said.setAttribute('role', 'status');
+
+    list = document.createElement('ul');
+    list.className = 'palette-results';
+
+    foot = document.createElement('p');
+    foot.className = 'palette-foot';
+
+    panel.appendChild(label);
+    panel.appendChild(field);
+    panel.appendChild(said);
+    panel.appendChild(list);
+    panel.appendChild(foot);
+    dialog.appendChild(panel);
+    document.body.appendChild(dialog);
+
+    field.addEventListener('input', render);
+    field.addEventListener('keydown', fromField);
+    list.addEventListener('keydown', fromResult);
+    /* A click that reaches the dialog itself landed outside the panel: the panel
+       is the only child, and the dialog's own background is transparent. */
+    dialog.addEventListener('click', function (event) {
+      if (event.target === dialog) close();
+    });
+    dialog.addEventListener('close', function () {
+      kept = field.value;
+      opener.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  /* ── loading ──────────────────────────────────────────────────────────── */
+
+  function load() {
+    if (records || asked) return;
+    asked = true;
+    fetch(INDEX, { credentials: 'same-origin' })
+      .then(function (response) {
+        if (!response.ok) throw new Error(response.status);
+        return response.json();
+      })
+      .then(function (data) {
+        records = data.map(function (record) {
+          record.hay = [record.title, record.summary]
+            .concat(record.lines).join(' ').toLowerCase();
+          return record;
+        });
+        total = records.length;
+        /* `foot` is null until the palette is built, and this runs in a promise: a
+           response that arrived before the dialog existed would take the whole
+           success path down with it and be reported to the reader as a failed
+           load. The audit's own self-test found that by making the fetch early. */
+        if (foot) {
+          foot.textContent = 'Every title, summary and section heading in ' + total +
+            ' pages. Enter opens the first result.';
+        }
+        render();
+      })
+      .catch(function () {
+        broke = true;
+        render();
+      });
+  }
+
+  /* ── matching: the directory's rule, over more text ───────────────────── */
+
+  function wordsOf(query) {
+    return query.toLowerCase().split(/\s+/).filter(Boolean);
   }
 
   function hitsFor(words) {

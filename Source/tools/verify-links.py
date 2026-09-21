@@ -1745,6 +1745,32 @@ def check_search(rep: Report, site: pathlib.Path, docs: dict) -> None:
         rep.fail("/search.js", "missing — every page names it and nothing would load")
         return
     source = palette.read_text(encoding="utf-8")
+
+    # ONE RULE, TWO SEARCHES. The directory's find field filters the list in front of
+    # the reader and the palette searches the rest of the library, and they read
+    # different text by design - an entry is its title and summary, the palette reads
+    # headings too - but the WORD test has one implementation, in /search.js, which the
+    # field calls. Two facts hold that together and neither can be seen from one file:
+    # the generated page calls the name the script publishes, and the page does not
+    # carry a second copy of the fold, which is the drift this is here to prevent.
+    # Found by measurement rather than by reading: on the directory's own corpus the
+    # plain rule showed 16 entries for "models" where the fold shows 42, and typing
+    # "hallucinations" hid the page called "What is AI hallucination?" entirely.
+    borrowed = "window.istorMatch ||" in directory
+    called = "match(li.getAttribute('data-hay'), word)" in directory
+    published = "window.istorMatch =" in source
+    fallback = "indexOf(word) !== -1" in directory
+    copied = "'isation'" in directory or "FOLD_CAP" in directory
+    generated = index.FIND_SCRIPT.strip() in directory
+    if not (borrowed and called and published and fallback and generated) or copied:
+        rep.fail("the directory's field borrows the palette's rule",
+                 f"published {published}, borrowed {borrowed}, called {called}, "
+                 f"own substring fallback {fallback}, its own copy of the table "
+                 f"{copied}, and the generator's script verbatim {generated}")
+    else:
+        rep.ok("the directory's field borrows the palette's rule",
+               "one implementation called by both searches, with the field's own "
+               "substring test kept for the page where /search.js never loads")
     m = re.search(r"var INDEX = '([^']+)'", source)
     if not m:
         rep.fail("the palette's index path",

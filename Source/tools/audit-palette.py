@@ -238,6 +238,41 @@ DIRECTORY_SCENARIO = r"""
     ? d.querySelector('.palette').matches(':modal') : false;
   out.caretAfterCtrlK = d.activeElement ? d.activeElement.id : null;
   if (d.querySelector('.palette')) d.querySelector('.palette').close();
+
+  /* THE PAGE'S OWN FIELD, AND WHETHER IT AGREES WITH THE PALETTE. The two searches
+     read different text - an entry is its title and summary, the dialog reads
+     headings too - so what is compared is the WORD test, which is now one
+     implementation in two places. Each probe is a query that the substring rule used
+     to answer differently from the fold, and the last one deletes the shared matcher
+     to make sure the field still filters on a page where that file never loaded. */
+  const find = d.getElementById('find');
+  out.findExists = !!find;
+  if (find) {
+    const visible = () => [].slice.call(d.querySelectorAll('.index-list li'))
+      .filter(li => !li.hidden);
+    const typeIn = async (q) => {
+      find.value = q;
+      find.dispatchEvent(new w.Event('input', {bubbles: true}));
+      await new Promise(r => w.setTimeout(r, 150));
+      return visible();
+    };
+    const plural = await typeIn('hallucinations');
+    out.pluralRows = plural.length;
+    out.pluralTitles = plural.slice(0, 3).map(li => (li.textContent || '').slice(0, 44));
+    out.pluralSaid = (d.querySelector('.index-said') || {}).textContent || null;
+
+    out.boundRows = (await typeIn('cars')).length;
+    out.boundSaid = (d.querySelector('.index-said') || {}).textContent || null;
+
+    out.modelsRows = (await typeIn('models')).length;
+
+    /* As if /search.js had never loaded. A field that only works while somebody
+       else's script is present is a field that breaks in a way nobody chose. */
+    try { delete w.istorMatch; } catch (e) {}
+    out.matcherGone = typeof w.istorMatch;
+    out.plainRows = (await typeIn('models')).length;
+    out.plainSaid = (d.querySelector('.index-said') || {}).textContent || null;
+  }
   return out;
 })(d, w)
 """
@@ -380,6 +415,9 @@ PALETTE_CLAIMS = (
 DIRECTORY_CLAIMS = (
     "`/` still belongs to the directory's own field",
     "Cmd/Ctrl+K opens the palette over the directory",
+    "the directory's own field finds what the palette finds",
+    "and refuses what the palette refuses",
+    "the field keeps filtering when the palette's script never loads",
 )
 LANDING_CLAIMS = (
     "the landing's close offers the search, and it opens the same dialog",
@@ -494,6 +532,26 @@ def check_directory(doc: dict, failures: list) -> None:
         "dialog %s, modal %s, focus %s"
         % (doc.get("dialogAfterCtrlK"), doc.get("modalAfterCtrlK"),
            doc.get("caretAfterCtrlK")))
+
+    # The one implementation, two callers. "hallucinations" is the word that showed
+    # the disagreement: the plain rule hid the page called "What is AI hallucination?"
+    # (0 of 75 shown) while the palette found it, and "models" is where the gap is
+    # widest - 16 entries by substring against 42 through the fold.
+    titles = " ".join(doc.get("pluralTitles") or []).lower()
+    _ok(failures, "the directory's own field finds what the palette finds",
+        (doc.get("pluralRows") or 0) >= 1 and "hallucination" in titles
+        and "match" in (doc.get("pluralSaid") or ""),
+        "'hallucinations' shows %s entry of 75: %s"
+        % (doc.get("pluralRows"), titles[:44] or "nothing"))
+    _ok(failures, "and refuses what the palette refuses",
+        (doc.get("boundRows") or 0) == 0 and "Nothing" in (doc.get("boundSaid") or ""),
+        "'cars' shows %s entries here too, where the palette says %s"
+        % (doc.get("boundRows"), (doc.get("boundSaid") or "")[:28]))
+    _ok(failures, "the field keeps filtering when the palette's script never loads",
+        doc.get("matcherGone") == "undefined" and (doc.get("plainRows") or 0) >= 1
+        and (doc.get("plainRows") or 0) < (doc.get("modelsRows") or 0),
+        "matcher gone, 'models' shows %s entries against the fold's %s, the difference "
+        "being the rule" % (doc.get("plainRows"), doc.get("modelsRows")))
 
 
 def check_landing(doc: dict, failures: list) -> None:
@@ -631,6 +689,18 @@ SELF_TESTS = [
        "    if (false) {")],
      "Cmd/Ctrl+K opens the palette over the directory",
      ("search.js", "/library/")),
+    # The directory's own field. These two patch the GENERATED page rather than the
+    # script that generates it, so what is doctored is what a reader is served.
+    ("the directory's field stops borrowing the palette's rule",
+     [("          return match(li.getAttribute('data-hay'), word);",
+       "          return li.getAttribute('data-hay').indexOf(word) !== -1;")],
+     "the directory's own field finds what the palette finds",
+     ("library/index.html", "/library/")),
+    ("the directory's field loses its own substring test",
+     [("      var match = window.istorMatch || function (hay, word) {",
+       "      var match = window.istorMatch;")],
+     "the field keeps filtering when the palette's script never loads",
+     ("library/index.html", "/library/")),
     ("the landing stops naming the palette's script",
      [('<script src="/search.js" defer></script>', "")],
      "the landing's close offers the search, and it opens the same dialog",

@@ -153,6 +153,14 @@ def _lift(pattern: re.Pattern[str], text: str, what: str) -> str:
 # see. The query is kept in the URL, so a filtered view can be linked and
 # reloaded. And a group heading that says "(6)" while showing two entries is a
 # lie, so the headings count what is on screen.
+#
+# THE WORD TEST IS BORROWED RATHER THAN COPIED. `/search.js` publishes
+# `istorMatch`, and this field calls it: one rule, two searches, so a reader who has
+# learned what the dialog finds has learned what this field finds. Read at every
+# keystroke rather than at load, because this script is inline and that file is
+# deferred - a lookup done once here would find nothing and quietly keep the
+# substring rule forever. The substring test stays as the fallback, so the field
+# cannot stop working because a script it does not own went missing.
 FIND_SCRIPT = r"""  <script>
   (function () {
     var form = document.querySelector('.index-find');
@@ -179,9 +187,13 @@ FIND_SCRIPT = r"""  <script>
          query has just hidden. */
       if (jump) jump.hidden = !!query;
 
+      var match = window.istorMatch || function (hay, word) {
+        return hay.indexOf(word) !== -1;
+      };
+
       items.forEach(function (li) {
         var hit = words.every(function (word) {
-          return li.getAttribute('data-hay').indexOf(word) !== -1;
+          return match(li.getAttribute('data-hay'), word);
         });
         li.hidden = !hit;
         if (hit) shown++;
