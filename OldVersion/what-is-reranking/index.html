@@ -83,6 +83,25 @@
     <h2>Search fast, sort carefully.</h2>
     <p>Retrieval over a real library cannot afford to read everything closely, so it runs in two stages. The first, <a href="/what-is-hybrid-search/">keyword and vector search run together</a>, scans every passage cheaply and returns a broad candidate list, with ordering that is serviceable rather than fine. The second stage takes that shortlist and judges each candidate against the question directly. The division of labor is the point: the wide net guarantees the right passage is probably in the pile, and the reranker decides which pile members deserve the top spots.</p>
 
+    <figure class="rerank-flow reveal">
+      <!--#include rerank-flow-wide-->
+      <!--#include rerank-flow-tall-->
+      <figcaption>The same twenty candidates, ordered twice: the first pass's
+      list on the left, the reranker's on the right. The near-miss that shares
+      the question's wording falls out of the budget's four; the passage that
+      answers it, whose wording differs, rises in. The two coloured lines are
+      where the reordering happens.</figcaption>
+      <style>
+        .rerank-flow { margin: 2rem auto; max-width: 40rem; }
+        .rerank-flow svg { width: 100%; height: auto; display: block; }
+        .rerank-flow svg[data-variant="tall"] { display: none; }
+        @media (max-width: 560px) {
+          .rerank-flow svg[data-variant="wide"] { display: none; }
+          .rerank-flow svg[data-variant="tall"] { display: block; }
+        }
+      </style>
+    </figure>
+
     <h2>What a reranker actually reads.</h2>
     <p>The first pass compares your question and each document through <a href="/what-is-an-embedding/">separate number representations</a>, which is what makes it fast: two short lists of coordinates, compared by distance. A reranker works differently. It reads the question and the candidate together, as one text, and scores how well they answer each other, catching the matches where wording differs but meaning aligns and the near-misses where topics sound alike but the answer is absent. That joint reading is why its judgment is sharper, and why it cannot be run against everything.</p>
 
