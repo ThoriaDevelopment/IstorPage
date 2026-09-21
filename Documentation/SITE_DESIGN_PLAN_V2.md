@@ -1071,6 +1071,14 @@ unchanged at 16,384 B — it was never the problem, and behavior that doubles st
 for the hero's mechanism (M18) then fit under it, which is the point of a ceiling: it made the prose
 question unavoidable instead of deferring it by 267 B.
 
+**2026-09-21, later the same night: the strip paid for behavior rather than deferring it.** M18's
+generalization into one factory serving both worlds, and M19's flywheel, brought the shipped script to
+**14,351 B — 2,033 B under the 16,384 B ceiling** — so the growth this time was a feature bought with
+prose that had been arriving on every phone to do nothing. The measured behavior behind M19, taken in
+the browser rather than asserted: a ~3,000 px/s throw charges about 10° and coasts a further ~11°
+before it settles, a notched mouse-wheel read of 1,600 px of page moves the wheel to *exactly* the
+position's angle (0.00° of drift), and the pinion's ratio held at −4.6458 through the whole coast.
+
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
 
@@ -1089,6 +1097,8 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M12** | **The scribe** | plate enters | 900ms frames, 1,400ms roll, claim last | the ring is drawn the way its plates were made (§7.5) |
 | **M13** | **The reading log fills in** | act 4 enters | 140ms apart, ticks last | the act's claim is that you watch it read (§7.6) |
 | **M14** | **The hero's mechanism** | the reader's own scroll through the hero | 8° of the great wheel, 37° of each pinion | the world turns because the reader moved, not because the page did (§2.2) |
+| **M18** | **Both worlds answer the hand** | dragging the ground (mouse or pen) | live, then momentum ≤200°/s halving every 160ms | §2.2's world is a place, and a place can be taken hold of; one factory, one writer, one ratio |
+| **M19** | **The flywheel** | the speed of the reader's own scroll | charged above ~350 px/s, coasts ~13° and settles inside a second | the world has mass: the fast gesture is charged and the slow read is left perfectly still (adaptive pace) |
 
 ### 7.1 M2 — the hero sequence, in detail
 

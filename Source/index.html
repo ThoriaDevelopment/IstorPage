@@ -1133,6 +1133,40 @@
          the page having stopped rather than as restraint. The machine is the
          same one; only the page's own voice at the end is quieter.
 
+     M19 · THE FLYWHEEL, and the reader's pace is an input. M14 made the angle
+     the scroll's POSITION and M18 the hand's motion; neither answered the
+     scroll's SPEED, so a reader who threw the page moved the mechanism exactly
+     as far as one who crept down it. A real wheel does not behave that way, and
+     the world this page claims - a place, not a backdrop - is a place with
+     mass. So speed now charges the turn: scrolling above a threshold sets the
+     wheel's angular velocity in proportion to the reader's own, and the
+     momentum engine that already serves a flick hands back the remainder. It is
+     the same claim M18 makes for the hand, and the same one part of the
+     machinery, rather than a second animation system; the scroll still maps to
+     its eight degrees exactly as before, and the charge rides on top of it as
+     the hand's turn does.
+
+     Three things hold it honest. The charge is a function of velocity and
+     nothing else, so at rest it is exactly zero and a page that is still moves
+     nothing - the property that keeps this the reader's motion and not the
+     page's, which is the house rule M14 set for the rotation. The threshold it
+     has to clear is on a speed that decays with elapsed time, not with the
+     count of events, and that is the whole difference between adaptive pacing
+     and a twitch: a mouse wheel delivers a whole notch as one event, which
+     reads as speed for an instant and as almost nothing once it is decayed, so
+     a reader turning the wheel slowly keeps the position's angle exactly - the
+     page they have always had - while a trackpad or a wheel thrown hard
+     sustains the speed and moves the mechanism. That is the reference behaviour
+     this borrows deliberately: the fast gesture is charged, the slow read is
+     calm. And the wheel's momentum is the one `spinStep` the drag already uses,
+     capped at 200 deg/s and halving every 160ms, so a hard throw coasts a
+     further ~13 degrees past where the reader stopped and settles inside a
+     second. The accumulation is permanent, as the hand's is: a wheel keeps the
+     rotation it was given, and the pinion keeps the mesh at whatever total it
+     reaches. The close is deliberately left out, because M14b's ending is a
+     settling; the reader may still turn the crown by hand there, but the page
+     never charges it.
+
      WHY THESE NOTES LIVE HERE, and it is a rule now rather than a preference.
      The plan's §7 sets a budget for shipped JS, and comments inside `<script>`
      ship: 1,118 B of prose was arriving with the document and being parsed as
@@ -1188,15 +1222,17 @@
     var closeB = closeWorld ? closeWorld.querySelector('[data-close-b]') : null;
     var CLOSE_RATIO = 223 / 60;
     var closeTurn = -1;
-    var closeScrollTurn = 0, closeDragTurn = 0;
+    var closeScrollTurn = 0, closeFreeTurn = 0;
     // M18's second writer. Same shape as the hero's, and deliberately so: the
     // reader who learned the world is touchable in the hero meets the same
     // machine at the end, and a machine that ignores the hand it took is worse
     // than one that never offered. The PAGE still performs only the one slow
-    // settling degree on scroll - what is added is the reader's own turn.
+    // settling degree on scroll - what is added is the reader's own turn. The
+    // free term is the reader's energy on both worlds: the hand's turn, plus in
+    // the hero the M19 flywheel. The close has no flywheel by decision (M19).
     var writeClose = function () {
       if (!closeA) return;
-      var turn = Math.round((closeScrollTurn + closeDragTurn) * 10) / 10;
+      var turn = Math.round((closeScrollTurn + closeFreeTurn) * 10) / 10;
       if (turn === closeTurn) return;
       closeTurn = turn;
       var cax = closeA.getAttribute('data-close-cx');
@@ -1219,7 +1255,11 @@
     var closeTop = 0;
     var closeRange = 1;
     var heroTurn = -1;
-    var heroScrollTurn = 0, heroDragTurn = 0;
+    var heroScrollTurn = 0, heroFreeTurn = 0;
+    // M19's state: the hero's turnable (assigned below, once the machinery it
+    // needs exists), the two samples the scroll's speed is taken from, and the
+    // smoothed speed itself.
+    var heroTurnable = null, lastY = 0, lastT = 0, flow = 0;
     // M18 · the one writer for the hero's angle, whatever moved it. Wheel A's
     // pivot comes from the drawing, exactly as the pinions' do. The first
     // version hardcoded 720 720, the viewBox centre, while the wheel's own
@@ -1230,7 +1270,7 @@
     // hand holds the interleave exactly as a turn from the scroll does.
     var writeHero = function () {
       if (!gearA) return;
-      var turn = Math.round((heroScrollTurn + heroDragTurn) * 10) / 10;
+      var turn = Math.round((heroScrollTurn + heroFreeTurn) * 10) / 10;
       if (turn === heroTurn) return;
       heroTurn = turn;
       var ax = gearA.getAttribute('data-gear-cx');
@@ -1299,6 +1339,36 @@
         writeHero();
       }
 
+      // M19 · the flywheel. The speed of the reader's own scroll charges the
+      // wheel's angular velocity through the momentum engine the hand already
+      // uses, so a thrust of the page leaves the mechanism turning and a slow
+      // read leaves it perfectly still. `heroTurnable` is null until the turn
+      // machinery below has been built, which is also why nothing here can run
+      // before `spinStep` exists; `active` guards the one case that would be a
+      // fight, a reader dragging while the page is also moving.
+      //
+      // The gate reads a SMOOTHED speed, decayed by elapsed time rather than by
+      // event count, and that one choice is the whole difference between
+      // adaptive pacing and a twitch. A mouse wheel delivers its 100px as one
+      // event per notch: measured instantaneously that is 1 px/ms of "speed",
+      // so a reader turning the wheel slowly, notch by notch, would have been
+      // charged for it. Decayed between events, one notch leaves 0.10 px/ms of
+      // residue - under the threshold, so the wheel simply holds the position's
+      // angle, which is what this site always did. A trackpad or a wheel thrown
+      // hard sustains the speed across many events and converges on it in about
+      // 80ms, so the gesture that means something is the gesture that moves the
+      // mechanism.
+      var nowFly = performance.now();
+      var dtFly = lastT ? Math.min(250, nowFly - lastT) : 0;
+      flow *= Math.pow(0.5, (dtFly || 16) / 100);
+      if (dtFly) flow += ((window.scrollY - lastY) / dtFly - flow) * 0.35;
+      lastY = window.scrollY;
+      lastT = nowFly;
+      if (heroTurnable && active !== heroTurnable && (flow > 0.35 || flow < -0.35)) {
+        heroTurnable.vel = Math.max(-200, Math.min(200, flow * 22));
+        if (!heroTurnable.raf) spinStep(heroTurnable, nowFly);
+      }
+
       // M14b · one degree of the crown across the poster's whole scroll range,
       // the pinion 223/60 of that the same way. Rounding to a tenth keeps the
       // attribute writes as rare as the hero's; the range is clamped to 1 so a
@@ -1348,8 +1418,12 @@
     // prose, which stays selectable.
     var heroGround = world ? world.closest('.hero') : null;
     var turnables = [];   // filled by makeTurnable below; read by the hover loop here
+    // `target.closest` is the totality test: it is what tells an element from a
+    // window, and this predicate runs on every pointermove. A real pointermove
+    // always targets an element, but a listener that throws when handed
+    // something else is a listener that can be made to throw.
     var overGround = function (ground, target) {
-      return !!(ground && target && ground.contains(target) &&
+      return !!(ground && target && target.closest && ground.contains(target) &&
                 !target.closest('a, button, .win, p, h1, li'));
     };
     if (world || closeWorld) {
@@ -1456,7 +1530,7 @@
     window.addEventListener('pointercancel', onTurnUp, { passive: true });
     window.addEventListener('blur', onTurnUp, { passive: true });   // the lost release
     var makeTurnable = function (ground, svg, wheel, cx, cy, spin) {
-      if (!ground || !svg || !wheel) return;
+      if (!ground || !svg || !wheel) return null;
       var t = { ground: ground, svg: svg, wheel: wheel, cx: cx, cy: cy,
                 spin: spin, shown: false, vel: 0, raf: 0, last: 0, time: 0 };
       turnables.push(t);
@@ -1471,14 +1545,15 @@
         t.time = e.timeStamp || performance.now();
         ground.classList.add('is-turning');
       });
+      return t;
     };
-    makeTurnable(heroGround, world && world.querySelector('svg'), gearA,
+    heroTurnable = makeTurnable(heroGround, world && world.querySelector('svg'), gearA,
                  'data-gear-cx', 'data-gear-cy',
-                 function (d) { heroDragTurn += d; writeHero(); });
+                 function (d) { heroFreeTurn += d; writeHero(); });
     makeTurnable(closeWorld && closeWorld.closest('.poster'),
                  closeWorld && closeWorld.querySelector('svg'), closeA,
                  'data-close-cx', 'data-close-cy',
-                 function (d) { closeDragTurn += d; writeClose(); });
+                 function (d) { closeFreeTurn += d; writeClose(); });
   }
 
   var ask = document.querySelector('.hero .ask');   // M9
