@@ -89,6 +89,25 @@
     <h2>When it does not fit.</h2>
     <p>Tools handle an oversized model by splitting it: the layers that fit go to the GPU, the rest run on the CPU with system RAM as their workspace. The answer still arrives and its quality is identical; only the speed changes, because the split adds a trip through the slower memory on every token. So the practical question is never whether a model can run but how fast, and <a href="/how-much-ram-for-local-ai/">the RAM arithmetic</a> is what decides where the split lands.</p>
 
+    <figure class="vram-split reveal">
+      <!--#include vram-split-wide-->
+      <!--#include vram-split-tall-->
+      <figcaption>The same 32-layer model against the same 4&nbsp;GB card,
+      twice, at one scale - a gigabyte is the same width in every bar. At
+      8&nbsp;bits, 16 of the 32 layers fit and the rest run on the CPU, which
+      is the slower-memory trip on every token. At 4&nbsp;bits, the same 32
+      layers fit with room left for the conversation.</figcaption>
+      <style>
+        .vram-split { margin: 2rem auto; max-width: 40rem; }
+        .vram-split svg { width: 100%; height: auto; display: block; }
+        .vram-split svg[data-variant="tall"] { display: none; }
+        @media (max-width: 560px) {
+          .vram-split svg[data-variant="wide"] { display: none; }
+          .vram-split svg[data-variant="tall"] { display: block; }
+        }
+      </style>
+    </figure>
+
     <h2>What else lives in VRAM.</h2>
     <p>The model's weights are the biggest tenant, not the only one. The working state that carries a long conversation, the text of a document currently in context, and the scratch buffers used while generating all draw on the same 4 GB. This is why a small model fed a long document can still slow down: the document changes nothing about answer quality, but it competes for the same memory as everything else. A context-length cap is, in hardware terms, a decision about how much VRAM the conversation itself may occupy.</p>
 

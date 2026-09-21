@@ -76,6 +76,7 @@ GENERATORS: list[tuple[str, tuple[str, ...], bool]] = [
     ("make-reading-bar.py", ("figures/reading-bar-wide.svg", "figures/reading-bar-tall.svg"), True),
     ("make-rerank-flow.py", ("figures/rerank-flow-wide.svg", "figures/rerank-flow-tall.svg"), True),
     ("make-agent-loop.py", ("figures/agent-loop-wide.svg", "figures/agent-loop-tall.svg"), True),
+    ("make-vram-split.py", ("figures/vram-split-wide.svg", "figures/vram-split-tall.svg"), True),
     ("make-temperature.py", ("figures/temperature-wide.svg", "figures/temperature-tall.svg",
                            "temperature-dial.partial"), True),
 ]

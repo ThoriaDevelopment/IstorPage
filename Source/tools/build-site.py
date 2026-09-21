@@ -220,6 +220,8 @@ LIBRARY_INCLUDES = {
     "rerank-flow-tall": (SOURCE / "figures" / "rerank-flow-tall.svg", "svg"),
     "agent-loop-wide": (SOURCE / "figures" / "agent-loop-wide.svg", "svg"),
     "agent-loop-tall": (SOURCE / "figures" / "agent-loop-tall.svg", "svg"),
+    "vram-split-wide": (SOURCE / "figures" / "vram-split-wide.svg", "svg"),
+    "vram-split-tall": (SOURCE / "figures" / "vram-split-tall.svg", "svg"),
     "attention-profile-tall": (SOURCE / "figures" / "attention-profile-tall.svg", "svg"),
     "embedding-map-wide": (SOURCE / "figures" / "embedding-map-wide.svg", "svg"),
     "embedding-map-tall": (SOURCE / "figures" / "embedding-map-tall.svg", "svg"),
