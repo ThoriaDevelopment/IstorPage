@@ -73,6 +73,26 @@
     <h2>Why models invent sources.</h2>
     <p>A language model has no index of the world to consult, a property behind every <a href="/what-is-ai-hallucination/">hallucination</a>. It has a statistical memory of what text tends to follow other text, and "the study, published in a journal, found" is a pattern it has seen many times. So it continues the pattern. The result is not a lie in any useful sense; there is no intent behind it. It is a sentence shaped exactly like a citation, generated with the same ease as any other sentence, and no amount of <a href="/what-is-prompt-engineering/">careful prompting</a> changes what the pattern continues into. That is also why the invented ones feel so credible: the fluency is real, only the referent is missing.</p>
 
+    <figure class="citation-anatomy">
+      <!--#include citation-anatomy-wide-->
+      <!--#include citation-anatomy-tall-->
+      <figcaption>Both citations are built the same way, down to the one field that
+      can be checked: the locator, in red, is the part a reader can follow. The
+      first is a record that exists and its line ends at a document. The second is
+      not a real record, drawn here as an example, and its line has nothing to
+      arrive at, so it leaves the frame.</figcaption>
+    </figure>
+    <style>
+      .citation-anatomy { margin: 2rem auto; max-width: 40rem; }
+      .citation-anatomy svg { width: 100%; height: auto; display: block; }
+      .citation-anatomy [data-variant="tall"] { display: none; }
+      .citation-anatomy figcaption { margin-top: 0.75rem; color: var(--mist); font-size: 0.9rem; }
+      @media (max-width: 560px) {
+        .citation-anatomy [data-variant="wide"] { display: none; }
+        .citation-anatomy [data-variant="tall"] { display: block; }
+      }
+    </style>
+
     <h2>Why retrieval alone does not fix it.</h2>
     <p><a href="/what-is-rag/">Retrieval-augmented generation</a> changes the setup: instead of answering from memory, the model is handed actual passages from your documents and asked to answer from those. The invented-source problem mostly disappears, because the model now has real material to cite. What does not disappear is the accuracy problem. A model can still quote a passage slightly beyond what it says, merge two authors into one claim, or cite the right document for the wrong sentence. The answer is grounded in real sources and still partly wrong.</p>
 

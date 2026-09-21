@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 452" width="560" height="452" role="img" aria-label="A real citation on top, an invented one below: the same three lines, the same fields in the same places. The locator is the only field that can be checked, and the only thing the drawing lets differ is where it leads." focusable="false" data-variant="wide" data-generated-by="Source/tools/make-citation-anatomy.py - do not hand-edit">
+<rect x="6" y="6" width="548" height="104" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"/>
+<text x="22" y="42" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">[1]</text>
+<text x="78" y="42" font-family="Inter, system-ui, sans-serif" font-size="21" fill="var(--ink)" font-weight="600">Vaswani et al.</text>
+<text x="268" y="42" font-family="Inter, system-ui, sans-serif" font-size="19" fill="var(--mist)">(2017)</text>
+<text x="78" y="74" font-family="Fraunces, Georgia, serif" font-size="22" fill="var(--ink)">Attention Is All You Need</text>
+<text x="78" y="100" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">NeurIPS 30</text>
+<text x="534" y="100" text-anchor="end" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--witness)" font-weight="600">5998-6008</text>
+<line x1="514" y1="110" x2="514" y2="144" stroke="var(--ink)" stroke-width="1.5"/>
+<path d="M492.0 144 h28.16 l15.84 15.84 v32.16 h-44 z" fill="var(--subtle)" stroke="var(--ink)" stroke-width="1.3"/>
+<path d="M520.16 144 v15.84 h15.84" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+<line x1="499.9" y1="164.2" x2="528.1" y2="164.2" stroke="var(--mist)" stroke-width="1"/>
+<line x1="499.9" y1="171.8" x2="528.1" y2="171.8" stroke="var(--mist)" stroke-width="1"/>
+<line x1="499.9" y1="179.5" x2="528.1" y2="179.5" stroke="var(--mist)" stroke-width="1"/>
+<text x="480.0" y="207.0" text-anchor="end" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">found</text>
+<rect x="6" y="214" width="548" height="104" fill="var(--canvas)" stroke="var(--hairline)" stroke-width="1"/>
+<text x="22" y="250" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">[2]</text>
+<text x="78" y="250" font-family="Inter, system-ui, sans-serif" font-size="21" fill="var(--ink)" font-weight="600">Aldrich &amp; Povey</text>
+<text x="268" y="250" font-family="Inter, system-ui, sans-serif" font-size="19" fill="var(--mist)">(2021)</text>
+<text x="78" y="282" font-family="Fraunces, Georgia, serif" font-size="22" fill="var(--ink)">Retrieval Gates for Local Corpora</text>
+<text x="78" y="308" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">J. Doc. Analysis</text>
+<text x="534" y="308" text-anchor="end" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--witness)" font-weight="600">331-349</text>
+<line x1="514" y1="318" x2="514" y2="452" stroke="var(--mist)" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="480.0" y="381.0" text-anchor="end" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">not found</text>
+</svg>

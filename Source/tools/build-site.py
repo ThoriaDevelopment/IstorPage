@@ -171,6 +171,8 @@ INCLUDES = {
 # page - a dictionary shared by both passes would make the home page fail for
 # a marker it never had.
 LIBRARY_INCLUDES = {
+    "citation-anatomy-wide": (SOURCE / "figures" / "citation-anatomy-wide.svg", "svg"),
+    "citation-anatomy-tall": (SOURCE / "figures" / "citation-anatomy-tall.svg", "svg"),
     "gguf-anatomy-wide": (SOURCE / "figures" / "gguf-anatomy-wide.svg", "svg"),
     "gguf-anatomy-tall": (SOURCE / "figures" / "gguf-anatomy-tall.svg", "svg"),
     "quant-ladder-wide": (SOURCE / "figures" / "quant-ladder-wide.svg", "svg"),
