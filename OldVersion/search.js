@@ -273,20 +273,43 @@
 
   /* ── loading ──────────────────────────────────────────────────────────── */
 
-  function load() {
-    if (records || asked) return;
-    asked = true;
-    fetch(INDEX, { credentials: 'same-origin' })
+  /* THE TEXT IS THE LIBRARY'S, NOT THE DIALOG'S. One file holds what every page is
+     matched on - a title, a summary, its headings and their first lines - and both
+     searches read it, because two searches that answer one query differently are two
+     searches a reader has to learn. The directory's field filters the list in front
+     of them on this same text (it falls back to the entry's own title and summary
+     while this is on its way, and if it never arrives). One fetch, one parse, and the
+     memo is the promise: whoever asks first pays for it. */
+  var INDEXED = null;
+
+  function index() {
+    if (INDEXED) return INDEXED;
+    INDEXED = fetch(INDEX, { credentials: 'same-origin' })
       .then(function (response) {
         if (!response.ok) throw new Error(response.status);
         return response.json();
       })
       .then(function (data) {
-        records = data.map(function (record) {
+        var hay = {};
+        var records = data.map(function (record) {
           record.hay = [record.title, record.summary]
             .concat(record.lines).join(' ').toLowerCase();
+          hay[record.url] = record.hay;
           return record;
         });
+        return { records: records, hay: hay };
+      });
+    return INDEXED;
+  }
+
+  window.istorIndex = index;
+
+  function load() {
+    if (records || asked) return;
+    asked = true;
+    index()
+      .then(function (data) {
+        records = data.records;
         total = records.length;
         /* `foot` is null until the palette is built, and this runs in a promise: a
            response that arrived before the dialog existed would take the whole

@@ -161,6 +161,15 @@ def _lift(pattern: re.Pattern[str], text: str, what: str) -> str:
 # deferred - a lookup done once here would find nothing and quietly keep the
 # substring rule forever. The substring test stays as the fallback, so the field
 # cannot stop working because a script it does not own went missing.
+#
+# AND THE TEXT IT MATCHES IS THE LIBRARY'S TOO. An entry here carries a title and a
+# summary; the dialog reads those plus each section's heading and its first line, so
+# the same query returned two different things - "parameters" 1 entry against 9
+# pages, "models" 42 against 58. `/search.js` publishes `istorIndex` and this field
+# reads each page's own text out of it, fetched the first time anybody types. Until
+# it arrives, and if it never does, the entry's own title and summary are what is
+# matched, so the field still filters on the first keystroke rather than after a
+# round trip.
 FIND_SCRIPT = r"""  <script>
   (function () {
     var form = document.querySelector('.index-find');
@@ -177,6 +186,21 @@ FIND_SCRIPT = r"""  <script>
       li.setAttribute('data-hay', (li.textContent || '').toLowerCase());
     });
 
+    /* The text every page is matched on, once somebody has asked for it. One fetch
+       per page load, shared with the palette: whoever types first pays for it, and
+       the second search reads what the first one already fetched. */
+    var corpus = null;
+    var corpusAsked = false;
+    function hay() {
+      if (corpus || corpusAsked || !window.istorIndex) return corpus;
+      corpusAsked = true;
+      window.istorIndex().then(function (data) {
+        corpus = data.hay;
+        if (field.value.trim()) apply();
+      }).catch(function () {});
+      return null;
+    }
+
     function apply() {
       var query = field.value.trim();
       var words = query.toLowerCase().split(/\s+/).filter(Boolean);
@@ -190,11 +214,15 @@ FIND_SCRIPT = r"""  <script>
       var match = window.istorMatch || function (hay, word) {
         return hay.indexOf(word) !== -1;
       };
+      var over = hay();
 
       items.forEach(function (li) {
-        var hit = words.every(function (word) {
-          return match(li.getAttribute('data-hay'), word);
-        });
+        var link = li.querySelector('a');
+        var url = link ? link.getAttribute('href') : null;
+        /* The library's text for this page when it is here, this entry's own
+           title and summary when it is not. */
+        var text = (over && url && over[url]) || li.getAttribute('data-hay');
+        var hit = words.every(function (word) { return match(text, word); });
         li.hidden = !hit;
         if (hit) shown++;
       });

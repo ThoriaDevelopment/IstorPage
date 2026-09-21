@@ -1757,7 +1757,7 @@ def check_search(rep: Report, site: pathlib.Path, docs: dict) -> None:
     # plain rule showed 16 entries for "models" where the fold shows 42, and typing
     # "hallucinations" hid the page called "What is AI hallucination?" entirely.
     borrowed = "window.istorMatch ||" in directory
-    called = "match(li.getAttribute('data-hay'), word)" in directory
+    called = "return match(text, word);" in directory
     published = "window.istorMatch =" in source
     fallback = "indexOf(word) !== -1" in directory
     copied = "'isation'" in directory or "FOLD_CAP" in directory
@@ -1771,6 +1771,28 @@ def check_search(rep: Report, site: pathlib.Path, docs: dict) -> None:
         rep.ok("the directory's field borrows the palette's rule",
                "one implementation called by both searches, with the field's own "
                "substring test kept for the page where /search.js never loads")
+
+    # ONE CORPUS, AS WELL AS ONE RULE. An entry in the directory carries a title and a
+    # summary; the dialog reads those plus each section's heading and its first line,
+    # so the same query used to be answered twice with different numbers - "parameters"
+    # 1 entry against 9 pages, "models" 42 against 58. The field now reads each page's
+    # own text out of the accessor /search.js publishes, and the entry's title and
+    # summary stay as what is matched until that text arrives. The third fact is the
+    # anti-drift one: the page must not name the index file itself, or it could fetch
+    # and parse its own copy of the corpus and the two would be free to disagree again.
+    reads_it = "window.istorIndex()" in directory
+    owns_fallback = "over[url]) || li.getAttribute('data-hay')" in directory
+    publishes_it = "window.istorIndex =" in source
+    own_fetch = "search-index.json" in directory
+    if not (reads_it and owns_fallback and publishes_it) or own_fetch:
+        rep.fail("the directory's field reads the library's text",
+                 f"published {publishes_it}, read {reads_it}, its own fallback "
+                 f"{owns_fallback}, and a copy of the index path of its own "
+                 f"{own_fetch}")
+    else:
+        rep.ok("the directory's field reads the library's text",
+               "the same per-page text as the dialog, fetched through it, with the "
+               "entry's own title and summary until it arrives")
     m = re.search(r"var INDEX = '([^']+)'", source)
     if not m:
         rep.fail("the palette's index path",

@@ -224,6 +224,14 @@ DIRECTORY_SCENARIO = r"""
   const out = {};
   const key = (target, k, mods) => target.dispatchEvent(new w.KeyboardEvent('keydown',
     Object.assign({key: k, bubbles: true, cancelable: true}, mods || {})));
+  const until = async (fn, ms) => {
+    const t0 = Date.now();
+    while (Date.now() - t0 < (ms || 6000)) {
+      if (fn()) return true;
+      await new Promise(r => w.setTimeout(r, 50));
+    }
+    return false;
+  };
 
   /* `/` on the directory belongs to the page's own field, whose copy tells the
      reader so. The palette must not take it. */
@@ -266,12 +274,44 @@ DIRECTORY_SCENARIO = r"""
 
     out.modelsRows = (await typeIn('models')).length;
 
+    /* THE SAME QUERY, ASKED TWICE, ON ONE PAGE. "parameters" is where the two
+       searches were furthest apart: 1 entry by the field's own text against 9 pages
+       in the dialog, because the dialog reads each section's heading and its first
+       line. Both numbers are read here, from the two controls a reader would use. */
+    const waitForCorpus = async () => {
+      if (w.istorIndex) { try { await w.istorIndex(); } catch (e) {} }
+      await new Promise(r => w.setTimeout(r, 300));
+      return visible().length;
+    };
+    await typeIn('parameters');
+    out.sharedRows = await waitForCorpus();
+    out.sharedSaid = (d.querySelector('.index-said') || {}).textContent || null;
+
     /* As if /search.js had never loaded. A field that only works while somebody
        else's script is present is a field that breaks in a way nobody chose. */
     try { delete w.istorMatch; } catch (e) {}
     out.matcherGone = typeof w.istorMatch;
     out.plainRows = (await typeIn('models')).length;
     out.plainSaid = (d.querySelector('.index-said') || {}).textContent || null;
+
+    /* And the dialog's own answer to the same query, read off its count line. */
+    const trigger = d.querySelector('[data-search-open]');
+    if (trigger) {
+      trigger.click();
+      const paletteField = d.getElementById('palette-field');
+      const drew = await until(() => d.querySelectorAll('.palette-hit.is-group').length > 0);
+      if (paletteField && drew) {
+        paletteField.value = 'parameters';
+        paletteField.dispatchEvent(new w.Event('input', {bubbles: true}));
+        await until(() => {
+          const said = (d.querySelector('.palette-said') || {}).textContent || '';
+          return said.indexOf('parameters') !== -1 || said.indexOf('Nothing') !== -1;
+        });
+        out.paletteSaid = (d.querySelector('.palette-said') || {}).textContent || null;
+        out.paletteRows = d.querySelectorAll('.palette-results .palette-link').length;
+      }
+      if (d.querySelector('.palette')) d.querySelector('.palette').close();
+    }
   }
   return out;
 })(d, w)
@@ -418,6 +458,7 @@ DIRECTORY_CLAIMS = (
     "the directory's own field finds what the palette finds",
     "and refuses what the palette refuses",
     "the field keeps filtering when the palette's script never loads",
+    "the same query gets the same count from both searches",
 )
 LANDING_CLAIMS = (
     "the landing's close offers the search, and it opens the same dialog",
@@ -552,6 +593,35 @@ def check_directory(doc: dict, failures: list) -> None:
         and (doc.get("plainRows") or 0) < (doc.get("modelsRows") or 0),
         "matcher gone, 'models' shows %s entries against the fold's %s, the difference "
         "being the rule" % (doc.get("plainRows"), doc.get("modelsRows")))
+
+    # The two searches, one query, two controls on one page. "parameters" is the
+    # widest gap in the library: an entry's title and summary carry it once, the
+    # headings and their leads carry it nine times, and a reader who asked the field
+    # and then the dialog was told 1 and then 9.
+    import re as _re
+
+    def here_count(said):
+        """The directory's line: '<n> of 75 pages match "q".'"""
+        m = _re.match(r"\s*(\d+)", said or "")
+        return int(m.group(1)) if m else None
+
+    def there_count(said):
+        """The dialog's line, in both of its shapes: '<n> pages match "q".' when
+        the whole answer fits the eight rows it shows, and 'The first 8 of <n>
+        pages match "q".' when it does not - which is the case for this query, so a
+        parser that read the leading number would be comparing 8 against 9 and
+        failing for the wrong reason."""
+        said = said or ""
+        m = _re.search(r"of (\d+) pages", said) or _re.match(r"\s*(\d+)", said)
+        return int(m.group(1)) if m else None
+
+    here = here_count(doc.get("sharedSaid"))
+    there = there_count(doc.get("paletteSaid"))
+    _ok(failures, "the same query gets the same count from both searches",
+        here is not None and here == there and here >= 2,
+        "'parameters': the field says %s, the dialog says %s%s"
+        % (doc.get("sharedSaid"), doc.get("paletteSaid"),
+           "" if here == there else " - the same question, two answers"))
 
 
 def check_landing(doc: dict, failures: list) -> None:
@@ -692,14 +762,19 @@ SELF_TESTS = [
     # The directory's own field. These two patch the GENERATED page rather than the
     # script that generates it, so what is doctored is what a reader is served.
     ("the directory's field stops borrowing the palette's rule",
-     [("          return match(li.getAttribute('data-hay'), word);",
-       "          return li.getAttribute('data-hay').indexOf(word) !== -1;")],
+     [("        var hit = words.every(function (word) { return match(text, word); });",
+       "        var hit = words.every(function (word) { return text.indexOf(word) !== -1; });")],
      "the directory's own field finds what the palette finds",
      ("library/index.html", "/library/")),
     ("the directory's field loses its own substring test",
      [("      var match = window.istorMatch || function (hay, word) {",
        "      var match = window.istorMatch;")],
      "the field keeps filtering when the palette's script never loads",
+     ("library/index.html", "/library/")),
+    ("the directory's field stops reading the library's text",
+     [("        var text = (over && url && over[url]) || li.getAttribute('data-hay');",
+       "        var text = li.getAttribute('data-hay');")],
+     "the same query gets the same count from both searches",
      ("library/index.html", "/library/")),
     ("the landing stops naming the palette's script",
      [('<script src="/search.js" defer></script>', "")],
