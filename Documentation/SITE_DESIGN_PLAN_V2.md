@@ -1240,6 +1240,57 @@ A third failure was a gate catching this change rather than a bug: the index's j
 the group sections' class attribute to hold exactly `index-group`, and reported all seven groups as
 missing the moment a `reveal` marker joined the list. The class list is a list.
 
+**2026-09-21, later that day: the library can be searched from inside it (M22).** The directory has
+had a find field since it was built, and it can only find what is on the directory: a reader standing
+on `what-is-a-context-window` who wants `how-to-run-a-model-locally` has to walk back to the door
+first. What every carried page now carries is the way in from wherever the reader is - a link in the
+header that the one shared script upgrades into a dialog, and a file to search, built from the same
+75 pages by `make-search-index.py`.
+
+The decisions that shaped it were mostly decisions about *not* building things. **The rule is the
+directory's rule** - every word typed has to appear, all of them, in any order - so a reader who has
+learned one has learned both, and there is no rank to explain. **It indexes what a reader scans, not
+every word**: the full text of the library is **258 KB**, and what answers a query is the title, the
+summary, the lede, and each section's heading with the first sentence under it, which comes to
+**67,608 B** and 620 indexed lines for all 75 pages. **The results are links and focus moves to them**,
+the same one focus order the directory documents, rather than an ARIA listbox laid over a list of
+links. **Nothing from the index is ever written as markup**: every string arrives in a text node built
+by `write()`, and the generator refuses `<` in any field, because a search index is page text and page
+text that can carry markup can carry an injection. And **the trigger ships as `<a href="/library/">`**,
+so a reader whose script does not run gets the directory rather than a button that does nothing; the
+script adds `role="button"` and `aria-haspopup` only when it is there to keep the promise.
+
+Two of the smaller decisions cost the most thought. **Ordering** is title matches first and then the
+library's own order, which is a sort rather than a score because a score is a thing the reader cannot
+check - and the rule is visible in the result, since the title's matched words are the ones marked.
+The generator asserts that the records are in the reading order the directory lists in, so a result's
+place is predictable. **The mark's colour** is where a measurement changed the design: the marked word
+would naturally keep the accent its line is drawn in, and a marked word in a snippet is --mist under a
+12% --cite-wash - **4.53:1** on the palette's ground and **4.36:1** on a hovered row, the second of
+which is *under* the bar, so a title would read one hair above it and drop below the moment a pointer
+arrived on the row the reader was trying to read. Taking the page's own ink measures **15.15:1** and
+**14.60:1** light, **13.15:1** and **11.68:1** dark, and the gate recomputes both figures from the
+tokens in the same file, so the note that explains the choice fails the build if the tokens ever move
+it back.
+
+What behaviour found that the assertions could not: `/` opens the palette and **defers to the
+directory's own field** on the page that has one (checked against the page, not assumed - the
+directory's copy invites the reader to press `/` for the list in front of them, and a second search
+over the first would be a bug, not a feature); Escape closes and focus returns to the trigger, which
+is the platform's own dialog behaviour rather than a trap written here; reopening keeps what was typed;
+`ArrowDown` walks into the results and `Enter` from the field opens the first one, which was measured
+end to end by navigating from `/what-is-a-context-window/` to `/what-is-quantization/` with a query of
+`quantization`. One `:root`-duplicate bug in the new gate is worth recording: `verify-links.py` already
+had a `token_block(css, selector)`, and the second one added later shadowed it, so the light-theme
+tokens were looked up under a selector named `:root` and the check crashed instead of reporting. Names
+are global in a module like this one.
+
+The honest limits: the palette is the library's, so the landing page has no way into it (the landing
+links to the library and stops there); it searches titles, summaries, headings and section leads
+rather than full prose, which is a scope the footer states in words rather than implying; and the
+directory keeps its own in-page find field, because filtering the list in front of you and searching
+the other 74 pages are different jobs with different scopes.
+
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
 
@@ -1607,6 +1658,8 @@ The build gates are re-baselined **by measurement, never transcription** — the
 |---|---|
 | `document.*` | **retiered as ceilings on 2026-09-20** (Thoria's call: the budget should be generous, not a re-baseline on every commit): `index_html_bytes_ceiling` **78,643 B** (256 KiB over a ~74 KB document), `index_html_gzip_ceiling` a round **32 KiB** (against ~20.2 KiB measured), `inline_js_bytes_ceiling` **16 KiB** (over 5,354 B shipped). The exact figures this replaces are in git history; the ceilings still catch the incidents the budget exists for — a copy deck pasted twice, a generator gone wrong, script that doubles — while ordinary content work ships without touching `budget.json` |
 | `library.page_bytes_ceiling` / `index_bytes_ceiling` | **retiered as ceilings the same night**: **1 MiB** over ~619 KB of pages, **128 KiB** over the ~34 KB generated index. `page_count` stays exact: a missing page is a dead end for a reader. The shared files stay exact: a regenerated `theme.js` or recoloured stylesheet is a replacement, not a content edit |
+| `library.search_bytes_ceiling` **(new row, 2026-09-21)** | **84,000 B** over the **67,608 B** search index, the generator's own ceiling stated a second time here: the palette fetches that file whole, lazily, the first time it opens. `library.files` gains `/search.js` at **14,371 B** exact, and `/styles.css` moves 59,140 → **67,945 B** for the trigger's rule and the dialog's own type, grounds and measured ratios |
+| `verify-links.py` — the search palette **(new pass)** | **6 assertions** (93 → **100**), and the coupling is the point: every carried page and the directory carries the trigger and the script (a page that lost either half looks exactly like a page that has them), the script's `INDEX` names a file this build writes, that file is the generator's output **byte for byte**, the record set equals the **artifact's** published pages rather than the generator's own input, the classes the script builds have rules in the stylesheet the pages load, and the mark's colour is **recomputed from the tokens** (`--ink` under `--cite-wash` 15.15:1 and 14.60:1 light, 13.15:1 and 11.68:1 dark, against 4.53:1 and 4.36:1 for the accent it replaced), so the note explaining that choice fails the build rather than going quietly stale. The pass also runs its two tools' own proofs, `make-search-index.py --self-test` (**11 doctored files**) and `add-search-trigger.py --check` |
 | `totals.phone_1x` / `retina_2x` | re-baselined over 9 exhibits: **194,064 B** / **388,356 B**, and again on 2026-09-19 over 9 exhibits **plus 4 phone crops** at **237,991 B** / **500,885 B** — the inventory grows while what a device *downloads* shrinks, because those four exhibits now serve a narrower crop below 430px |
 | `totals.exports_all_*` | **renamed `exports_all_36`** and the `.png` suffix dropped from the sum, because PNG left the shipped set; **renamed again to `exports_all`** when the phone crops took the set from 36 files to 52 and the number in the name stopped being true |
 | `ARTIFACT_FILES` | re-baselined to **138** (the whole +18 is 9 exhibits × 4 files against 3 × 6), then to **154** on 2026-09-19 (+16 = 4 phone crops × 4 files), then to **156** (+the generated library index, +`/theme.js`). Stays exact: it caught stray screenshots twice |

@@ -1881,6 +1881,236 @@ a { color: inherit; }
 .page-index .index-find input:focus-visible { border-radius: 0.5rem; }
 .page-index .index-said { margin: 0.5rem 0 0; color: var(--mist); font-size: 0.875rem; }
 
+/* ── the search palette ────────────────────────────────────────────────
+   The way into the library from anywhere in it. The header control is a link
+   (so a reader with no script lands on the directory), search.js turns it into
+   the control that opens the dialog, and the dialog is the page's own tokens.
+
+   It is the index's find field with the whole library behind it, and the two
+   share more than a look: the rule is the same all-words rule, the results are
+   the same list of links, and the matched words are marked the same way. A
+   reader who has learned one of them has learned both.
+
+   The trigger rides the header at the theme button's own weight rather than as
+   a third button: this header already carries a wordmark, a control and a
+   gradient CTA, and a fourth boxed thing in the row would make the row read as
+   a toolbar. */
+.search-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  /* Tall enough to be the theme control's equal in the row, which is 2rem: a
+     header is read as a row of things the same height or it is read as a mess. */
+  padding: 0.45rem 0.65rem;
+  border-radius: 999px;
+  color: var(--mist);
+  font-size: 0.8125rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.search-open:hover { color: var(--ink); background: var(--subtle); }
+/* Same ring, the control's own shape: the global rule squares corners to 2px. */
+.search-open:focus-visible { border-radius: 999px; }
+
+.search-glyph {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+.search-open kbd {
+  padding: 0.02rem 0.3rem;
+  border: 1px solid var(--hairline);
+  border-radius: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+/* The row is the wordmark, the trigger, the theme control and the CTA. Below
+   these widths the keys go first (they are a hint, and a hint is the first
+   thing to lose), then the word, which leaves the glyph and the link's own
+   accessible name. */
+@media (max-width: 720px) {
+  .search-open kbd { display: none; }
+}
+@media (max-width: 560px) {
+  .search-open .search-word { display: none; }
+  .search-open { padding: 0.5rem; }
+}
+
+/* The palette itself. A native dialog, so the focus trap, the Escape key and
+   the inert page behind it are the platform's job rather than a second script's,
+   and so the trigger's own `role="button"` promise is one the browser keeps. */
+.palette {
+  width: calc(100% - 2rem);
+  max-width: 34rem;
+  margin: 11vh auto auto;
+  padding: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 0.9rem;
+  background: var(--canvas);
+  color: var(--ink);
+  box-shadow: 0 1.5rem 3.5rem -1.25rem rgba(0, 0, 0, 0.5);
+}
+/* The veil has to separate the palette from the page behind it, and how much
+   depends on which world the page is in: 42% of near-black over white paper is
+   an obvious dim, and the same value over the dark canvas is almost nothing.
+   The blur is what carries the dark one, and it is a filter rather than a
+   second element so an engine without it still gets the veil. */
+.palette::backdrop {
+  background: rgba(10, 10, 10, 0.42);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+:root[data-theme="dark"] .palette::backdrop { background: rgba(0, 0, 0, 0.62); }
+
+/* The veil and the panel arrive rather than appear, but only where a reader has
+   not asked for less motion. `@starting-style` is how a dialog's own display
+   change is given a before; an engine without it shows both at once, which is
+   the whole animation. */
+@media (prefers-reduced-motion: no-preference) {
+  .palette { transition: opacity 0.18s var(--ease-out), translate 0.18s var(--ease-out); }
+  .palette::backdrop { transition: opacity 0.18s linear; }
+  @starting-style {
+    .palette[open] { opacity: 0; translate: 0 -0.4rem; }
+    .palette[open]::backdrop { opacity: 0; }
+  }
+}
+
+.palette-panel { display: flex; flex-direction: column; padding: 0.9rem 0.95rem 0.8rem; }
+
+.palette-label {
+  color: var(--mist);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The field is the palette's one big element, and its focus state is the ring
+   the rest of the site draws, rounded to the field's own shape, plus the rule
+   under it darkening from hairline to ink. Neither is decoration: a palette
+   that opens without a visible caret reads as an empty panel. */
+.palette-field {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  font: inherit;
+  font-size: 1.125rem;
+  color: var(--ink);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+}
+.palette-field::placeholder { color: var(--mist); opacity: 1; }
+.palette-field:focus { border-bottom-color: var(--ink); outline: none; }
+.palette-field:focus-visible { border-radius: 0.5rem; outline: 2px solid var(--witness); }
+
+.palette-said { margin: 0.7rem 0.15rem 0.35rem; color: var(--mist); font-size: 0.8125rem; }
+
+.palette-results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 46vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.palette-link {
+  display: block;
+  padding: 0.55rem 0.6rem;
+  border-radius: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+.palette-link:hover { background: var(--subtle); }
+.palette-link:focus-visible { border-radius: 0.5rem; }
+
+/* The family the page belongs to, named the way the directory names it. The
+   seven marks are drawn from the page's own <h1> and the directory's headings;
+   a result row is a list of links rather than a third surface for the marks. */
+/* 0.72rem and not the 0.68 this was first written at: the site's floor for type a
+   reader has to read is 11px at every width, which the contrast audit's type pass
+   enforces on the pages it can reach - and it cannot reach a dialog that needs a
+   script and a click to exist, so this one is held to the floor by the arithmetic
+   below instead. 0.72rem is 11.52px, and verify-links.py reads these sizes out of
+   this file and fails on anything under 11. */
+.palette-where {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.palette-title {
+  display: block;
+  margin-top: 0.1rem;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  line-height: 1.35;
+  color: var(--cite-ink);
+}
+.palette-hit.is-group .palette-title { font-family: var(--font-sans); color: var(--ink); }
+
+.palette-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: 0.15rem;
+  color: var(--mist);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+/* The results scroll inside the panel rather than the page scrolling behind it,
+   and a nested scroll region with the browser's default scrollbar reads as a
+   piece of another program in the middle of the card. Thin, in the hairline's
+   own colour, on both engines; an engine that ignores this keeps the default. */
+.palette-results {
+  scrollbar-width: thin;
+  scrollbar-color: var(--hairline) transparent;
+}
+.palette-results::-webkit-scrollbar { width: 0.5rem; }
+.palette-results::-webkit-scrollbar-track { background: none; }
+.palette-results::-webkit-scrollbar-thumb {
+  background: var(--hairline);
+  border-radius: 999px;
+}
+
+/* What matched, three ways at once, and the colour is the one that needed
+   deciding. The marked word takes the page's own ink rather than the accent its
+   line is written in, because the wash under the accent costs that line its
+   contrast and the loss is worst exactly where a reader is looking: --cite-ink on
+   the light --cite-wash measures 4.53:1 on --canvas and 4.36:1 on the hovered
+   row's --subtle, so a marked word in a title would read one hair above the bar
+   and then drop under it when the pointer arrives on the row the reader is trying
+   to read. Taking --ink instead measures 15.15:1 and 14.60:1 on those two grounds
+   and 13.15:1 and 11.68:1 on the dark pair, which is what lets the mark be as
+   visible as it likes. verify-links.py recomputes both from the tokens above and
+   fails if a token ever moves the accent back over the bar, at which point this
+   note is the thing that is wrong. */
+.palette mark {
+  background: var(--cite-wash);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.palette-foot {
+  margin: 0.6rem 0 0;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--hairline);
+  color: var(--mist);
+  font-size: 0.75rem;
+}
+
 @media (max-width: 720px) {
   .page-head-in, .page-foot-in { padding-left: 1.25rem; padding-right: 1.25rem; }
   .page { padding: 2.5rem 1.25rem 3.5rem; }
@@ -1946,7 +2176,11 @@ a { color: inherit; }
      the entry list, the headings and their counts are the whole of what a printed
      directory is for. The hint goes with it, since it describes a keystroke. */
   .index-find,
-  .index-jump { display: none; }
+  .index-jump,
+  /* A control that opens a dialog over the page has nothing to do on a sheet of
+     paper either, and the dialog itself is never in the printed document: it is
+     created when a reader opens it. */
+  .search-open { display: none; }
 
   /* A link whose only life was to be clicked has to say where it went. Internal
      links are left alone, and that is this site's own argument: seventy internal

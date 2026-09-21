@@ -45,6 +45,7 @@ from __future__ import annotations
 
 import html as htmllib
 import importlib.util
+import json
 import pathlib
 import math
 import re
@@ -85,7 +86,7 @@ LIBRARY_PAGES = 75
 # §1.1: /styles.css is the library's file. This number is also in budget.json, and
 # the duplication is deliberate: the two tools read the same artifact by different
 # routes, so a size that only one of them knows about is itself the finding.
-LIBRARY_STYLES_BYTES = 59140          # 50,980 to 55,112 on 2026-09-20: the
+LIBRARY_STYLES_BYTES = 67945          # 50,980 to 55,112 on 2026-09-20: the
                                       # metric-matched fallback faces and the
                                       # measurement that chose them, so the swap
                                       # does not move the page on a slow link;
@@ -101,12 +102,21 @@ LIBRARY_STYLES_BYTES = 59140          # 50,980 to 55,112 on 2026-09-20: the
                                       # 59,140 the same morning: the seven group
                                       # marks get their one sizing rule here,
                                       # because 76 pages draw them and a rule
-                                      # copied into 75 pages stops agreeing
-ARTIFACT_FILES = 144                  # 138 + the four phone crops' 16 files + the library
+                                      # copied into 75 pages stops agreeing;
+                                      # 67,945 that same day: the search palette —
+                                      # the header trigger's rule, the dialog's
+                                      # own type and grounds, and the four
+                                      # measured ratios that chose the mark's
+                                      # colour over the accent it was drawn in,
+                                      # which verify-links recomputes
+ARTIFACT_FILES = 146                  # 138 + the four phone crops' 16 files + the library
                                       # index, less exhibit-12's eight retired exports
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
                                       # - 4 on 2026-09-21: exhibit-13 retired, act 5's table
                                       # now a DOM replica (the second exhibit to make that move)
+                                      # + 2 on 2026-09-21: /search.js and /search-index.json,
+                                      # the patch of library a reader can search from
+                                      # any page in it
 
 # Check 8's marker. If the assembler ever globs OldVersion/ instead of copying by
 # allowlist, the previous home page ships at this path and every other check here
@@ -1546,6 +1556,247 @@ def check_page_marks(rep: Report, site: pathlib.Path, docs: dict) -> None:
                f"{counted} pages, each with the mark of the group its slug claims")
 
 
+def wash_over(wash: str, ground: str) -> str:
+    """The colour a reader's eye gets where a translucent token sits on a ground.
+
+    `rgba()` over `#RRGGBB`, in that order: the ground is opaque and the wash is
+    not, so the compositing is multiplication and one subtraction. The existing
+    `contrast()` above measures hex pairs, and this is what produces its second
+    hex out of what the stylesheet actually declares.
+    """
+    m = re.fullmatch(r"rgba?\(([^)]+)\)", wash.strip())
+    if m:
+        parts = [p.strip() for p in m.group(1).split(",")]
+        alpha = float(parts[3]) if len(parts) > 3 else 1.0
+        body = [float(p) for p in parts[:3]]
+    else:
+        hexed = wash.strip().lstrip("#")
+        body = [int(hexed[i:i + 2], 16) for i in (0, 2, 4)]
+        alpha = 1.0
+    under = ground.strip().lstrip("#")
+    ground_rgb = [int(under[i:i + 2], 16) for i in (0, 2, 4)]
+    out = [round(alpha * body[i] + (1 - alpha) * ground_rgb[i]) for i in range(3)]
+    return "#%02X%02X%02X" % tuple(out)
+
+
+def check_search(rep: Report, site: pathlib.Path, docs: dict) -> None:
+    """The search palette: every page offers it, and what it reads is this build.
+
+    Four claims, none of which the page a reader lands on can show:
+
+    * **Every carried page carries the way in**, and the directory too. The trigger
+      is an `<a href="/library/">` upgraded into a dialog by one deferred script, so
+      a page that lost either half looks exactly like a page that has them: the link
+      still goes somewhere, and nothing about the page changes until a reader clicks.
+    * **The script fetches the file this build wrote**, by name, from the script
+      rather than from a list here. A palette pointed at a path no build writes is a
+      palette that opens, says "did not load", and looks like a bad connection.
+    * **That file is the generator's output, byte for byte.** It is derived from the
+      same 75 pages as the directory; a committed copy that drifted would answer
+      searches with titles that no longer exist, and every other check would pass.
+    * **The dialog the script builds is styled by the stylesheet the pages load.**
+      The script names its own classes and the stylesheet draws them, and a rename on
+      one side of that pair ships an unstyled widget, which is a change neither file
+      can see on its own.
+    """
+    print("\nthe search palette")
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "make_search_index", SOURCE / "tools" / "make-search-index.py")
+        assert spec and spec.loader
+        search = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(search)
+        spec = importlib.util.spec_from_file_location(
+            "make_library_index", SOURCE / "tools" / "make-library-index.py")
+        assert spec and spec.loader
+        index = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(index)
+    except Exception as exc:                       # noqa: BLE001 - reported, not raised
+        rep.fail("the search palette",
+                 f"its generators could not be loaded: {exc}")
+        return
+
+    slugs = index.library_slugs()
+    silent = []
+    scriptless = []
+    for slug in slugs:
+        html = docs.get(site / slug / "index.html")
+        if html is None:
+            continue
+        if "data-search-open" not in html:
+            silent.append(slug)
+        if '/search.js"' not in html:
+            scriptless.append(slug)
+    directory = docs.get(site / "library" / "index.html", "")
+    missing_directory = "data-search-open" not in directory
+
+    if silent or scriptless or missing_directory:
+        rep.fail("every page offers the search",
+                 f"{len(silent)} page(s) with no trigger, {len(scriptless)} with no "
+                 f"script" + (", and the directory has neither" if missing_directory else "") +
+                 f" - run python Source/tools/add-search-trigger.py")
+    else:
+        rep.ok("every page offers the search",
+               f"{len(slugs)} carried pages and the directory, trigger and script")
+
+    palette = site / "search.js"
+    if not palette.is_file():
+        rep.fail("/search.js", "missing — every page names it and nothing would load")
+        return
+    source = palette.read_text(encoding="utf-8")
+    m = re.search(r"var INDEX = '([^']+)'", source)
+    if not m:
+        rep.fail("the palette's index path",
+                 "search.js names no INDEX for the file it fetches")
+        return
+
+    shipped = site / m.group(1).lstrip("/")
+    if not shipped.is_file():
+        rep.fail("the palette's index path",
+                 f"search.js fetches {m.group(1)} and no build writes it")
+        return
+
+    want = search.build()
+    if shipped.read_bytes().decode("utf-8") != want:
+        rep.fail("the search index is the generator's",
+                 f"{m.group(1)} is not make-search-index.py's output - run "
+                 f"python Source/tools/make-search-index.py")
+    else:
+        records = json.loads(want)
+        urls = {r["url"] for r in records}
+        # Read off the ARTIFACT's directories rather than off OldVersion's, which
+        # is where the generator read them: two routes to one fact, so a page that
+        # is published and not indexed is a failure here rather than an agreement
+        # between a generator and itself.
+        carried = {f"/{d.name}/" for d in site.iterdir()
+                   if d.is_dir() and (d / "index.html").is_file()
+                   and d.name not in LIBRARY_TOC}
+        if urls != carried:
+            rep.fail("the search index covers the published pages",
+                     f"{len(urls)} record(s) against {len(carried)} published "
+                     f"pages - no record for {sorted(carried - urls)[:3]}, records "
+                     f"for {sorted(urls - carried)[:3]}")
+        else:
+            rep.ok("the search index is the generator's",
+                   f"{len(records)} pages, {len(want.encode('utf-8')):,} B, "
+                   f"fetched as {m.group(1)}")
+
+    # The pair the stylesheet and the script have to agree on by name.
+    built = sorted(set(re.findall(r"className = '([a-z0-9-]+)'", source)) |
+                   {"search-open"})
+    # The dialog's own ids, which the script writes into the markup and the
+    # stylesheet draws: one list, read from the script, asked of the stylesheet.
+    ids = sorted(set(re.findall(r"\.id = '([a-z0-9-]+)';", source)))
+    stylesheet_path = site / "styles.css"
+    stylesheet = (stylesheet_path.read_text(encoding="utf-8")
+                  if stylesheet_path.is_file() else "")
+    # A boundary rather than a substring: `.palette-where` is a prefix of
+    # `.palette-where-gone`, so `in` would pass on a class that was renamed away.
+    unstyled = [name for name in built + ids
+                if not re.search(r"[.#]%s(?![\w-])" % re.escape(name), stylesheet)]
+    if unstyled:
+        rep.fail("the palette's own classes",
+                 f"the script builds {', '.join(unstyled)} and the stylesheet draws "
+                 f"none of them")
+    else:
+        rep.ok("the palette's own classes are the stylesheet's",
+               f"{len(built)} classes, {len(ids)} ids")
+
+    # The mark's colour, derived rather than trusted. The stylesheet says the
+    # marked word takes --ink and not the accent its line is drawn in, and gives a
+    # measurement as the reason. A measurement in a comment is the kind that goes
+    # stale silently, so the reason is recomputed here from the tokens in the same
+    # file: if a token moves enough that the accent would be safe under the wash,
+    # or the page's ink would stop being safe, the comment is wrong and this says so.
+    block = re.search(r"\.palette mark \{(.*?)\}", stylesheet, re.S)
+    if not block:
+        rep.fail("the palette's mark", "the stylesheet draws no .palette mark")
+    else:
+        if "color: var(--ink)" not in block.group(1):
+            rep.fail("the palette's mark",
+                     "the mark does not take --ink, so the wash is under the accent "
+                     "and the line loses the contrast the comment measured")
+        else:
+            light = token_block(stylesheet, ":root")
+            dark = token_block(stylesheet, ':root[data-theme="dark"]')
+            tightest, accent = None, None
+            for name, tokens in (("light", light), ("dark", dark)):
+                if "--cite-wash" not in tokens or "--ink" not in tokens:
+                    continue
+                for ground in ("--canvas", "--subtle"):
+                    over = wash_over(tokens["--cite-wash"], tokens[ground])
+                    got = contrast(tokens["--ink"], over)
+                    tightest = got if tightest is None else min(tightest, got)
+                    if name == "light":
+                        here = contrast(tokens["--cite-ink"], over)
+                        accent = here if accent is None else min(accent, here)
+            if tightest is None or tightest < 4.5:
+                rep.fail("the palette's mark",
+                         f"the page's ink on the wash is {tightest:.2f}:1 - below the "
+                         f"4.5:1 a snippet has to clear")
+            elif accent is not None and accent >= 4.5:
+                rep.fail("the palette's mark",
+                         f"the accent on the wash now measures {accent:.2f}:1, so the "
+                         f"reason the mark takes --ink (that the accent drops under the "
+                         f"4.5:1 bar) no longer holds - re-measure and rewrite the note "
+                         f"in /styles.css")
+            else:
+                rep.ok("the palette's mark is the measured choice",
+                       f"ink on the wash {tightest:.2f}:1 in the tighter world, "
+                       f"against {accent:.2f}:1 for the accent it replaced")
+
+    # The type floor, for the one surface the contrast audit's pass cannot reach.
+    # That pass walks real pages at 13 widths and multiplies every text by the scale
+    # of the SVG it sits inside, which is exactly the right instrument for everything
+    # a reader can load - and this dialog only exists after a click, so it is held to
+    # the site's 11px floor here instead. Read out of the stylesheet, so it moves with
+    # the rule rather than with a copy of the numbers.
+    typed = []
+    for sel, body, inside in css_rules(stylesheet):
+        if inside or not re.search(r"\.(palette|search-open)", sel):
+            continue
+        for prop, value in declarations(body):
+            if prop != "font-size":
+                continue
+            m = re.fullmatch(r"([\d.]+)(rem|px)", value)
+            if not m:
+                continue
+            px = float(m.group(1)) * (16 if m.group(2) == "rem" else 1)
+            typed.append((px, sel))
+    if not typed:
+        rep.fail("the palette's type floor",
+                 "no font-size is declared for the palette or its trigger, so this "
+                 "check is measuring nothing")
+    elif min(typed)[0] < 11:
+        small = ", ".join(f"{sel} {px:.2f}px" for px, sel in sorted(typed)[:3])
+        rep.fail("the palette's type floor",
+                 f"under 11px at a 16px root: {small}. The audit's own pass cannot "
+                 f"reach a dialog that only exists after a click.")
+    else:
+        rep.ok("the palette's type floor",
+               f"{len(typed)} sizes, smallest {min(typed)[0]:.2f}px "
+               f"({min(typed)[1]})")
+
+    # The two tools that make this feature: the generator's own doctored-file
+    # self-test, and the tool's own --check that every page still carries the
+    # markup it would write. Both are cheap, both are the proof that the checks
+    # above are checks rather than descriptions, and neither is worth a separate
+    # run for a reader to remember.
+    import subprocess
+    for tool, args, what in (
+            ("make-search-index.py", ["--self-test"], "self-test"),
+            ("add-search-trigger.py", ["--check"], "--check")):
+        done = subprocess.run([sys.executable, str(SOURCE / "tools" / tool), *args],
+                              capture_output=True, text=True)
+        said = ((done.stdout or "").strip() or (done.stderr or "").strip())
+        said = said.splitlines()[-1] if said else ""
+        if done.returncode == 0:
+            rep.ok(f"{tool} {what}", said[:110])
+        else:
+            rep.fail(f"{tool} {what}", said[:300])
+
+
 def check_library_arrivals(rep: Report, site: pathlib.Path, docs: dict) -> None:
     """The library's arrivals, checked where driving a page cannot reach.
 
@@ -2096,6 +2347,7 @@ def main(argv: list[str]) -> int:
     check_12(rep, site, library_css)
     check_library_arrivals(rep, site, docs)
     check_page_marks(rep, site, docs)
+    check_search(rep, site, docs)
     check_newlines(rep, site)
 
     print()

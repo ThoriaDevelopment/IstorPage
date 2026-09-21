@@ -64,6 +64,14 @@ _spec = importlib.util.spec_from_file_location("make_library_index",
 make_library_index = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(make_library_index)
 
+# make-search-index.py, the same shape again: the file the library's search
+# palette fetches. It is generated rather than committed for the same reason the
+# directory is - it is derived from the 75 pages, title by title.
+_spec = importlib.util.spec_from_file_location("make_search_index",
+                                              HERE / "make-search-index.py")
+make_search_index = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(make_search_index)
+
 
 # --------------------------------------------------------------------------
 # The artifact's contents, as tables. §1.1 is the same list in prose.
@@ -142,11 +150,13 @@ EXPORT_SUFFIXES = [".avif", ".webp", "@2x.avif", "@2x.webp"]   # 52 files over 1
 # The library's non-page directories. The page directories are found by the
 # index.html test below; these three are carried whole, outside that test.
 LIBRARY_TREES = ["assets", "brand"]
-# styles.css and theme.js are shared by every library page, so they sit at the
-# site root rather than being duplicated into each page directory. theme.js is
-# the theme control: one file, because 75 copies of the same 1.4 KB would be
-# 105 KB of duplicated bytes and a fix would be 75 edits.
-LIBRARY_FILES = ["styles.css", "theme.js"]
+# styles.css, theme.js and search.js are shared by every library page, so they
+# sit at the site root rather than being duplicated into each page directory.
+# theme.js is the theme control and search.js is the search palette: one file
+# each, because 75 copies of the same few KB would be megabytes of duplicated
+# bytes and a fix would be 75 edits. Every page names both, and verify-links.py
+# holds the pages and this list to each other.
+LIBRARY_FILES = ["styles.css", "theme.js", "search.js"]
 LIBRARY_ROOT_FILES = ["robots.txt", "08eaa6e8b97d4b94943057b2c49bd712.txt"]
 
 # The three splice sites in Source/index.html. `kind` is only for the error
@@ -717,6 +727,25 @@ def write_library_index() -> None:
     write_text_lf(path, page)
 
 
+def write_search_index() -> str:
+    """The file the library's search palette reads, built from the pages.
+
+    The generator checks the artifact it is about to write - coverage, no markup
+    in any string, every page findable by its own title, its byte ceiling - so a
+    build that would publish a search which does not cover the library fails here
+    rather than shipping. That check is the generator's, not a second one written
+    here: two copies of a rule are two rules.
+    """
+    text = make_search_index.build()
+    try:
+        notes = make_search_index.check(text)
+    except (make_search_index.SearchError,
+            make_library_index.MissingCopy) as exc:
+        raise BuildError(f"the search index: {exc}") from None
+    write_text_lf(SITE / "search-index.json", text)
+    return notes[0]
+
+
 def write_sitemap() -> int:
     paths = page_paths()
     try:
@@ -750,6 +779,7 @@ def main() -> int:
     # its paths from what is in _site/ — a page that is not there is a page the
     # sitemap does not know about.
     write_library_index()
+    searched = write_search_index()
     urls = write_sitemap()
 
     files = [p for p in SITE.rglob("*") if p.is_file()]
@@ -758,6 +788,7 @@ def main() -> int:
     total = sum(p.stat().st_size for p in files)
     print(f"_site/  {len(files)} files, {total:,} B")
     print(f"        {urls} urls in sitemap.xml")
+    print(f"        {searched}")
     if spliced:
         print(f"        {spliced} library include(s) spliced")
     print("        preview:  python -m http.server --directory _site 8080")

@@ -68,10 +68,13 @@ DUPLICATED = [
 # /theme.js: the library's theme control is one shared file rather than a script
 # copied into each of the 75 pages, which is the only shape that keeps a fix to
 # it a one-file edit.
-ARTIFACT_FILES = 144                  # + the generated library index; 8 fewer since
+ARTIFACT_FILES = 146                  # + the generated library index; 8 fewer since
                                       # exhibit-12 retired its exports (2026-09-20);
                                       # 4 fewer since exhibit-13 did the same (2026-09-21),
-                                      # act 5's table now a DOM replica
+                                      # act 5's table now a DOM replica; +2 on
+                                      # 2026-09-21 for the search palette: /search.js,
+                                      # the one script all 76 library pages name, and
+                                      # /search-index.json, the file it fetches
 
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 # The library index lives at /library/ and is a page, but it is not one of the 75
@@ -338,6 +341,28 @@ def main(argv: list[str]) -> int:
         rep.ok("library.index_bytes_ceiling",
                f"{index.stat().st_size:,} B generated index  "
                f"(ceiling {want_index:,} B)")
+
+    # The search index is generated from the same 75 pages as the directory, and
+    # it is fetched whole, lazily, the first time a reader opens the palette. Its
+    # ceiling is the generator's own (make-search-index.py's CEILING) stated a
+    # second time here, which is deliberate: the generator is what stops a build
+    # that would ship the file over it, and this is what notices a file that
+    # arrived at that size some other way. Both routes read the artifact.
+    want_search = budget["library"].get("search_bytes_ceiling")
+    search_index = site / "search-index.json"
+    if want_search is None:
+        state = f"{search_index.stat().st_size:,} B" if search_index.is_file() else "missing"
+        print(f"  --    /search-index.json  {state}  (budget.json asserts no value yet)")
+    elif not search_index.is_file():
+        rep.fail("library.search_bytes_ceiling",
+                 "/search-index.json is missing — the palette would fetch a 404")
+    elif search_index.stat().st_size > want_search:
+        rep.fail("library.search_bytes_ceiling",
+                 f"{search_index.stat().st_size:,} B, over the {want_search:,} B ceiling")
+    else:
+        rep.ok("library.search_bytes_ceiling",
+               f"{search_index.stat().st_size:,} B search index  "
+               f"(ceiling {want_search:,} B)")
 
     # -- and the one number that proves §1.1's collision resolved right ------
     styles = site / "styles.css"
