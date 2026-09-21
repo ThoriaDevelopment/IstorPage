@@ -1439,6 +1439,7 @@ The build gates are re-baselined **by measurement, never transcription** — the
 | `type floor` **(new pass, 2026-09-20)** | walks **13 widths from 320 to 1440** and asserts that nothing a reader has to read renders under **11px**, multiplying each text's size by the scale of the SVG it sits inside, because a plate's type is in user units and its computed `font-size` is not the number a reader gets. 6,489 texts. It found the site's smallest text at **7.66px** (the ring's `355` at a 390px window), the boundary plate's glosses at **9.0-10.8** between 641 and 768 and the etymology ledger's at **9.8** at 320; all three are fixed. Its own first version measured the audit harness's document instead of the framed page and passed over **zero** texts, which is why the line prints the count it measured |
 | `verify-figures.py` **(new tool, 2026-09-20)** | regenerates all seven figures in `Source/figures/` and compares each to the committed file **by bytes**, restoring the working tree whatever the comparison says, then runs each generator's own `--self-test` where it has one. 9 checks. The claim in `SITE_BUILD_PLAN.md` that `verify-budget.py` catches a stale regeneration was only half true: it catches a stale figure that moves the page's total past a ceiling, which is a much larger event than a figure three hundred bytes out of date, and this repository generates its artwork rather than storing it. It also fixed two generators that wrote to `../figures/`, a path that is right only when the tool is run from `Source/tools` and, from the repository root their own docstrings name, resolves to the repository's **parent** |
 | `verify-copy.py` **(new tool)** | Stage 9's checks 10 and 11: the humanizer pass as a rule rather than a memory, and §10.4's release-claim rule in both prose and tables. Both run a positive control before they trust their own silence, and an allow-list entry that stops matching fails the build |
+| `audit-motion.py` **(new tool, 2026-09-21)** | drives the page instead of reading it, and asserts **12 claims** about the two worlds: a notched read leaves the wheel where the scroll put it, a page-sized jump is not a gesture, a sustained flick charges it and it coasts and stops, the mesh ratio holds at every one of those moments, the hand turns it, a control keeps its own pointer, a touch is never taken, and with motion reduced the world is never written. A local tool with a non-zero exit, for the same reason `audit-contrast.py` is one. Its `--self-test` builds **five doctored pages** and requires each to fail the claim it breaks. The night's most expensive lesson lives in its docstring: `--virtual-time-budget`, the only thing that makes headless wait for a scenario, produces no animation frames and stalls outright on a page that requests them, so the harness **POSTs its answer back** and Chrome runs in real time |
 | **`composition` (new)** | asserts the page has **≥ 10 sections, ≥ 4 distinct composition classes, ≥ 1 sticky element, ≥ 1 `<details>`, and ≤ 1 display-size element** |
 
 That last gate is the point. v1 had 53 assertions and none could see that the page was nine identical
@@ -1514,6 +1515,32 @@ lightest stop. Both were fixed in the ink, not in the tool. Grounds that are pho
 the app's own screenshots are reported as unmeasured, and every run prints how many viewports it
 walked and how many elements it could not measure: a clean result that covered seven elements of a
 long page is not a clean result.
+
+**A second local tool drives the page rather than measuring it.** `Source/tools/audit-motion.py` asks
+what the mechanism DOES when it is used, which is the one class of claim no build-time fact can reach:
+a notched read leaves the wheel exactly where the scroll put it, a page-sized jump is not a gesture, a
+sustained flick charges the wheel and it coasts and then stops, the hand turns it, a control keeps its
+own pointer, a touch is never taken, and with motion reduced the world is never written at all.
+**Twelve claims**, each of them a sentence this plan makes elsewhere, and each proven failable before
+it shipped: five doctored copies of the built page, every one caught by the claim it breaks. Its own
+first version could honestly assert nine of them, and the three it could not - the coast, the settle,
+and the ratio through the coast - are exactly what the instrument change below recovered.
+
+**That tool also cost the most to build, and for a reason worth recording.** It began on
+`audit-contrast.py`'s harness, which reads its answer out of the DOM with `--dump-dom`. That fires at
+load, so a scenario of eight seconds of gestures needs `--virtual-time-budget` to make the browser wait
+at all - and under the virtual clock this renderer produces almost no animation frames: **four in three
+seconds**, in old headless and new, with and without every frame switch worth trying, and with a running
+CSS animation in the page to force invalidation. The momentum is advanced by `requestAnimationFrame`, so
+the wheel would receive its charge and never turn; worse, a page that keeps requesting frames **stalls
+the virtual clock** rather than finishing, and two self-test runs sat for the full 420-second subprocess
+timeout instead of reporting anything. The fix was to change the question's plumbing rather than the
+claim: the harness now POSTs the scenario's value back to the tool's own server and Chrome runs in
+**real time**, where the waits are the waits a reader's browser makes. The first three claims that
+version could assert are now twelve, and the one thing this arrangement gives up is that the tool
+describes a real browser rather than a deterministic one - which is what the claims below are about
+anyway, and why the events are still dispatched at instants the tool chooses rather than read from the
+browser's own coalescing stream.
 
 **It audits the states a render never shows, too.** §3.6 promises `prefers-contrast: more` on both
 halves, and §3.5's theme control promises a dark world to a reader whose machine is dark and who has
