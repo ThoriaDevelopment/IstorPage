@@ -742,16 +742,31 @@ def check_5(rep: Report, page: str) -> None:
     # FAQ is a disclosure — so the v1 prohibition is gone. What replaces it is a
     # narrower rule: the page's ONE script must stay small, inline, and incapable
     # of being the reason anything works.
+    # AMENDED 2026-09-21 for the library's search palette: the rule this check
+    # keeps is that the page's OWN behaviour is one inline script that nothing
+    # depends on, and that has not changed. What the landing now also carries is
+    # one external, deferred file - /search.js, the same file all 75 carried pages
+    # name - and the exception is written as a name rather than as a count, so a
+    # second bundle, a CDN or a font loader cannot slip in behind it.
     scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", body, re.S | re.I)
     tags = re.findall(r"<script\b[^>]*>", body, re.I)
-    if len(tags) != 1:
-        rep.fail("script count", f"{len(tags)} <script> tags — the page carries "
-                                 f"exactly one")
-    elif re.search(r"\bsrc\s*=", tags[0], re.I):
-        rep.fail("<script src>", f"{tags[0].strip()} — the one script must be "
-                                 f"inline, or §12's payload arithmetic changes")
+    inline = [t for t in tags if not re.search(r"\bsrc\s*=", t, re.I)]
+    external = [t for t in tags if re.search(r"\bsrc\s*=", t, re.I)]
+    if len(inline) != 1:
+        rep.fail("script count", f"{len(inline)} inline <script> tag(s) — the page's "
+                                  f"own behaviour is exactly one")
+    elif any('src="/search.js"' not in t for t in external):
+        rep.fail("the page's one external script",
+                 f"{', '.join(t.strip() for t in external if 'src=\"/search.js\"' not in t)}"
+                 f" — the only external file this page may name is the library's "
+                 f"search palette")
+    elif len(external) > 1:
+        rep.fail("the page's one external script",
+                 f"{len(external)} <script src> tags, and /search.js is already the "
+                 f"one exception")
     else:
-        rep.ok("exactly one <script>, inline, no src")
+        rep.ok("one inline <script> and one shared external one",
+               "/search.js, deferred" if external else "no external script needs it")
 
     src = scripts[0] if scripts else ""
 
@@ -1579,6 +1594,74 @@ def wash_over(wash: str, ground: str) -> str:
     return "#%02X%02X%02X" % tuple(out)
 
 
+def mark_ratios(tokens: dict[str, str], grounds: tuple[str, ...]) -> tuple[float, float] | None:
+    """One token world's (ink on its wash, accent on its wash), or None.
+
+    The wash is composited over each ground the mark can sit on - the dialog's own
+    and a hovered row's - and the tighter figure is the one returned, because the
+    tighter figure is the one a reader meets.
+    """
+    if "--cite-wash" not in tokens or "--ink" not in tokens:
+        return None
+    ink = accent = None
+    for ground in grounds:
+        if ground not in tokens:
+            continue
+        over = wash_over(tokens["--cite-wash"], tokens[ground])
+        here = contrast(tokens["--ink"], over)
+        ink = here if ink is None else min(ink, here)
+        if "--cite-ink" in tokens:
+            there = contrast(tokens["--cite-ink"], over)
+            accent = there if accent is None else min(accent, there)
+    return (ink, accent) if ink is not None else None
+
+
+def palette_font_sizes(css: str, root: dict[str, str] | None = None) -> list[tuple[float, str]]:
+    """Every font-size the palette's own selectors declare, as (px, selector).
+
+    Three forms and all three matter: a rem is read at the root the site sets (16px,
+    which is what the audit's own pass measures against), a px is itself, and a
+    `var(--t-...)` is resolved through the file's own tokens - because the landing's
+    stylesheet is written on a type scale, and a check that only understood literals
+    would have measured two of its declarations and reported the floor as safe.
+    """
+    root = token_block(css, ":root") if root is None else root
+    out: list[tuple[float, str]] = []
+    for sel, body, inside in css_rules(css):
+        if inside or not re.search(r"\.(palette|search-open)", sel):
+            continue
+        for prop, value in declarations(body):
+            if prop != "font-size":
+                continue
+            seen = 0
+            token = re.fullmatch(r"var\(\s*(--[a-z0-9-]+)\s*\)", value)
+            while token and seen < 8:
+                value = root.get(token.group(1), "")
+                token = re.fullmatch(r"var\(\s*(--[a-z0-9-]+)\s*\)", value)
+                seen += 1
+            m = re.fullmatch(r"([\d.]+)(rem|px)", value.strip())
+            if m:
+                out.append((float(m.group(1)) * (16 if m.group(2) == "rem" else 1), sel))
+    return out
+
+
+def palette_class_names(css: str) -> set[str]:
+    """The palette's class names, as selectors rather than as substrings.
+
+    `search-open`, `search-glyph` and `search-word` by name rather than by prefix,
+    because this page has other classes that begin with `search` - the app
+    replica's - and a prefix would report them as half of a widget they belong to
+    nothing.
+    """
+    names: set[str] = set()
+    for sel, _body, inside in css_rules(css):
+        if inside:
+            continue
+        names.update(re.findall(r"\.(palette[a-z0-9-]*|search-(?:open|glyph|word))",
+                                sel))
+    return names
+
+
 def check_search(rep: Report, site: pathlib.Path, docs: dict) -> None:
     """The search palette: every page offers it, and what it reads is this build.
 
@@ -1630,15 +1713,26 @@ def check_search(rep: Report, site: pathlib.Path, docs: dict) -> None:
             scriptless.append(slug)
     directory = docs.get(site / "library" / "index.html", "")
     missing_directory = "data-search-open" not in directory
+    # The landing too, and it is the one page whose trigger is authored rather than
+    # written by the tool: its copy sits in the close, where the page hands the reader
+    # sixteen of the site's seventy-five other pages. A build that dropped either half
+    # there would leave a link to the directory and no way to search from it, which
+    # looks exactly like the page working.
+    landing_page = docs.get(site / "index.html", "")
+    landing_silent = "data-search-open" not in landing_page
+    landing_scriptless = "/search.js" not in landing_page
 
-    if silent or scriptless or missing_directory:
+    if silent or scriptless or missing_directory or landing_silent or landing_scriptless:
         rep.fail("every page offers the search",
                  f"{len(silent)} page(s) with no trigger, {len(scriptless)} with no "
-                 f"script" + (", and the directory has neither" if missing_directory else "") +
+                 f"script" + (", the directory has neither" if missing_directory else "") +
+                 (", and the landing one or the other"
+                  if (landing_silent or landing_scriptless) else "") +
                  f" - run python Source/tools/add-search-trigger.py")
     else:
         rep.ok("every page offers the search",
-               f"{len(slugs)} carried pages and the directory, trigger and script")
+               f"{len(slugs)} carried pages, the directory and the landing, trigger "
+               f"and script")
 
     palette = site / "search.js"
     if not palette.is_file():
@@ -1682,101 +1776,134 @@ def check_search(rep: Report, site: pathlib.Path, docs: dict) -> None:
                    f"{len(records)} pages, {len(want.encode('utf-8')):,} B, "
                    f"fetched as {m.group(1)}")
 
-    # The pair the stylesheet and the script have to agree on by name.
+    # ONE WIDGET, TWO STYLESHEETS, and this is where they are held together. The
+    # landing inlines its stylesheet; the library links /styles.css; so the palette
+    # has to be written in both, in each file's own token vocabulary. Everything
+    # below is asked of both files, and the pair is the point: a rename that lands in
+    # one file and not the other ships a widget that is styled on one side of the
+    # site and naked on the other, which is a change neither file can see alone.
     built = sorted(set(re.findall(r"className = '([a-z0-9-]+)'", source)) |
                    {"search-open"})
-    # The dialog's own ids, which the script writes into the markup and the
-    # stylesheet draws: one list, read from the script, asked of the stylesheet.
     ids = sorted(set(re.findall(r"\.id = '([a-z0-9-]+)';", source)))
-    stylesheet_path = site / "styles.css"
-    stylesheet = (stylesheet_path.read_text(encoding="utf-8")
-                  if stylesheet_path.is_file() else "")
-    # A boundary rather than a substring: `.palette-where` is a prefix of
-    # `.palette-where-gone`, so `in` would pass on a class that was renamed away.
-    unstyled = [name for name in built + ids
-                if not re.search(r"[.#]%s(?![\w-])" % re.escape(name), stylesheet)]
-    if unstyled:
-        rep.fail("the palette's own classes",
-                 f"the script builds {', '.join(unstyled)} and the stylesheet draws "
-                 f"none of them")
-    else:
-        rep.ok("the palette's own classes are the stylesheet's",
-               f"{len(built)} classes, {len(ids)} ids")
 
-    # The mark's colour, derived rather than trusted. The stylesheet says the
-    # marked word takes --ink and not the accent its line is drawn in, and gives a
-    # measurement as the reason. A measurement in a comment is the kind that goes
-    # stale silently, so the reason is recomputed here from the tokens in the same
-    # file: if a token moves enough that the accent would be safe under the wash,
-    # or the page's ink would stop being safe, the comment is wrong and this says so.
-    block = re.search(r"\.palette mark \{(.*?)\}", stylesheet, re.S)
-    if not block:
-        rep.fail("the palette's mark", "the stylesheet draws no .palette mark")
+    library_path = site / "styles.css"
+    library_css = (library_path.read_text(encoding="utf-8")
+                   if library_path.is_file() else "")
+    landing = site / "index.html"
+    landing_html = landing.read_text(encoding="utf-8") if landing.is_file() else ""
+    style = re.search(r"<style\b[^>]*>(.*?)</style>", landing_html, re.S | re.I)
+    landing_css = style.group(1) if style else ""
+    drawn = {"the landing's inlined copy": landing_css,
+             "the library's /styles.css": library_css}
+
+    for label, css in drawn.items():
+        # A boundary rather than a substring: `.palette-where` is a prefix of
+        # `.palette-where-gone`, so `in` would pass on a class renamed away.
+        unstyled = [name for name in built + ids
+                    if not re.search(r"[.#]%s(?![\w-])" % re.escape(name), css)]
+        if unstyled:
+            rep.fail("the palette's own classes",
+                     f"{label} draws none of {', '.join(unstyled)}, which the script "
+                     f"builds")
+        else:
+            rep.ok(f"the palette's own classes, {label}",
+                   f"{len(built)} classes, {len(ids)} ids")
+
+    # The same widget means the same names in both. Not the same rules - these files
+    # hold different tokens - but the same vocabulary, or a reader who meets the
+    # palette in the library would not recognise it on the landing.
+    landing_names = palette_class_names(landing_css)
+    library_names = palette_class_names(library_css)
+    if landing_names != library_names:
+        rep.fail("the two palettes draw the same classes",
+                 f"only in one file: {sorted(landing_names ^ library_names)[:6]}. The "
+                 f"names are one widget's, written twice in two vocabularies.")
     else:
+        rep.ok("the two palettes draw the same classes",
+               f"{len(library_names)} names in both files")
+
+    # The mark's colour, derived rather than trusted, in each file from its own
+    # tokens. Both stylesheets say the marked word takes the page's ink rather than
+    # the accent its line is drawn in, and each gives a measurement as the reason - so
+    # each is recomputed here. In the library the reason is that the accent fails
+    # under the wash; on the landing it is that the same widget must mark a word the
+    # same way in both places. One of those is a claim this file can refute.
+    for label, css, worlds in (
+            ("the library's /styles.css", library_css,
+             ((":root", ("--canvas", "--subtle")),
+              (':root[data-theme="dark"]', ("--canvas", "--subtle")))),
+            ("the landing's inlined copy", landing_css,
+             ((":root", ("--card",)),))):
+        block = re.search(r"\.palette mark\s*\{(.*?)\}", css, re.S)
+        if not block:
+            rep.fail("the palette's mark", f"{label} draws no .palette mark")
+            continue
         if "color: var(--ink)" not in block.group(1):
             rep.fail("the palette's mark",
-                     "the mark does not take --ink, so the wash is under the accent "
-                     "and the line loses the contrast the comment measured")
+                     f"{label} does not give the mark --ink, so the wash sits under "
+                     f"the accent and the line loses the contrast its note measured")
+            continue
+        tightest, accent = None, None
+        for selector, grounds in worlds:
+            tokens = token_block(css, selector)
+            got = mark_ratios(tokens, grounds)
+            if not got:
+                continue
+            ink_here, accent_here = got
+            tightest = ink_here if tightest is None else min(tightest, ink_here)
+            if accent_here is not None:
+                accent = accent_here if accent is None else min(accent, accent_here)
+        if tightest is None:
+            rep.fail("the palette's mark",
+                     f"{label} declares no --cite-wash/--ink pair to measure the mark "
+                     f"against, so this check is measuring nothing")
+        elif tightest < 4.5:
+            rep.fail("the palette's mark",
+                     f"{label}: the page's ink on its own wash is {tightest:.2f}:1 - "
+                     f"below the 4.5:1 a snippet has to clear")
         else:
-            light = token_block(stylesheet, ":root")
-            dark = token_block(stylesheet, ':root[data-theme="dark"]')
-            tightest, accent = None, None
-            for name, tokens in (("light", light), ("dark", dark)):
-                if "--cite-wash" not in tokens or "--ink" not in tokens:
-                    continue
-                for ground in ("--canvas", "--subtle"):
-                    over = wash_over(tokens["--cite-wash"], tokens[ground])
-                    got = contrast(tokens["--ink"], over)
-                    tightest = got if tightest is None else min(tightest, got)
-                    if name == "light":
-                        here = contrast(tokens["--cite-ink"], over)
-                        accent = here if accent is None else min(accent, here)
-            if tightest is None or tightest < 4.5:
-                rep.fail("the palette's mark",
-                         f"the page's ink on the wash is {tightest:.2f}:1 - below the "
-                         f"4.5:1 a snippet has to clear")
-            elif accent is not None and accent >= 4.5:
-                rep.fail("the palette's mark",
-                         f"the accent on the wash now measures {accent:.2f}:1, so the "
-                         f"reason the mark takes --ink (that the accent drops under the "
-                         f"4.5:1 bar) no longer holds - re-measure and rewrite the note "
-                         f"in /styles.css")
-            else:
-                rep.ok("the palette's mark is the measured choice",
-                       f"ink on the wash {tightest:.2f}:1 in the tighter world, "
-                       f"against {accent:.2f}:1 for the accent it replaced")
+            rep.ok(f"the palette's mark, {label}",
+                   f"ink on the wash {tightest:.2f}:1, against {accent:.2f}:1 for the "
+                   f"accent it replaced")
+
+    # The library's own copy carries a reason the landing's cannot: there the accent
+    # drops UNDER the bar on the row a reader is reading, and the note in that file
+    # says so. If a token ever moves the accent back over it, the note is wrong.
+    library_mark = mark_ratios(token_block(library_css, ":root"),
+                               ("--canvas", "--subtle"))
+    dark_mark = mark_ratios(token_block(library_css, ':root[data-theme="dark"]'),
+                            ("--canvas", "--subtle"))
+    accent = min([r[1] for r in (library_mark, dark_mark) if r and r[1] is not None],
+                 default=None)
+    if accent is not None and accent >= 4.5:
+        rep.fail("the library's mark note",
+                 f"the accent on the wash now measures {accent:.2f}:1, so the reason "
+                 f"that file gives for taking --ink (that the accent drops under the "
+                 f"4.5:1 bar) no longer holds - re-measure and rewrite the note")
+    elif accent is not None:
+        rep.ok("the library's mark note still holds",
+               f"the accent it replaced measures {accent:.2f}:1 under the wash")
 
     # The type floor, for the one surface the contrast audit's pass cannot reach.
     # That pass walks real pages at 13 widths and multiplies every text by the scale
-    # of the SVG it sits inside, which is exactly the right instrument for everything
-    # a reader can load - and this dialog only exists after a click, so it is held to
-    # the site's 11px floor here instead. Read out of the stylesheet, so it moves with
-    # the rule rather than with a copy of the numbers.
-    typed = []
-    for sel, body, inside in css_rules(stylesheet):
-        if inside or not re.search(r"\.(palette|search-open)", sel):
-            continue
-        for prop, value in declarations(body):
-            if prop != "font-size":
-                continue
-            m = re.fullmatch(r"([\d.]+)(rem|px)", value)
-            if not m:
-                continue
-            px = float(m.group(1)) * (16 if m.group(2) == "rem" else 1)
-            typed.append((px, sel))
-    if not typed:
-        rep.fail("the palette's type floor",
-                 "no font-size is declared for the palette or its trigger, so this "
-                 "check is measuring nothing")
-    elif min(typed)[0] < 11:
-        small = ", ".join(f"{sel} {px:.2f}px" for px, sel in sorted(typed)[:3])
-        rep.fail("the palette's type floor",
-                 f"under 11px at a 16px root: {small}. The audit's own pass cannot "
-                 f"reach a dialog that only exists after a click.")
-    else:
-        rep.ok("the palette's type floor",
-               f"{len(typed)} sizes, smallest {min(typed)[0]:.2f}px "
-               f"({min(typed)[1]})")
+    # of the SVG it sits inside, which is the right instrument for everything a reader
+    # can load - and this dialog only exists after a click, so it is held to the
+    # site's 11px floor here instead, in both files.
+    for label, css in drawn.items():
+        typed = palette_font_sizes(css)
+        if not typed:
+            rep.fail("the palette's type floor",
+                     f"{label} declares no font-size for the palette or its trigger, "
+                     f"so this check is measuring nothing there")
+        elif min(typed)[0] < 11:
+            small = ", ".join(f"{sel} {px:.2f}px" for px, sel in sorted(typed)[:3])
+            rep.fail("the palette's type floor",
+                     f"{label} is under 11px at a 16px root: {small}. The audit's own "
+                     f"pass cannot reach a dialog that only exists after a click.")
+        else:
+            rep.ok(f"the palette's type floor, {label}",
+                   f"{len(typed)} sizes, smallest {min(typed)[0]:.2f}px "
+                   f"({min(typed)[1]})")
 
     # The two tools that make this feature: the generator's own doctored-file
     # self-test, and the tool's own --check that every page still carries the

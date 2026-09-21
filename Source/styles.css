@@ -2306,6 +2306,220 @@ h3 {
    that already exists as a designed object (§3.4: light-theme windows on teal,
    dark-theme windows on paper). Print is the paper case, so it gets the light
    window rather than a dimmed copy of the dark one. */
+/* ---------------------------------------------------------------------------
+   17 · The library's search.
+
+   The close hands the reader sixteen of this site's seventy-five other pages and
+   tells them the rest exist, so the block offers both ways in: browse the sixteen,
+   or search all seventy-five. What the trigger opens is the SAME widget the carried
+   pages open - one script, one index, one look - and it has to be written twice,
+   because this page inlines its stylesheet while the library links its own from
+   /styles.css. Two files, one widget: verify-links.py is what holds them together,
+   asking both for the same class list, the same mark declaration, the same 11px
+   floor, and a mark that clears 4.5:1 in each file's own tokens.
+
+   So this is a TRANSLATION rather than a copy, and each word is the right one here:
+   --card for the dialog's ground (the app's own modal, which is what this is),
+   --ink and --ink-2 for its two text weights, --rule for its hairlines, --paper for
+   a hovered row (the same ground change the library's --canvas/--subtle pair draws),
+   --azure for the focus ring (this page has one interactive colour and this is not
+   a second), --serif for result titles, --sans for everything else, --ease for the
+   arrival, and --t-label / --t-body / --t-sm / --t-lede for its type.
+
+   ONE DELIBERATE DEPARTURE from the library's copy, and it is the mark: that file
+   had to take the page's ink because the accent under its wash measures 4.36:1, a
+   hair under the bar on exactly the hovered row a reader is looking at. Here the
+   accent would clear it, at 4.74:1 - and the mark takes --ink anyway, because a
+   reader who meets this widget in the library and then on this page should not have
+   to learn it twice, and because 0.24 of margin is not a margin. Measured here:
+   --ink on --cite-wash is 15.13:1, --ink-2 on it 5.07:1, and the ink on the dialog's
+   ground 17.79:1. */
+.search-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 9px 15px;
+  border: 1px solid var(--field-rule);
+  border-radius: 999px;
+  color: var(--field-ink-2);
+  font-family: var(--sans);
+  font-size: var(--t-sm);
+  text-decoration: none;
+}
+.search-open:hover { color: var(--field-ink); border-color: var(--field-ink-2); }
+/* Same ring, the control's own shape: the global rule squares corners to 2px. */
+.search-open:focus-visible { border-radius: 999px; outline-color: var(--azure-lift); }
+
+.search-glyph {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+.search-open kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--field-rule);
+  border-radius: 4px;
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* The dialog. A native <dialog>, so the focus trap, Escape and the inert page
+   behind it are the platform's job and the element lands in the top layer
+   whatever ground it was opened over - which matters here, because the trigger
+   sits in the close's dark field and the dialog is a light card. */
+.palette {
+  width: calc(100% - 32px);
+  max-width: 544px;
+  margin: 11vh auto auto;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--sans);
+  box-shadow: var(--shadow-field);
+}
+/* One veil for both grounds this can be opened over, and it is the field's own
+   colour at two thirds rather than a black: the palette can be opened from the
+   close, over the field, or from anywhere on the page over paper, and the veil is
+   what tells the reader which one is on top. The blur is what carries it over the
+   dark ground, where a dim alone is almost nothing; over paper the veil carries it,
+   because a blur alone would leave the page legible under the card. Translucent
+   through color-mix for the reason the nav's own surface is (see 9 · The nav). */
+.palette::backdrop {
+  background: color-mix(in srgb, var(--field-base) 64%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* The panel and the veil arrive rather than appear, and not at all where a reader
+   asked for less motion. `@starting-style` is how a dialog's display change is
+   given a before; an engine without it shows both at once, which is the whole
+   animation. */
+@media (prefers-reduced-motion: no-preference) {
+  .palette { transition: opacity 180ms var(--ease), translate 180ms var(--ease); }
+  .palette::backdrop { transition: opacity 180ms linear; }
+  @starting-style {
+    .palette[open] { opacity: 0; translate: 0 -6px; }
+    .palette[open]::backdrop { opacity: 0; }
+  }
+}
+
+.palette-panel { display: flex; flex-direction: column; padding: 14px 15px 13px; }
+
+.palette-label {
+  color: var(--ink-2);
+  font-size: var(--t-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The field is the palette's one big element, and its focus state is the ring the
+   rest of the page draws, rounded to the field's own shape, plus the rule under it
+   darkening from --rule to --ink. Neither is decoration: a palette that opens
+   without a visible caret reads as an empty panel. */
+.palette-field {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: var(--t-lede);
+  color: var(--ink);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+}
+.palette-field::placeholder { color: var(--ink-2); opacity: 1; }
+.palette-field:focus { border-bottom-color: var(--ink); outline: none; }
+.palette-field:focus-visible { border-radius: 8px; outline: 2px solid var(--azure); }
+
+.palette-said { margin: 11px 2px 6px; color: var(--ink-2); font-size: var(--t-label); }
+
+/* The results scroll inside the panel rather than the page scrolling behind it,
+   and a nested scroll region with the browser's default scrollbar reads as a piece
+   of another program in the middle of the card. Thin, in the rule's own colour, on
+   both engines; an engine that ignores this keeps the default. */
+.palette-results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 46vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+.palette-results::-webkit-scrollbar { width: 8px; }
+.palette-results::-webkit-scrollbar-track { background: none; }
+.palette-results::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 999px; }
+
+.palette-link {
+  display: block;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+}
+.palette-link:hover { background: var(--paper); }
+.palette-link:focus-visible { border-radius: 8px; }
+
+/* The family the page belongs to, named the way the directory names it. This page
+   has no monospace face at all, so the label is set in the label size it does own
+   rather than importing one face for seven words. */
+.palette-where {
+  display: block;
+  font-size: var(--t-label);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.palette-title {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--serif);
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--cite-ink);
+}
+.palette-hit.is-group .palette-title { font-family: var(--sans); font-weight: 600; color: var(--ink); }
+
+.palette-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: 3px;
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+  line-height: 1.45;
+}
+
+/* What matched: the page's own ink under the page's own citation wash, a step
+   heavier. The wash is the app's citation highlight, so a marked word here looks
+   like the thing this page spends its time showing. */
+.palette mark {
+  background: var(--cite-wash);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.palette-foot {
+  margin: 10px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-2);
+  font-size: 12px;
+}
+
 @media print {
   :root {
     color-scheme: light;
@@ -2355,10 +2569,14 @@ h3 {
     border: 1px solid var(--rule);
   }
 
-  /* Paper has no sticky nav, no scroll position, and no hover. */
+  /* Paper has no sticky nav, no scroll position, and no hover. The search trigger
+     goes with them: a control that opens a dialog over the page has nothing to do
+     on a sheet, and the dialog itself is never in the printed document, since it
+     is built when a reader opens it. */
   .nav,
   .reading-progress,
-  .act-index {
+  .act-index,
+  .search-open {
     display: none;
   }
 

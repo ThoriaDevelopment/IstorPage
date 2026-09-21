@@ -930,6 +930,22 @@
      ===================================================================== -->
   <div class="reading">
     <div class="wrap">
+      <!-- The way into the library's search from the page that hands out sixteen of
+           its pages. It is a link first: with no script it lands on the directory,
+           which is where the reader was going anyway, and /search.js upgrades it
+           into the dialog the carried pages open. It sits above the lede rather
+           than beside it so the block offers both answers - search, or browse what
+           the page picked - without either reading as a footnote to the other. -->
+      <a class="search-open" href="/library/" data-search-open
+         aria-label="Search all seventy-five pages" title="Search every page, or press /">
+        <svg class="search-glyph" viewBox="0 0 20 20" aria-hidden="true">
+          <circle cx="8.6" cy="8.6" r="5.2" />
+          <path d="M12.6 12.6 L17 17" />
+        </svg>
+        <span class="search-word">Search all seventy-five pages</span>
+        <kbd aria-hidden="true">/</kbd>
+      </a>
+
       <p class="reading-lede">There are seventy-five other pages about local AI on this site.
         These are the ones to start with, or <a href="/library/">see all seventy-five</a>.</p>
 
@@ -1804,6 +1820,12 @@
   }
 })();
 </script>
+
+<!-- The library's search palette, one file shared with the 75 carried pages, which
+     name it from their own headers. Deferred, so it costs the first paint nothing,
+     and it fetches search-index.json only when a reader opens the dialog. This is
+     the landing's one external script: its own behaviour is inlined above. -->
+<script src="/search.js" defer></script>
 
 </body>
 </html>

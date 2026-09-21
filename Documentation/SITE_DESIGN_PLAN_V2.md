@@ -1285,11 +1285,47 @@ had a `token_block(css, selector)`, and the second one added later shadowed it, 
 tokens were looked up under a selector named `:root` and the check crashed instead of reporting. Names
 are global in a module like this one.
 
-The honest limits: the palette is the library's, so the landing page has no way into it (the landing
-links to the library and stops there); it searches titles, summaries, headings and section leads
-rather than full prose, which is a scope the footer states in words rather than implying; and the
-directory keeps its own in-page find field, because filtering the list in front of you and searching
-the other 74 pages are different jobs with different scopes.
+**The same day, the landing gets the way in too, and that half is where the coupling lives.** The
+close hands the reader sixteen of the site's seventy-five other pages and tells them the rest exist
+("These are the ones to start with, or see all seventy-five"), which is the one place on the page where
+a reader's intent *is* the library - so the trigger sits there, above that lede, rather than in the
+nav: the landing's nav is a wordmark, six links and a CTA, and a search control in it would be a
+fourth kind of thing in a row that is deliberately only one kind. It opens the same dialog, from one
+script and one index.
+
+What was unavoidable is that the widget had to be **written twice**, because this page inlines its
+stylesheet while the library links `/styles.css` - and the second copy is a *translation*, not a
+copy, since the two files hold different tokens. `--card` for the dialog's ground (the app's own
+modal), `--paper` for a hovered row, `--rule` for the hairlines, `--azure` for the focus ring,
+`--serif` for result titles, `--sans` for everything else, and the page's own type scale
+(`--t-label`, `--t-body`, `--t-sm`, `--t-lede`) rather than sizes invented beside it. Measured in this
+file's tokens: `--ink` on `--cite-wash` **15.13:1**, and the accent it replaced **4.74:1** - which
+*passes* here, unlike the library's 4.36:1, and the mark takes the ink anyway, because a reader who
+meets this widget in the library should not have to learn it twice and 0.24 of margin is not a margin.
+The landing has no monospace face at all, so the group label is set in the label size the page owns
+rather than importing a face for seven words.
+
+Two gates had to change rather than be satisfied, and both are recorded in §12.2. The script count
+check required the page's *own* behaviour to be one inline script that nothing depends on, which is
+still true; what is new is one external deferred file, so the exception is written as a **name**
+(`/search.js`) instead of as a count, which is what makes a second bundle or a CDN unable to slip in
+behind it. And `verify-links.py` now asks both stylesheets for the same fourteen class names, both
+mark declarations, both type floors and a mark that clears 4.5:1 in each file's own tokens - the
+coupling is the check, because two copies of one widget in two vocabularies drift on their own. Nine
+doctored artifacts later, each of those fires by name; the one that does not is a *paler* wash, and
+that is the check behaving correctly rather than a hole: a paler ground can only help the ink on it.
+
+What the landing pays for this is one deferred request, **14,371 B / 4,489 B gzipped**, on a page
+whose only script was inline, and the index itself (**67,608 B / 20,869 B**) only when a reader opens
+the dialog. The document grew 4,884 B to **118,037 B / 28,840 B gzipped**, both still under their
+ceilings at 90% and 88%.
+
+The honest limits: it searches titles, summaries, headings and section leads rather than full prose,
+which is a scope the footer states in words rather than implying; the directory keeps its own in-page
+find field, because filtering the list in front of you and searching the other 74 pages are different
+jobs with different scopes; and the two stylesheets hold one widget's worth of rules that a third page
+would have to translate a third time, which is the cost of a site that inlines one stylesheet and
+links another.
 
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
@@ -1658,8 +1694,9 @@ The build gates are re-baselined **by measurement, never transcription** — the
 |---|---|
 | `document.*` | **retiered as ceilings on 2026-09-20** (Thoria's call: the budget should be generous, not a re-baseline on every commit): `index_html_bytes_ceiling` **78,643 B** (256 KiB over a ~74 KB document), `index_html_gzip_ceiling` a round **32 KiB** (against ~20.2 KiB measured), `inline_js_bytes_ceiling` **16 KiB** (over 5,354 B shipped). The exact figures this replaces are in git history; the ceilings still catch the incidents the budget exists for — a copy deck pasted twice, a generator gone wrong, script that doubles — while ordinary content work ships without touching `budget.json` |
 | `library.page_bytes_ceiling` / `index_bytes_ceiling` | **retiered as ceilings the same night**: **1 MiB** over ~619 KB of pages, **128 KiB** over the ~34 KB generated index. `page_count` stays exact: a missing page is a dead end for a reader. The shared files stay exact: a regenerated `theme.js` or recoloured stylesheet is a replacement, not a content edit |
-| `library.search_bytes_ceiling` **(new row, 2026-09-21)** | **84,000 B** over the **67,608 B** search index, the generator's own ceiling stated a second time here: the palette fetches that file whole, lazily, the first time it opens. `library.files` gains `/search.js` at **14,371 B** exact, and `/styles.css` moves 59,140 → **67,945 B** for the trigger's rule and the dialog's own type, grounds and measured ratios |
-| `verify-links.py` — the search palette **(new pass)** | **6 assertions** (93 → **100**), and the coupling is the point: every carried page and the directory carries the trigger and the script (a page that lost either half looks exactly like a page that has them), the script's `INDEX` names a file this build writes, that file is the generator's output **byte for byte**, the record set equals the **artifact's** published pages rather than the generator's own input, the classes the script builds have rules in the stylesheet the pages load, and the mark's colour is **recomputed from the tokens** (`--ink` under `--cite-wash` 15.15:1 and 14.60:1 light, 13.15:1 and 11.68:1 dark, against 4.53:1 and 4.36:1 for the accent it replaced), so the note explaining that choice fails the build rather than going quietly stale. The pass also runs its two tools' own proofs, `make-search-index.py --self-test` (**11 doctored files**) and `add-search-trigger.py --check` |
+| `library.search_bytes_ceiling` **(new row, 2026-09-21)** | **84,000 B** over the **67,608 B** search index, the generator's own ceiling stated a second time here: the palette fetches that file whole, lazily, the first time it opens. `library.files` gains `/search.js` at **14,371 B** exact, and `/styles.css` moves 59,140 → **67,945 B** for the trigger's rule and the dialog's own type, grounds and measured ratios || `verify-links.py` — the search palette **(new pass)** | **12 assertions** (93 → **106**), and the coupling is the point: every carried page, the directory **and the landing** carries the trigger and the script (a page that lost either half looks exactly like a page that has them), the script's `INDEX` names a file this build writes, that file is the generator's output **byte for byte**, the record set equals the **artifact's** published pages rather than the generator's own input, the classes the script builds have rules in the stylesheet the pages load, and the mark's colour is **recomputed from the tokens** (`--ink` under `--cite-wash` 15.15:1 and 14.60:1 light, 13.15:1 and 11.68:1 dark, against 4.53:1 and 4.36:1 for the accent it replaced), so the note explaining that choice fails the build rather than going quietly stale. The pass also runs its two tools' own proofs, `make-search-index.py --self-test` (**11 doctored files**) and `add-search-trigger.py --check` |
+| `verify-links.py` — **one widget, two stylesheets** (2026-09-21) | the landing inlines its stylesheet and the library links `/styles.css`, so the palette is written twice in two token vocabularies, and these four assertions are the whole coupling: both files draw the **same fourteen class names**, both declare `.palette mark { … color: var(--ink) }`, both clear the **11px floor** (the landing's copy is written on its own type scale, so the check resolves `var(--t-…)` through that file's tokens - a literals-only version measured two of its nine declarations and called the floor safe), and each file's mark is **recomputed from its own tokens** (15.13:1 landing, 11.68:1 library; not the same number, because these are different papers) |
+| `script count` **(amended 2026-09-21)** | the check required the landing's own behaviour to be one inline script that nothing depends on, and that is unchanged; the page now also names **one** external, deferred file, so the exception is written as a **name** (`/search.js`) rather than as a count. That is what makes a second bundle, a CDN or a font loader unable to slip in behind it |
 | `totals.phone_1x` / `retina_2x` | re-baselined over 9 exhibits: **194,064 B** / **388,356 B**, and again on 2026-09-19 over 9 exhibits **plus 4 phone crops** at **237,991 B** / **500,885 B** — the inventory grows while what a device *downloads* shrinks, because those four exhibits now serve a narrower crop below 430px |
 | `totals.exports_all_*` | **renamed `exports_all_36`** and the `.png` suffix dropped from the sum, because PNG left the shipped set; **renamed again to `exports_all`** when the phone crops took the set from 36 files to 52 and the number in the name stopped being true |
 | `ARTIFACT_FILES` | re-baselined to **138** (the whole +18 is 9 exhibits × 4 files against 3 × 6), then to **154** on 2026-09-19 (+16 = 4 phone crops × 4 files), then to **156** (+the generated library index, +`/theme.js`). Stays exact: it caught stray screenshots twice |
