@@ -99,6 +99,14 @@ THEME_SCRIPT = re.compile(r"<script>\s*\(function \(\) \{.*?</script>", re.S)
 # lifts the header — the button the header supplies is inert without this file,
 # and a lift that cannot find it raises instead of shipping that button dead.
 THEME_JS = re.compile(r'<script src="/theme\.js" defer></script>')
+# The library's second shared script, lifted for the same reason and found missing
+# the hard way: the index lifts the HEADER, which carries the search trigger, so a
+# build that lifted only the theme script shipped a directory with a control whose
+# script was never loaded - a trigger that navigated to the page it was already on,
+# and a Cmd/Ctrl+K that did nothing. `audit-palette.py` drove the directory and said
+# so; nothing static had noticed, because a lifted header brings its own markup and
+# no list of what that markup needs.
+SEARCH_JS = re.compile(r'<script src="/search\.js" defer></script>')
 
 
 class MissingCopy(Exception):
@@ -339,6 +347,7 @@ def build() -> str:
     foot = _lift(FOOT, sample, "footer")
     theme = _lift(THEME_SCRIPT, sample, "theme guard")
     theme_js = _lift(THEME_JS, sample, "theme control script")
+    search_js = _lift(SEARCH_JS, sample, "search palette script")
     # ...minus the link back to this page, which is the one link that cannot be
     # on it. Written as a removal rather than as an omission so the rest of the
     # footer stays byte-for-byte the library's.
@@ -375,6 +384,7 @@ def build() -> str:
         "  " + theme,
         '  <link rel="stylesheet" href="/styles.css" />',
         "  " + theme_js,
+        "  " + search_js,
         "</head>",
         "<body>",
         "",

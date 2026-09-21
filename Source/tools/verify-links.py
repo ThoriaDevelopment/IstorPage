@@ -1712,7 +1712,13 @@ def check_search(rep: Report, site: pathlib.Path, docs: dict) -> None:
         if '/search.js"' not in html:
             scriptless.append(slug)
     directory = docs.get(site / "library" / "index.html", "")
-    missing_directory = "data-search-open" not in directory
+    # Both halves, because the index LIFTS the header and the script tags from a real
+    # page: a generator that stopped lifting the palette's script would ship a
+    # directory whose trigger navigated to the page it is already on, which looks
+    # exactly like a working link. Found by driving the directory rather than by
+    # reading it (`audit-palette.py`, whose Ctrl+K claim was the thing that failed).
+    missing_directory = ("data-search-open" not in directory
+                         or "/search.js" not in directory)
     # The landing too, and it is the one page whose trigger is authored rather than
     # written by the tool: its copy sits in the close, where the page hands the reader
     # sixteen of the site's seventy-five other pages. A build that dropped either half

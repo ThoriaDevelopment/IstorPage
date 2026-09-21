@@ -120,8 +120,14 @@
           return record;
         });
         total = records.length;
-        foot.textContent = 'Every title, summary and section heading in ' + total +
-          ' pages. Enter opens the first result.';
+        /* `foot` is null until the palette is built, and this runs in a promise: a
+           response that arrived before the dialog existed would take the whole
+           success path down with it and be reported to the reader as a failed
+           load. The audit's own self-test found that by making the fetch early. */
+        if (foot) {
+          foot.textContent = 'Every title, summary and section heading in ' + total +
+            ' pages. Enter opens the first result.';
+        }
         render();
       })
       .catch(function () {
