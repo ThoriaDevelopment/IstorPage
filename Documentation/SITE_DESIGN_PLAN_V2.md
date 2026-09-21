@@ -1199,6 +1199,25 @@ the pace inequality is the same inequality rather than a second one: the arrival
 a reader at `pace` px/ms covers `pace × ARRIVE_MS` in that time, and if that is further than the
 screen the arrival ends off it.
 
+**2026-09-21: the dwell - stillness is an input (M22).** M14 through M21 made every
+reader motion an input to the mechanism and left the one state nobody had claimed: doing
+nothing. M22 claims it. A reader who sits still in the hero hears the clockwork keep time:
+the great wheel advances one tooth (360/223 degrees, the drawing's own pitch, held by
+verify-links against the drawing's declared count), the pinion answers at 223:48 through the
+same writer the scroll and hand use, and after three teeth the mechanism rests - a clock that
+ticked forever would be an animation, and this page's motion is answers. Any scroll restarts
+the clock; the hand defers it (a grip is not stillness); a hidden tab holds it; reduced
+motion never arms it. The first tooth waits 4200ms, and that number is an interlock with the
+audit itself: the momentum claims' coast-and-settle windows end 3.3s after a gesture, so an
+earlier tick would walk into a measurement taken about the momentum. audit-motion grows a
+fourth family - a 28s real-time scenario of mostly waiting, which is the honest cost of
+measuring patience - and five doctors; claims 24 -> 30. Three lessons are recorded in the
+tool: headless Chrome is BORN hidden and the scenario must say so against the iframe's own
+document (the top page's `document` is the harness's); a measurement window that opens on a
+timer must first let the hand's coast die, because the coast is momentum and not clock; and a
+claim whose success value is zero must not be read through a falsy-or fallback, which reads
+perfect stillness as a missing measurement.
+
 The shape of the library is what made this a decision rather than a copy. Its 76 documents share one
 stylesheet and one script (`/styles.css`, `/theme.js`) while the landing inlines both, so the landing's
 inlined copy is not the library's to reuse and the two run beside each other rather than through each
@@ -1411,6 +1430,7 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M19** | **The flywheel** | the speed of the reader's own scroll, read over a window, **while the hero's band is on screen** | charged above 1 px/ms sustained across three samples spanning 60ms+ in a 150ms window; coasts ~14° past the gesture and settles in about a second | the world has mass: the fast gesture is charged and the slow read is left perfectly still (adaptive pace), and the angle keeps meaning the reader's position |
 | **M20** | **The arrivals keep the reader's clock** | the pace the reader arrives at a block with | the family's timings scaled by `--arrive: 0.3` when the arrival would end off screen; the authored clock above 1.25 px/ms | the fast scroll gets an abbreviated entrance and the stopped read gets the whole thing; the order and the content never change |
 | **M21** | **The library's blocks arrive** | the block crossing the fold, and the pace the reader fed it | the landing's clock, from the shared script: 700ms authored, 0.3 when the arrival would end off screen | the 78 carried documents get the craft the landing already had, and a reader who asked for less motion is never marked at all |
+| **M22** | **The dwell: stillness is an input** | the reader's stillness in the hero | three tooth-steps of the great wheel (360/223 each, the drawing's own pitch), 4.2s after stillness begins and 2.6s apart, then rest; any scroll restarts the clock, the hand defers it, a hidden tab holds it, reduced motion never arms it | the mechanism is a clockwork, and a clockwork at rest keeps time - the one reference behaviour the page lacked was a world that lives when nothing drives it; the first tooth waits 4.2s because the motion audit's own coast-and-settle windows end at 3.3s, an interlock the audit measures exactly |
 
 ### 7.8 The library's figures
 

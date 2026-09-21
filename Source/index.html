@@ -1381,6 +1381,50 @@
           'rotate(' + (-turn * RATIO) + ' ' + cx + ' ' + cy + ')');
       }
     };
+    // M22 · DWELL. Every input so far has been the reader's - the scroll's
+    // position (M14), the hand (M18), its momentum (M19) - and stillness was
+    // the one state the machine ignored. It is a clockwork, and a clockwork
+    // at rest does not stop; it keeps time. A reader who sits still in the
+    // hero hears that: the great wheel advances exactly ONE tooth (360/223,
+    // the pitch the drawing was generated from; verify-links holds the
+    // equality) and the pinion answers at 223:48 through the same writer, so
+    // the mesh holds to the writer's tenth of a degree. Three teeth, then the
+    // mechanism rests - a clock that ticked forever would be an animation,
+    // and this page's motion is answers, not wallpaper. ANY scroll resets
+    // the clock, so a tick is earned by stillness rather than scheduled by
+    // the page; the hand defers it (a drag is not stillness, and a wheel
+    // that moved under a holding hand would be the page gripping back); and
+    // reduced motion never arms it, because `heroTurnable` is null there and
+    // every path below is gated on that. The first tooth waits 4200ms, and
+    // that number is an interlock, not a taste: the motion audit's
+    // coast-and-settle windows end 3.3s after a gesture's last scroll, so a
+    // first tooth any earlier would walk into a measurement taken about the
+    // momentum and break a claim that was true.
+    var DWELL_FIRST = 4200, DWELL_STEP = 2600, DWELL_TICKS = 3;
+    var DWELL_TOOTH = 360 / 223;
+    var dwell = { n: 0, timer: 0 };
+    var dwellStop = function () {
+      if (dwell.timer) { clearTimeout(dwell.timer); dwell.timer = 0; }
+      dwell.n = 0;
+    };
+    var dwellTick = function () {
+      dwell.timer = 0;
+      // The hand defers the clock, and a hidden tab is not a reader; either
+      // way the step is not taken, and the chain waits for a still one.
+      if (heroTurnable && !active && !document.hidden) {
+        heroFreeTurn += DWELL_TOOTH;
+        writeHero();
+        dwell.n += 1;
+      }
+      if (dwell.n < DWELL_TICKS) {
+        dwell.timer = setTimeout(dwellTick, DWELL_STEP);
+      }
+    };
+    var dwellArm = function () {
+      dwellStop();
+      if (!heroTurnable || window.scrollY >= heroBottom) return;
+      dwell.timer = setTimeout(dwellTick, DWELL_FIRST);
+    };
     var heroBottom = 0, railLinks = [], railTops = [], railCurrent = null;
     var measure = function () {
       if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
@@ -1501,6 +1545,8 @@
         var ratio = pageHeight > 0 ? Math.min(1, window.scrollY / pageHeight) : 0;
         progress.style.transform = 'scaleX(' + ratio + ')';
       }
+      // M22 · any scroll, from any source, resets the dwell clock.
+      dwellArm();
       if (paintPoster) paintPoster();
     };
     onScroll();
@@ -1634,6 +1680,7 @@
       if (!t) return;
       active = null;
       t.ground.classList.remove('is-turning');
+      dwellArm();   // M22 · stillness can begin again the moment the hand lifts
       if (Math.abs(t.vel) > SPIN_MIN) spinStep(t, performance.now());
       else t.time = 0;
     };
@@ -1653,6 +1700,7 @@
         if (e.pointerType === 'touch' || e.button) return;
         if (!overGround(ground, e.target)) return;   // their pointer, not the ground
         stopSpin(t);
+        dwellStop();   // M22 · a grip is not stillness; the clock defers
         var p = pivotScreen(t);
         active = t;
         t.vel = 0;
@@ -1669,6 +1717,10 @@
                  closeWorld && closeWorld.querySelector('svg'), closeA,
                  'data-close-cx', 'data-close-cy',
                  function (d) { closeFreeTurn += d; writeClose(); });
+    // M22 · armed from the first paint: stillness begins when the page does,
+    // not at the first scroll. Under reduced motion this is a no-op by
+    // construction, because `heroTurnable` is null there.
+    dwellArm();
   }
 
   var ask = document.querySelector('.hero .ask');   // M9

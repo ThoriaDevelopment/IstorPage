@@ -1130,7 +1130,44 @@ def check_gears(rep: Report, page: str) -> None:
                            f"{kind}: {d:.2f} = {r1:.2f} "
                            f"{'+' if wants_negated else '-'} {r2:.2f}, and the script "
                            + ("negates" if negated else "does not negate") + " the ratio")
-                break
+                break    # M22 - the dwell's tick is the drawing's pitch. The stillness clock steps
+    # the wheel 360 over 223 degrees per tick, which is one tooth of the great
+    # wheel the generator drew, and the page's comment says verify-links holds
+    # that equality. A check that existed only in a comment is a wish, so here
+    # it is: the constant the script multiplies its ticks by must be 360 over
+    # the drawing's own declared tooth count, and the tick must go through the
+    # same writer the scroll and the hand use (heroFreeTurn plus writeHero),
+    # because a second writer would be a second source of truth for the angle.
+    hero_teeth = counts("data-gear-a")
+    dwell = re.search(r"var DWELL_TOOTH = 360 / (\d+)", page)
+    if not dwell:
+        rep.fail("the dwell's tooth is the drawing's",
+                 "the script no longer declares its tick in the form this check "
+                 "reads (var DWELL_TOOTH = 360 / N) - teach it the new form, do "
+                 "not drop the check")
+    elif not hero_teeth:
+        rep.fail("the dwell's tooth is the drawing's",
+                 "no hero tooth count to hold the constant against")
+    else:
+        n = int(dwell.group(1))
+        if n != hero_teeth[0]:
+            rep.fail("the dwell's tooth is the drawing's",
+                     f"the dwell steps 360/{n} per tick and the great wheel was "
+                     f"generated from {hero_teeth[0]} teeth - a tick would be "
+                     "between the teeth, which is what a mesh must never do")
+        else:
+            rep.ok("the dwell's tooth is the drawing's",
+                   f"360/{n} per still tick, the great wheel's own pitch")
+    for frag, what in (("dwellArm();", "the scroll re-arms the dwell clock"),
+                       ("dwellStop();", "the hand defers the dwell clock"),
+                       ("heroFreeTurn += DWELL_TOOTH;",
+                        "the tick goes through the one writer")):
+        if frag not in page:
+            rep.fail(what,
+                     f"the page no longer contains {frag!r}, which the dwell's "
+                     "claims are built on")
+        else:
+            rep.ok(what, "present")
 
 
 def check_poster_mark(rep: Report, page: str, css: str) -> None:

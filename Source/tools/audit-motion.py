@@ -430,6 +430,189 @@ def run(chrome, site, tmp, page, width, height, scenario, extra=None, tag="motio
         return {"error": "the scenario returned nothing (it must end by calling itself "
                          "with (d, w)); the harness reports success either way"}
     return doc["value"]
+# M22 asks the question every other scenario ignores: what the machine does
+# when the reader does NOTHING. The wheel's stillness ticks are on setTimeout
+# chains, which virtual time would burn through in an instant, so this too is
+# driven in real time - about 28s of scenario, mostly waiting, which is the
+# honest cost of measuring patience.
+DWELL_SCENARIO = r"""
+(async (d, w) => {
+  const wheel = d.querySelector('[data-gear-a]');
+  const pinion = d.querySelector('[data-gear-b]');
+  const hero = d.querySelector('.hero');
+  if (!wheel || !pinion || !hero) {
+    return { error: 'the dwell scenario needs the hero world: wheel=' + !!wheel +
+                    ' pinion=' + !!pinion + ' hero=' + !!hero };
+  }
+  const angle = (el) => {
+    const m = /rotate\(([-0-9.]+)/.exec(el.getAttribute('transform') || '');
+    return m ? parseFloat(m[1]) : 0;
+  };
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const step = (dy) => {
+    w.scrollTo({ top: w.scrollY + dy, behavior: 'instant' });
+    w.dispatchEvent(new Event('scroll'));
+  };
+  const pe = (type, x, y) => new w.PointerEvent(type, {
+    pointerId: 7, pointerType: 'mouse', button: 0, buttons: 1,
+    clientX: x, clientY: y, bubbles: true });
+  d.documentElement.style.scrollBehavior = 'auto';
+  w.scrollTo({ top: 0, behavior: 'instant' });
+  w.dispatchEvent(new Event('scroll'));
+  const t0 = performance.now();
+  // Every WHEEL change, with its time and the pinion's answer at that moment.
+  // The poll is SEEDED with the angle it starts at, so the page's initial
+  // rotate(0) write - which happens at load, before this scenario begins - is
+  // not a mark: the marks are the machine's CHANGES, not its existence.
+  const marks = [];
+  let lastA = angle(wheel);
+  const poll = setInterval(() => {
+    const a = angle(wheel);
+    if (a !== lastA) {
+      lastA = a;
+      marks.push({ a, pa: angle(pinion), t: Math.round(performance.now() - t0) });
+    }
+  }, 40);
+  // Headless Chrome is BORN hidden, and the reader's tab is not: the guard
+  // the page keeps (a hidden tab holds the tick) would otherwise make every
+  // claim here unmeasurable in the one browser this audit runs in. The
+  // scenario states what it does - the reader is present until Phase D says
+  // otherwise - and Phase D is where the guard itself is measured. The shadow
+  // lands on `d`, the iframe's own document, because that is the one the
+  // page's guard reads; the top page's `document` is the harness's.
+  Object.defineProperty(d, 'hidden', { get: () => false, configurable: true });
+
+  // Phase A - stillness. Three teeth are owed; a fourth (at ~12s) would be a
+  // clock that never rests, and the 13.4s window exists to see one if it comes.
+  await wait(13400);
+  const phaseA = marks.length;
+
+  // Phase B - a scroll re-arms the clock, RESTARTED: the next tooth must wait
+  // the full first interval again. This is also where the interlock with the
+  // momentum claims above is measured exactly: the scroll instant is ours, so
+  // the first tooth after it is the page's own DWELL_FIRST to the millisecond.
+  const bScroll = performance.now();
+  step(100);
+  await wait(4800);
+  const bStart = Math.round(bScroll - t0);
+  // The scroll's own M14 write lands within ~50ms of the event and is the
+  // position's echo, not the clock's work, so the window opens 500ms in.
+  const sinceB = marks.filter((m) => m.t >= bStart + 500);
+  const bFirst = sinceB.length ? sinceB[0].t - bStart : null;
+  // The clock's work is what the window saw, not what the scroll echoed:
+  // counting every mark after Phase A would credit the scroll's own M14
+  // write, which the 500ms filter exists to exclude, as a tick.
+  const newB = sinceB.length;
+
+  // Phase C - the hand holds. A grip is not stillness; and there is a live
+  // timer in flight here (Phase B's tick scheduled its successor at +2.6s,
+  // which lands inside this hold), so what blocks it is the pointerdown's
+  // dwellStop, not the absence of a timer.
+  const r = hero.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  hero.dispatchEvent(pe('pointerdown', cx + 220, cy));
+  w.dispatchEvent(pe('pointermove', cx + 220, cy + 60));
+  await wait(16);
+  const beforeC = angle(wheel);
+  await wait(4600);
+  const duringC = +(angle(wheel) - beforeC).toFixed(3);
+  w.dispatchEvent(new w.PointerEvent('pointerup', { pointerId: 7, pointerType: 'mouse',
+    clientX: cx + 220, clientY: cy + 60, bubbles: true }));
+
+  // Phase D - a hidden tab. The pointerup re-armed the clock, so a tooth is
+  // due at +4.2s - but the release also left the wheel coasting, and the
+  // coast is the hand's momentum rather than the clock: it decays for about
+  // 2.5s and would contaminate any count that opened at the release. The
+  // window therefore opens once the coast has died, and a tooth is still
+  // due inside it, so the visibility guard is the only thing that can hold
+  // it. (`hidden` is an accessor on Document.prototype rather than an own
+  // property of the instance, so it is shadowed on the instance, and the
+  // shadow is deleted afterwards.)
+  Object.defineProperty(d, 'hidden', { get: () => true, configurable: true });
+  // The window opens on DEMONSTRATED stillness rather than on a guess about
+  // the coast: the release flung the wheel with the hand's capped velocity,
+  // and its decay length is the momentum constants' to decide, not this
+  // scenario's. 1500ms with no mark at all means the rAF loop has stopped -
+  // the coast's own threshold - so everything the window sees from here is
+  // the clock's, or nothing is. Capped at 8s so a pathological coast cannot
+  // stall the audit.
+  const dStart = performance.now();
+  let stillFor = 0, lastCount = marks.length;
+  while (stillFor < 1500 && performance.now() - dStart < 8000) {
+    await wait(100);
+    if (marks.length === lastCount) stillFor += 100;
+    else { stillFor = 0; lastCount = marks.length; }
+  }
+  const lenD0 = marks.length;
+  await wait(4800);
+  const ticksD = marks.length - lenD0;
+  delete d.hidden;   // the prototype's accessor again
+  clearInterval(poll);
+  return {
+    phaseA, newB, bFirst, duringC, ticksD,
+    firstTooth: marks.length ? marks[0].a : null,
+    firstPinion: marks.length ? marks[0].pa : null,
+    finalRatio: angle(wheel) ? +(angle(pinion) / angle(wheel)).toFixed(4) : null,
+    marks: marks.slice(0, 8)
+  };
+})(d, w)
+"""
+
+
+DWELL_CLAIMS = [
+    "stillness steps the wheel one tooth at a time",
+    "the pinion answers the tick through the mesh",
+    "three teeth, then the mechanism rests",
+    "a scroll re-arms the clock, restarted and past the settle window",
+    "the hand defers the clock",
+    "a hidden tab holds the tick",
+]
+
+
+def check_dwell(doc: dict, failures: list) -> None:
+    """M22's behaviour, asserted. The tooth is 360/223 and the interlock is
+    3.3s: both are held here against the page, not against a note."""
+    def ok(label, good, detail=""):
+        CHECKED[0] += 1
+        print("  %s  %-58s %s" % ("ok  " if good else "FAIL", label, detail))
+        if not good:
+            failures.append(label)
+
+    if "error" in doc:
+        ok("the dwell scenario ran", False, doc["error"])
+        return
+    tooth = 360 / 223
+    ok("stillness steps the wheel one tooth at a time",
+       doc.get("firstTooth") is not None
+       and abs(abs(doc["firstTooth"]) - tooth) <= 0.11,
+       "%.2f degrees at the first mark, and 360/223 = %.3f (the writer rounds "
+       "to a tenth)" % (doc.get("firstTooth") or 0, tooth))
+    pa = doc.get("firstPinion") or 0
+    fa = doc.get("firstTooth") or 0
+    ok("the pinion answers the tick through the mesh",
+       abs(abs(pa) - abs(fa) * RATIO) <= 0.15
+       and doc.get("finalRatio") is not None
+       and abs(abs(doc["finalRatio"]) - RATIO) <= 0.06,
+       "pinion stepped %.2f against %.2f owed, end ratio %.4f against %.4f"
+       % (abs(pa), abs(fa * RATIO), abs(doc.get("finalRatio") or 0), RATIO))
+    ok("three teeth, then the mechanism rests", doc.get("phaseA") == 3,
+       "%d wheel marks in the 13.4s stillness window (marks: %s)"
+       % (doc.get("phaseA") or 0, doc.get("marks")))
+    ok("a scroll re-arms the clock, restarted and past the settle window",
+       doc.get("newB") == 1 and doc.get("bFirst") is not None
+       and 3800 <= doc["bFirst"] <= 5200,
+       "%d tick(s) after the scroll, the first %s ms after it - the momentum "
+       "audit's windows end at 3300, which is why the clock waits 4200"
+       % (doc.get("newB") or 0, doc.get("bFirst")))
+    dc = doc.get("duringC")
+    ok("the hand defers the clock", dc is not None and abs(dc) <= DRIFT_MAX,
+       "%.3f degrees during a 4.6s hold, with a live timer in flight - zero "
+       "is the success this claim describes, so a falsy-or fallback would "
+       "read it as missing" % (0.0 if dc is None else dc))
+    ok("a hidden tab holds the tick", doc.get("ticksD") == 0,
+       "%d tick(s) while the tab was hidden and a tooth was due"
+       % (doc.get("ticksD") or 0))
+
 
 
 RATIO = 223 / 48          # the drawing's own count, mirrored in the script
@@ -684,6 +867,29 @@ SELF_TESTS = [
      [("if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: "
        "reduce)').matches) return;", "")],
      "in the reduced world the library marks nothing", ("theme.js", "/library/")),
+    # M22's five, each the failure of one of the dwell's claims. The clock is
+    # three constants, a guard and two call sites; each patch removes exactly
+    # one of the things a reader can catch.
+    ("the dwell's tooth stopped being the drawing's pitch",
+     [("var DWELL_TOOTH = 360 / 223;", "var DWELL_TOOTH = 360 / 48;")],
+     "stillness steps the wheel one tooth at a time"),
+    ("the dwell never rested",
+     [("DWELL_TICKS = 3;", "DWELL_TICKS = 99;")],
+     "three teeth, then the mechanism rests"),
+    ("a scroll no longer re-armed the dwell clock",
+     [('dwellArm();\n      if (paintPoster) paintPoster();',
+       'if (paintPoster) paintPoster();')],
+     "a scroll re-arms the clock, restarted and past the settle window"),
+    ("a grip stopped deferring the dwell clock",
+     [('stopSpin(t);\n        dwellStop();   // M22 · a grip is not stillness; the clock defers',
+       "stopSpin(t);"),
+      ("heroTurnable && !active && !document.hidden",
+       "heroTurnable && !document.hidden")],
+     "the hand defers the clock"),
+    ("the dwell ticked to a hidden tab",
+     [("heroTurnable && !active && !document.hidden",
+       "heroTurnable && !active")],
+     "a hidden tab holds the tick"),
 ]
 
 # The claims that need the pacing pair of page loads, so the self-test knows which
@@ -982,8 +1188,10 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
         rel, url = entry[3] if len(entry) > 3 else ("index.html", "/")
         in_lib = expected in lib_claims
         in_pace = expected in PACE_CLAIMS
+        in_dwell = expected in DWELL_CLAIMS
         if ((family == "lib" and not in_lib) or (family == "pace" and not in_pace)
-                or (family == "land" and (in_lib or in_pace))):
+                or (family == "dwell" and not in_dwell)
+                or (family == "land" and (in_lib or in_pace or in_dwell))):
             skip += 1
             continue
         broken = os.path.join(tmp, "broken-%d" % i)
@@ -1032,6 +1240,10 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
             fdoc = run(chrome, broken, tmp, "/", width, height, PACE_FAST,
                        extra=None, tag="st%d-fast" % i)
             check_pace(cdoc, fdoc, failures)
+        elif in_dwell:
+            ddoc = run(chrome, broken, tmp, "/", width, height, DWELL_SCENARIO,
+                       extra=None, tag="st%d-dwell" % i)
+            check_dwell(ddoc, failures)
         elif expected in REDUCED_CLAIMS:
             # Only the reduced page can carry this claim, so only it is driven: the
             # world run would cost a browser and could never report this failure.
@@ -1067,7 +1279,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--height", type=int, default=900)
     ap.add_argument("--json", default="")
     ap.add_argument("--self-test", action="store_true")
-    ap.add_argument("--family", default="all", choices=("all", "land", "pace", "lib"),
+    ap.add_argument("--family", default="all", choices=("all", "land", "pace", "lib", "dwell"),
                     help="with --self-test, doctor only one family's pages: the landing's "
                          "world and reduced claims, the arrivals' pacing pair, or the "
                          "library's fold test and clock")
@@ -1095,6 +1307,11 @@ def main(argv: list[str]) -> int:
         fdoc = run(chrome, a.site, tmp, "/", a.width, a.height, PACE_FAST,
                    extra=None, tag="pace-fast")
         check_pace(cdoc, fdoc, failures)
+        # M22 - stillness, driven. A 28s scenario of mostly waiting, which is
+        # the honest cost of measuring patience.
+        wdoc = run(chrome, a.site, tmp, "/", a.width, a.height, DWELL_SCENARIO,
+                   extra=None, tag="dwell")
+        check_dwell(wdoc, failures)
         # The library is a different page on a different pair of shared files, so it is
         # driven rather than inferred from the landing's behaviour: nothing about the
         # landing's arrivals would move if `/theme.js` lost its fold test.
@@ -1111,6 +1328,7 @@ def main(argv: list[str]) -> int:
         if a.json:
             with open(a.json, "w", encoding="utf-8", newline="\n") as fh:
                 json.dump({"motion": doc, "reduced": rdoc, "calm": cdoc, "fast": fdoc,
+                           "dwell": wdoc,
                            "library": lcalm, "libraryFast": lfast,
                            "libraryReduced": lred, "failures": failures}, fh, indent=1)
             print("\nfindings written to %s" % a.json)
@@ -1121,9 +1339,9 @@ def main(argv: list[str]) -> int:
                   % (len(failures), CHECKED[0], "\n  ".join(failures)))
             return 1
         band = "%dpx" % doc["heroBottom"] if isinstance(doc.get("heroBottom"), int) else "not measured"
-        print("motion ok - %d claims about the two worlds, the landing's arrivals and "
-              "the library's, verified by driving the pages rather than by reading "
-              "them (hero band %s of %s)"
+        print("motion ok - %d claims about the two worlds, the landing's arrivals, "
+              "the dwell and the library's, verified by driving the pages rather "
+              "than by reading them (hero band %s of %s)"
               % (CHECKED[0], band, doc.get("viewport", "?")))
         return 0
     finally:
