@@ -1091,25 +1091,31 @@ def check_gears(rep: Report, page: str) -> None:
                 break
 
 
-def check_momentum(rep: Report, source: str) -> None:
+def check_momentum(rep: Report, source: str, page: str) -> None:
     """The numbers the notes quote, recomputed from the constants they describe.
 
     Every other clause in this file compares one artifact against another. This
     one compares the PAGE against its own account of itself, which is the only
     promise in the project that nothing was checking: the notes above the script
-    say the wheel's speed is capped at 200 deg/s and halves every 160ms, that a
-    hard flick carries it about 46 degrees and settles in about a second, and
-    that the hero's scroll maps to eight degrees of the great wheel. Every one of
-    those is arithmetic on constants in the file below them, and every one of
-    them can quietly become a lie the moment somebody tunes the motion.
+    state the wheel's speed cap and half-life, the sweep a hard flick carries,
+    the time it takes to settle, and the degrees the reader's scroll maps to.
+    Every one of those is arithmetic on constants in the file below them, and
+    every one of them can quietly become a lie the moment somebody tunes the
+    motion.
 
-    It already had. The notes said a flick "settles in under a second" while the
-    arithmetic says 1.13s: cap 200 deg/s decaying to the 1.5 deg/s settle
-    threshold at a 160ms half-life. That is the whole point of the check, and it
-    is checked rather than eyeballed: the constants are named once in the script,
-    the quoted numbers are read out of the prose, and the derived quantities are
-    computed here. If the prose changes shape the check fails and says so rather
-    than passing silently, which is how the ratio clause behaves too.
+    It already had, twice. The notes said a flick "settles in under a second"
+    while the arithmetic gave 1.13s at the cap of the day. And later the cap
+    itself was wrong: 200 deg/s is 3.33 deg a frame, against a great wheel whose
+    tooth pitch is 360/223 = 1.61 deg, so the fastest the wheel could be driven
+    advanced 2.1 teeth between frames and the dashed teeth aliased into a strobe
+    on 18% of the frames of an extreme throw. The cap is 96 now, which is one
+    tooth a frame, and the last clause below holds it there against the tooth
+    count the DRAWING declares rather than against a number written in the note.
+    That is the whole point of the check: constants named once in the script, the
+    quoted numbers read out of the prose, the derived quantities computed here,
+    and the tune held against the artifact it draws. If the prose changes shape
+    the check fails and says so rather than passing silently, which is how the
+    ratio clause behaves too.
     """
     print("\nthe momentum the notes quote")
 
@@ -1182,6 +1188,40 @@ def check_momentum(rep: Report, source: str) -> None:
         rep.ok("settling takes the time the note claims",
                f"{cap:g} deg/s to {floor:g} deg/s at a {half:g}ms half-life is "
                f"{settle:.2f}s, which is the about a second the notes say")
+
+    # The cap has to be slow enough that the teeth do not alias. A wheel that
+    # advances more than one tooth pitch between frames does not read as fast:
+    # it reads as still, or as turning backwards (the wagon-wheel effect), and
+    # this page's whole subject is a toothed mechanism, so strobing is not a
+    # performance cost but a wrong statement. The wheel turns because the reader
+    # moved; the pitch is 360 / the count the DRAWING declares, so this clause
+    # holds the tune against the artifact rather than against the note. 60Hz is
+    # the worst case and the right one to check: a faster display steps less far
+    # per frame, so a cap that survives 60 survives 120.
+    #
+    # The pinion needs no clause of its own, and that is the meshing fact rather
+    # than an omission: a driven pair advances the SAME number of teeth, so the
+    # pinion's 7.4 deg a frame against its 7.5 deg pitch (360/48) is the same
+    # statement as the great wheel's. One inequality, both wheels.
+    step = cap / 60.0
+    for tag, attr in (("hero", "data-gear-a"), ("close", "data-close-a")):
+        counts = [int(v) for v in re.findall(attr + r'="(\d+)"', page)]
+        if not counts:
+            rep.fail("the cap cannot outrun a tooth",
+                     f"the {tag}'s drawing declares no tooth count, so the cap "
+                     "cannot be held against it — that is the check, not a detail")
+            continue
+        pitch = 360.0 / counts[0]
+        if step > pitch + 1e-9:
+            rep.fail("the cap cannot outrun a tooth",
+                     f"the {tag}'s wheel has {counts[0]} teeth, a pitch of "
+                     f"{pitch:.2f} deg, and {cap:g} deg/s is {step:.2f} deg a frame "
+                     f"({step / pitch:.2f} pitches, where 1 is the limit): the teeth "
+                     "alias into a strobe, which is the wagon wheel, not speed")
+        else:
+            rep.ok("the cap cannot outrun a tooth",
+                   f"{cap:g} deg/s is {step:.2f} deg a frame against the {tag} "
+                   f"wheel's {pitch:.2f} deg pitch ({step / pitch:.2f} of one tooth)")
 
     # The two angle mappings, against the notes that state them in words.
     words = {w: i for i, w in enumerate(
@@ -1739,7 +1779,7 @@ def main(argv: list[str]) -> int:
                  f"{source_path} is missing, so nothing compares the code to the "
                  "numbers its notes quote")
     else:
-        check_momentum(rep, source_path.read_text(encoding="utf-8"))
+        check_momentum(rep, source_path.read_text(encoding="utf-8"), page)
     check_9(rep, site, docs)
     library_css = (site / "styles.css").read_text(encoding="utf-8")
     notfound = re.search(r"<style\b[^>]*>(.*?)</style>",

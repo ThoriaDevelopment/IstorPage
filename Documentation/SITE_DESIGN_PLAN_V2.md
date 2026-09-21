@@ -1084,22 +1084,36 @@ question unavoidable instead of deferring it by 267 B.
 
 **2026-09-21, later the same night: the strip paid for behavior rather than deferring it.** M18's
 generalization into one factory serving both worlds, and M19's flywheel, brought the shipped script to
-**14,351 B — 2,033 B under the 16,384 B ceiling** — so the growth this time was a feature bought with
+**14,482 B — 1,902 B under the 16,384 B ceiling** (14,351 B before the charge gained its boundary, +
+131 B of shipped behavior and no prose) — so the growth this time was a feature bought with
 prose that had been arriving on every phone to do nothing. The measured behavior behind M19, taken in
-the browser rather than asserted: a ~3,000 px/s throw charges about 10° and coasts a further ~11°
-before it settles, a notched mouse-wheel read of 1,600 px of page moves the wheel to *exactly* the
-position's angle (0.00° of drift), and the pinion's ratio held at −4.6458 through the whole coast.
+the browser rather than asserted at the time: a sustained throw charges the wheel and it coasts on past
+the gesture before settling, a notched mouse-wheel read moves the wheel to *exactly* the position's
+angle (0.00° of drift), and the pinion's ratio held at −4.6458 through the whole coast. Those figures
+are asserted now, and the asserted ones are 14.1° charged and a further 14.4° of coast.
 
-**2026-09-21, last: the momentum's three constants are named once, and the notes are checked against
-them.** `SPIN_CAP = 200`, `SPIN_HALF = 160`, `SPIN_MIN = 1.5` now sit in one place, read by the hand,
-the release and the flywheel, because three inputs writing their own literals is how one of them gets
-tuned alone. The link gate recomputes what the notes claim from those constants — the flick's sweep
-(v₀h/ln2 = 46.2°, and the note says about 46), the settling time (200 → 1.5 deg/s at a 160 ms half-life
-is **1.13 s**, and the notes now say *about* a second rather than *under* one, which is what they said
-until the arithmetic was checked), and both angle mappings (80/10 = 8°, 10/10 = 1°). **81 assertions
-now**, and the clause was proven failable in seven dimensions before it shipped: a tuned cap, a tuned
-half-life, an inflated sweep, the old settling wording, a changed mapping, a bare literal beside a named
-constant, and a deleted note each fail by name.
+**2026-09-21, last: the momentum's three constants are named once, the notes are checked against them,
+and the cap is held under a tooth.** `SPIN_CAP`, `SPIN_HALF = 160`, `SPIN_MIN = 1.5` now sit in one
+place, read by the hand, the release and the flywheel, because three inputs writing their own literals
+is how one of them gets tuned alone. The cap itself is **96 deg/s**, and that number came from the
+drawing rather than from taste: 96/60 = 1.60° a frame at 60Hz against the great wheel's **1.614°**
+tooth pitch (360/223), so the fastest this wheel is ever allowed to turn is **one tooth a frame**. The
+cap was 200 until that was measured — 3.33° a frame, 2.1 pitches, a dashed tooth ring that aliased
+into a strobe on **18% of the frames** of an extreme throw, which on a page whose subject is a toothed
+mechanism is a false statement rather than a smoother animation. The pinion needs no number of its own:
+a meshed pair advances the *same* count of teeth, so the pinion's 7.4° a frame against its 7.5° pitch
+(360/48) is the same inequality, and the gate states it once.
+
+The link gate recomputes what the notes claim from those constants — the flick's sweep (v₀h/ln2 =
+**22.2°**, and the note says about 22), the settling time (96 → 1.5 deg/s at a 160 ms half-life is
+**0.96 s**; the notes said "under a second" at the old cap when the arithmetic gave 1.13 s, which is
+what the clause was written after), both angle mappings (80/10 = 8°, 10/10 = 1°), and now the cap
+against the **tooth count the drawing declares**, read from the built page rather than from a note.
+**83 assertions now**, and the clause was proven failable in twelve dimensions before it shipped: a
+tuned cap, a tuned half-life, an inflated sweep, the old settling wording, a changed mapping, a bare
+literal beside a named constant, a deleted note, the old cap restored, a cap one pitch past the limit,
+a wheel regenerated to a different count, and a tooth count removed from either world, each failing by
+name with the mismatch in the message.
 
 **Testing the flywheel turned up a design flaw rather than a code one.** Speed measured *per event*
 cannot tell a flick from a teleport: a mouse wheel hands over its whole 100px notch as one event, and so
@@ -1117,6 +1131,20 @@ safe direction, which is the property worth naming: when the input is ambiguous 
 Writing it also caught a bug in its own window: trimming samples by count kept one old enough to belong
 to a different gesture under the window's floor, and two page-sized jumps 400ms apart read as
 1.75 px/ms of continued motion and charged 11°.
+
+**The charge has a boundary, and the boundary was measured.** What a *session* does to the wheel is a
+different question from what a gesture does to it, and a probe answered it: 24 sustained gestures down
+the page left the wheel **484° from where its own scroll position says it should be**, 1.3 turns of
+rotation. That is not extra motion but a **wrong statement** — the wheel is the reader's position on a
+world, and past the hero the reader was looking at prose while the thing accumulated. Worse, it
+accumulated *invisibly*: none of those eighteen gestures happened while the mechanism was on screen,
+so the reader who scrolled back up found a wheel offset by turns for no reason they could have seen.
+The flywheel now charges only while the world is on screen, `window.scrollY < heroBottom` — the same
+measurement M14's mapping already reads, so it costs nothing — and the wheel is charged where it can be
+watched being charged. Accumulation itself stays permanent, as the hand's is: a wheel keeps the rotation
+it was given; what stops is being charged for gestures made somewhere else. The close stays out of it
+entirely (M14b's ending is a settling). The motion audit asserts the pair directly: the same
+gesture that charges **14.1°** at the hero charges **0.000°** 3,775px down.
 
 The vocabulary is deliberately small and each item has a job. The report's #14 warning is respected:
 Tempo-level motion on a page that does not need it *"reads as noise."*
@@ -1136,8 +1164,8 @@ Tempo-level motion on a page that does not need it *"reads as noise."*
 | **M12** | **The scribe** | plate enters | 900ms frames, 1,400ms roll, claim last | the ring is drawn the way its plates were made (§7.5) |
 | **M13** | **The reading log fills in** | act 4 enters | 140ms apart, ticks last | the act's claim is that you watch it read (§7.6) |
 | **M14** | **The hero's mechanism** | the reader's own scroll through the hero | 8° of the great wheel, 37° of each pinion | the world turns because the reader moved, not because the page did (§2.2) |
-| **M18** | **Both worlds answer the hand** | dragging the ground (mouse or pen) | live, then momentum ≤200°/s halving every 160ms | §2.2's world is a place, and a place can be taken hold of; one factory, one writer, one ratio |
-| **M19** | **The flywheel** | the speed of the reader's own scroll, read over a window | charged above 1 px/ms sustained across three samples spanning 60ms+ in a 150ms window; coasts ~11° at a 3,000 px/s throw and settles in about a second | the world has mass: the fast gesture is charged and the slow read is left perfectly still (adaptive pace) |
+| **M18** | **Both worlds answer the hand** | dragging the ground (mouse or pen) | live, then momentum ≤96°/s halving every 160ms (one tooth a frame) | §2.2's world is a place, and a place can be taken hold of; one factory, one writer, one ratio |
+| **M19** | **The flywheel** | the speed of the reader's own scroll, read over a window, **while the hero's band is on screen** | charged above 1 px/ms sustained across three samples spanning 60ms+ in a 150ms window; coasts ~14° past the gesture and settles in about a second | the world has mass: the fast gesture is charged and the slow read is left perfectly still (adaptive pace), and the angle keeps meaning the reader's position |
 
 ### 7.1 M2 — the hero sequence, in detail
 

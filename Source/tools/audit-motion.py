@@ -50,7 +50,9 @@ So here the answer is DELIVERED rather than dumped: the harness posts the scenar
 value back to this tool's own server, Chrome runs in REAL TIME, and the scenario's
 waits are the waits a reader's browser would make. That is what makes the coast and
 the settle assertable rather than merely measurable, and it is why this file can
-claim twelve things where the first draft could honestly claim nine.
+claim thirteen things where the first draft could honestly claim nine, and a session
+probe has since handed it a fourteenth reason to exist (see the boundary in the
+scenario): a claim list is only worth what the next measurement adds to it.
 
 IT REUSES `audit-contrast.py` BY PATH. That harness already solves the two hard
 parts of putting a page under a controlled browser: a server that can hand the page
@@ -138,22 +140,42 @@ SCENARIO = r"""
 
   const out = { heroBottom: Math.round(heroBottom), viewport: w.innerWidth + 'x' + w.innerHeight };
 
+  // Every claim below is measured from the world's own ground, and that is not
+  // tidiness: the page only charges the wheel where the world is on screen (see
+  // 4b), so a gesture driven at a scroll position left over from the previous step
+  // would report zero for a reason that has nothing to do with the claim. The probe
+  // made exactly that mistake before the boundary existed, and the boundary is what
+  // exposed it: steps 1 to 3 all ran at scrollY ~2700 on a 1975px hero.
+  const home = async () => {
+    w.scrollTo({ top: 0, behavior: 'instant' });
+    w.dispatchEvent(new Event('scroll'));
+    await wait(400);
+  };
+
   // 1 · the calm case a mouse wheel produces: one notch per event, 200ms apart.
+  await home();
   let before = angle(wheel), pos = position();
   for (let i = 0; i < 6; i++) { step(100); await wait(200); }
   await wait(600);
   out.notched = +(angle(wheel) - before - (position() - pos)).toFixed(3);
 
   // 2 · the teleport: a page-sized jump is not a gesture, whatever speed it implies.
+  await home();
   before = angle(wheel); pos = position();
   for (let i = 0; i < 3; i++) { step(700); await wait(400); }
   await wait(600);
   out.jumps = +(angle(wheel) - before - (position() - pos)).toFixed(3);
 
-  // 3 · the sustained gesture: continued motion across many samples.
-  before = angle(wheel);
+  // 3 · the sustained gesture: continued motion across many samples. This is free
+  // rotation too, and it has to be: the gesture also moves the reader 720px down
+  // the hero, which the position's own mapping is entitled to turn the wheel for.
+  // Measuring the raw delta would credit the flywheel for M14's work and would let
+  // a page whose charge had been silenced pass on the position's 2.9 degrees.
+  await home();
+  before = angle(wheel); pos = position();
   for (let i = 0; i < 12; i++) { step(60); await wait(16); }
-  out.charged = +(angle(wheel) - before).toFixed(3);
+  out.charged = +(angle(wheel) - before - (position() - pos)).toFixed(3);
+  out.gestureEnd = Math.round(w.scrollY);
   out.ratioAtRelease = +ratio().toFixed(4);
   out.wroteTransform = wheel.hasAttribute('transform');
 
@@ -166,6 +188,27 @@ SCENARIO = r"""
   const settled = angle(wheel);
   await wait(600);
   out.settledDelta = +(angle(wheel) - settled).toFixed(3);
+
+  // 4b · the boundary. The SAME sustained gesture, made where no world is on
+  // screen, must not charge the wheel. This is the clause that closes a measured
+  // bug rather than a hypothetical one: with no boundary a 24-gesture scroll down
+  // the page left the wheel 484 degrees from where its own scroll position says it
+  // is, which is invisible rotation that stops the angle meaning the reader's
+  // position. `position()` is clamped to 1 past the hero, so below it the free
+  // rotation is the whole measurement.
+  w.scrollTo({ top: heroBottom + w.innerHeight * 2, behavior: 'instant' });
+  w.dispatchEvent(new Event('scroll'));
+  await wait(400);
+  out.belowHero = Math.round(w.scrollY);
+  pos = position(); before = angle(wheel);
+  for (let i = 0; i < 12; i++) { step(60); await wait(16); }
+  await wait(900);
+  out.belowHeroCharged = +(angle(wheel) - before - (position() - pos)).toFixed(3);
+
+  // Back to the world: the hand and the controls below are on the hero, and a
+  // probe that leaves it scrolled away measures elementFromPoint instead of the
+  // page's guards.
+  await home();
 
   // 5 · the hand. A drag around the pivot must turn the wheel and keep the mesh.
   const r = hero.getBoundingClientRect();
@@ -411,7 +454,8 @@ def check(doc: dict, failures: list) -> None:
     # decision, and they need frames - see the note printed below the claims.
     ok("a sustained flick reaches the wheel", v["charged"] >= 2,
        "%.2f degrees of free rotation from the gesture, against %.3f from a notched "
-       "read" % (v["charged"], abs(v["notched"])))
+       "read (the gesture ended %spx down, inside the %spx hero)"
+       % (v["charged"], abs(v["notched"]), v["gestureEnd"], v["heroBottom"]))
     ok("the mesh ratio holds at the moment of release",
        abs(abs(v["ratioAtRelease"]) - RATIO) < 0.001,
        "pinion/wheel = %.4f, and 223/48 = %.4f" % (v["ratioAtRelease"], RATIO))
@@ -424,6 +468,11 @@ def check(doc: dict, failures: list) -> None:
     ok("and then it stops", abs(v["settledDelta"]) <= SETTLE_MAX,
        "%.2f degrees in the 600ms after the coast was given 1.5s to finish"
        % v["settledDelta"])
+
+    ok("a flick below the hero does not charge the wheel",
+       v["belowHero"] > v["heroBottom"] + 400 and abs(v["belowHeroCharged"]) <= DRIFT_MAX,
+       "%dpx down, %.3f degrees of free rotation from the same gesture that charges "
+       "%.1f at the hero" % (v["belowHero"], v["belowHeroCharged"], v["charged"]))
 
     ok("the hand turns the wheel", abs(v["handTurned"]) >= 0.5,
        "%.2f degrees from a 120px drag" % v["handTurned"])
@@ -470,6 +519,13 @@ SELF_TESTS = [
     ("the window holds a stale sample, so a teleport counts as motion",
      [("> 150) fly.shift();", "> 1200) fly.shift();")],
      "a page-sized jump is not a gesture"),
+    # The boundary the session probe earned: without it the wheel is charged from
+    # anywhere on the page, and the rotation it accumulates below the hero is
+    # invisible and unexplainable when the reader scrolls back up to it.
+    ("the flywheel charged below the hero as well",
+     [("active !== heroTurnable && window.scrollY < heroBottom",
+       "active !== heroTurnable")],
+     "a flick below the hero does not charge the wheel"),
     ("the flywheel's charge silenced across the board",
      [("Math.min(SPIN_CAP, surge * 22)", "Math.min(SPIN_CAP, surge * 0)")],
      "a sustained flick reaches the wheel"),
@@ -491,7 +547,8 @@ SELF_TESTS = [
 
 
 def self_test(chrome, site, width, height, tmp) -> int:
-    print("self-test: four doctored pages, each of which must fail one named claim")
+    print("self-test: %d doctored pages, each of which must fail one named claim"
+          % len(SELF_TESTS))
     worst = 0
     for i, (what, edits, expected) in enumerate(SELF_TESTS):
         broken = os.path.join(tmp, "broken-%d" % i)

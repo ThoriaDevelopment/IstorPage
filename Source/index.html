@@ -1118,11 +1118,20 @@
          window are excluded by selector, so the prose stays selectable and
          every control still clicks - the machine is turned on the ground
          around them. The cursor is the only affordance, and it is the honest
-         one: a hand where a hand works. Momentum is capped at 200 deg/s and
-         halves every 160ms, so a hard flick carries the wheel about 46 degrees
-         and settles in about a second: this is a world behind the page's own
-         headline, and a thing that keeps spinning in the reader's peripheral
-         vision stops being a place and starts being a toy.
+         one: a hand where a hand works. Momentum is capped at 96 deg/s and
+         halves every 160ms, so a hard flick carries the wheel about 22 degrees
+         and settles in about a second. The cap is measurement, not taste. At
+         60Hz it is 1.6 deg a frame, and the great wheel's own tooth pitch is
+         360/223 = 1.61 deg, so the fastest this wheel is ever allowed to turn
+         is one tooth a frame; a meshed pair advances the same number of teeth,
+         so the pinion is inside its pitch (360/48 = 7.5 deg against its
+         7.4 deg a frame) without its own number being written down anywhere.
+         The cap was 200 until that was measured, which is 2.1 pitches a frame
+         and strobed on 18% of the frames of an extreme throw - the wagon
+         wheel, on a page whose whole subject is a toothed mechanism. Above
+         that: this is a world behind the page's own headline, and a thing that
+         keeps spinning in the reader's peripheral vision stops being a place
+         and starts being a toy.
        * THE CLOSE GETS THE SAME HAND, and that was a decision rather than a
          symmetry. Its note (M14b) says the ending is "a settling, not a second
          performance" — and that is still exactly what the PAGE does there: one
@@ -1163,14 +1172,27 @@
      charged and the slow read calm, and it fails in the safe direction: when
      the input is ambiguous the wheel is calm. And the wheel's momentum is the
      one `spinStep` the drag already uses,
-     capped at 200 deg/s and halving every 160ms, so a hard throw coasts a
-     further ~11 degrees past where the reader stopped (measured, at a throw of
-     about 3,000 px/s) and settles in about a second. The accumulation is
+     capped at 96 deg/s and halving every 160ms, so a hard throw coasts about
+     14 degrees past where the reader stopped (measured at a sustained throw
+     that charges 14.1 degrees, which is well under the cap) and settles in
+     about a second. The accumulation is
      permanent, as the hand's is: a wheel keeps the
      rotation it was given, and the pinion keeps the mesh at whatever total it
      reaches. The close is deliberately left out, because M14b's ending is a
      settling; the reader may still turn the crown by hand there, but the page
      never charges it.
+
+     THE CHARGE HAS A BOUNDARY, and the boundary is measured rather than
+     guessed: it is the hero's own band, `window.scrollY < heroBottom`, the same
+     measurement M14's mapping already reads, so it costs nothing extra. Without
+     it the wheel is charged by gestures made where no world is on screen, and
+     the arithmetic of that is worse than it sounds. A probe of 24 sustained
+     gestures down the page left the wheel 484 degrees from where its own scroll
+     position says it should be - 1.3 turns of rotation nobody could see and
+     nothing could account for on the way back up. That is not extra motion but
+     a wrong statement: the angle stops meaning the reader's position, which is
+     the one thing M14's mapping is for. The wheel is charged where it can be
+     watched being charged; below the hero it is a drawing again, and calm.
 
      WHY THESE NOTES LIVE HERE, and it is a rule now rather than a preference.
      The plan's §7 sets a budget for shipped JS, and comments inside `<script>`
@@ -1264,13 +1286,25 @@
     // M18's momentum, named ONCE, because three inputs now share it and the
     // notes above quote it: the wheel's speed is capped at SPIN_CAP degrees a
     // second, halves every SPIN_HALF ms, and counts as settled below SPIN_MIN.
-    // Those three numbers are where the note's "about 46 degrees" and "about a
+    // Those three numbers are where the note's "about 22 degrees" and "about a
     // second" come from, and the link gate recomputes both from them, so a
     // tuning change cannot leave the prose claiming a number the code stopped
     // producing. They sit out here rather than beside `spinStep` because the
     // flywheel reads them from the scroll handler, and two copies of a constant
     // is the failure this file keeps learning to check for.
-    var SPIN_CAP = 200, SPIN_HALF = 160, SPIN_MIN = 1.5;
+    //
+    // WHY 96 AND NOT 200. The teeth are a dash pattern on a circle of 223 of them,
+    // so the wheel has 1.614 degrees of tooth pitch and a frame can advance at most
+    // one pitch before the pattern stops reading as a wheel: past that the eye
+    // aliases it, and a spinning gear appears to stand still, crawl backwards or
+    // strobe. Measured at 60fps, a hard throw at the old 200 deg/s cap advanced
+    // 2.11 tooth pitches per frame and 18% of the coast's frames were past a whole
+    // tooth. 96 deg/s is 1.60 degrees a frame, which is 0.99 of a tooth, and it
+    // costs a normal reader nothing: the charge from a 3,000 px/s flick is 82 deg/s,
+    // so the only gestures the cap touches are the violent ones it was there to
+    // bound anyway. (A 120Hz display halves the limit; this number is stated for
+    // the rate the page is judged at.)
+    var SPIN_CAP = 96, SPIN_HALF = 160, SPIN_MIN = 1.5;
     // M19's state: the hero's turnable, assigned below once the machinery it
     // needs exists, and the window of scroll samples the gesture test reads.
     var heroTurnable = null, fly = [];
@@ -1385,7 +1419,8 @@
       var spanFly = nowFly - fly[0][0];
       var surge = (fly.length >= 3 && spanFly >= 60)
         ? (yFly - fly[0][1]) / spanFly : 0;
-      if (heroTurnable && active !== heroTurnable && (surge > 1 || surge < -1)) {
+      if (heroTurnable && active !== heroTurnable && window.scrollY < heroBottom
+          && (surge > 1 || surge < -1)) {
         heroTurnable.vel = Math.max(-SPIN_CAP, Math.min(SPIN_CAP, surge * 22));
         if (!heroTurnable.raf) spinStep(heroTurnable, nowFly);
       }
