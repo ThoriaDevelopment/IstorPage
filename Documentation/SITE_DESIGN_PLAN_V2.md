@@ -1273,6 +1273,36 @@ arrived on the row the reader was trying to read. Taking the page's own ink meas
 tokens in the same file, so the note that explains the choice fails the build if the tokens ever move
 it back.
 
+**The last decision is the one that was missing, and it came from asking what a reader actually types.**
+A substring rule survives an inflection the page did not write - `model` is inside `models` - and fails
+the direction a reader is most likely to use, which is the one where the page wrote the singular and
+they typed the plural: **`hallucinations` appeared in no page of the library while `hallucination` is
+the title of one.** So a typed word is now folded into at most **four** spellings of *that word* and the
+same all-words rule runs over the list. Three families, and each was measured against the built index
+before a line of it was written: **stripping** what a reader added (`hallucinations` 0 → 3 pages,
+`gpus` 0 → 8, `tokens` 3 → 8, `parameters` 4 → 9, `models` 23 → 58), **swapping** the spelling this
+library does not use for the one it does (`quantisation` 1 → 6, `tokeniser` 0 → 1), and **completing**
+a base form into the inflection the page writes (`boundary` 0 → 1, the only page that says
+`boundaries`; `property` 2 → 3, `entry` 2 → 3). What is deliberately absent is the fourth family that
+looks obviously useful: generating `-ing` and `-ed` forms from a typed base. Substring already answers
+those (`adjust` is inside `adjusted`), and doing it anyway produced `bak` → `baked` and `ceil` →
+`ceiling`, which match words nobody typed.
+
+The fold's safety is a single rule, and it is the part worth keeping: **a folded spelling has to be the
+whole word, while the typed one keeps the substring rule.** Without it the stripped stem matches
+fragments of unrelated words - `cars` folds to `car`, and `car` is inside `card`, `care`, `carries`,
+`carry`, `cargo` on **22 indexed pages** - so the palette would answer with pages that never said the
+word. With it, a reader who types `cars` is told the honest thing (**0 rows**) and a reader who types
+`quantiz` still finds `quantization`, with the **whole word** marked rather than the seven letters they
+typed. The cap is the other half of the bound: four spellings of one word, and the table is data rather
+than code, so its rows can be removed one at a time by the audit's self-test.
+
+**Its limit is measured and written down where the rule lives**: the fold is a rule about one word, so
+a term this library writes in another shape across a hyphen is still a miss - `fine-tuned` finds
+nothing while `fine-tuning` is the title of the page it means, because the stripped stem is not a whole
+word there. A phrase table is a different feature with a different cost, and it is the next ceiling
+rather than this one.
+
 What behaviour found that the assertions could not: `/` opens the palette and **defers to the
 directory's own field** on the page that has one (checked against the page, not assumed - the
 directory's copy invites the reader to press `/` for the list in front of them, and a second search
@@ -1694,10 +1724,10 @@ The build gates are re-baselined **by measurement, never transcription** — the
 |---|---|
 | `document.*` | **retiered as ceilings on 2026-09-20** (Thoria's call: the budget should be generous, not a re-baseline on every commit): `index_html_bytes_ceiling` **78,643 B** (256 KiB over a ~74 KB document), `index_html_gzip_ceiling` a round **32 KiB** (against ~20.2 KiB measured), `inline_js_bytes_ceiling` **16 KiB** (over 5,354 B shipped). The exact figures this replaces are in git history; the ceilings still catch the incidents the budget exists for — a copy deck pasted twice, a generator gone wrong, script that doubles — while ordinary content work ships without touching `budget.json` |
 | `library.page_bytes_ceiling` / `index_bytes_ceiling` | **retiered as ceilings the same night**: **1 MiB** over ~619 KB of pages, **128 KiB** over the ~34 KB generated index. `page_count` stays exact: a missing page is a dead end for a reader. The shared files stay exact: a regenerated `theme.js` or recoloured stylesheet is a replacement, not a content edit |
-| `library.search_bytes_ceiling` **(new row, 2026-09-21)** | **84,000 B** over the **67,608 B** search index, the generator's own ceiling stated a second time here: the palette fetches that file whole, lazily, the first time it opens. `library.files` gains `/search.js` at **14,732 B** exact, and `/styles.css` moves 59,140 → **67,945 B** for the trigger's rule and the dialog's own type, grounds and measured ratios. `/search.js` moved once more inside the same goal (14,371 → **14,732**), for a null guard `audit-palette.py`'s self-test found by making the fetch early |
+| `library.search_bytes_ceiling` **(new row, 2026-09-21)** | **84,000 B** over the **67,608 B** search index, the generator's own ceiling stated a second time here: the palette fetches that file whole, lazily, the first time it opens. `library.files` gains `/search.js` at **22,728 B** exact, and `/styles.css` moves 59,140 → **67,945 B** for the trigger's rule and the dialog's own type, grounds and measured ratios. `/search.js` moved three times on 2026-09-21, and each move is visible here as the one-line change it is: 14,371 → **14,732** for a null guard `audit-palette.py`'s self-test found by making the fetch early, then → **22,334** for the fold, which is mostly its own reasoning written down (why each family exists, what it was measured to buy, why two directions that look useful are absent) |
 | `verify-links.py` — the search palette **(new pass)** | **12 assertions** (93 → **106**), and the coupling is the point: every carried page, the directory **and the landing** carries the trigger and the script (a page that lost either half looks exactly like a page that has them), the script's `INDEX` names a file this build writes, that file is the generator's output **byte for byte**, the record set equals the **artifact's** published pages rather than the generator's own input, the classes the script builds have rules in the stylesheet the pages load, and the mark's colour is **recomputed from the tokens** (`--ink` under `--cite-wash` 15.15:1 and 14.60:1 light, 13.15:1 and 11.68:1 dark, against 4.53:1 and 4.36:1 for the accent it replaced), so the note explaining that choice fails the build rather than going quietly stale. The pass also runs its two tools' own proofs, `make-search-index.py --self-test` (**11 doctored files**) and `add-search-trigger.py --check` |
 | `verify-links.py` — **one widget, two stylesheets** (2026-09-21) | the landing inlines its stylesheet and the library links `/styles.css`, so the palette is written twice in two token vocabularies, and these four assertions are the whole coupling: both files draw the **same fourteen class names**, both declare `.palette mark { … color: var(--ink) }`, both clear the **11px floor** (the landing's copy is written on its own type scale, so the check resolves `var(--t-…)` through that file's tokens - a literals-only version measured two of its nine declarations and called the floor safe), and each file's mark is **recomputed from its own tokens** (15.13:1 landing, 11.68:1 library; not the same number, because these are different papers) |
-| `audit-palette.py` **(new tool, 2026-09-21)** | the third tool that drives a page rather than reading one, and it exists because the palette's claims are all about *behaviour*: it clicks the trigger and asserts the link was **prevented** (the page is still the page), that `role`/`aria-expanded` are added **only once a script is there to honour them**, and that the trigger is a plain `href="/library/"` on disk. **19 claims** across four surfaces: a carried page (no dialog in the DOM until asked for, **zero** requests for the index before the click and exactly one after, five rows with five marked words, ArrowDown entering and leaving the result list at its ends, Enter navigating to `/what-is-quantization/`, focus returning to the trigger on close, what was typed surviving a reopen, and no `img`/`script`/`iframe` ever reaching the panel's text), the directory (`` ` `` still belongs to the field in front of the reader, and **Cmd/Ctrl+K** opens the palette over it), the landing (the close's trigger opens the same dialog and a result links into the library), and reduced motion (opens, searches, `opacity 1`). Its `--self-test` doctors **11 files** and requires each to fail the claim it breaks. **The directory defect was its first catch, and it was one this file's own static pass could not have made**: the index lifts a real page's header, and the header carries the trigger, so a build that lifted the theme script but not the palette's shipped a directory whose control navigated to the page it was already on, with a Cmd+K that did nothing. `verify-links.py` now demands both halves (`data-search-open` **and** `/search.js`) in the generated directory, and the generator lifts the script tag by name and raises if it is absent rather than shipping a dead control |
+| `audit-palette.py` **(new tool, 2026-09-21)** | the third tool that drives a page rather than reading one, and it exists because the palette's claims are all about *behaviour*: it clicks the trigger and asserts the link was **prevented** (the page is still the page), that `role`/`aria-expanded` are added **only once a script is there to honour them**, and that the trigger is a plain `href="/library/"` on disk. **26 claims** across five surfaces: a carried page (no dialog in the DOM until asked for, **zero** requests for the index before the click and exactly one after, rows with their matched words marked, ArrowDown entering and leaving the result list at its ends, Enter navigating to `/what-is-quantization/`, focus returning to the trigger on close, what was typed surviving a reopen, and no `img`/`script`/`iframe` ever reaching the panel's text), the directory (`` ` `` still belongs to the field in front of the reader, and **Cmd/Ctrl+K** opens the palette over it), the landing (the close's trigger opens the same dialog and a result links into the library), reduced motion (opens, searches, `opacity 1`), and **the fold** - the seven claims that say what the palette counts as a match, typed as queries: `hallucinations` **0 → 3** pages, `llms` **0 → 2**, `gpus` **0 → 8**, `quantisation` **1 → 6**, `tokeniser` **0 → 1**, `boundary` **0 → 1**, while `cars` still finds nothing although `car` is inside 22 indexed pages and `mixture of experts` finds nothing at all. Its `--self-test` doctors **16 files** and requires each to fail the claim it breaks, five of them removing one published row of the fold or one guard around it. **Two real defects were its catches**, and neither could have been made from reading a file. The first is in the **directory**: the index lifts a real page's header, and the header carries the trigger, so a build that lifted the theme script but not the palette's shipped a directory whose control navigated to the page it was already on, with a Cmd+K that did nothing - a dead control that looked exactly like a working link to every static check in the repository, because a lifted header carries no list of what it depends on. `verify-links.py` now demands both halves (`data-search-open` **and** `/search.js`) in the generated directory, and the generator lifts the script tag by name and raises if it is absent. The second is in the **fold itself**, found the first time its claims ran: the row that completes `boundary` into `boundaries` appended instead of replacing, so the palette was searching for `boundaryies`, a word no page in the library has ever written - and the reason it was caught at all is that the byte ledger made a change to `/search.js` something to look at. A third, smaller one came from measuring rather than reasoning: the strip row refused a word ending in `us`, on the theory that `status` would fold to `statu` - it does, harmlessly - and that guard was costing the plural of the library's own acronym, so `gpus` found nothing while `gpu` is a word of eight pages |
 | `script count` **(amended 2026-09-21)** | the check required the landing's own behaviour to be one inline script that nothing depends on, and that is unchanged; the page now also names **one** external, deferred file, so the exception is written as a **name** (`/search.js`) rather than as a count. That is what makes a second bundle, a CDN or a font loader unable to slip in behind it |
 | `totals.phone_1x` / `retina_2x` | re-baselined over 9 exhibits: **194,064 B** / **388,356 B**, and again on 2026-09-19 over 9 exhibits **plus 4 phone crops** at **237,991 B** / **500,885 B** — the inventory grows while what a device *downloads* shrinks, because those four exhibits now serve a narrower crop below 430px |
 | `totals.exports_all_*` | **renamed `exports_all_36`** and the `.png` suffix dropped from the sum, because PNG left the shipped set; **renamed again to `exports_all`** when the phone crops took the set from 36 files to 52 and the number in the name stopped being true |
@@ -1793,8 +1823,9 @@ first version could honestly assert nine of them, and the three it could not - t
 and the ratio through the coast - are exactly what the instrument change below recovered.
 
 **A third local tool drives the palette, and it paid for itself on its first run.**
-`Source/tools/audit-palette.py` asserts the nineteen sentences this plan makes about the library's
-search, on all four surfaces it can appear on, by using it the way a reader does. Three of those
+`Source/tools/audit-palette.py` asserts the twenty-six sentences this plan makes about the library's
+search, across every surface it can appear on and every rule it applies, by using it the way a
+reader does. Three of those
 claims restated the feature's whole defensive design and none of them could be made by reading a file:
 the trigger is a link to the directory on disk and the click is *prevented* once a script exists to
 prevent it, nothing asks for the index until a reader asks for the palette (**zero** requests before
@@ -1807,6 +1838,16 @@ the palette's script tag by name and raises if it is absent rather than shipping
 `verify-links.py` demands both halves of the widget in the generated directory. The lesson is the one
 the composition gate taught a night earlier in a different medium: **a markup lift has dependencies,
 and a list of what a page needs is not carried inside the markup it lifts.**
+
+**Its second family is the one that could not be asserted any other way.** A rule about what counts as
+a match is not a line in a file that a static check can read - it is a set of answers to queries - so
+seven of the claims now type words into the palette and read what comes back, which is how the fold
+above is held to the numbers in this plan. Removing one published row of the table, or the guard that
+keeps a folded spelling to a whole word, is a doctored file in the self-test, and the suite fails
+exactly when the claim that row exists for stops being true. It earned that immediately: the row that
+completes `boundary` into `boundaries` was written to append, so the palette spent its first run
+searching for `boundaryies`, and the doctored file that removes the whole-word guard shows the size of
+the thing the guard prevents - `cars` returns **8 of the 22 pages** that contain `car` as a fragment.
 
 **That tool also cost the most to build, and for a reason worth recording.** It began on
 `audit-contrast.py`'s harness, which reads its answer out of the DOM with `--dump-dom`. That fires at

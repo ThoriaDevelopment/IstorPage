@@ -22,6 +22,17 @@
  * * **Nothing from the index is ever written as markup.** Every string arrives in
  *   a text node, built by `write()`. A search index is page text; page text that
  *   can carry markup is page text that can carry an injection.
+ *
+ * AND ONE THING THAT IS NOT ABOUT ORDER BUT ABOUT WHAT COUNTS AS A MATCH, because
+ * a substring rule alone is not the rule a reader is holding in their head: it
+ * survives an inflection the page did not write ("model" is inside "models") and
+ * fails the direction a reader is most likely to type, which is the one where the
+ * page wrote the singular and they typed the plural. "hallucinations" appears in
+ * no page and "hallucination" is the title of one. So a typed word is folded into
+ * a short list of spellings OF THAT WORD - see FOLD below - and the same all-words
+ * rule runs over the list. The count still counts pages, the mark still marks the
+ * words that matched, and the list is capped, because a rule that is predictable
+ * after two searches is the whole point of this file.
  */
 (function () {
   'use strict';
@@ -142,10 +153,145 @@
     return query.toLowerCase().split(/\s+/).filter(Boolean);
   }
 
+  /* What a reader typed, and the other spellings of it that count as the same
+     word. Every row is a declared ending: `strip` removes one a reader added,
+     `swap` changes the spelling this library does not use into the one it does,
+     `add` supplies one a reader left off. Nothing here is fuzzy - no edit
+     distance, no dictionary, no ranking - so each variant is still a string the
+     reader could have typed and every one of them is visible when it matches.
+
+     Each family was measured against the built index before it was written, and
+     the numbers are why the table is this small:
+
+       strip  s/ies/es   "hallucinations" 0 pages -> 3, "tokens" 3 -> 9,
+                         "parameters" 4 -> 9. A stripped query is a prefix of
+                         itself, so this is exactly the direction a substring
+                         rule cannot do.
+       swap   ise/ize    "quantisation" 1 -> 6, "tokeniser" 0 -> 1. The library
+                         writes one spelling; an English reader may type either.
+       add    y/ies      "boundary" 0 -> 1, "property" 2 -> 3, "entry" 2 -> 3.
+
+     What is deliberately NOT here: verb endings in the `add` direction. The
+     library writes "adjusted" and a reader types "adjust", and substring already
+     handles that; generating the inflections instead produced "bak" -> "baked"
+     and "ceil" -> "ceiling", which match words nobody typed. The cap below is
+     the other half of the bound: four spellings of one word, never more.
+
+     The guarantee, and `spansIn` below is where it is kept: every spelling in a
+     list is a spelling of THAT word. The fold never adds a fragment of a longer
+     one, so a word this library has never used still finds nothing.
+
+     And its limit, measured rather than hoped: this folds ONE word. A term the
+     library writes in another shape across a hyphen is still a miss - "fine-tuned"
+     finds nothing while "fine-tuning" is the title of the page it means, because
+     the stripped stem is not a whole word there. That is a phrase question, and a
+     phrase table is a different feature with a different cost. */
+  var FOLD = [
+    ['strip', 'ies', 'y'],
+    ['strip', 'ses', 's'], ['strip', 'xes', 'x'], ['strip', 'zes', 'z'],
+    ['strip', 'ches', 'ch'], ['strip', 'shes', 'sh'],
+    ['strip', 'es', ''], ['strip', 'ing', ''], ['strip', 'ed', ''],
+    ['strip', 's', ''],
+    ['swap', 'isation', 'ization'], ['swap', 'iser', 'izer'],
+    ['swap', 'ising', 'izing'], ['swap', 'ise', 'ize'],
+    ['add', 'y', 'ies'],
+  ];
+
+  var FOLDED = {};          /* one query word folded once, since every row asks */
+  var FOLD_CAP = 4;         /* spellings of one word, and the bound is the point */
+
+  function alts(word) {
+    if (FOLDED[word]) return FOLDED[word];
+    var out = [word];
+    function keep(candidate) {
+      if (candidate.length < 3 || out.indexOf(candidate) !== -1) return;
+      if (out.length < FOLD_CAP) out.push(candidate);
+    }
+    FOLD.forEach(function (row) {
+      var kind = row[0], has = row[1], gets = row[2];
+      if (kind === 'strip') {
+        /* A bare `s` needs a word to leave behind: "is" and "bus" are not plurals of
+           anything, and "class" is not the singular of "clas". An earlier version of
+           this guard also refused a word ending in `us`, on the theory that "status"
+           would fold to "statu" - it does, harmlessly, and the guard was costing the
+           plurals of the library's own acronyms: "gpus" found nothing while "gpu" is
+           a word of eight pages. Measurement, not caution, decided the row. */
+        if (!word.endsWith(has)) return;
+        if (has === 's' && (word.endsWith('ss') || word.length < 4)) return;
+        keep(word.slice(0, word.length - has.length) + gets);
+      } else if (kind === 'swap') {
+        if (word.endsWith(has)) keep(word.slice(0, word.length - has.length) + gets);
+        else if (word.endsWith(gets)) keep(word.slice(0, word.length - gets.length) + has);
+      } else if (kind === 'add') {
+        /* "boundary" -> "boundaries" only for a consonant + y: "day" is not
+           "daies", and "key" is not "keies". The row replaces its ending like the
+           others, which the audit caught the first time it ran: appending gave
+           "boundaryies", a word no page has ever written. */
+        if (!word.endsWith(has) || word.length < 4) return;
+        if (word.length >= 2 && 'aeiou'.indexOf(word.charAt(word.length - 2)) !== -1) return;
+        keep(word.slice(0, word.length - has.length) + gets);
+      }
+    });
+    FOLDED[word] = out;
+    return out;
+  }
+
+  function altsOf(words) {
+    return words.map(alts);
+  }
+
+  /* A mark should cover a WORD, not the fragment of one that happened to match: a
+     reader who typed "hallucinations" and gets the page whose text says
+     "hallucinations" should see that word marked, not its first eleven letters.
+     A span always comes from a spelling found in this very string, so the offsets
+     are the text's own and this only has to grow them out to the letters around
+     them. */
+  var WORDISH = /[A-Za-z0-9'-]/;
+
+  function widen(text, from, to) {
+    while (from > 0 && WORDISH.test(text.charAt(from - 1))) from--;
+    while (to < text.length && WORDISH.test(text.charAt(to))) to++;
+    return [from, to];
+  }
+
+  /* Where a spelling occurs in a piece of text, and whether it has to be the whole
+     word there.
+
+     The surface word keeps the substring rule, because that is the directory's rule
+     and it is how a reader types half a word: "quantiz" finds "quantization". A
+     FOLDED spelling does not, and that distinction is the entire safety of the
+     table above. Without it the stripped stem matches fragments of unrelated words
+     - "cars" folds to "car", and "car" is inside "carried" - so the fold would
+     answer a query with pages that never said the word. With it, the fold only ever
+     offers another spelling of the SAME word, and a reader who typed "cars" still
+     gets the honest answer: nothing here. */
+  function spansIn(text, word, whole) {
+    var from = 0, at, out = [];
+    while ((at = text.indexOf(word, from)) !== -1) {
+      var before = at > 0 ? text.charAt(at - 1) : '';
+      var after = at + word.length < text.length ? text.charAt(at + word.length) : '';
+      if (!whole || (!WORDISH.test(before) && !WORDISH.test(after))) {
+        out.push([at, at + word.length]);
+      }
+      from = at + 1;
+    }
+    return out;
+  }
+
+  /* Which of a word's spellings this TEXT carries, surface form first: a line that
+     says "tokens" is marked on "tokens" rather than on every "token" in it. */
+  function carriedBy(text, list) {
+    for (var i = 0; i < list.length; i++) {
+      if (spansIn(text, list[i], i > 0).length) return list[i];
+    }
+    return null;
+  }
+
   function hitsFor(words) {
+    var lists = altsOf(words);
     var hits = records.filter(function (record) {
-      return words.every(function (word) {
-        return record.hay.indexOf(word) !== -1;
+      return lists.every(function (list) {
+        return carriedBy(record.hay, list) !== null;
       });
     });
     /* Pages whose TITLE carries every word go first, and that is the whole of the
@@ -156,7 +302,7 @@
     var named = [], rest = [];
     hits.forEach(function (record) {
       var title = record.title.toLowerCase();
-      (words.every(function (word) { return title.indexOf(word) !== -1; })
+      (lists.every(function (list) { return carriedBy(title, list) !== null; })
         ? named : rest).push(record);
     });
     return named.concat(rest);
@@ -165,13 +311,14 @@
   /* The line to quote back: whichever of the page's own lines carries the most of
      what was typed, with the title first among equals. A reader who searched two
      words and sees one mark on a heading can tell at a glance which part missed. */
-  function quoteFor(record, words) {
+  function quoteFor(record, lists) {
+
     var pool = [record.title, record.summary].concat(record.lines);
     var best = pool[0], bestHits = -1;
     pool.forEach(function (line) {
       var lower = line.toLowerCase(), hits = 0;
-      words.forEach(function (word) {
-        if (lower.indexOf(word) !== -1) hits++;
+      lists.forEach(function (list) {
+        if (carriedBy(lower, list) !== null) hits++;
       });
       if (hits > bestHits) {
         best = line;
@@ -185,15 +332,19 @@
 
   /* Text nodes and <mark> elements, built by hand. See the header: never
      innerHTML, because these strings are the pages' own words. */
-  function write(into, text, words) {
+  function write(into, text, lists) {
     var lower = text.toLowerCase();
     var spans = [];
-    words.forEach(function (word) {
-      var from = 0, at;
-      while ((at = lower.indexOf(word, from)) !== -1) {
-        spans.push([at, at + word.length]);
-        from = at + word.length;
-      }
+    lists.forEach(function (list) {
+      /* The list arrives as spellings of one typed word. Whichever spelling this
+         line actually carries is the one marked, so a surface form wins over a
+         fold of it and nothing the reader did not type is ever marked for its
+         own sake. */
+      var found = carriedBy(lower, list);
+      if (found === null) return;
+      spansIn(lower, found, found !== list[0]).forEach(function (span) {
+        spans.push(widen(text, span[0], span[1]));
+      });
     });
     spans.sort(function (a, b) { return a[0] - b[0]; });
 
@@ -219,7 +370,7 @@
     }
   }
 
-  function row(record, words) {
+  function row(record, lists) {
     var li = document.createElement('li');
     li.className = 'palette-hit';
     var link = document.createElement('a');
@@ -232,7 +383,7 @@
 
     var title = document.createElement('span');
     title.className = 'palette-title';
-    write(title, record.title, words);
+    write(title, record.title, lists);
 
     link.appendChild(where);
     link.appendChild(title);
@@ -240,11 +391,11 @@
     /* When the line that best answers the query IS the title, the title has
        already shown it with its marks on, and repeating it underneath reads as a
        rendering fault. The row is one line shorter and says the same thing. */
-    var quote = quoteFor(record, words);
+    var quote = quoteFor(record, lists);
     if (quote !== record.title) {
       var line = document.createElement('span');
       line.className = 'palette-line';
-      write(line, quote, words);
+      write(line, quote, lists);
       link.appendChild(line);
     }
 
@@ -297,8 +448,9 @@
     }
 
     var hits = hitsFor(words);
+    var lists = altsOf(words);
     hits.slice(0, SHOWN).forEach(function (record) {
-      list.appendChild(row(record, words));
+      list.appendChild(row(record, lists));
     });
 
     said.textContent = hits.length

@@ -9,7 +9,7 @@ creates, rows the script draws from a fetched index - and neither of the other t
 audits can see any of it. `audit-contrast.py` measures pages a reader can load and this
 dialog only exists after a click; `audit-motion.py` measures arrivals, which is a
 different question. So this drives it, in a real browser, with real events, and asserts
-eighteen things a reader would notice if they broke.
+twenty-six things a reader would notice if they broke.
 
 WHAT IS DRIVEN RATHER THAN READ, and why each one needs a browser:
 
@@ -29,8 +29,13 @@ WHAT IS DRIVEN RATHER THAN READ, and why each one needs a browser:
   precedence is a fact about two scripts and one document, not about either file.
 * **Reduced motion**, where the palette must still open: its transition is gated, its
   behaviour is not.
+* **What counts as a match**, which is a rule and not a line: the fold below turns a typed
+  word into the few spellings of it that count, and the only honest way to check a rule
+  like that is to type the words - a plural the library wrote in the singular, a spelling
+  it does not use, a base form whose inflected form is the only one on the page, and the
+  word it must still refuse.
 
-THREE THINGS THIS FILE IS CAREFUL ABOUT, each the shape of a bug it would otherwise miss:
+FOUR THINGS THIS FILE IS CAREFUL ABOUT, each the shape of a bug it would otherwise miss:
 
 * **An absent answer is a finding.** `audit-motion.py`'s harness reports success when a
   scenario returns nothing, because a probe that never calls itself back evaluates to a
@@ -40,6 +45,10 @@ THREE THINGS THIS FILE IS CAREFUL ABOUT, each the shape of a bug it would otherw
   doctored file asserts the text it edits was actually there.
 * **The claim a patch is aimed at has to be the claim that FAILS**, by name. A patch that
   trips some other assertion proves the suite works and not that this check works.
+* **A claim about a rule is proved by the queries it answers, not by reading the table.**
+  Each patch below removes one published row of the fold or one guard around it, and the
+  suite fails if the claim that row exists for is not the claim that broke - so the table
+  in `search.js` cannot quietly lose a row and keep a passing suite.
 
 Standard library only.
 """
@@ -297,6 +306,55 @@ REDUCED_SCENARIO = r"""
 })(d, w)
 """
 
+FOLD_SCENARIO = r"""
+(async (d, w) => {
+  /* Seven queries in one page load, typed the way a reader types them, and for each
+     one what the palette said, how many rows it drew, where the first one goes and
+     what it marked. The claims below are all about this table, so the probes read
+     the palette's own output rather than any part of the fold implementation. */
+  const out = {results: {}, error: null};
+  const until = async (fn, ms) => {
+    const t0 = Date.now();
+    while (Date.now() - t0 < (ms || 6000)) {
+      if (fn()) return true;
+      await new Promise(r => w.setTimeout(r, 50));
+    }
+    return false;
+  };
+  const trigger = d.querySelector('[data-search-open]');
+  if (!trigger) { out.error = 'no trigger on the page'; return out; }
+  trigger.click();
+  const field = d.getElementById('palette-field');
+  const drew = await until(() => d.querySelectorAll('.palette-hit.is-group').length > 0);
+  if (!field || !drew) { out.error = 'the palette never drew its groups'; return out; }
+
+  const queries = ['hallucinations', 'llms', 'gpus', 'cars', 'quantisation',
+                   'tokeniser', 'boundary', 'mixture of experts', 'quantiz'];
+  for (const q of queries) {
+    field.value = q;
+    field.dispatchEvent(new w.Event('input', {bubbles: true}));
+    /* Waited for by the query's own name or by the nothing line: a stale render from
+       the previous query satisfies neither, so a probe cannot read the last answer. */
+    const answered = await until(() => {
+      const said = (d.querySelector('.palette-said') || {}).textContent || '';
+      return said.indexOf(q) !== -1 || said.indexOf('Nothing') !== -1;
+    });
+    const links = [].slice.call(d.querySelectorAll('.palette-results .palette-link'));
+    const first = d.querySelector('.palette-results .palette-hit');
+    out.results[q] = {
+      answered: answered,
+      rows: links.length,
+      firstHref: links.length ? links[0].getAttribute('href') : null,
+      said: (d.querySelector('.palette-said') || {}).textContent || null,
+      marks: first
+        ? [].slice.call(first.querySelectorAll('mark')).map(m => m.textContent) : []
+    };
+  }
+  d.querySelector('.palette').close();
+  return out;
+})(d, w)
+"""
+
 
 # --------------------------------------------------------------------------
 # The claims. Counted, so the verdict can say how much was asserted.
@@ -329,6 +387,19 @@ LANDING_CLAIMS = (
 )
 REDUCED_CLAIMS = (
     "with motion reduced the palette still opens and works",
+)
+
+# The fold. Every one of these is a sentence a reader could hold the palette to, and
+# every one was measured against the built index before the rule was written: the
+# numbers in the details are what the rule buys, and one of them is what it refuses.
+FOLD_CLAIMS = (
+    "a plural the library does not write finds the page that writes the singular",
+    "a two-letter stem still folds, so the short plurals of acronyms work too",
+    "a folded spelling only counts as the whole word, so a word this library never uses finds nothing",
+    "the spelling this library does not use finds the one it does",
+    "a base form finds the page that only ever writes it inflected",
+    "a query this library cannot answer still reports nothing",
+    "a partial word marks the whole word it was found in",
 )
 
 
@@ -438,6 +509,69 @@ def check_landing(doc: dict, failures: list) -> None:
         doc.get("firstHref") or "-")
 
 
+def check_fold(doc: dict, failures: list) -> None:
+    if doc.get("error"):
+        _ok(failures, "the scenario ran", False, doc.get("error") or doc["error"])
+        return
+    r = doc.get("results") or {}
+
+    def of(q: str) -> dict:
+        return r.get(q) or {}
+
+    plural = of("hallucinations")
+    _ok(failures, FOLD_CLAIMS[0],
+        plural.get("firstHref") == "/what-is-ai-hallucination/"
+        and (plural.get("rows") or 0) >= 1,
+        "'hallucinations' -> %s, %s row(s), and the library's own count says %s"
+        % (plural.get("firstHref") or "nothing", plural.get("rows"),
+           (plural.get("said") or "").split(".")[0]))
+
+    # Both of the library's acronyms, and the first of them is why the strip row's
+    # guard was measured rather than reasoned about: a version that refused a word
+    # ending in `us` found nothing for "gpus" while "gpu" is a word of eight pages.
+    short, gpus = of("llms"), of("gpus")
+    _ok(failures, FOLD_CLAIMS[1],
+        short.get("firstHref") == "/what-is-a-local-llm/" and (gpus.get("rows") or 0) >= 1,
+        "'llms' -> %s, 'gpus' -> %s row(s) where it found none"
+        % (short.get("firstHref") or "nothing", gpus.get("rows")))
+
+    # The bound. "car" is a substring of 22 indexed pages - card, care, carries,
+    # carry - and a whole word of none of them, so a reader who types "cars" must be
+    # told the library has nothing rather than handed 22 pages that never said it.
+    bound = of("cars")
+    _ok(failures, FOLD_CLAIMS[2],
+        (bound.get("rows") or 0) == 0
+        and "Nothing" in (bound.get("said") or ""),
+        "'cars' -> %s row(s), though 'car' is inside 22 indexed pages: %s"
+        % (bound.get("rows"), (bound.get("said") or "")[:40]))
+
+    oz = of("quantisation")
+    iser = of("tokeniser")
+    _ok(failures, FOLD_CLAIMS[3],
+        oz.get("firstHref") == "/what-is-quantization/" and (iser.get("rows") or 0) >= 1,
+        "'quantisation' -> %s, 'tokeniser' -> %s row(s)"
+        % (oz.get("firstHref") or "nothing", iser.get("rows")))
+
+    base = of("boundary")
+    _ok(failures, FOLD_CLAIMS[4],
+        base.get("firstHref") == "/how-document-chunking-works/",
+        "'boundary' -> %s, which is the only page that writes 'boundaries'"
+        % (base.get("firstHref") or "nothing"))
+
+    nothing = of("mixture of experts")
+    _ok(failures, FOLD_CLAIMS[5],
+        (nothing.get("rows") or 0) == 0
+        and "Nothing" in (nothing.get("said") or ""),
+        "'mixture of experts' -> %s row(s): the fold offers spellings, not answers"
+        % nothing.get("rows"))
+
+    partial = of("quantiz")
+    _ok(failures, FOLD_CLAIMS[6],
+        "quantization" in (partial.get("marks") or []),
+        "'quantiz' marks %s rather than the seven letters typed"
+        % (partial.get("marks") or ["nothing"]))
+
+
 def check_reduced(doc: dict, failures: list) -> None:
     if "error" in doc:
         _ok(failures, "the scenario ran", False, doc["error"])
@@ -505,6 +639,31 @@ SELF_TESTS = [
      [("      var mark = document.createElement('mark');", "      var mark = document.createElement('b');")],
      "a query draws rows that link into the library, with the matched words marked",
      ("search.js", "/what-is-a-gguf/")),
+    # The fold's own patches. Each removes one published row or one guard, so what
+    # fails is the claim that row is there for and nothing else about the palette.
+    ("the plural stops folding, so a typed plural finds nothing",
+     [("    ['strip', 's', ''],\n", "")],
+     "a plural the library does not write finds the page that writes the singular",
+     ("search.js", LIBRARY_PAGE)),
+    ("the spelling this library does not use stops being swapped",
+     [("    ['swap', 'isation', 'ization'], ['swap', 'iser', 'izer'],\n", "")],
+     "the spelling this library does not use finds the one it does",
+     ("search.js", LIBRARY_PAGE)),
+    ("a base form stops being completed into the plural the page writes",
+     [("    ['add', 'y', 'ies'],\n", "")],
+     "a base form finds the page that only ever writes it inflected",
+     ("search.js", LIBRARY_PAGE)),
+    ("a folded spelling is allowed to match inside a longer word",
+     [("      if (!whole || (!WORDISH.test(before) && !WORDISH.test(after))) {",
+       "      if (true) {")],
+     "a folded spelling only counts as the whole word, so a word this library never uses finds nothing",
+     ("search.js", LIBRARY_PAGE)),
+    ("a partial word stops widening to the word it was found in",
+     [("  function widen(text, from, to) {\n    while (from > 0 && WORDISH.test(text.charAt(from - 1))) from--;\n"
+       "    while (to < text.length && WORDISH.test(text.charAt(to))) to++;\n    return [from, to];\n  }",
+       "  function widen(text, from, to) {\n    return [from, to];\n  }")],
+     "a partial word marks the whole word it was found in",
+     ("search.js", LIBRARY_PAGE)),
 ]
 
 # The one patch that is not a script edit: the index is doctored with markup in a
@@ -555,6 +714,8 @@ def self_test(chrome, site, width, height, tmp, only: str = "") -> int:
             scenario, extra, checker = DIRECTORY_SCENARIO, None, check_directory
         elif expected in LANDING_CLAIMS:
             scenario, extra, checker = LANDING_SCENARIO, None, check_landing
+        elif expected in FOLD_CLAIMS:
+            scenario, extra, checker = FOLD_SCENARIO, None, check_fold
         else:
             scenario, extra, checker = PALETTE_SCENARIO, None, check_palette
         doc = AM.run(chrome, broken, tmp, url, width, height, scenario,
@@ -635,6 +796,9 @@ def main(argv: list[str]) -> int:
         doc = AM.run(chrome, a.site, tmp, LIBRARY_PAGE, a.width, a.height,
                      PALETTE_SCENARIO, extra=None, tag="palette")
         check_palette(doc, failures)
+        fdoc = AM.run(chrome, a.site, tmp, LIBRARY_PAGE, a.width, a.height,
+                      FOLD_SCENARIO, extra=None, tag="fold")
+        check_fold(fdoc, failures)
         ddoc = AM.run(chrome, a.site, tmp, "/library/", a.width, a.height,
                       DIRECTORY_SCENARIO, extra=None, tag="directory")
         check_directory(ddoc, failures)
@@ -648,8 +812,9 @@ def main(argv: list[str]) -> int:
 
         if a.json:
             with open(a.json, "w", encoding="utf-8", newline="\n") as fh:
-                json.dump({"palette": doc, "directory": ddoc, "landing": ldoc,
-                           "reduced": rdoc, "failures": failures}, fh, indent=1)
+                json.dump({"palette": doc, "fold": fdoc, "directory": ddoc,
+                           "landing": ldoc, "reduced": rdoc,
+                           "failures": failures}, fh, indent=1)
             print("\nfindings written to %s" % a.json)
 
         print()
