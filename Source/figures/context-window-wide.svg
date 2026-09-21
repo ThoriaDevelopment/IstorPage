@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 268" width="640" height="268" role="img" aria-label="A context window as a budget, in an example 8,192-token window: the instructions, the question, the few passages retrieval chose, and the answer being written all share it, and the split between them is an illustration rather than a measurement. The middle band is read less reliably than the ends, and text past the ceiling is invisible rather than compressed." focusable="false" data-variant="wide" data-generated-by="Source/tools/make-context-window.py - do not hand-edit">
+<text x="6" y="26" font-family="Fraunces, Georgia, serif" font-size="22" fill="var(--ink)">The window is a budget, not a memory</text>
+<text x="6" y="54" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">e.g. one 8,192-token window</text>
+<text x="526" y="54" text-anchor="end" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">the ceiling</text>
+<rect x="6" y="92" width="520" height="100" fill="var(--subtle)" stroke="var(--hairline)" stroke-width="1"/>
+<rect x="10" y="96" width="62.0" height="92" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="78" y="96" width="46.0" height="92" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1"/>
+<rect x="130.0" y="96" width="100.3" height="92" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1"/>
+<rect x="234.3" y="96" width="100.3" height="92" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1"/>
+<rect x="338.7" y="96" width="100.3" height="92" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1"/>
+<rect x="445" y="96" width="77.0" height="92" fill="var(--canvas)" stroke="var(--mist)" stroke-width="1" stroke-dasharray="5 4"/>
+<rect class="veil" x="163.6" y="96" width="204.8" height="92" fill="var(--ink)" opacity="0.14"/>
+<path d="M163.6 92 V88 H368.4 V92" fill="none" stroke="var(--mist)" stroke-width="1"/>
+<text x="266" y="76" text-anchor="middle" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">read less reliably</text>
+<line x1="526" y1="82" x2="526" y2="202" stroke="var(--ink)" stroke-width="1.5"/>
+<rect class="beyond" x="538" y="96.0" width="24" height="92.0" fill="none" stroke="var(--mist)" stroke-width="1.2" opacity="0.6" stroke-dasharray="5 4"/>
+<rect class="beyond" x="574" y="110.7" width="21" height="62.6" fill="none" stroke="var(--mist)" stroke-width="1.2" opacity="0.36" stroke-dasharray="5 4"/>
+<rect class="beyond" x="610" y="125.4" width="18" height="33.1" fill="none" stroke="var(--mist)" stroke-width="1.2" opacity="0.16" stroke-dasharray="5 4"/>
+<text x="628" y="76" text-anchor="end" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="16" fill="var(--mist)">invisible, not compressed</text>
+<rect x="6" y="209" width="14" height="14" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1.5"/>
+<text x="28" y="220" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)">instructions</text>
+<rect x="330" y="209" width="14" height="14" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1.5"/>
+<text x="352" y="220" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)">your question</text>
+<rect x="6.0" y="231" width="3.3" height="14" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1.5"/><rect x="11.3" y="231" width="3.3" height="14" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1.5"/><rect x="16.7" y="231" width="3.3" height="14" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1.5"/>
+<text x="28" y="242" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)">a few passages</text>
+<rect x="330" y="231" width="14" height="14" fill="var(--canvas)" stroke="var(--mist)" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="352" y="242" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--ink)">the answer</text>
+</svg>

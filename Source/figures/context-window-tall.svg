@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 448" width="380" height="448" role="img" aria-label="A context window as a budget, in an example 8,192-token window: the instructions, the question, the few passages retrieval chose, and the answer being written all share it, and the split between them is an illustration rather than a measurement. The middle band is read less reliably than the ends, and text past the ceiling is invisible rather than compressed." focusable="false" data-variant="tall" data-generated-by="Source/tools/make-context-window.py - do not hand-edit">
+<text x="6" y="24" font-family="Fraunces, Georgia, serif" font-size="18" fill="var(--ink)">The window is a budget,</text>
+<text x="6" y="46" font-family="Fraunces, Georgia, serif" font-size="18" fill="var(--ink)">not a memory</text>
+<text x="6" y="68" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--mist)">e.g. one 8,192-token window</text>
+<rect x="6" y="86" width="120" height="252" fill="var(--subtle)" stroke="var(--hairline)" stroke-width="1"/>
+<rect x="12" y="92" width="108" height="24.0" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1.3"/>
+<line x1="126" y1="106.0" x2="138" y2="106.0" stroke="var(--hairline)" stroke-width="1"/>
+<text x="142" y="110.8" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--ink)">instructions</text>
+<rect x="12" y="126" width="108" height="17.0" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1"/>
+<line x1="126" y1="136.5" x2="138" y2="136.5" stroke="var(--hairline)" stroke-width="1"/>
+<text x="142" y="141.3" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--ink)">your question</text>
+<rect x="12" y="153.0" width="108" height="32.5" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1"/>
+<rect x="12" y="188.5" width="108" height="32.5" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1"/>
+<rect x="12" y="224.0" width="108" height="32.5" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1"/>
+<rect x="12" y="259.5" width="108" height="32.5" fill="var(--canvas)" stroke="var(--ink)" stroke-width="1"/>
+<line x1="126" y1="222.5" x2="138" y2="222.5" stroke="var(--hairline)" stroke-width="1"/>
+<text x="142" y="227.3" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--ink)">a few passages</text>
+<rect x="12" y="298" width="108" height="30.0" fill="var(--canvas)" stroke="var(--mist)" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="126" y1="315.0" x2="138" y2="315.0" stroke="var(--hairline)" stroke-width="1"/>
+<text x="142" y="319.8" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--ink)">the answer</text>
+<rect class="veil" x="6" y="164.0" width="120" height="96.0" fill="var(--ink)" opacity="0.14"/>
+<path d="M130 164.0 H126 V260.0 H130" fill="none" stroke="var(--mist)" stroke-width="1"/>
+<line x1="130" y1="202" x2="268" y2="202" stroke="var(--mist)" stroke-width="1"/>
+<text x="272" y="207" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--mist)">read less</text>
+<text x="272" y="227" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--mist)">reliably</text>
+<line x1="0" y1="348" x2="134" y2="348" stroke="var(--ink)" stroke-width="1.5"/>
+<rect class="beyond" x="6" y="360.0" width="120" height="20" fill="none" stroke="var(--mist)" stroke-width="1.2" opacity="0.6" stroke-dasharray="5 4"/>
+<rect class="beyond" x="6" y="386.0" width="102" height="15" fill="none" stroke="var(--mist)" stroke-width="1.2" opacity="0.36" stroke-dasharray="5 4"/>
+<rect class="beyond" x="6" y="412.0" width="84" height="10" fill="none" stroke="var(--mist)" stroke-width="1.2" opacity="0.16" stroke-dasharray="5 4"/>
+<text x="142" y="352" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--mist)">the ceiling</text>
+<text x="142" y="372" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--mist)">invisible,</text>
+<text x="142" y="392" font-family="JetBrains Mono, ui-monospace, Consolas, monospace" font-size="15" fill="var(--mist)">not compressed</text>
+</svg>

@@ -173,6 +173,8 @@ INCLUDES = {
 LIBRARY_INCLUDES = {
     "citation-anatomy-wide": (SOURCE / "figures" / "citation-anatomy-wide.svg", "svg"),
     "citation-anatomy-tall": (SOURCE / "figures" / "citation-anatomy-tall.svg", "svg"),
+    "context-window-wide": (SOURCE / "figures" / "context-window-wide.svg", "svg"),
+    "context-window-tall": (SOURCE / "figures" / "context-window-tall.svg", "svg"),
     "gguf-anatomy-wide": (SOURCE / "figures" / "gguf-anatomy-wide.svg", "svg"),
     "gguf-anatomy-tall": (SOURCE / "figures" / "gguf-anatomy-tall.svg", "svg"),
     "quant-ladder-wide": (SOURCE / "figures" / "quant-ladder-wide.svg", "svg"),

@@ -227,8 +227,14 @@ CHROME_CANDIDATES = [
 # step of the bar. The 404 is here because it carries a page's worth of ink (a
 # heading, a box of links, a form and a button) on a stylesheet of its own, which
 # is the other way a template goes unmeasured: not large, just separate.
+# `/what-is-a-context-window/` joins them because its plate is the densest small type
+# in the library: the budget column's labels are 15 units against a 0.737 scale at the
+# narrowest column a 320px window gives it, which is 11.1px, and the floor it is held
+# to is derived from that measurement rather than chosen (see the generator's note).
+# A page whose smallest text sits a tenth of a pixel above the floor is exactly the
+# page this pass exists to visit.
 DEFAULT_PAGES = ["/", "/library/", "/what-is-a-local-llm/", "/changelog/",
-                 "/vs-chatgpt/", "/404.html"]
+                 "/vs-chatgpt/", "/404.html", "/what-is-a-context-window/"]
 
 # The width the target-size pass is run at in addition to `--width`, because a
 # target is small where the layout is narrow and this is the width the site's own

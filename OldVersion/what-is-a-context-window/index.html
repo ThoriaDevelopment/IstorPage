@@ -73,6 +73,28 @@
     <h2>The working memory of a model.</h2>
     <p>When a model answers, it reads a block of text: your question, whatever context was added, and its own answer so far. That block is the context window, and it has a hard ceiling. Text beyond it is invisible, not compressed or remembered. This is why a model can lose the thread of a long chat, why it does not know about documents you never gave it, and why <a href="/can-local-ai-summarize-pdfs/">a two-hundred-page PDF cannot be summarized in one gulp</a>. The window is not ignorance; it is a budget.</p>
 
+    <figure class="context-window reveal">
+      <!--#include context-window-wide-->
+      <!--#include context-window-tall-->
+      <figcaption>One window, four claimants, and a ceiling that ends it. The standing
+      instructions take their share first, retrieval spends the bulk on a few passages
+      rather than on the whole library, and the answer gets what is left. The veiled
+      band is the middle of that space, where a model reads least reliably, and the
+      region past the ceiling is not compressed or remembered; it is only absent. The
+      split is an example of how a request fills a window rather than a measurement of
+      one.</figcaption>
+    </figure>
+    <style>
+      .context-window { margin: 2rem auto; max-width: 40rem; }
+      .context-window svg { width: 100%; height: auto; display: block; }
+      .context-window [data-variant="tall"] { display: none; }
+      .context-window figcaption { margin-top: 0.75rem; color: var(--mist); font-size: 0.9rem; }
+      @media (max-width: 560px) {
+        .context-window [data-variant="wide"] { display: none; }
+        .context-window [data-variant="tall"] { display: block; }
+      }
+    </style>
+
     <h2>How retrieval spends the budget well.</h2>
     <p>This constraint is exactly why <a href="/what-is-rag/">retrieval-augmented generation</a> exists. Rather than stuffing a whole library into the window, a retrieval step picks the handful of passages most relevant to your question and places only those in front of the model. The window fills with the right text instead of all the text. On local hardware this matters twice over: a larger window needs more memory and more time for every answer, so the skill is in choosing well rather than in choosing everything.</p>
 
