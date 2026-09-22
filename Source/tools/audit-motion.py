@@ -440,19 +440,26 @@ setTimeout(function () {{ report({{ error: 'the scenario did not finish within 6
 
 
 class Rig:
-    """The answer the harness posts back, shared with the server thread."""
+    """One run's answer box. This used to be a class-global shared by every run,
+    which was fine while runs were serial but made the tool unable to run two
+    pages at once: two concurrent runs would read each other's answers and half
+    the claims would be checked against the wrong page's evidence. Each run()
+    now owns one box, the handler factory closes over it, and two runs on two
+    ports on two profiles share nothing at all. SLOW RUNS ARE STILL SERIAL
+    INSIDE THEMSELVES - one box, one page, one answer - so every claim's
+    semantics are exactly what they were; only the WAITING overlaps."""
 
-    answer: dict | None = None
+    def __init__(self) -> None:
+        self.answer: dict | None = None
 
-    @classmethod
-    def post_result(cls, body: bytes) -> None:
+    def post_result(self, body: bytes) -> None:
         try:
-            cls.answer = json.loads(body.decode("utf-8"))
+            self.answer = json.loads(body.decode("utf-8"))
         except (ValueError, UnicodeDecodeError) as exc:
-            cls.answer = {"error": "the harness posted something unreadable: %s" % exc}
+            self.answer = {"error": "the harness posted something unreadable: %s" % exc}
 
 
-def make_handler(site: str, harness: str):
+def make_handler(site: str, harness: str, rig: Rig):
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *a, **kw):
             super().__init__(*a, directory=site, **kw)
@@ -470,7 +477,7 @@ def make_handler(site: str, harness: str):
 
         def do_POST(self):
             n = int(self.headers.get("Content-Length") or 0)
-            Rig.post_result(self.rfile.read(n))
+            rig.post_result(self.rfile.read(n))
             self.send_response(204)
             self.end_headers()
 
@@ -487,8 +494,8 @@ def run(chrome, site, tmp, page, width, height, scenario, extra=None, tag="motio
     harness = os.path.join(tmp, "harness-%s.html" % tag)
     AC.write(harness, HARNESS.format(w=width, h=height, url=page,
                                      expr=json.dumps(scenario), settle=700))
-    Rig.answer = None
-    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), make_handler(site, harness))
+    rig = Rig()
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), make_handler(site, harness, rig))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     base = "http://127.0.0.1:%d" % srv.server_address[1]
     cmd = [chrome, "--headless", "--disable-gpu", "--no-first-run",
@@ -498,7 +505,7 @@ def run(chrome, site, tmp, page, width, height, scenario, extra=None, tag="motio
                             text=True, encoding="utf-8", errors="replace")
     deadline = time.time() + timeout
     try:
-        while time.time() < deadline and Rig.answer is None:
+        while time.time() < deadline and rig.answer is None:
             time.sleep(0.1)
     finally:
         proc.terminate()
@@ -508,11 +515,11 @@ def run(chrome, site, tmp, page, width, height, scenario, extra=None, tag="motio
             proc.kill()
             proc.communicate()
         srv.shutdown()
-    if Rig.answer is None:
+    if rig.answer is None:
         return {"error": "no answer in %ds; the browser was killed. A page that keeps "
                          "requesting animation frames can hold a headless renderer "
                          "open, so this is reported rather than waited on forever" % timeout}
-    doc = Rig.answer
+    doc = rig.answer
     if "error" in doc:
         return doc
     # An absent answer is its own finding rather than a pass: a scenario that never
@@ -1812,7 +1819,7 @@ def check_library_reduced(doc: dict, failures: list) -> None:
        % (doc["blocks"], doc["cold"], doc["quick"], doc["hidden"], doc["arrive"]))
 
 
-def self_test(chrome, site, width, height, tmp, family="all") -> int:
+def self_test(chrome, site, width, height, tmp, family="all", jobs=1) -> int:
     print("self-test: %d doctored pages, each of which must fail one named claim"
           % len(SELF_TESTS))
     worst = 0
@@ -1822,12 +1829,19 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
     # family is read off the claim the patch is declared to break, so a new patch
     # cannot forget to declare one.
     lib_claims = LIB_CLAIMS + LIB_REDUCED_CLAIMS
-    skip = 0
-    for i, entry in enumerate(SELF_TESTS):
+
+    # JOBS. A doctor's cost is almost entirely the real-time wait inside its run()
+    # call; the copy, the patch and the check are noise. And since every run() now
+    # owns its Rig, its port, its profile and its broken copy, two doctors share
+    # nothing - so the waits overlap freely at N concurrent browsers. The CHECKS
+    # still run on the main thread, in the self-test's own order, so the output is
+    # byte-for-byte what the serial run printed: parallel evidence, serial verdicts.
+    # Caveat worth naming: the scenarios measure REAL time, so a machine that
+    # cannot comfortably render N animations at once can make a timing claim flake.
+    # A flake under --jobs reruns serial before it is believed.
+    def prepare(i, entry):
+        """Do everything up to and including the browser waits; return the check."""
         what, edits, expected = entry[0], entry[1], entry[2]
-        # A patch names the built file it doctors and the page to drive, because they
-        # are not always the landing's: the library's behaviour lives in the shared
-        # `/theme.js` and `/styles.css`, and its claims are about `/library/`.
         rel, url = entry[3] if len(entry) > 3 else ("index.html", "/")
         in_lib = expected in lib_claims
         in_pace = expected in PACE_CLAIMS
@@ -1840,32 +1854,19 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
         in_bearing_land = expected in ("the bearing rides the rail it marks",
                                        "the bearing settles on the act the rail names",
                                        "and hands back to the first act on the return")
-        if ((family == "lib" and not in_lib) or (family == "pace" and not in_pace)
-                or (family == "dwell" and not in_dwell)
-                or (family == "hero" and not in_hero)
-                or (family == "close" and not in_close)
-                or (family == "land" and (in_lib or in_pace or in_dwell
-                                          or in_hero or in_close)) and
-                not (family == "land" and (in_sun_land or in_bearing_land))):
-            skip += 1
-            continue
         broken = os.path.join(tmp, "broken-%d" % i)
         if os.path.isdir(broken):
             shutil.rmtree(broken)
         shutil.copytree(site, broken)
         patched = os.path.join(broken, rel)
         if not os.path.isfile(patched):
-            print("  FAIL  %s: %s is not a file in the built site, so the self-test "
-                  "is checking nothing" % (what, rel))
-            worst = 1
-            continue
+            return ("fail", "%s: %s is not a file in the built site, so the self-test "
+                    "is checking nothing" % (what, rel))
         html = open(patched, encoding="utf-8").read()
         missing = [old for old, _ in edits if old not in html]
         if missing:
-            print("  FAIL  %s: the text it patches is not in %s (%r), so the "
-                  "self-test is checking nothing" % (what, rel, missing[0]))
-            worst = 1
-            continue
+            return ("fail", "%s: the text it patches is not in %s (%r), so the "
+                    "self-test is checking nothing" % (what, rel, missing[0]))
         for old, new in edits:
             html = html.replace(old, new, 1)
         AC.write(patched, html)
@@ -1874,62 +1875,90 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
         # self-test that loads four browsers per patch to prove one thing is a
         # self-test nobody runs. A patch aimed at the wheel is not evidence about
         # the arrivals, and the reverse.
-        failures: list = []
-        reduced_failures: list = []
         if in_lib:
             if expected in LIB_REDUCED_CLAIMS:
                 rlib = run(chrome, broken, tmp, url, width, height,
                            LIB_REDUCED_SCENARIO,
                            extra=["--force-prefers-reduced-motion"],
                            tag="st%d-lib-red" % i)
-                check_library_reduced(rlib, failures)
-            else:
-                cdoc = run(chrome, broken, tmp, url, width, height, LIB_CALM,
-                           extra=None, tag="st%d-lib-calm" % i)
-                fdoc = run(chrome, broken, tmp, url, width, height, LIB_FAST,
-                           extra=None, tag="st%d-lib-fast" % i)
-                check_library(cdoc, fdoc, failures)
-        elif in_pace:
+                return ("check", lambda f, rf: check_library_reduced(rlib, f))
+            cdoc = run(chrome, broken, tmp, url, width, height, LIB_CALM,
+                       extra=None, tag="st%d-lib-calm" % i)
+            fdoc = run(chrome, broken, tmp, url, width, height, LIB_FAST,
+                       extra=None, tag="st%d-lib-fast" % i)
+            return ("check", lambda f, rf: check_library(cdoc, fdoc, f))
+        if in_pace:
             cdoc = run(chrome, broken, tmp, "/", width, height, PACE_CALM,
                        extra=None, tag="st%d-calm" % i)
             fdoc = run(chrome, broken, tmp, "/", width, height, PACE_FAST,
                        extra=None, tag="st%d-fast" % i)
-            check_pace(cdoc, fdoc, failures)
-        elif in_dwell:
+            return ("check", lambda f, rf: check_pace(cdoc, fdoc, f))
+        if in_dwell:
             ddoc = run(chrome, broken, tmp, "/", width, height, DWELL_SCENARIO,
                        extra=None, tag="st%d-dwell" % i)
-            check_dwell(ddoc, failures)
-        elif in_hero:
+            return ("check", lambda f, rf: check_dwell(ddoc, f))
+        if in_hero:
             hdoc = run(chrome, broken, tmp, "/", width, height, HERO_SCENARIO,
                        extra=None, tag="st%d-hero" % i)
-            check_hero(hdoc, failures)
-        elif in_sun_land:
+            return ("check", lambda f, rf: check_hero(hdoc, f))
+        if in_sun_land:
             sdoc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
                        extra=None, tag="st%d-sun" % i)
-            check(sdoc, failures)
-        elif in_bearing_land:
+            return ("check", lambda f, rf: check(sdoc, f))
+        if in_bearing_land:
             bdoc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
                        extra=None, tag="st%d-bearing" % i)
-            check(bdoc, failures)
-        elif expected in CLOSE_REDUCED_CLAIMS:
+            return ("check", lambda f, rf: check(bdoc, f))
+        if expected in CLOSE_REDUCED_CLAIMS:
             xred = run(chrome, broken, tmp, "/", width, height, CLOSE_CALM,
                        extra=["--force-prefers-reduced-motion"],
                        tag="st%d-close-red" % i)
-            check_close(xred, failures, reduced=True)
-        elif in_close:
+            return ("check", lambda f, rf: check_close(xred, f, reduced=True))
+        if in_close:
             xdoc = run(chrome, broken, tmp, "/", width, height, CLOSE_FAST,
                        extra=None, tag="st%d-close" % i)
-            check_close(xdoc, failures, fast=True)
-        elif expected in REDUCED_CLAIMS:
+            return ("check", lambda f, rf: check_close(xdoc, f, fast=True))
+        if expected in REDUCED_CLAIMS:
             # Only the reduced page can carry this claim, so only it is driven: the
             # world run would cost a browser and could never report this failure.
             rdoc = run(chrome, broken, tmp, "/", width, height, REDUCED_SCENARIO,
                        extra=["--force-prefers-reduced-motion"], tag="st%d-reduced" % i)
-            check_reduced(rdoc, reduced_failures)
-        else:
-            doc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
-                      extra=None, tag="st%d" % i)
-            check(doc, failures)
+            return ("check", lambda f, rf: check_reduced(rdoc, rf))
+        doc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
+                  extra=None, tag="st%d" % i)
+        return ("check", lambda f, rf: check(doc, f))
+
+    live = [e for i, e in enumerate(SELF_TESTS)
+            if not ((family == "lib" and e[2] not in lib_claims)
+                    or (family == "pace" and e[2] not in PACE_CLAIMS)
+                    or (family == "dwell" and e[2] not in DWELL_CLAIMS)
+                    or (family == "hero" and e[2] not in HERO_CLAIMS)
+                    or (family == "close" and e[2] not in CLOSE_CLAIMS
+                        and e[2] not in CLOSE_REDUCED_CLAIMS)
+                    or (family == "land" and (e[2] in lib_claims
+                                              or e[2] in PACE_CLAIMS
+                                              or e[2] in DWELL_CLAIMS
+                                              or e[2] in HERO_CLAIMS
+                                              or e[2] in CLOSE_CLAIMS
+                                              or e[2] in CLOSE_REDUCED_CLAIMS)))]
+    skip = len(SELF_TESTS) - len(live)
+    indices = [i for i, e in enumerate(SELF_TESTS) if e in live]
+    if jobs > 1:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=jobs) as pool:
+            results = list(pool.map(lambda pair: prepare(pair[0], pair[1]),
+                                    list(zip(indices, live))))
+    else:
+        results = [prepare(i, e) for i, e in zip(indices, live)]
+    for entry, (kind, payload) in zip(live, results):
+        what, expected = entry[0], entry[2]
+        failures: list = []
+        reduced_failures: list = []
+        if kind == "fail":
+            print("  FAIL  %s" % payload)
+            worst = 1
+            continue
+        payload(failures, reduced_failures)
         named = expected in failures or expected in reduced_failures
         print("  %s  %s -> %s" % ("ok  " if named else "FAIL", what,
                                   (", ".join(failures + reduced_failures) or "nothing failed")))
@@ -1960,6 +1989,13 @@ def main(argv: list[str]) -> int:
                     help="with --self-test, doctor only one family's pages: the landing's "
                          "world and reduced claims, the hero's arrival, the arrivals' "
                          "pacing pair, or the library's fold test and clock")
+    ap.add_argument("--jobs", type=int, default=1,
+                    help="how many pages to drive at once. Each run owns its own port, "
+                         "browser profile and answer box, so the real-time waits overlap "
+                         "freely; the checks stay on the main thread in the tool's own "
+                         "order, so the output reads exactly as the serial run's. Every "
+                         "scenario measures REAL time, so a flaky result under N>1 is "
+                         "rerun serial before it is believed. 1 keeps the old behaviour.")
     a = ap.parse_args(argv)
 
     if not os.path.isdir(a.site):
@@ -1970,53 +2006,67 @@ def main(argv: list[str]) -> int:
     tmp = tempfile.mkdtemp(prefix="istor-motion-")
     try:
         if a.self_test:
-            return self_test(chrome, a.site, a.width, a.height, tmp, a.family)
+            return self_test(chrome, a.site, a.width, a.height, tmp, a.family, a.jobs)
 
-        print("the mechanism, driven: %s at %dpx" % (a.site, a.width))
+        print("the mechanism, driven: %s at %dpx%s"
+              % (a.site, a.width, "" if a.jobs == 1 else " (%d at a time)" % a.jobs))
         failures: list = []
+        # With jobs > 1 the drives overlap: every run owns its port, profile and
+        # answer box, so N browsers render N pages without sharing anything, and
+        # the longest scenario - the 28s dwell - no longer gates the total. The
+        # checks stay here, on the main thread, in this order, so the printed
+        # claims and the failure list are exactly the serial run's.
+        specs = [
+            ("hdoc", "/", HERO_SCENARIO, None, "hero-arrival"),
+            ("xdoc", "/", CLOSE_CALM, None, "close-calm"),
+            ("xfd", "/", CLOSE_FAST, None, "close-fast"),
+            ("xred", "/", CLOSE_CALM, ["--force-prefers-reduced-motion"], "close-reduced"),
+            ("doc", "/", SCENARIO, None, "world"),
+            ("rdoc", "/", REDUCED_SCENARIO, ["--force-prefers-reduced-motion"], "reduced"),
+            ("cdoc", "/", PACE_CALM, None, "pace-calm"),
+            ("fdoc", "/", PACE_FAST, None, "pace-fast"),
+            ("wdoc", "/", DWELL_SCENARIO, None, "dwell"),
+            ("lcalm", "/library/", LIB_CALM, None, "lib-calm"),
+            ("lfast", "/library/", LIB_FAST, None, "lib-fast"),
+            ("lred", "/library/", LIB_REDUCED_SCENARIO,
+             ["--force-prefers-reduced-motion"], "lib-reduced"),
+        ]
+        docs: dict = {}
+        if a.jobs > 1:
+            from concurrent.futures import ThreadPoolExecutor
+            def drive(spec):
+                name, page, scenario, extra, tag = spec
+                return name, run(chrome, a.site, tmp, page, a.width, a.height,
+                                 scenario, extra=extra, tag=tag)
+            with ThreadPoolExecutor(max_workers=a.jobs) as pool:
+                for name, d in pool.map(drive, specs):
+                    docs[name] = d
+        else:
+            for name, page, scenario, extra, tag in specs:
+                docs[name] = run(chrome, a.site, tmp, page, a.width, a.height,
+                                 scenario, extra=extra, tag=tag)
+        hdoc, xdoc, xfd, xred = (docs[k] for k in ("hdoc", "xdoc", "xfd", "xred"))
+        doc, rdoc, cdoc, fdoc, wdoc = (docs[k] for k in ("doc", "rdoc", "cdoc", "fdoc", "wdoc"))
+        lcalm, lfast, lred = (docs[k] for k in ("lcalm", "lfast", "lred"))
+
         # M23 - the opening moment, driven. ~5.4s of real time, most of it the
         # courtesy of letting a re-armed cold state finish hiding.
-        hdoc = run(chrome, a.site, tmp, "/", a.width, a.height, HERO_SCENARIO,
-                   extra=None, tag="hero-arrival")
         check_hero(hdoc, failures)
         # M24 - the close's arrival, driven on both clocks like the pacing pair,
         # plus its reduced run: the mark, the window, the prose and the CTA.
-        xdoc = run(chrome, a.site, tmp, "/", a.width, a.height, CLOSE_CALM,
-                   extra=None, tag="close-calm")
         check_close(xdoc, failures)
-        xfd = run(chrome, a.site, tmp, "/", a.width, a.height, CLOSE_FAST,
-                  extra=None, tag="close-fast")
         check_close(xfd, failures, fast=True)
-        xred = run(chrome, a.site, tmp, "/", a.width, a.height, CLOSE_CALM,
-                   extra=["--force-prefers-reduced-motion"],
-                   tag="close-reduced")
         check_close(xred, failures, reduced=True)
-        doc = run(chrome, a.site, tmp, "/", a.width, a.height, SCENARIO)
         check(doc, failures)
-        rdoc = run(chrome, a.site, tmp, "/", a.width, a.height, REDUCED_SCENARIO,
-                   extra=["--force-prefers-reduced-motion"], tag="reduced")
         check_reduced(rdoc, failures)
-        cdoc = run(chrome, a.site, tmp, "/", a.width, a.height, PACE_CALM,
-                   extra=None, tag="pace-calm")
-        fdoc = run(chrome, a.site, tmp, "/", a.width, a.height, PACE_FAST,
-                   extra=None, tag="pace-fast")
         check_pace(cdoc, fdoc, failures)
         # M22 - stillness, driven. A 28s scenario of mostly waiting, which is
         # the honest cost of measuring patience.
-        wdoc = run(chrome, a.site, tmp, "/", a.width, a.height, DWELL_SCENARIO,
-                   extra=None, tag="dwell")
         check_dwell(wdoc, failures)
         # The library is a different page on a different pair of shared files, so it is
         # driven rather than inferred from the landing's behaviour: nothing about the
         # landing's arrivals would move if `/theme.js` lost its fold test.
-        lcalm = run(chrome, a.site, tmp, "/library/", a.width, a.height, LIB_CALM,
-                    extra=None, tag="lib-calm")
-        lfast = run(chrome, a.site, tmp, "/library/", a.width, a.height, LIB_FAST,
-                    extra=None, tag="lib-fast")
         check_library(lcalm, lfast, failures)
-        lred = run(chrome, a.site, tmp, "/library/", a.width, a.height,
-                   LIB_REDUCED_SCENARIO,
-                   extra=["--force-prefers-reduced-motion"], tag="lib-reduced")
         check_library_reduced(lred, failures)
 
         if a.json:
