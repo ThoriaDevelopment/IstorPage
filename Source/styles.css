@@ -606,6 +606,15 @@ h3 {
   padding: 4px 10px;
   border-radius: var(--r-pill);
   background: var(--fill);
+  /* M28 · tabular figures on the one numeral that MOVES. The readlog window's
+     count steps 0, 1, 2, 3, 4 in step with the rows' ticks, and Inter's
+     default figures are proportional (measured: "0 sources" and "4 sources"
+     differ by 0.2px), so the pill breathed on every step. Tabular figures
+     hold every digit on one advance, and the pill is the only live numeral
+     on the page: the evidence act's dts are static display figures in the
+     serif, where proportional spacing is the editorial choice, and the
+     dispute table's numbers sit in prose cells. */
+  font-variant-numeric: tabular-nums;
   color: var(--ink-2);
   font-size: var(--t-label);
 }
