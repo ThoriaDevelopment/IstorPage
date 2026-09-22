@@ -1053,6 +1053,30 @@ h3 {
 .nav-links a { color: var(--ink-2); text-decoration: none; }
 .nav-links a:hover { color: var(--ink); }
 
+/* M29 · the skip link. The library's stylesheet has styled a `.skip` since it
+   was built; no page ever carried the anchor, so the promise sat unclaimed and
+   the landing, whose nav plus act-index put nine tab stops before the content,
+   needed it most. The library's shape (top slides in on focus-visible) drawn
+   in this page's tokens: --ink on --paper is the 17:1 pair the stylesheet
+   already asserts, and the radius and ease are the page's own so the control
+   reads as this site's, not as a visitor from another stylesheet. Positioned
+   absolutely against the body so it overlays the nav's bar when it arrives,
+   and clipped while unfocused so it costs the visual design nothing. */
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -64px;
+  z-index: 40;
+  padding: 10px 18px;
+  border-radius: var(--r-chip);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  text-decoration: none;
+}
+.skip:focus-visible { top: 10px; }
+
 /* The CTA. One component, two attributes: when a release exists, only the label
    and href change. The brief asks for a swappable slot, not a hardcoded button. */
 .cta {
@@ -2049,6 +2073,10 @@ h3 {
   .reading-progress > span { transition: transform 120ms linear; }
   .scroll-cue { transition: color 160ms var(--ease); }
   .scroll-cue span { transition: transform 160ms var(--ease); }
+  /* M29 · the skip link's arrival is the library's own 150ms top slide, inside
+     this page's motion guard like every other motion on the page; under reduced
+     motion the link still works, it just appears without the slide. */
+  .skip { transition: top 150ms var(--ease); }
   .scroll-cue:hover span { transform: translateY(1px) rotate(45deg); }
   /* M11's pointer answer: the dot fills toward the accent and leans out. Same
      160ms family as every other hover; the base rule (§14e) stays still. */

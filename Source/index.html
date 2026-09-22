@@ -23,6 +23,16 @@
 </head>
 <body>
 
+<!-- M29 · the skip link. The library's stylesheet has styled a `.skip` since it
+     was built and no page ever carried the anchor for it, so the promise sat in
+     the CSS unclaimed. The landing has the most to skip: the sticky nav, then
+     the hero's act-index rail, sit before the content in DOM order, and a
+     keyboard visitor tabbing for the answer met eight tab stops before it.
+     It takes the library's own shape (ink on the ground, top slides in on
+     focus-visible) drawn with this page's tokens, so the two halves of the site
+     offer the same courtesy with one voice. -->
+<a class="skip" href="#the-answer">Skip to the answer</a>
+
 <!-- The five Lucide glyphs, inlined once. Every use on the page is one <use>. -->
 <svg class="sprite" aria-hidden="true" focusable="false"><!--#include icons--></svg>
 
@@ -45,7 +55,7 @@
   </div>
 </nav>
 
-<main>
+<main id="the-answer">
 
 <!-- =====================================================================
      Act 1 · C1, field-full.  The hero, and the page's one bold moment.
