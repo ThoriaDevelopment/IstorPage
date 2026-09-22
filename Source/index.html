@@ -1275,13 +1275,31 @@
     // Two frames: the first paints the cold state, the second releases it, so
     // the transition runs from a state the screen has actually shown.
     requestAnimationFrame(function () {
-      requestAnimationFrame(function () { heroField.classList.remove('is-cold'); });
+      requestAnimationFrame(function () {
+        heroField.classList.remove('is-cold');
+        // M27 · the dawn starts here, on the cast's own arm. The hold kept
+        // the light sunk through the cold state; clearing it hands the depth
+        // term to the pose the reader's own scroll calls for (0 at the top),
+        // and the drift loop's ease - the sun's one clock, the same 0.08
+        // chase M25 answers the pointer with - carries the rise. The chase is
+        // slower than the cast's 700ms, so the light settles just after the
+        // words do. The kick is guarded on driftStep, which exists whenever
+        // this callback can run: it is assigned inside the world block, and
+        // the world block only stays unentered under reduce, which never
+        // reaches this line.
+        sun.hold = false;
+        // No is-cold branch here: the class was removed two lines above, so a
+        // pose it could name cannot be read on this line (M26's rule: a state
+        // that cannot occur is not authored). A reload mid-page rises to the
+        // pose the reader's own scrollY calls for, which is the correct dawn
+        // for wherever they landed.
+        sun.td = Math.max(0, Math.min(1, window.scrollY / Math.max(1, heroBottom)));
+        if (!drift.raf && driftStep) drift.raf = requestAnimationFrame(driftStep);
+      });
     });
   }
 
-  var paintPoster = null;   // M6's parallax; set below, called by the nav's scroll
-  var closeRelease = null;  // M24's cast release; set below, same plumbing
-  // M25 · the field's sun: DECLARED AND ARMED HERE, at the top, because
+  // M27 · the field's sun, DECLARED AND ARMED HERE, at the top, because
   // onScroll is called once immediately after its definition and reads
   // sun.td - and a var hoists its declaration, not its assignment. The first
   // version armed the sun down in the drift block, the first onScroll threw
@@ -1290,15 +1308,34 @@
   // as a page where nothing turned. The capability test is on window.CSS,
   // not window: Chromium exposes registerProperty on the CSS interface, and
   // testing `in window` is always false there.
-  var sun = { x: 0, y: 0, tx: 0, d: 0, td: 0, s: null };
+  //
+  // M27 is also the dawn. M25 made the light answer the reader, but the
+  // page's own OPENING still started in full daylight: the words rose (M23),
+  // the mechanism swept in (M14), and the field's light never took part. So
+  // the light is born sunk - --sun-d starts at 1, the pose a reader would
+  // have to scroll half the hero to reach - and `hold` keeps it there until
+  // the cast's own release clears it: the dawn is not a second clock but the
+  // sun's, running once, on the page's arm. Without script the registered
+  // property's initial value 0 stands and nothing writes the inline 1, so a
+  // reader whose script never ran gets the authored daylight, as everywhere
+  // else on this page.
+  var sun = { x: 0, y: 0, tx: 0, d: 1, td: 1, hold: true, s: null };
   if (!reduced && window.CSS && 'registerProperty' in window.CSS) {
     var sunEl = document.querySelector('.hero');
-    if (sunEl) sun.s = sunEl.style;
+    if (sunEl) {
+      sun.s = sunEl.style;
+      sun.s.setProperty('--sun-d', '1');
+      sun.s.setProperty('--sun-x', '0');
+    }
   }
-  // drift's OBJECT is assigned here for the same reason: the sun's block in
-  // onScroll reads drift.raf to schedule the shared loop, and the version that
-  // kept the assignment down in the world block made the first onScroll throw
-  // on the unassigned name - the hoisting lesson, met twice by one feature.
+
+  var paintPoster = null;   // M6's parallax; set below, called by the nav's scroll
+  var closeRelease = null;  // M24's cast release; set below, same plumbing
+  // drift's OBJECT is assigned here for the same reason the sun's is: the
+  // sun's block in onScroll reads drift.raf to schedule the shared loop, and
+  // a var hoists its declaration, not its assignment - the first onScroll
+  // must not meet either name unassigned (the hoisting lesson, met twice by
+  // one feature, recorded at M25).
   var drift = { x: 0, y: 0, tx: 0, ty: 0, raf: 0 };
 
   var nav = document.getElementById('nav');   // M1
@@ -1600,12 +1637,18 @@
       }
       // M22 · any scroll, from any source, resets the dwell clock.
       dwellArm();
-      // M25 · the sun sinks as the reader descends the hero band: 0 at the
-      // top, 1 at heroBottom, outside the band it holds at 1 (the close has
-      // its own authored dawn; a second sun there would be a second clock).
+      // M25/M27 · the depth term. While the opening is held (M27's dawn) the
+      // light stays sunk; after it, the light sinks as the reader descends
+      // the hero band: 0 at the top, 1 at heroBottom, outside the band it
+      // holds at 1 (the close has its own authored dawn; a second sun there
+      // would be a second clock). A cold re-arm - M23 made the opening
+      // re-armable, and the audit drives it - sinks the light again for as
+      // long as the class holds, which is what makes the dawn a replayable
+      // opening rather than a one-shot.
       if (sun.s) {
-        sun.td = Math.max(0, Math.min(1,
-          window.scrollY / Math.max(1, heroBottom)));
+        sun.td = (sun.hold || heroField.classList.contains('is-cold'))
+          ? 1
+          : Math.max(0, Math.min(1, window.scrollY / Math.max(1, heroBottom)));
         if (!drift.raf && driftStep) drift.raf = requestAnimationFrame(driftStep);
       }
       if (paintPoster) paintPoster();

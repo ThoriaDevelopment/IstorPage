@@ -750,8 +750,28 @@ HERO_SCENARIO = r"""
   // (the lede's own clock is 560ms of delay plus 560ms of travel; the cue's is
   // 1360ms), then release and demand the arrival again.
   hero.classList.add('is-cold');
+  // M27 · one scroll, so the depth term can speak in the cold state: both the
+  // hold and the cold class are read inside the scroll handler, and a state
+  // that never produces an event is a state the page cannot answer in. The
+  // 1450ms is the ease's own coast (74 frames of 0.92 to cross its stop slack)
+  // plus margin, so the read is the settled pose, not the flight.
+  w.dispatchEvent(new Event('scroll'));
   await wait(1450);
   const cold = state();
+  // The origin is authored through calc(), but the computed serialization
+  // differs between Chromium builds: some keep calc(78%), some simplify it
+  // to 78%. Parsing must accept both, or a correct dawn reads as no pose -
+  // which is exactly the false failure the first run produced.
+  const sunOrigin = (bg) => {
+    const m = /at\s+(?:calc\(([^)]*)\)|([^\s,()]+))\s+(?:calc\(([^)]*)\)|([^\s,()]+))/.exec(bg);
+    return m ? { x: m[1] || m[2], y: m[3] || m[4] } : null;
+  };
+  const coldPose = sunOrigin(getComputedStyle(hero).backgroundImage);
+  result.coldDawn = {
+    originY: coldPose ? parseFloat(coldPose.y) : null,
+    styleD: ((hero.getAttribute('style') || '').match(/--sun-d:\s*([\d.]+)/) || [])[1] || null,
+    bg: getComputedStyle(hero).backgroundImage.slice(0, 160),
+  };
   result.cold = {
     line1Down: Math.abs(ty(cold.line1)) > 20,
     line2Down: Math.abs(ty(cold.line2)) > 20,
@@ -761,8 +781,14 @@ HERO_SCENARIO = r"""
     worldHidden: parseFloat(cold.world.op) < 0.05,
   };
   hero.classList.remove('is-cold');
+  // M27 · the same one scroll on release, so the pose the reader gets is the
+  // one the page's own handler targets rather than wherever the ease coasts.
+  w.dispatchEvent(new Event('scroll'));
   await wait(1500);
   const back = state();
+  const backPose = sunOrigin(getComputedStyle(hero).backgroundImage);
+  result.restoredDawn = { originY: backPose ? parseFloat(backPose.y) : null,
+                          bg: getComputedStyle(hero).backgroundImage.slice(0, 160) };
   result.restored = {
     line1: atRest(back.line1), line2: atRest(back.line2), lede: atRest(back.lede),
     cta: atRest(back.cta), cue: atRest(back.cue),
@@ -977,6 +1003,8 @@ HERO_CLAIMS = (
     "the mask leaves the lines room to breathe",
     "is-cold hides the hero's arrival again",
     "released, the hero arrives a second time",
+    "the dawn holds the light sunk in the cold state",
+    "and releases it on the cast's own clock",
 )
 
 
@@ -1021,6 +1049,28 @@ def check_hero(doc: dict, failures: list) -> None:
     ok("released, the hero arrives a second time",
        all(r.get(k) for k in ("line1", "line2", "lede", "cta", "cue")),
        "the same words at rest again - is-cold must not be a one-way door")
+
+    # M27 · the dawn's two claims, read off the rendered gradient the way the
+    # sun's are: the computed background is the only honest reading of a
+    # custom property, and the style attribute is what separates a pose the
+    # page wrote from one the stylesheet defaulted. Sunk is d = 1, which
+    # renders as origin 28%; authored rest is d = 0, origin 14%. The cold
+    # state must hold the sunk pose and the released state must be back on
+    # the authored one, or the opening the page performs is not the opening
+    # it authored.
+    dc = doc.get("coldDawn") or {}
+    dr = doc.get("restoredDawn") or {}
+    ok("the dawn holds the light sunk in the cold state",
+       dc.get("originY") is not None and dc["originY"] > 25
+       and dc.get("styleD") is not None and float(dc["styleD"]) > 0.9,
+       "sunk is origin 28%% with --sun-d 1: the cold state reads %.1f%% (style %s) bg=%s"
+       % (dc.get("originY") if dc.get("originY") is not None else -1, dc.get("styleD"),
+          (dc.get("bg") or "")[:90]))
+    ok("and releases it on the cast's own clock",
+       dr.get("originY") is not None and dr["originY"] < 17,
+       "released, the origin is back on the authored 14%%: %.1f%% bg=%s"
+       % (dr.get("originY") if dr.get("originY") is not None else -1,
+          (dr.get("bg") or "")[:90]))
 
 
 def check(doc: dict, failures: list) -> None:
@@ -1252,8 +1302,10 @@ PACE_FAST = PACE_SCENARIO.replace("__HOW__", "fast").replace(
 # wording drifts, the doctor FAILS LOUDLY at self-test time (the patch's `old`
 # text is not in the built file) rather than passing on stale anchors - which is
 # the same contract the other families' doctors keep by declaring their page.
-PAGE_RELEASE = ("      requestAnimationFrame(function () { "
-                "heroField.classList.remove('is-cold'); });")
+# M27 moved the dawn into the release callback, so the release is no longer the
+# one-liner it was; the anchor is the remove line itself, which is the statement
+# both M23 doctors mean to kill.
+PAGE_RELEASE = "        heroField.classList.remove('is-cold');"
 PAGE_COLD_LINE = "  .hero.is-cold .h1-reveal .h1-line { transform: translateY(118%); }"
 PAGE_ARM_COND = "  if (heroField && !reduced) {"
 PAGE_MASK_PAD = ("                   padding-block: 0.14em; margin-block: -0.14em; }")
@@ -1408,8 +1460,19 @@ SELF_TESTS = [
      [(PAGE_COLD_LINE, "  .hero.is-cold .h1-reveal .h1-line { transform: translateY(0%); }")],
      "is-cold hides the hero's arrival again"),
     ("M23 · the arm ignores reduced motion",
-     [(PAGE_ARM_COND, "  if (heroField) {"), (PAGE_RELEASE, "      /* doctor: no release */")],
+     [(PAGE_ARM_COND, "  if (heroField) {"), (PAGE_RELEASE, "        /* doctor: no release */")],
      "in the reduced world the hero never arms its arrival"),
+    # M27's two. A hold that never releases dawns forever - the cold state's
+    # light stays sunk on a page the reader is reading - and a depth term that
+    # ignores the hold means the first scroll paints daylight before the cast
+    # has arrived, which is the dawn silently not existing.
+    ("M27 · the dawn never releases the hold",
+     [("        sun.hold = false;", "        sun.hold = true;")],
+     "and releases it on the cast's own clock"),
+    ("M27 · the depth term ignores the hold",
+     [("        sun.td = (sun.hold || heroField.classList.contains('is-cold'))",
+       "        sun.td = false ?")],
+     "the dawn holds the light sunk in the cold state"),
     # M24's four, each the failure of one of the close's claims. The cold class
     # goes on the section AND the mark, so the release that forgets the section
     # leaves the cast hidden forever, and the patch below removes both - the
@@ -1641,8 +1704,13 @@ LIB_REDUCED_SCENARIO = r"""
 # not evidence about the reduced page and the reverse, so the self-test pays for the
 # load that can catch its patch and no other: a self-test that loads two browsers per
 # patch to prove one thing is a self-test nobody runs.
+# The sun's reduced claim belongs here with the others: without it its doctor
+# routed to the ordinary scenario, which cannot carry a reduced-world claim, and
+# the doctored page passed the one run it was given. Found by the self-test's
+# own verdict line, which is what the verdict line is for.
 REDUCED_CLAIMS = ("in the reduced world nothing is written",
                   "in the reduced world the hero never arms its arrival",
+                  "in the reduced world the field keeps its authored light",
                   "in the reduced world the bearing still finds its slot",)
 
 # The claims that need the library's pair of page loads.
