@@ -440,6 +440,29 @@ h3 {
 .field .lede, .field p { color: var(--field-ink-2); }
 .field a { color: var(--azure-lift); }
 
+/* M25 · the field keeps a sun, and the sun answers the reader. Every field on
+   the page shares one gradient whose light origin is frozen at 78% 14% - the
+   world was a place with wheels, a hand and a clock, but its light was a
+   still. The hero's origin now leans toward the pointer (a lamp over the
+   mechanism) and sinks as the reader descends the hero band (a sun setting
+   under the scroll), through two registered properties the page's script
+   writes in the drift's own rAF loop. The rule sits OUTSIDE the
+   reduced-motion guard on the same contract as M23's mask: at the initial
+   values this IS the authored gradient, pixel for pixel, and the movement is
+   made only by script that never runs under reduce. The worst case is
+   unchanged by construction - the origin's brightest stop is --field-hi
+   wherever it sits, and both inks are measured against exactly that stop.
+   The other six fields and the close keep the authored, static gradient: a
+   sun over every band would be wallpaper, and a second sun at the close
+   would be a second clock. */
+@property --sun-x { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --sun-d { syntax: "<number>"; inherits: true; initial-value: 0; }
+.hero {
+  background-image: radial-gradient(130% 120% at
+    calc(78% + var(--sun-x) * 10%) calc(14% + var(--sun-d) * 14%),
+    #163234 0%, #11282B 34%, #0F2024 62%, #0E1E22 86%, #0C1B1E 100%);
+}
+
 /* The window inside a field: 1px seam + the dark shadow. Tempo's measured
    technique for separating a window from its ground. */
 .field .win {

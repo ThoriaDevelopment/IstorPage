@@ -956,7 +956,7 @@ def check_8(rep: Report, page: str) -> None:
     # The marker is matched against the h1's TEXT: the h1 now carries an inline
     # span around "what it saw" (the hero's one accent), and a tag is not a
     # word. Same normalisation the copy gate's extractor uses.
-    h1_text = re.sub(r"<[^>]+>", "", h1.group(1)).strip() if h1 else ""
+    h1_text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", h1.group(1))).strip()         if h1 else ""
     if not h1 or HOME_MARKER not in h1_text:
         found = h1_text[:60] if h1 else "no <h1>"
         rep.fail("_site/index.html",

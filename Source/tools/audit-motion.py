@@ -257,6 +257,44 @@ SCENARIO = r"""
   out.touchStartsATurn = hero.classList.contains('is-turning');
   w.dispatchEvent(new w.PointerEvent('pointerup', { pointerId: 9, pointerType: 'touch',
     clientX: cx, clientY: cy, bubbles: true }));
+  // M25 · the sun, read at home: rest, then the pointer's lean, then the
+  // depth term the scroll writes. Read off the hero's computed background,
+  // which is the only honest reading - a custom property round-trips as a
+  // string and would pass even if the gradient ignored it.
+  const sunBG = () => getComputedStyle(hero).backgroundImage;
+  // The reader's return is TWO moves: the pointer back to centre and the
+  // scroll back to the top. The hand's drag and the lean read both left the
+  // pointer away from centre, and the sun keeps the LAST lean it was given,
+  // so bg0 and bgBack read without this would be two different residues
+  // compared - the claim would fail on a correct page forever.
+  const readerHome = async () => {
+    w.dispatchEvent(new w.PointerEvent('pointermove', { pointerId: 3,
+      pointerType: 'mouse', clientX: Math.round(w.innerWidth / 2),
+      clientY: 100, bubbles: true }));
+    w.scrollTo({ top: 0, behavior: 'instant' });
+    w.dispatchEvent(new Event('scroll'));
+    // 1700ms, not the 400ms home() gives: the ease runs at 0.08/frame, so
+    // the trip home crosses its own 0.002 stop slack ~1.3s after the target
+    // moves - a 400ms window reads the return MID-FLIGHT and calls a correct
+    // rest a failure. A measuring window waits out the coast it measures.
+    await wait(1700);
+  };
+  await readerHome();
+  const bg0 = sunBG();
+  // Lean: a pointer far right of centre must move the origin right.
+  w.dispatchEvent(new w.PointerEvent('pointermove', { pointerId: 3,
+    pointerType: 'mouse', clientX: w.innerWidth - 20, clientY: 100,
+    bubbles: true }));
+  await wait(700);
+  const bgRight = sunBG();
+  // Sink: the depth term rides the scroll's own event, so no pointer needed.
+  w.scrollTo({ top: Math.round(heroBottom / 2), behavior: 'instant' });
+  w.dispatchEvent(new Event('scroll'));
+  await wait(700);
+  const bgMid = sunBG();
+  await readerHome();
+  const bgBack = sunBG();
+  out.sun = { bg0, bgRight, bgMid, bgBack };
   return out;
 })(d, w)
 """
@@ -290,8 +328,13 @@ REDUCED_SCENARIO = r"""
     buttons: 1, clientX: cx + 220, clientY: cy + 140, bubbles: true }));
   await wait(200);
   const line = d.querySelector('.hero .h1-reveal .h1-line');
+  // M25 · under reduce the sun's writer is never armed (the arm requires
+  // !reduced), so the hero's inline style must carry neither sun property.
+  const heroStyle = hero.getAttribute('style') || '';
+  const sunArmed = /--sun-(x|d)\s*:/.test(heroStyle);
   return { reduced: w.matchMedia('(prefers-reduced-motion: reduce)').matches,
            worldPresent: true,
+           sunArmed: sunArmed,
            wroteTransform: wheel.hasAttribute('transform'),
            scrolled: Math.round(w.scrollY),
            heroColdArmed: hero.classList.contains('is-cold'),
@@ -949,8 +992,8 @@ def check(doc: dict, failures: list) -> None:
 
     for key, label in (("notched", "a notched read leaves the wheel where the scroll put it"),
                        ("jumps", "a page-sized jump is not a gesture")):
-        ok(label, abs(v[key]) <= DRIFT_MAX,
-           "%.3f degrees of free rotation (the writer rounds to %.1f)" % (v[key], SETTLE_MAX))
+        ok(label, v[key] is not None and abs(v[key]) <= DRIFT_MAX,
+           "%s degrees of free rotation (the writer rounds to %.1f)" % (v[key], SETTLE_MAX))
 
     # The two claims that CAN be asserted about the gesture are the decision and the
     # arithmetic: that a sustained flick reaches the wheel at all, where a notched
@@ -962,33 +1005,57 @@ def check(doc: dict, failures: list) -> None:
        "read (the gesture ended %spx down, inside the %spx hero)"
        % (v["charged"], abs(v["notched"]), v["gestureEnd"], v["heroBottom"]))
     ok("the mesh ratio holds at the moment of release",
-       abs(abs(v["ratioAtRelease"]) - RATIO) < 0.001,
-       "pinion/wheel = %.4f, and 223/48 = %.4f" % (v["ratioAtRelease"], RATIO))
-    ok("the wheel coasts after the gesture ends", v["coasted"] >= 3,
-       "%.2f degrees after the reader stopped, on top of the %.2f already charged"
+       v["ratioAtRelease"] is not None and abs(abs(v["ratioAtRelease"]) - RATIO) < 0.001,
+       "pinion/wheel = %s, and 223/48 = %.4f" % (v["ratioAtRelease"], RATIO))
+    ok("the wheel coasts after the gesture ends",
+       v["coasted"] is not None and v["coasted"] >= 3,
+       "%s degrees after the reader stopped, on top of the %s already charged"
        % (v["coasted"], v["charged"]))
     ok("the mesh ratio holds through the coast",
-       abs(abs(v["ratioInCoast"]) - RATIO) < 0.001,
-       "pinion/wheel = %.4f" % v["ratioInCoast"])
-    ok("and then it stops", abs(v["settledDelta"]) <= SETTLE_MAX,
-       "%.2f degrees in the 600ms after the coast was given 1.5s to finish"
+       v["ratioInCoast"] is not None and abs(abs(v["ratioInCoast"]) - RATIO) < 0.001,
+       "pinion/wheel = %s" % v["ratioInCoast"])
+    ok("and then it stops", v["settledDelta"] is not None
+       and abs(v["settledDelta"]) <= SETTLE_MAX,
+       "%s degrees in the 600ms after the coast was given 1.5s to finish"
        % v["settledDelta"])
 
     ok("a flick below the hero does not charge the wheel",
-       v["belowHero"] > v["heroBottom"] + 400 and abs(v["belowHeroCharged"]) <= DRIFT_MAX,
+       v["belowHero"] > v["heroBottom"] + 400 and v["belowHeroCharged"] is not None
+       and abs(v["belowHeroCharged"]) <= DRIFT_MAX,
        "%dpx down, %.3f degrees of free rotation from the same gesture that charges "
        "%.1f at the hero" % (v["belowHero"], v["belowHeroCharged"], v["charged"]))
 
-    ok("the hand turns the wheel", abs(v["handTurned"]) >= 0.5,
-       "%.2f degrees from a 120px drag" % v["handTurned"])
+    ok("the hand turns the wheel", v["handTurned"] is not None
+       and abs(v["handTurned"]) >= 0.5,
+       "%s degrees from a 120px drag" % v["handTurned"])
     ok("the mesh ratio holds under the hand",
-       abs(abs(v["ratioUnderHand"]) - RATIO) < 0.001,
-       "pinion/wheel = %.4f" % v["ratioUnderHand"])
+       v["ratioUnderHand"] is not None and abs(abs(v["ratioUnderHand"]) - RATIO) < 0.001,
+       "pinion/wheel = %s" % v["ratioUnderHand"])
 
     ok("a control keeps its own pointer", not v["controlStartsATurn"],
        "the pointer was over %s" % v["controlTarget"])
     ok("a touch is never taken", not v["touchStartsATurn"],
        "a touch drag is the reader scrolling")
+
+    # M25 · the sun's three claims, read off computed backgrounds. The lean
+    # and the sink must both MOVE the origin (the gradient string differs);
+    # returning home must return the authored gradient exactly, or the lamp
+    # would be a lamp that never turns off. A browser without registered
+    # properties keeps bg0 == bgRight == bgMid, so the claims fail loudly
+    # rather than silently measuring a static gradient that never moved.
+    s = v.get("sun") or {}
+    ok("the field's light leans with the pointer",
+       bool(s) and s["bg0"] != s["bgRight"],
+       "the computed origin differs from rest when the pointer sits far right"
+       if s else "no sun reading in this document")
+    ok("the field's light sinks as the reader descends",
+       bool(s) and s["bgRight"] != s["bgMid"],
+       "the computed origin at half the hero band differs from the leaned one"
+       if s else "no sun reading in this document")
+    ok("and returns when the reader does",
+       bool(s) and s["bgBack"] == s["bg0"],
+       "home again, the gradient is the authored one to the string"
+       if s else "no sun reading in this document")
 
 
 
@@ -1014,6 +1081,9 @@ def check_reduced(doc: dict, failures: list) -> None:
        not doc.get("heroColdArmed")
        and doc.get("lineAtRest") in ("none", "matrix(1, 0, 0, 1, 0, 0)"),
        "no cold state on the field, the headline at rest: %s" % doc.get("lineAtRest"))
+    ok("in the reduced world the field keeps its authored light",
+       not doc.get("sunArmed"),
+       "the sun's writer was never armed: %s" % doc.get("sunArmed"))
 
 
 # M20 asks a different question again, and it needs two page loads because a reveal
@@ -1133,6 +1203,13 @@ PAGE_CLOSE_QUICK = ("        mark.classList.add('is-quick');\n"
 PAGE_CLOSE_ARM = ("  if (mark && !reduced && mark.getBoundingClientRect().top "
                   ">= window.innerHeight) {")
 
+# M25's doctors' anchors, quoted from the page itself, on the same contract as
+# M23's and M24's: a page whose wording drifts makes the doctor fail loudly at
+# self-test time rather than passing on a stale anchor.
+PAGE_SUN_ARM = ("if (!reduced && window.CSS && "
+                "'registerProperty' in window.CSS) {")
+PAGE_SUN_TX = "if (sun.s) sun.tx = (e.clientX / window.innerWidth) - 0.5;"
+
 SELF_TESTS = [
     # The bug the first window version actually shipped: a window that holds a
     # sample old enough to belong to a different gesture, so a teleport reads as
@@ -1223,8 +1300,8 @@ SELF_TESTS = [
      [("DWELL_TICKS = 3;", "DWELL_TICKS = 99;")],
      "three teeth, then the mechanism rests"),
     ("a scroll no longer re-armed the dwell clock",
-     [('dwellArm();\n      if (paintPoster) paintPoster();',
-       'if (paintPoster) paintPoster();')],
+     [('dwellArm();\n      if (sun.s) {',
+       'if (sun.s) {')],
      "a scroll re-arms the clock, restarted and past the settle window"),
     ("a grip stopped deferring the dwell clock",
      [('stopSpin(t);\n        dwellStop();   // M22 · a grip is not stillness; the clock defers',
@@ -1278,6 +1355,15 @@ SELF_TESTS = [
     ("M24 · the close arms in the reduced world",
      [(PAGE_CLOSE_ARM, "  if (mark) {")],
      CLOSE_REDUCED_CLAIMS[0]),
+    # M25's two, each the failure of one of the sun's claims. The arm ignored
+    # under reduce is the reduced claim's own failure; the lean that never
+    # follows the pointer is the lean claim's.
+    ("M25 · the sun's writer armed in the reduced world",
+     [(PAGE_SUN_ARM, "if (window.CSS && 'registerProperty' in window.CSS) {")],
+     "in the reduced world the field keeps its authored light"),
+    ("M25 · the sun ignores the pointer",
+     [(PAGE_SUN_TX, "if (sun.s) sun.tx = 0;")],
+     "the field's light leans with the pointer"),
 ]
 
 
@@ -1583,12 +1669,16 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
         in_dwell = expected in DWELL_CLAIMS
         in_hero = expected in HERO_CLAIMS
         in_close = expected in CLOSE_CLAIMS
+        in_sun_land = expected in ("the field's light leans with the pointer",
+                                   "the field's light sinks as the reader descends",
+                                   "and returns when the reader does")
         if ((family == "lib" and not in_lib) or (family == "pace" and not in_pace)
                 or (family == "dwell" and not in_dwell)
                 or (family == "hero" and not in_hero)
                 or (family == "close" and not in_close)
                 or (family == "land" and (in_lib or in_pace or in_dwell
-                                          or in_hero or in_close))):
+                                          or in_hero or in_close)) and
+                not (family == "land" and in_sun_land)):
             skip += 1
             continue
         broken = os.path.join(tmp, "broken-%d" % i)
@@ -1645,6 +1735,10 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
             hdoc = run(chrome, broken, tmp, "/", width, height, HERO_SCENARIO,
                        extra=None, tag="st%d-hero" % i)
             check_hero(hdoc, failures)
+        elif in_sun_land:
+            sdoc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
+                       extra=None, tag="st%d-sun" % i)
+            check(sdoc, failures)
         elif expected in CLOSE_REDUCED_CLAIMS:
             xred = run(chrome, broken, tmp, "/", width, height, CLOSE_CALM,
                        extra=["--force-prefers-reduced-motion"],

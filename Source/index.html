@@ -1281,6 +1281,25 @@
 
   var paintPoster = null;   // M6's parallax; set below, called by the nav's scroll
   var closeRelease = null;  // M24's cast release; set below, same plumbing
+  // M25 · the field's sun: DECLARED AND ARMED HERE, at the top, because
+  // onScroll is called once immediately after its definition and reads
+  // sun.td - and a var hoists its declaration, not its assignment. The first
+  // version armed the sun down in the drift block, the first onScroll threw
+  // on the unassigned name, and the exception killed the whole IIFE before
+  // the wheel, the drift and the dwell ever attached - the audit caught it
+  // as a page where nothing turned. The capability test is on window.CSS,
+  // not window: Chromium exposes registerProperty on the CSS interface, and
+  // testing `in window` is always false there.
+  var sun = { x: 0, y: 0, tx: 0, d: 0, td: 0, s: null };
+  if (!reduced && window.CSS && 'registerProperty' in window.CSS) {
+    var sunEl = document.querySelector('.hero');
+    if (sunEl) sun.s = sunEl.style;
+  }
+  // drift's OBJECT is assigned here for the same reason: the sun's block in
+  // onScroll reads drift.raf to schedule the shared loop, and the version that
+  // kept the assignment down in the world block made the first onScroll throw
+  // on the unassigned name - the hoisting lesson, met twice by one feature.
+  var drift = { x: 0, y: 0, tx: 0, ty: 0, raf: 0 };
 
   var nav = document.getElementById('nav');   // M1
   if (nav) {
@@ -1573,6 +1592,14 @@
       }
       // M22 · any scroll, from any source, resets the dwell clock.
       dwellArm();
+      // M25 · the sun sinks as the reader descends the hero band: 0 at the
+      // top, 1 at heroBottom, outside the band it holds at 1 (the close has
+      // its own authored dawn; a second sun there would be a second clock).
+      if (sun.s) {
+        sun.td = Math.max(0, Math.min(1,
+          window.scrollY / Math.max(1, heroBottom)));
+        if (!drift.raf && driftStep) drift.raf = requestAnimationFrame(driftStep);
+      }
       if (paintPoster) paintPoster();
       if (closeRelease) closeRelease();   // M24 · the cast rides the scroll
     };
@@ -1615,11 +1642,16 @@
                 !target.closest('a, button, .win, p, h1, li'));
     };
     if (world || closeWorld) {
-      var drift = { x: 0, y: 0, tx: 0, ty: 0, raf: 0 };
       var driftStep = function () {
         drift.raf = 0;
         drift.x += (drift.tx - drift.x) * 0.08;
         drift.y += (drift.ty - drift.y) * 0.08;
+        if (sun.s) {
+          sun.x += (sun.tx - sun.x) * 0.08;
+          sun.d += (sun.td - sun.d) * 0.08;
+          sun.s.setProperty('--sun-x', sun.x.toFixed(3));
+          sun.s.setProperty('--sun-d', sun.d.toFixed(3));
+        }
         if (world) {
           world.style.transform = 'translate(' + drift.x.toFixed(2) + 'px,' + drift.y.toFixed(2) + 'px)';
         }
@@ -1629,8 +1661,26 @@
           closeWorld.style.transform = 'translateX(-50%) translate(' +
             (drift.x * 0.7).toFixed(2) + 'px,' + (drift.y * 0.5).toFixed(2) + 'px)';
         }
-        if (Math.abs(drift.tx - drift.x) + Math.abs(drift.ty - drift.y) > 0.1) {
+        if (Math.abs(drift.tx - drift.x) + Math.abs(drift.ty - drift.y) > 0.1 ||
+            (sun.s && (Math.abs(sun.tx - sun.x) + Math.abs(sun.td - sun.d) > 0.002))) {
           drift.raf = requestAnimationFrame(driftStep);
+        } else {
+          // An ease that stops when its residue crosses the predicate's slack
+          // stops SHORT of the target, and the short value is what stays in
+          // the stylesheet: home would read 78.002% where the authored light
+          // says 78%, and "the reader returns to the gradient they arrived
+          // at" would be false to the string while looking perfect. So the
+          // final frame snaps to the target and writes it once - rest is the
+          // exact pose, not a residue the eye forgives.
+          drift.x = drift.tx; drift.y = drift.ty;
+          if (world) world.style.transform = 'translate(' + drift.x.toFixed(2) + 'px,' + drift.y.toFixed(2) + 'px)';
+          if (closeWorld) closeWorld.style.transform = 'translateX(-50%) translate(' +
+            (drift.x * 0.7).toFixed(2) + 'px,' + (drift.y * 0.5).toFixed(2) + 'px)';
+          if (sun.s) {
+            sun.x = sun.tx; sun.d = sun.td;
+            sun.s.setProperty('--sun-x', sun.x.toFixed(3));
+            sun.s.setProperty('--sun-d', sun.d.toFixed(3));
+          }
         }
       };
       window.addEventListener('pointermove', function (e) {
@@ -1639,7 +1689,8 @@
         // moving, not enough that it reads as the page being loose.
         drift.tx = (e.clientX / window.innerWidth - 0.5) * 20;
         drift.ty = (e.clientY / window.innerHeight - 0.5) * 12;
-        if (!drift.raf) drift.raf = requestAnimationFrame(driftStep);
+        if (sun.s) sun.tx = (e.clientX / window.innerWidth) - 0.5;
+        if (!drift.raf && driftStep) drift.raf = requestAnimationFrame(driftStep);
         // The turn, announced before it is taken: the same predicate M18's
         // pointerdown reads, so the hand appears exactly where a turn would
         // start and nowhere else. Written only on a change, so a moving pointer
