@@ -1053,6 +1053,30 @@ h3 {
 .nav-links a { color: var(--ink-2); text-decoration: none; }
 .nav-links a:hover { color: var(--ink); }
 
+/* M30 · the header's answer to "where am I". The hero's rail and its act-index
+   ring name the current act, but both scroll away with the hero; the header is
+   the one navigation that persists, and until now its three links were the
+   same grey at every scroll position. The script already computes the current
+   act for the rail, so the state costs one attribute, carried on the same
+   promote moment the dots and the ring ride (one clock for the page's answer
+   to where). The ink is the hover's --ink: the link you are in is the one the
+   pointer would pick. The underline is --azure, the bearing's current-act
+   colour, at this page's own 2px underline weight and offset - state, drawn
+   with the marks the page already uses, not a new device. aria-current is the
+   machine-readable half and it CLEARs when no header link names the act, so
+   the announcement is never a lie. */
+.nav-links a[aria-current] { color: var(--ink); }
+.nav-links a[aria-current] {
+  text-decoration: underline;
+  text-decoration-color: var(--azure);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.nav.over-field .nav-links a[aria-current] {
+  color: var(--field-ink);
+  text-decoration-color: var(--azure-lift);
+}
+
 /* M29 · the skip link. The library's stylesheet has styled a `.skip` since it
    was built; no page ever carried the anchor, so the promise sat unclaimed and
    the landing, whose nav plus act-index put nine tab stops before the content,

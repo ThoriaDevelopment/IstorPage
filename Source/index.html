@@ -1518,6 +1518,10 @@
       dwell.timer = setTimeout(dwellTick, DWELL_FIRST);
     };
     var heroBottom = 0, railLinks = [], railTops = [], railCurrent = null;
+    // M30 · the header's three links are the wayfinding that survives the hero
+    // (the rail scrolls away with its window), so they learn the same state the
+    // rail already computes. Collected once, beside the rail's own links.
+    var navLinks = nav ? Array.prototype.slice.call(nav.querySelectorAll('.nav-links a')) : [];
     var measure = function () {
       if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
       if (closePoster) {
@@ -1553,6 +1557,17 @@
         if (railCurrent) railCurrent.removeAttribute('aria-current');
         if (next) next.setAttribute('aria-current', 'location');
         railCurrent = next;
+        // M30 · the header's answer. A link carries aria-current only while the
+        // act it names IS the act the reader is in, and the three links cover
+        // three of the eight acts, so most of the page clears all three: a
+        // stale current-location is worse than none, the same rule the rail's
+        // own note records. Screen readers get the announcement; the stylesheet
+        // gets the ink and the azure underline it shares with the bearing.
+        var here = next ? next.getAttribute('href') : null;
+        navLinks.forEach(function (a) {
+          if (here && a.getAttribute('href') === here) a.setAttribute('aria-current', 'location');
+          else a.removeAttribute('aria-current');
+        });
         // M11's half of the same arithmetic. `k` is -1 above the first act,
         // which clears every dot: no dot claims a position the reader is not in.
         var k = railLinks.indexOf(next);

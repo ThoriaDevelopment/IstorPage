@@ -301,6 +301,11 @@ SCENARIO = r"""
   // string, and the dots' aria-current is the state the ring must agree with,
   // so the ring's index is compared to the RAIL's named act, not to itself.
   const rail = d.querySelector('.act-index');
+  // M30 · the header's three links, read as the list of hrefs that currently
+  // carry aria-current (null where they do not). Declared here, before either
+  // read, so both stops answer with the same instrument.
+  const headerRead = () => Array.from(d.querySelectorAll('.nav-links a'))
+    .map((a) => a.hasAttribute('aria-current') ? a.getAttribute('href') : null);
   const ringRead = async () => {
     await wait(700);
     const cs = getComputedStyle(rail, '::before');
@@ -318,9 +323,17 @@ SCENARIO = r"""
                behavior: 'instant' });
   w.dispatchEvent(new Event('scroll'));
   const ringMid = await ringRead();
+  const headerMid = headerRead();
   await readerHome();
   const ringBack = await ringRead();
-  out.bearing = { ring0: ring0, ringMid: ringMid, ringBack: ringBack };
+  // M30 · the header's answer, read on the same two stops: at the top, where
+  // the hero is the act and no header link names it, and deep in "On your
+  // machine", whose header link is the one of the three that names the act
+  // the rail has already promoted. The rail's own named act is the truth this
+  // is compared against - the header agrees with the rail or the claim fails.
+  const headerTop = headerRead();
+  out.bearing = { ring0: ring0, ringMid: ringMid, ringBack: ringBack,
+                  headerTop: headerTop, headerMid: headerMid };
   return out;
 })(d, w)
 """
@@ -1186,6 +1199,25 @@ def check(doc: dict, failures: list) -> None:
        bool(b) and rb.get("i") == "0" and ring_ty(rb) is not None and abs(ring_ty(rb)) < 0.5,
        "home again, the ring sits on the first dot: --i %s, render %.1f"
        % (rb.get("i"), ring_ty(rb) if ring_ty(rb) is not None else -99))
+    # M30 · the header's answer. At the top no header link may claim the act
+    # (the hero is not one of the three), and in "On your machine" exactly the
+    # link whose href names the rail's act carries it: the header agrees with
+    # the rail or the wayfinding is lying somewhere.
+    ht = (b.get("headerTop") or []) if isinstance(b.get("headerTop"), list) else []
+    hm = (b.get("headerMid") or []) if isinstance(b.get("headerMid"), list) else []
+    mid_named = None
+    if rm.get("named") is not None:
+        rail_acts = ["#what-it-is", "#how-it-answers", "#the-passage",
+                     "#on-your-machine", "#where-it-stops", "#the-evidence",
+                     "#questions", "#the-name"]
+        mid_named = rail_acts[rm["named"]] if rm["named"] < len(rail_acts) else None
+    current_mid = [h for h in hm if h]
+    ok("the header's links answer for the act they name",
+       ht is not None and all(h is None for h in ht)
+       and current_mid == ([mid_named] if mid_named in (
+           "#how-it-answers", "#on-your-machine", "#questions") else []),
+       "at rest %s; in act %s the header carries %s"
+       % (ht, rm.get("named"), current_mid or "nothing"))
 
 
 
@@ -1353,6 +1385,12 @@ PAGE_SUN_TX = "if (sun.s) sun.tx = (e.clientX / window.innerWidth) - 0.5;"
 # or stylesheet drifts fails loudly here rather than passing on a stale string.
 PAGE_BEARING_WRITE = "if (k >= 0) actIndex.style.setProperty('--i', String(k));"
 PAGE_BEARING_RING = "transform: translate(-50%, calc(-50% + var(--i, 0) * var(--pitch)));"
+# M30 · the header's write, anchored the way the bearing's is: the whole loop
+# the page uses to answer the header, so removing it removes the answer.
+PAGE_HEADER_WRITE = """navLinks.forEach(function (a) {
+          if (here && a.getAttribute('href') === here) a.setAttribute('aria-current', 'location');
+          else a.removeAttribute('aria-current');
+        });"""
 
 SELF_TESTS = [
     # The bug the first window version actually shipped: a window that holds a
@@ -1534,6 +1572,9 @@ SELF_TESTS = [
     ("M26 · the reduced ring stops rendering its slot",
      [(PAGE_BEARING_RING, "opacity: 0;")],
      "in the reduced world the bearing still finds its slot"),
+    ("M30 · the header stops answering",
+     [(PAGE_HEADER_WRITE, "/* the header no longer answers */")],
+     "the header's links answer for the act they name"),
 ]
 
 
