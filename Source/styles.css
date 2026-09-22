@@ -90,16 +90,26 @@
      #0E1E22 at every edge sampled. #0C1B1E is added only at the outermost stop
      so the field does not band when it is drawn 2000px wide. */
   --field-bg: radial-gradient(130% 120% at 78% 14%,
-                #163234 0%, #11282B 34%, #0F2024 62%, #0E1E22 86%, #0C1B1E 100%);
+                var(--field-hi) 0%, var(--field-fall-1) 34%,
+                var(--field-fall-2) 62%, var(--field-base) 86%,
+                var(--field-edge) 100%);
   /* The gradient's two extreme stops, named. --field-base is painted UNDER the
      gradient so a browser that drops `radial-gradient` still gets a field
      rather than paper; --field-hi is the origin stop, which is the LIGHTEST
      point of the field and therefore the worst case for text sitting on it —
      a check that measured text against --field-base would be measuring the
      easiest case and calling it the hardest. Measured: --field-ink-2 on
-     --field-hi is 6.07:1 and --azure-lift is 5.19:1, both still AA. */
+     --field-hi is 6.07:1 and --azure-lift is 5.19:1, both still AA.
+     The falloff's two middle stops and the outermost anti-banding stop are
+     named too, because M25's sun re-states the gradient with a moving origin
+     and a restated gradient must be the same colours, not a private copy:
+     every stop the field paints is a token, and the token is the one place
+     the hex exists. */
   --field-base:  #0E1E22;
   --field-hi:    #163234;
+  --field-fall-1: #11282B;
+  --field-fall-2: #0F2024;
+  --field-edge:  #0C1B1E;
   --field-ink:   #E9EDF0;              /* text in the field            */
   --field-ink-2: #9FB0B4;              /* secondary text in the field  */
   --field-rule:  rgb(255 255 255 / 0.10);  /* 1px seams, dark on dark  */
@@ -460,7 +470,8 @@ h3 {
 .hero {
   background-image: radial-gradient(130% 120% at
     calc(78% + var(--sun-x) * 10%) calc(14% + var(--sun-d) * 14%),
-    #163234 0%, #11282B 34%, #0F2024 62%, #0E1E22 86%, #0C1B1E 100%);
+    var(--field-hi) 0%, var(--field-fall-1) 34%, var(--field-fall-2) 62%,
+    var(--field-base) 86%, var(--field-edge) 100%);
 }
 
 /* The window inside a field: 1px seam + the dark shadow. Tempo's measured
@@ -1924,7 +1935,11 @@ h3 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 18px;
+  /* M26 · the dot pitch is a named constant because the bearing's travel
+     reads it too: gap and travel are one arithmetic, and two copies of 26px
+     would be two places to disagree. */
+  --pitch: 26px;
+  gap: calc(var(--pitch) - 8px);
   z-index: 9;
 }
 .act-index a {
@@ -1932,6 +1947,46 @@ h3 {
   height: 8px;
   border-radius: 50%;
   background: var(--ink-3);
+}
+/* M26 · the bearing: one ring that rides the rail and settles around the act
+   the reader is in, the way a marked hole is picked out on the calendar
+   plate. The idea is freebuff's tab indicator, rebuilt in this page's own
+   language: the active MARKER travels rather than swapping, so the eye is
+   handed along the column instead of being asked to re-find it.
+
+   It is a pseudo element on purpose. The dots keep their own aria-current
+   state, which screen readers announce and which is the whole of the
+   accessible interface; the ring adds nothing to either tree and is there
+   for the reader whose eye wants a cursor. Its rest position is the first
+   dot, which is the authored state of the markup itself: the first dot
+   carries aria-current in the source and the ring sits exactly there, true
+   to the page's own claim before any script runs. The script writes --i,
+   the current act's index, and this rule renders it.
+
+   There is deliberately no "away" state. k, the rail's own index, is -1 only
+   above the first act, and the hero opens the document, so that state cannot
+   occur on this page; a class for it would be dead code the page carried
+   forever. The ring is present whenever the rail is, which the index's own
+   `hidden` attribute already decides.
+
+   Position and transform live OUTSIDE the motion guard, on the same contract
+   as the sun's gradient: at --i: 0 this is the authored resting ring, and
+   the movement is made only by the transition, which is declared inside the
+   guard so a reduced reader gets the ring that jumps, never one that glides. */
+.act-index::before {
+  content: "";
+  position: absolute;
+  /* the column's horizontal centre: the nav's width IS the dots' 8px */
+  left: 4px;
+  /* the first dot's centre, from the flex column's own arithmetic:
+     centre minus half the column (7 pitches + one dot) plus half a dot */
+  top: calc(50% - (7 * var(--pitch) + 8px) / 2 + 4px);
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid var(--azure-deep);
+  border-radius: 50%;
+  transform: translate(-50%, calc(-50% + var(--i, 0) * var(--pitch)));
+  pointer-events: none;
 }
 /* The pointer answer is motion, so it lives in the reduced-motion guard with
    the page's other transitions (§15); the base rule above is the still page. */
@@ -1989,6 +2044,15 @@ h3 {
   /* M11's pointer answer: the dot fills toward the accent and leans out. Same
      160ms family as every other hover; the base rule (§14e) stays still. */
   .act-index a { transition: background-color 160ms var(--ease), transform 160ms var(--ease); }
+  /* M26 · the bearing glides on freebuff's own clock: the tab indicator its
+     rebuilt page slides between tabs reads 0.34s, and the bearing keeps that
+     duration rather than inventing a second one. Ease is the page's, and the
+     only property is transform, so the ring never repaints its content and a
+     reduced reader, whose guard drops this declaration, gets the ring that
+     jumps - state, not motion. */
+  .act-index::before {
+    transition: transform 340ms var(--ease);
+  }
   /* M9 has no transition on purpose. Switching a question swaps which answer
      block is displayed, and `display: none` is what stops the answer's own M2
      animation from running: the block becomes visible and the sequence plays,

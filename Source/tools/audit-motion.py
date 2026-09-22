@@ -295,6 +295,32 @@ SCENARIO = r"""
   await readerHome();
   const bgBack = sunBG();
   out.sun = { bg0, bgRight, bgMid, bgBack };
+  // M26 · the bearing, read mid-flight is useless - the claim is about WHERE
+  // it settles - so every read waits out the 340ms glide it measures. The
+  // transform's ty is the honest reading: a custom property round-trips as a
+  // string, and the dots' aria-current is the state the ring must agree with,
+  // so the ring's index is compared to the RAIL's named act, not to itself.
+  const rail = d.querySelector('.act-index');
+  const ringRead = async () => {
+    await wait(700);
+    const cs = getComputedStyle(rail, '::before');
+    const m = cs.transform.match(/matrix\(([^)]+)\)/);
+    const named = Array.from(rail.querySelectorAll('a'))
+      .findIndex((a) => a.hasAttribute('aria-current'));
+    return { ty: m ? parseFloat(m[1].split(',')[5]) : null,
+             op: parseFloat(cs.opacity),
+             i: rail.style.getPropertyValue('--i'), named: named };
+  };
+  const ring0 = await ringRead();
+  // A deep act, far enough that the slot difference is unambiguous.
+  const machineAct = d.getElementById('on-your-machine');
+  w.scrollTo({ top: machineAct.getBoundingClientRect().top + w.scrollY - 200,
+               behavior: 'instant' });
+  w.dispatchEvent(new Event('scroll'));
+  const ringMid = await ringRead();
+  await readerHome();
+  const ringBack = await ringRead();
+  out.bearing = { ring0: ring0, ringMid: ringMid, ringBack: ringBack };
   return out;
 })(d, w)
 """
@@ -332,9 +358,29 @@ REDUCED_SCENARIO = r"""
   // !reduced), so the hero's inline style must carry neither sun property.
   const heroStyle = hero.getAttribute('style') || '';
   const sunArmed = /--sun-(x|d)\s*:/.test(heroStyle);
+  // M26 · under reduce the ring still renders at its right slot; what must be
+  // absent is the glide. Read the transform, not the custom property alone: a
+  // property round-trips as a string and would pass even if nothing rendered.
+  const railR = d.querySelector('.act-index');
+  let ringArmed = false;
+  if (railR) {
+    await wait(400);
+    const stepTo = d.getElementById('on-your-machine');
+    w.scrollTo({ top: stepTo.getBoundingClientRect().top + w.scrollY - 200,
+                 behavior: 'instant' });
+    w.dispatchEvent(new Event('scroll'));
+    await wait(500);
+    const csR = getComputedStyle(railR, '::before');
+    const mR = csR.transform.match(/matrix\(([^)]+)\)/);
+    const namedR = Array.from(railR.querySelectorAll('a'))
+      .findIndex((a) => a.hasAttribute('aria-current'));
+    ringArmed = mR ? Math.abs((parseFloat(mR[1].split(',')[5]) + 12)
+                   - namedR * 26) < 0.5 : false;
+  }
   return { reduced: w.matchMedia('(prefers-reduced-motion: reduce)').matches,
            worldPresent: true,
            sunArmed: sunArmed,
+           ringArmed: ringArmed,
            wroteTransform: wheel.hasAttribute('transform'),
            scrolled: Math.round(w.scrollY),
            heroColdArmed: hero.classList.contains('is-cold'),
@@ -1057,6 +1103,33 @@ def check(doc: dict, failures: list) -> None:
        "home again, the gradient is the authored one to the string"
        if s else "no sun reading in this document")
 
+    # M26 · the bearing's three claims. The ring must appear (the dots' aria-
+    # current already carries the state; the ring is its visual half), must sit
+    # on the SAME act the rail names - the ring's --i against the rail's own
+    # aria-current, not against itself - and must return to the first dot when
+    # the reader returns home. `--i` reads back as "0", "1", ...; the transform
+    # is the render of it, which is what the eye actually sees.
+    b = v.get("bearing") or {}
+    r0, rm, rb = b.get("ring0") or {}, b.get("ringMid") or {}, b.get("ringBack") or {}
+    PITCH = 26
+    def ring_ty(r):
+        # ty is the render of -50% + i*26px on a 24px ring: -12 + i*26.
+        return None if r.get("ty") is None else r["ty"] + 12
+    ok("the bearing rides the rail it marks",
+       bool(b) and r0.get("op") == 1.0 and rm.get("op") == 1.0,
+       "the ring is present whenever its rail is: op %s at rest, %s in act %s"
+       % (r0.get("op"), rm.get("op"), rm.get("named")))
+    ok("the bearing settles on the act the rail names",
+       bool(b) and ring_ty(rm) is not None
+       and abs(ring_ty(rm) - rm.get("named", -9) * PITCH) < 0.5
+       and rm.get("i") == str(rm.get("named")),
+       "the ring's travel index (%s) and its rendered slot (%.1f) both name the act the rail's aria-current names (%s)"
+       % (rm.get("i"), ring_ty(rm) if ring_ty(rm) is not None else -99, rm.get("named")))
+    ok("and hands back to the first act on the return",
+       bool(b) and rb.get("i") == "0" and ring_ty(rb) is not None and abs(ring_ty(rb)) < 0.5,
+       "home again, the ring sits on the first dot: --i %s, render %.1f"
+       % (rb.get("i"), ring_ty(rb) if ring_ty(rb) is not None else -99))
+
 
 
 def check_reduced(doc: dict, failures: list) -> None:
@@ -1084,6 +1157,9 @@ def check_reduced(doc: dict, failures: list) -> None:
     ok("in the reduced world the field keeps its authored light",
        not doc.get("sunArmed"),
        "the sun's writer was never armed: %s" % doc.get("sunArmed"))
+    ok("in the reduced world the bearing still finds its slot",
+       doc.get("ringArmed"),
+       "the ring renders on the act the rail names, with no glide: %s" % doc.get("ringArmed"))
 
 
 # M20 asks a different question again, and it needs two page loads because a reveal
@@ -1209,6 +1285,11 @@ PAGE_CLOSE_ARM = ("  if (mark && !reduced && mark.getBoundingClientRect().top "
 PAGE_SUN_ARM = ("if (!reduced && window.CSS && "
                 "'registerProperty' in window.CSS) {")
 PAGE_SUN_TX = "if (sun.s) sun.tx = (e.clientX / window.innerWidth) - 0.5;"
+
+# M26's anchors, quoted from the page like every doctor's: a page whose script
+# or stylesheet drifts fails loudly here rather than passing on a stale string.
+PAGE_BEARING_WRITE = "if (k >= 0) actIndex.style.setProperty('--i', String(k));"
+PAGE_BEARING_RING = "transform: translate(-50%, calc(-50% + var(--i, 0) * var(--pitch)));"
 
 SELF_TESTS = [
     # The bug the first window version actually shipped: a window that holds a
@@ -1364,6 +1445,21 @@ SELF_TESTS = [
     ("M25 · the sun ignores the pointer",
      [(PAGE_SUN_TX, "if (sun.s) sun.tx = 0;")],
      "the field's light leans with the pointer"),
+    # M26's two. A writer that never fires leaves the ring parked on the first
+    # dot forever; a ring that ignores --i decorates the column without ever
+    # following the reader. Each is the failure of one of the bearing's claims.
+    ("M26 · the bearing never writes its index",
+     [(PAGE_BEARING_WRITE, "if (k >= 0) actIndex.style.setProperty('--i', '0');")],
+     "the bearing settles on the act the rail names"),
+    ("M26 · the ring ignores the index it is given",
+     [(PAGE_BEARING_RING, "transform: translate(-50%, -50%);")],
+     "the bearing settles on the act the rail names"),
+    # The reduced world's own doctor: a ring that no longer renders at its slot
+    # is the one failure the reduced claim can see, and it is checked against
+    # the reduced page, which costs its own browser load.
+    ("M26 · the reduced ring stops rendering its slot",
+     [(PAGE_BEARING_RING, "opacity: 0;")],
+     "in the reduced world the bearing still finds its slot"),
 ]
 
 
@@ -1546,7 +1642,8 @@ LIB_REDUCED_SCENARIO = r"""
 # load that can catch its patch and no other: a self-test that loads two browsers per
 # patch to prove one thing is a self-test nobody runs.
 REDUCED_CLAIMS = ("in the reduced world nothing is written",
-                  "in the reduced world the hero never arms its arrival",)
+                  "in the reduced world the hero never arms its arrival",
+                  "in the reduced world the bearing still finds its slot",)
 
 # The claims that need the library's pair of page loads.
 LIB_CLAIMS = ("the library hides only what is below the fold",
@@ -1672,13 +1769,16 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
         in_sun_land = expected in ("the field's light leans with the pointer",
                                    "the field's light sinks as the reader descends",
                                    "and returns when the reader does")
+        in_bearing_land = expected in ("the bearing rides the rail it marks",
+                                       "the bearing settles on the act the rail names",
+                                       "and hands back to the first act on the return")
         if ((family == "lib" and not in_lib) or (family == "pace" and not in_pace)
                 or (family == "dwell" and not in_dwell)
                 or (family == "hero" and not in_hero)
                 or (family == "close" and not in_close)
                 or (family == "land" and (in_lib or in_pace or in_dwell
                                           or in_hero or in_close)) and
-                not (family == "land" and in_sun_land)):
+                not (family == "land" and (in_sun_land or in_bearing_land))):
             skip += 1
             continue
         broken = os.path.join(tmp, "broken-%d" % i)
@@ -1739,6 +1839,10 @@ def self_test(chrome, site, width, height, tmp, family="all") -> int:
             sdoc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
                        extra=None, tag="st%d-sun" % i)
             check(sdoc, failures)
+        elif in_bearing_land:
+            bdoc = run(chrome, broken, tmp, "/", width, height, SCENARIO,
+                       extra=None, tag="st%d-bearing" % i)
+            check(bdoc, failures)
         elif expected in CLOSE_REDUCED_CLAIMS:
             xred = run(chrome, broken, tmp, "/", width, height, CLOSE_CALM,
                        extra=["--force-prefers-reduced-motion"],

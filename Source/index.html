@@ -1513,6 +1513,14 @@
           if (d === k) dots[d].setAttribute('aria-current', 'location');
           else dots[d].removeAttribute('aria-current');
         }
+        // M26 · the bearing. The ring's travel rides the SAME moment the dots'
+        // state changes on, so there is one clock for the rail's answer and the
+        // two cannot disagree. Written only on a change (this branch is inside
+        // `if (next !== railCurrent)`), so a still page writes nothing, and k
+        // is always >= 0 here because the hero opens the document: the scan
+        // line is behind the first act's top from the first scroll onward.
+        // The stylesheet renders --i with no away state to keep in step.
+        if (k >= 0) actIndex.style.setProperty('--i', String(k));
       }
 
       // M14 · eight degrees of the great wheel across the whole hero, which is
