@@ -1258,19 +1258,23 @@ PACE_SCENARIO = r"""
   const authored = count ? count.textContent.trim() : null;
   const t0 = performance.now();
   const countChanges = [];
-  let seen = authored;
-  const poll = setInterval(function () {
-    if (!count) return;
-    const now = count.textContent.trim();
-    if (now !== seen) {
-      seen = now;
-      countChanges.push(Math.round(performance.now() - t0));
-    }
-  }, 10);
+  // The writes are observed, not polled. The first instrument was a 10ms
+  // setInterval comparing text, and under load - four browsers at once, or any
+  // busy machine - the interval can slip past one of the fast clock's 40ms
+  // steps, so two writes landed between two polls and read as ONE. A shortened
+  // gap list failed the length equality the claim needs, on a page that was
+  // behaving. A MutationObserver queues one record per mutation no matter how
+  // long delivery waits - delivery is deferred, coalescing is not - so the
+  // write COUNT is exact and contention can only bunch the timestamps, never
+  // lose a write. Same claim, an instrument that cannot drop what it measures.
+  const mo = new MutationObserver(function () {
+    countChanges.push(Math.round(performance.now() - t0));
+  });
+  if (count) mo.observe(count, { characterData: true, childList: true, subtree: true });
 
   __APPROACH__
   await wait(2400);
-  clearInterval(poll);
+  mo.disconnect();
 
   const cs = getComputedStyle(block);
   const row1 = getComputedStyle(rows[0]);
