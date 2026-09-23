@@ -1960,6 +1960,68 @@ h3 {
 }
 
 /* ---------------------------------------------------------------------------
+   14d2 · The rear-dials plate, in the evidence act.
+
+   The act's figures are four numbers the app printed, and the two dials those
+   numbers were read against were named all over the page and never drawn. The
+   plate is generated arithmetic (Source/tools/make-rear-dials.py), so the
+   drawing's turn and slot counts are the prose's own numbers and cannot drift
+   from them; the self-test sweeps the turns and counts the slots.
+
+   Ink: structure is --ink-3 (the spirals and their slots are the drawing, not
+   text), the counts are --ink with --ink-2 glosses, and each dial carries one
+   azure statement, the dot and its name marking the first month of each count.
+   Classes rather than token fills, so the field remaps them the way it remaps
+   the etymology plate: --field-ink-2 for structure, --azure-lift for the claim.
+   --------------------------------------------------------------------------- */
+.rear-dials { margin: 56px 0 0; }
+.rear-dials .field.is-inset { max-width: 700px; }
+.dials-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.dials-wide { max-width: 640px; }
+.dials-tall { display: none; max-width: 340px; }
+
+.dials-line { stroke: var(--ink-3); stroke-width: 1.2; fill: none; }
+.dials-slots { stroke: var(--ink-3); stroke-width: 1.1;
+               stroke-linecap: round; fill: none; }
+.dials-start { fill: var(--azure); }
+/* The generator sets sizes inline where they are geometry (the tall plate's
+   16.5 clears the 11px type floor at its 0.68 render scale); the stylesheet
+   sets only the wide plate's 14-unit start label and its inks. */
+.dials-startlabel { font-family: Inter, sans-serif;
+                    font-weight: 500; fill: var(--azure); }
+.dials-count { font-family: Inter, sans-serif;
+               font-weight: 600; fill: var(--ink);
+               font-variant-numeric: tabular-nums; }
+.dials-sub { font-family: Inter, sans-serif;
+             fill: var(--ink-2); }
+
+/* In the dark field the plate's tokens remap, exactly the etymology plate's
+   division: structure takes --field-ink-2 (6.07:1 there; --field-rule is 10%
+   white, about 1.3:1, a drawing nobody is shown), text takes the field's inks,
+   and the claim takes the blue that passes on teal. */
+.field .dials-line, .field .dials-slots { stroke: var(--field-ink-2); }
+.field .dials-start { fill: var(--azure-lift); }
+.field .dials-startlabel { fill: var(--azure-lift); }
+.field .dials-count { fill: var(--field-ink); }
+.field .dials-sub { fill: var(--field-ink-2); }
+
+/* The swap is measured, not guessed. The wide plate is a 640-unit viewBox;
+   its field gives it at most that, so its 13-14px labels render at or near
+   native above 700. Below that they fall with the scale, and at 390 the wide
+   plate would render at 0.61 - 16.5px counts at 10, a phone reading a
+   shorthand only its author can read. The tall plate is a 340-unit viewBox at
+   a 340px cap, rendering between 0.68 (a 320px phone: svg 231.6 after the
+   wrap's and field's padding) and 1.0, so its 16.5-unit labels land 11.2px or
+   larger at every width - the same arithmetic the etymology ledger runs. The
+   tall plate's azure dot speaks alone there; the caption, real HTML, carries
+   what the dot means. */
+@media (max-width: 700px) {
+  .dials-wide { display: none; }
+  .dials-tall { display: block; }
+  .rear-dials .field.is-inset { padding: 18px 16px; }
+}
+
+/* ---------------------------------------------------------------------------
    14e · The act index.
 
    The one device taken from the Awwwards pass (G36): the fixed edge navigation

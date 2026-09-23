@@ -172,6 +172,8 @@ INCLUDES = {
     "poster-horizon": (SOURCE / "figures" / "poster-horizon.svg", "svg"),
     "etymology":      (SOURCE / "figures" / "etymology.svg",      "svg"),
     "etymology-tall": (SOURCE / "figures" / "etymology-tall.svg", "svg"),
+    "rear-dials-wide": (SOURCE / "figures" / "rear-dials-wide.svg", "svg"),
+    "rear-dials-tall": (SOURCE / "figures" / "rear-dials-tall.svg", "svg"),
     "hero-gears":     (SOURCE / "figures" / "hero-gears.svg",     "svg"),
     "close-gears":    (SOURCE / "figures" / "close-gears.svg",    "svg"),
     "boundary-wide":  (SOURCE / "figures" / "boundary-wide.svg",  "svg"),
