@@ -334,6 +334,36 @@ SCENARIO = r"""
   const headerTop = headerRead();
   out.bearing = { ring0: ring0, ringMid: ringMid, ringBack: ringBack,
                   headerTop: headerTop, headerMid: headerMid };
+  // M33 · the two whole-SVG reveals. Their is-cold selectors were the one
+  // thing the stylesheet did not answer (the M3 list names a .win or an
+  // .exhibit img, and these figures are neither), so both sat fully drawn
+  // through their own waiting state. The read is the family's own shape:
+  // arm-check at cold (opacity 0), release, wait out the 700ms window, and
+  // the settled state must be the authored one. The boundary is read first
+  // (questions act), then the rear dials (evidence act), each from a fresh
+  // cold state - a block unobserves after it fires, so the order below is
+  // the only honest one: boundary cold, boundary released, dials cold,
+  // dials released.
+  const plateRead = async (sel) => {
+    const fig = d.querySelector(sel);
+    if (!fig) return { error: 'no ' + sel };
+    const svg = fig.querySelector('svg');
+    fig.scrollIntoView({ behavior: 'instant', block: 'center' });
+    w.dispatchEvent(new Event('scroll'));
+    const cold = fig.classList.contains('is-cold');
+    const coldOp = cold ? getComputedStyle(svg).opacity : null;
+    await wait(1600);
+    const cs = getComputedStyle(svg);
+    return { cold: cold, coldOp: coldOp, restOp: parseFloat(cs.opacity),
+             restTransform: cs.transform, armed: cold };
+  };
+  // Both plates sit below the fold, so a fresh load has them cold; if the
+  // run arrived here already-released (a scenario reorder, or a short
+  // viewport that fired them on the way down), the claim records that
+  // honestly rather than passing on a state nobody drove.
+  out.boundaryPlate = await plateRead('.boundary');
+  out.dialsPlate = await plateRead('.rear-dials');
+  await home();
   return out;
 })(d, w)
 """
@@ -1219,6 +1249,29 @@ def check(doc: dict, failures: list) -> None:
        "at rest %s; in act %s the header carries %s"
        % (ht, rm.get("named"), current_mid or "nothing"))
 
+    # M33 · the two whole-SVG reveals arrive. The claims are the family's own:
+    # the block was armed cold (so the arrival is real), the stylesheet answered
+    # it (the plate was actually hidden while it waited - the bug this exists
+    # for is the class arriving with no rule behind it), and the released state
+    # is the authored one (opaque, untransformed). A plate that reads armed
+    # false was fired before the probe got there - an environment fact, not a
+    # page fact - so the claim records it and fails loudly rather than passing
+    # on a state nobody drove.
+    for key, label in (("boundaryPlate", "the boundary plate arrives from its own cold state"),
+                       ("dialsPlate", "the rear dials arrive from their own cold state")):
+        p = v.get(key) or {}
+        if p.get("error"):
+            ok(label, False, p["error"])
+            continue
+        ok(label,
+           p.get("armed") is True
+           and p.get("coldOp") == "0"
+           and p.get("restOp") == 1.0
+           and p.get("restTransform") in ("none", "matrix(1, 0, 0, 1, 0, 0)"),
+           "cold %s (opacity %s), released to opacity %s, transform %s"
+           % (p.get("armed"), p.get("coldOp"), p.get("restOp"),
+              (p.get("restTransform") or "?")[:28]))
+
 
 
 def check_reduced(doc: dict, failures: list) -> None:
@@ -1472,6 +1525,16 @@ SELF_TESTS = [
      [("if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: "
        "reduce)').matches) return;", "")],
      "in the reduced world the library marks nothing", ("theme.js", "/library/")),
+    # M33 · the class without the rule, on the landing this time: the same
+    # failure the library doctor above holds, in the place it had actually
+    # shipped - the whole-SVG reveals sat fully drawn through their own cold
+    # state because the M3 selectors named a .win or an .exhibit img and these
+    # figures are neither. The patch drops the boundary selector; the dials'
+    # claim still passes (its rule remains), so the doctor pins exactly the
+    # rule that failed and nothing else.
+    ("the landing's whole-SVG cold state dropped, so a waiting plate is visible",
+     [(".boundary.is-cold .bnd,", "")],
+     "the boundary plate arrives from its own cold state", ("index.html", "/")),
     # M22's five, each the failure of one of the dwell's claims. The clock is
     # three constants, a guard and two call sites; each patch removes exactly
     # one of the things a reader can catch.

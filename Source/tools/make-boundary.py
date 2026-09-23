@@ -86,14 +86,22 @@ MEASURED = {
     # in user units to land at the same pixels -- which is why the tall plate's
     # boxes are wider than the wide plate's for the same words.
     ("your library", 17.0): 91.9,
-    ("the documents you gave it", 13.5): 170.1,
     ("istor", 17.0): 35.7,
-    ("search, reading and answers", 13.5): 184.2,
     ("ollama or llama.cpp", 17.0): 156.2,
-    ("the model you choose", 13.5): 142.4,
     ("web research", 17.0): 109.2,
-    ("off until you turn it on", 13.5): 146.4,
-    ("no account, no key", 13.5): 131.0,
+    # 2026-09-23: the tall subs stepped 13.5 -> 14.5. The earlier note measured
+    # the plate's 320px render at 0.824 of its units; the real floor is lower -
+    # a 17px scrollbar (the audit's own iframe shows one) takes the content to
+    # 303, the clamp keeps the gutter at 20 a side, and the tall svg rendered
+    # 263 wide: scale 0.774, where 13.5-unit subs landed at 10.45px, UNDER the
+    # 11px type floor the contrast audit now asserts. 14.5 lands at 11.2 there
+    # and at 14.5px from 390 up. The five widths below are measured live in the
+    # rendered page (wide variant at 11.5, scaled per unit), not estimated.
+    ("the documents you gave it", 14.5): 177.0,
+    ("search, reading and answers", 14.5): 191.8,
+    ("the model you choose", 14.5): 148.2,
+    ("off until you turn it on", 14.5): 142.0,
+    ("no account, no key", 14.5): 126.4,
 }
 
 # What the layout is allowed to assume: how much air a label keeps inside its box,
@@ -118,14 +126,13 @@ T_SUB = 11.5
 T_LABEL = 12.5
 T_NOTE = 11.5
 TALL_BW = 328.0  # the tall boundary's width, quoted here so self_test() can use it
-# The tall plate's type, one step up from the wide plate's. Measured off the
-# rendered page on 2026-09-20: at a 320px viewport the tall plate renders at 0.824
-# of its user units, where the wide plate's 15/11.5 land at 12.4 and 9.5px. 17 and
-# 13.5 land at 14.0 and 11.1, and at 390px and wider, where the plate is 1:1, the
-# plate simply reads a step larger than the desktop one, which is what a phone
-# wants from a diagram drawn in a 340-unit column.
+# The tall plate's type, one step up from the wide plate's. The 2026-09-20
+# measurement had the 320px render at 0.824 of user units; the real floor is
+# 0.774 (a 17px scrollbar plus the gutter clamp's 20px floor), so the subs were
+# stepped again on 2026-09-23 - see the note in MEASURED. Node 17 lands at
+# 13.2px at that floor and 17px from 390 up; sub 14.5 lands at 11.2 and 14.5.
 T_TALL_NODE = 17.0
-T_TALL_SUB = 13.5
+T_TALL_SUB = 14.5
 
 
 def tw(s, size):

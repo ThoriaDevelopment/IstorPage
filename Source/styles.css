@@ -2343,14 +2343,30 @@ h3 {
      whose script is blocked, broken or disabled therefore sees the finished
      page rather than a column of invisible sections — which is the difference
      between an enhancement and a dependency. */
+  /* The two whole-figure reveals whose subject is an inline SVG plate - the
+     questions act's boundary and the evidence act's rear dials. M3's selectors
+     name a .win or an .exhibit img, and neither figure has one, so both sat
+     fully drawn through their own waiting state: is-cold was on the block and
+     nothing answered it, which is exactly the failure mode the motion audit's
+     own doctor exists for ("the class arriving on a block the stylesheet no
+     longer hides"). The etymology figure needed this same exception when it
+     was the page's first whole-SVG reveal; these are the second and third.
+     The class selector names the plate root (.bnd / .dials-plate) rather than
+     a bare `svg`, so the variant-swap display rules cannot fight a hidden
+     state that lives on opacity: whichever variant is shown arrives, and the
+     hidden one is untouched. */
   .reveal .win,
   .reveal .exhibit img,
+  .boundary .bnd,
+  .rear-dials .dials-plate,
   .etymology {
     transition: opacity calc(var(--arrive) * 700ms) var(--ease),
                 transform calc(var(--arrive) * 700ms) var(--ease);
   }
   .reveal.is-cold .win,
   .reveal.is-cold .exhibit img,
+  .boundary.is-cold .bnd,
+  .rear-dials.is-cold .dials-plate,
   .etymology.is-cold {
     opacity: 0;
     transform: translateY(24px) scale(0.97);
