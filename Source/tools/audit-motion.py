@@ -799,37 +799,28 @@ HERO_SCENARIO = r"""
   };
   // M43 · the answer's seventh child. The cycles answer gained a drawn plate
   // (the pin-and-slot, the sentence that names it made visible), and M2's
-  // sequence gained a seventh slot for it. The claim is the family's own:
-  // at rest it is the authored state (fully visible), and in the sequence it
-  // lands AFTER the sixth child (the last prose paragraph), so the drawing
-  // arrives after the words that introduce it.
+  // sequence gained a seventh slot for it. The claim reads the COMPUTED
+  // animation-delay, not a wall-clock race: by the time this scenario polls,
+  // the sequence may already have finished, and two settled elements cannot
+  // be ordered by their timestamps. The delay is the authored slot (the
+  // sixth child's 1260ms plus the family's 100ms step, read as a computed
+  // value the doctor's removal zeroes), and the plate must be at rest.
   const answer = d.querySelector('.hero .answer#ans-cycles') ||
                  d.querySelector('.hero .answer');
   const kids = answer ? answer.children : [];
   if (kids.length >= 7) {
     const fig = kids[6];
-    const figState = () => {
-      const cs = getComputedStyle(fig);
-      return { op: parseFloat(cs.opacity), tf: cs.transform };
-    };
-    // its own first-visible timestamp, on the same poll's clock
-    let figFirst = null;
-    const figPoll = setInterval(() => {
-      const s = figState();
-      if (figFirst === null && s.op >= 0.9 && (s.tf === 'none' ||
-          Math.abs(parseFloat(/matrix\(([^)]+)\)/.exec(s.tf)[1].split(',')[5])) < 3)) {
-        figFirst = Math.round(performance.now() - t0);
-      }
-    }, 40);
-    await wait(1700 - 0);
-    clearInterval(figPoll);
-    const fs = figState();
+    const prev = kids[5];
+    const delayOf = (el) => getComputedStyle(el).animationDelay;
+    const fs = (() => { const cs = getComputedStyle(fig);
+      return { op: parseFloat(cs.opacity), tf: cs.transform }; })();
     result.answerPlate = {
       seventhChild: fig.tagName.toLowerCase() + '.' + (fig.className || ''),
       atRest: fs.op >= 0.95 && (fs.tf === 'none' ||
                Math.abs(parseFloat(/matrix\(([^)]+)\)/.exec(fs.tf)[1].split(',')[5] || 0)) < 2),
-      first: figFirst,
-      afterProse: figFirst !== null && firsts.cue !== undefined ? true : figFirst !== null,
+      figDelay: delayOf(fig),
+      prevDelay: delayOf(prev),
+      ordered: parseFloat(delayOf(fig)) > parseFloat(delayOf(prev)),
     };
   }
 
@@ -1138,17 +1129,17 @@ def check_hero(doc: dict, failures: list) -> None:
        all(r.get(k) for k in ("line1", "line2", "lede", "cta", "cue")),
        "the same words at rest again - is-cold must not be a one-way door")
 
-    # M43 · the answer's drawn plate. The scenario read the cycles answer's
-    # seventh child on the same clock as the words; the claim is that it
-    # arrived (fully painted at rest) and last (after the prose that names
-    # the mechanism it draws).
+    # M43 · the answer's drawn plate. The computed animation-delay is the
+    # authored slot (1.36s of the family's clock); the doctor's removal
+    # reads 0s, which orders the plate with the prose instead of after it.
+    # At rest the plate is the authored state, fully painted.
     ap = doc.get("answerPlate") or {}
     if ap:
         ok("the cycles answer's plate arrives last, at rest",
-           ap.get("atRest") is True and ap.get("first") is not None
-           and ap.get("first") >= (f.get("cue") or 0),
-           "child %s first visible at %s ms (cue at %s)"
-           % (ap.get("seventhChild", "?"), ap.get("first"), f.get("cue")))
+           ap.get("atRest") is True and ap.get("ordered") is True,
+           "child %s delay %s (prev %s), at rest %s"
+           % (ap.get("seventhChild", "?"), ap.get("figDelay"),
+              ap.get("prevDelay"), ap.get("atRest")))
     else:
         ok("the cycles answer's plate arrives last, at rest", False,
            "the scenario found no seventh child to read")

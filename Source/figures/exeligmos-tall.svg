@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 480"
+     class="ex-plate ex-tall" role="img" focusable="false"
+     aria-labelledby="ex-tall-title">
+  <title id="ex-tall-title">The exeligmos sub-dial: three divisions, adding nothing, 8 hours, or 16 hours to the Saros dial's times. Three 8-hour corrections are one whole day.</title>
+  <g class="ex-sectors">
+    <path class="ex-sector" d="M171.23 103.22 L172.72 46.04 A104.00 104.00 0 0 1 261.40 199.62 L211.13 172.33"/>
+    <text class="ex-glyph" x="235.3" y="118.1" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">o</text>
+    <path class="ex-sector" d="M209.90 174.45 L258.67 204.34 A104.00 104.00 0 0 1 81.33 204.34 L130.10 174.45"/>
+    <text class="ex-glyph" x="170.0" y="231.2" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">H</text>
+    <path class="ex-sector" d="M128.87 172.33 L78.60 199.62 A104.00 104.00 0 0 1 167.28 46.04 L168.77 103.22"/>
+    <text class="ex-glyph" x="104.7" y="118.1" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">Iϛ</text>
+    <circle class="ex-hub" cx="170.0" cy="150.0" r="46.8"/>
+  </g>
+  <g class="ex-hubtext">
+    <text class="ex-sum" x="170.0" y="131.8" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">3 x 8 h</text>
+    <text class="ex-sum" x="170.0" y="152.5" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">= 24 h</text>
+    <text class="ex-sum-sub" x="170.0" y="173.1" font-size="15.2" font-family="Inter, sans-serif" text-anchor="middle">one day</text>
+  </g>
+  <g class="ex-legend">
+    <text class="ex-glyph ex-legglyph" x="74.0" y="288.0" font-size="16.5" font-family="Inter, sans-serif">o</text>
+    <text class="ex-legnote" x="107.0" y="288.0" font-size="16.5" font-family="Inter, sans-serif">add nothing</text>
+    <text class="ex-glyph ex-legglyph" x="74.0" y="314.4" font-size="16.5" font-family="Inter, sans-serif">H</text>
+    <text class="ex-legnote" x="107.0" y="314.4" font-size="16.5" font-family="Inter, sans-serif">add 8 hours</text>
+    <text class="ex-glyph ex-legglyph" x="74.0" y="340.8" font-size="16.5" font-family="Inter, sans-serif">Iϛ</text>
+    <text class="ex-legnote" x="107.0" y="340.8" font-size="16.5" font-family="Inter, sans-serif">add 16 hours</text>
+  </g>
+  <text class="ex-cycle" x="170.0" y="368.9" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">54 years · 3 turns of the Saros</text></svg>

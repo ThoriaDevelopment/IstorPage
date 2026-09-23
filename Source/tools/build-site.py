@@ -184,6 +184,8 @@ INCLUDES = {
     "parapegma-tall":  (SOURCE / "figures" / "parapegma-tall.svg",  "svg"),
     "pin-slot-wide":   (SOURCE / "figures" / "pin-slot-wide.svg",   "svg"),
     "pin-slot-tall":   (SOURCE / "figures" / "pin-slot-tall.svg",   "svg"),
+    "exeligmos-wide":  (SOURCE / "figures" / "exeligmos-wide.svg",  "svg"),
+    "exeligmos-tall":  (SOURCE / "figures" / "exeligmos-tall.svg",  "svg"),
     "two-rings-wide":  (SOURCE / "figures" / "two-rings-wide.svg",  "svg"),
     "two-rings-tall":  (SOURCE / "figures" / "two-rings-tall.svg",  "svg"),
     "hero-gears":     (SOURCE / "figures" / "hero-gears.svg",     "svg"),

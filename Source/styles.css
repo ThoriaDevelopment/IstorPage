@@ -2285,7 +2285,49 @@ h3 {
 }
 
 /* ---------------------------------------------------------------------------
-   14d7 · The pin-and-slot plate, inside the hero's cycles answer.
+   14d7 · The exeligmos plate, in the evidence act, after the rear dials.
+
+   The sub-dial the Saros spiral carries in its eye, drawn in this plate's own
+   grammar: the structure inks and label classes are the rear-dials plate's
+   (dials-line family), the azure is the hub's sum - the drawing's one claim.
+   The three sectors are exact thirds of the circle (1.5-degree gaps either
+   side of each boundary so the divisions read as drawn, not cut). Source 1's
+   legend is complete, so the labels are its verbatim marks: o, H, Iϛ.
+   ------------------------------------------------------------------------- */
+.exeligmos-fig { margin: 56px 0 0; }
+.exeligmos-fig .field.is-inset { max-width: 700px; }
+.ex-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.ex-wide { max-width: 640px; }
+.ex-tall { display: none; max-width: 340px; }
+
+.ex-sector { fill: none; stroke: var(--ink-3); stroke-width: 1.2; }
+.ex-hub { fill: none; stroke: var(--ink-3); stroke-width: 1; }
+.ex-glyph { font-family: Inter, sans-serif; font-weight: 600;
+            fill: var(--ink); }
+.ex-sum { font-family: Inter, sans-serif; font-weight: 600;
+          fill: var(--azure); font-variant-numeric: tabular-nums; }
+.ex-sum-sub, .ex-legnote, .ex-cycle { font-family: Inter, sans-serif;
+                                      fill: var(--ink-2); }
+.ex-leghead { font-family: Inter, sans-serif; font-weight: 500;
+              fill: var(--ink); }
+.ex-legglyph { fill: var(--ink); font-weight: 600; }
+
+/* In the dark field: the rear-dials plate's own division. */
+.field .ex-sector, .field .ex-hub { stroke: var(--field-ink-2); }
+.field .ex-glyph { fill: var(--field-ink); }
+.field .ex-sum { fill: var(--azure-lift); }
+.field .ex-sum-sub, .field .ex-legnote, .field .ex-cycle
+  { fill: var(--field-ink-2); }
+.field .ex-leghead, .field .ex-legglyph { fill: var(--field-ink); }
+
+@media (max-width: 700px) {
+  .ex-wide { display: none; }
+  .ex-tall { display: block; }
+  .exeligmos-fig .field.is-inset { padding: 18px 16px; }
+}
+
+/* ---------------------------------------------------------------------------
+   14d8 · The pin-and-slot plate, inside the hero's cycles answer.
 
    The page's prose names the mechanism and no drawing carried it; this plate
    lives in the answer that names it, not in the evidence act, because its
