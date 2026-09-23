@@ -364,6 +364,7 @@ SCENARIO = r"""
   out.boundaryPlate = await plateRead('.boundary');
   out.dialsPlate = await plateRead('.rear-dials');
   out.gamesPlate = await plateRead('.games-dial-fig');
+  out.parapegmaPlate = await plateRead('.parapegma-fig');
   await home();
   return out;
 })(d, w)
@@ -1260,7 +1261,8 @@ def check(doc: dict, failures: list) -> None:
     # on a state nobody drove.
     for key, label in (("boundaryPlate", "the boundary plate arrives from its own cold state"),
                        ("dialsPlate", "the rear dials arrive from their own cold state"),
-                       ("gamesPlate", "the games dial arrives from its own cold state")):
+                       ("gamesPlate", "the games dial arrives from its own cold state"),
+                       ("parapegmaPlate", "the parapegma arrives from its own cold state")):
         p = v.get(key) or {}
         if p.get("error"):
             ok(label, False, p["error"])

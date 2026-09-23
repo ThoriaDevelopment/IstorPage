@@ -492,8 +492,26 @@ PROBE = r"""
             : (rec.lines && rec.lines.length ? rec.lines : [rec.rect]).map(function (L) {
                 return [L.x + 3, L.y + Math.max(1, Math.min(2, L.h * 0.12))];
               });
-          for (let pi = 0; pi < pts.length; pi++) {
-            const pvx = pts[pi][0] - w.scrollX, pvy = pts[pi][1] - w.scrollY;
+          /* For SVG text the SAMPLE RING, not the glyph box, is where the pixel
+             pass will read, and the ring sits ±5px OUTSIDE the box - directly
+             under a fixed bar the box itself clears. The parapegma's key letters
+             sat one line below the nav and came back 2.69:1 to 4.44:1 against
+             the nav's blue progress bar: a confident ratio about a ground the
+             letters never touch, because the occlusion test hit-tested only the
+             box. The ring points are hit-tested here for exactly that; any bar
+             over a ring point is an occluder the way a bar over the box is. */
+          const svgOff = Math.max(5, rec.rect.h * 0.6);
+          const ringPts = rec.svg
+            ? [[rec.rect.x + rec.rect.w * 0.25, rec.rect.y - svgOff],
+               [rec.rect.x + rec.rect.w * 0.75, rec.rect.y - svgOff],
+               [rec.rect.x + rec.rect.w * 0.25, rec.rect.y + rec.rect.h + svgOff],
+               [rec.rect.x + rec.rect.w * 0.75, rec.rect.y + rec.rect.h + svgOff],
+               [rec.rect.x - svgOff, rec.rect.y + rec.rect.h / 2],
+               [rec.rect.x + rec.rect.w + svgOff, rec.rect.y + rec.rect.h / 2]]
+            : [];
+          for (let pi = 0; pi < pts.length + ringPts.length; pi++) {
+            const p = pi < pts.length ? pts[pi] : ringPts[pi - pts.length];
+            const pvx = p[0] - w.scrollX, pvy = p[1] - w.scrollY;
             if (pvx < 0 || pvx > vw - 1 || pvy < 0 || pvy > vh - 1) continue;
             const hit = d.elementFromPoint(pvx, pvy);
             if (!hit || hit === el || el.contains(hit) || hit.contains(el)) continue;
@@ -1226,11 +1244,24 @@ function ratio(a, b) {{
            the box, plus the two sides: the ground a plate's word sits on is the
            field around it. The worst sample wins as always, so a word on a light
            field is still caught, and a word whose neighbour is a bright shape is
-           still measured against that shape rather than against the page. */
-        var rr = r.rect;
-        return [[rr.x + rr.w * 0.25, rr.y - 5], [rr.x + rr.w * 0.75, rr.y - 5],
-                [rr.x + rr.w * 0.25, rr.y + rr.h + 5], [rr.x + rr.w * 0.75, rr.y + rr.h + 5],
-                [rr.x - 5, rr.y + rr.h / 2], [rr.x + rr.w + 5, rr.y + rr.h / 2]];
+           still measured against that shape rather than against the page.
+
+           The offset scales with the box, and 5px fixed was wrong: a plate whose
+           leading is tighter than the offset samples the NEIGHBOURING ROW's own
+           ink and reports its ratio against that. The parapegma's keys sit on a
+           16px pitch with 14px boxes: the inter-row air is the next row's caps,
+           and NO vertical offset clears them - 8.4px below one key is the middle
+           of the key beneath it. A multi-line register's honest ground is
+           HORIZONTAL: beside a glyph, at its own mid-height, where the nearest
+           ink is the next column, a full gutter away. The plate's edges are the
+           only rows a vertical probe can trust, and the sampler cannot know
+           which row is first or last, so vertical probes are dropped for SVG
+           text entirely: two side samples, at a quarter and three quarters of
+           the mid-height, clear every neighbour a text row actually has. */
+        var rr = r.rect, off = Math.max(5, rr.h * 0.6), ym = rr.y + rr.h / 2;
+        return [[rr.x - off, ym], [rr.x + rr.w + off, ym],
+                [rr.x - off, rr.y + rr.h * 0.25], [rr.x + rr.w + off, rr.y + rr.h * 0.25],
+                [rr.x - off, rr.y + rr.h * 0.75], [rr.x + rr.w + off, rr.y + rr.h * 0.75]];
       }}
       if (r.hasOwn) {{
         /* Its own ground: sample INSIDE the box, in the padding at the vertical
@@ -1283,7 +1314,7 @@ function ratio(a, b) {{
         samples.push(s);
         var ink = over({{ rgb: r.ink, a: r.alpha === undefined ? 1 : r.alpha }}, s);
         var q = ratio(ink, s);
-        if (!worst || q < worst.ratio) worst = {{ ratio: q, ground: s }};
+        if (!worst || q < worst.ratio) worst = {{ ratio: q, ground: s, pt: pt }};
         lums.push(Math.round(lum(s) * 1000) / 1000);
       }});
       /* A photograph is not a gradient, and a number from one is worse than no
@@ -1308,7 +1339,13 @@ function ratio(a, b) {{
                 lumMin: Math.min.apply(null, lums),
                 lumMax: Math.max.apply(null, lums),
                 size: r.size, weight: r.weight, sel: r.sel, text: r.text,
-                replica: !!r.replica }};
+                replica: !!r.replica,
+                /* The record carries its own coordinates, so a finding can be
+                   walked back to the pixels that produced it. The first version
+                   dropped them, and the parapegma's keys spent an evening as a
+                   mystery: a number nobody could trace to a ground. */
+                rect: r.rect, shot: r.shot, anchor: r.anchor || 0,
+                worstPt: worst ? worst.pt : null }};
     }});
     out.textContent = 'RESULT:' + JSON.stringify({{ value: {{ width: cv.width, height: cv.height, results: results }} }});
   }} catch (e) {{

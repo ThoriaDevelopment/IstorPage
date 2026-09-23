@@ -2239,6 +2239,51 @@ h3 {
   .two-rings-fig .field.is-inset { padding: 18px 16px; }
 }
 
+/* -------------------------------------------------------------------------
+   14d6 · The parapegma plate, in the evidence act, after the two-rings.
+
+   Source 1's register, transcribed whole: the forty-four rows inscribed above
+   and beneath the dials, keyed by Greek letters, damage marks and all. The
+   inks are the house's text hierarchy - rows --ink, headers --ink-2 - and the
+   plate's one --azure is the key letters, the thing that makes a parapegma a
+   keyed register. The band between the slabs is the dial zone as indication:
+   --ink-3 structure, the sun and moon azure, no longitudes. The Greek rows
+   pin the display face inline (the M37a rebuild carries uppercase Greek);
+   the headers are Inter, tracked like the window chips.
+   ------------------------------------------------------------------------- */
+.parapegma-fig { margin: 56px 0 0; }
+.parapegma-fig .field.is-inset { max-width: 700px; }
+.pp-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.pp-wide { max-width: 640px; }
+.pp-tall { display: none; max-width: 340px; }
+
+.pp-title { fill: var(--ink); font-weight: 500; letter-spacing: 0.14em; }
+.pp-head { fill: var(--ink-2); font-weight: 600; letter-spacing: 0.14em; }
+.pp-key { fill: var(--azure); font-weight: 500; }
+.pp-greek { fill: var(--ink); letter-spacing: 0.02em; }
+.pp-frame { stroke: var(--ink-3); stroke-width: 1; fill: none; }
+.pp-tick { stroke: var(--ink-3); stroke-width: 1; stroke-linecap: round; }
+.pp-sun { fill: var(--azure); }
+.pp-ray { stroke: var(--azure); stroke-width: 1.1; stroke-linecap: round; }
+.pp-moon { fill: var(--paper); stroke: var(--azure); stroke-width: 1.3; }
+
+/* In the dark field: the house division. The moon's disc takes the field's
+   ground so it reads as a body, its rim the azure. */
+.field .pp-title { fill: var(--field-ink); }
+.field .pp-head { fill: var(--field-ink-2); }
+.field .pp-key { fill: var(--azure-lift); }
+.field .pp-greek { fill: var(--field-ink); }
+.field .pp-frame, .field .pp-tick { stroke: var(--field-ink-2); }
+.field .pp-sun { fill: var(--azure-lift); }
+.field .pp-ray { stroke: var(--azure-lift); }
+.field .pp-moon { fill: var(--field-base); stroke: var(--azure-lift); }
+
+@media (max-width: 700px) {
+  .pp-wide { display: none; }
+  .pp-tall { display: block; }
+  .parapegma-fig .field.is-inset { padding: 18px 16px; }
+}
+
 /* ---------------------------------------------------------------------------
    14e · The act index.
 
@@ -2580,6 +2625,7 @@ h3 {
   .games-dial-fig .games-plate,
   .front-dial-fig .front-plate,
   .two-rings-fig .two-rings,
+  .parapegma-fig .pp-plate,
   .etymology {
     transition: opacity calc(var(--arrive) * 700ms) var(--ease),
                 transform calc(var(--arrive) * 700ms) var(--ease);
@@ -2591,6 +2637,7 @@ h3 {
   .games-dial-fig.is-cold .games-plate,
   .front-dial-fig.is-cold .front-plate,
   .two-rings-fig.is-cold .two-rings,
+  .parapegma-fig.is-cold .pp-plate,
   .etymology.is-cold {
     opacity: 0;
     transform: translateY(24px) scale(0.97);
