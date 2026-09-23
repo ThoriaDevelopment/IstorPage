@@ -7,9 +7,9 @@
 Outputs, all committed (Stage 0's rule: generators run locally, CI never
 regenerates artwork):
 
-    Source/favicon.ico          16/32/48, from Assets/brand/istor-eye.svg
-    Source/icon.svg             from Assets/brand/istor-page.svg, + a dark block
-    Source/apple-touch-icon.png 180x180, from istor-page.svg, opaque on white
+    Source/favicon.ico          16/32/48, from Assets/brand/istor-gear.svg
+    Source/icon.svg             from Assets/brand/istor-gear-lg.svg, + a dark block
+    Source/apple-touch-icon.png 180x180, from istor-gear-lg.svg, opaque on white
 
 Why icon.svg carries its own media query
 ----------------------------------------
