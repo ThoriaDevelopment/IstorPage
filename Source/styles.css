@@ -2365,6 +2365,46 @@ h3 {
 }
 
 /* ---------------------------------------------------------------------------
+   14d10 · The gate plate, in the gate act (#how-it-answers), under the split.
+
+   The act's decision drawn as a flow: question -> the small model's test ->
+   two outcomes. The inks are the rear-dials family (structure --ink-3 on
+   paper, text --ink/--ink-2), and the azure is the test node - the one
+   thing that moves, the plate's single assertion. Boxes are sized from
+   measured strings in the generator; the stylesheet only sets inks.
+   ------------------------------------------------------------------------- */
+.gate-fig { margin: 40px 0 0; }
+.gate-fig .field.is-inset { max-width: 700px; }
+.gate-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.gate-wide { max-width: 640px; }
+.gate-tall { display: none; max-width: 340px; }
+
+.gn-box { fill: none; stroke: var(--ink-3); stroke-width: 1.2; }
+.gn-box.gn-azure { stroke: var(--azure); }
+.gn-edge { fill: none; stroke: var(--ink-3); stroke-width: 1.1; }
+.gn-t { fill: var(--ink); font-weight: 500; }
+.gn-t.gn-azure { fill: var(--azure); font-weight: 600; }
+.gn-elabel { fill: var(--ink-2); font-style: italic; }
+.gn-cap { fill: var(--ink-2); }
+
+/* In the dark field: the gate's inks remapped onto the field's own, the same
+   division the exeligmos and shelf plates make. Print needs no block of its
+   own here - the print world remaps the field tokens at :root, and these
+   rules follow. */
+.field .gn-box { stroke: var(--field-ink-2); }
+.field .gn-box.gn-azure { stroke: var(--azure-lift); }
+.field .gn-edge { stroke: var(--field-ink-2); }
+.field .gn-t { fill: var(--field-ink); }
+.field .gn-t.gn-azure { fill: var(--azure-lift); }
+.field .gn-elabel, .field .gn-cap { fill: var(--field-ink-2); }
+
+@media (max-width: 700px) {
+  .gate-wide { display: none; }
+  .gate-tall { display: block; }
+  .gate-fig .field.is-inset { padding: 18px 16px; }
+}
+
+/* ---------------------------------------------------------------------------
    14d9 · The pin-and-slot plate, inside the hero's cycles answer.
 
    The page's prose names the mechanism and no drawing carried it; this plate

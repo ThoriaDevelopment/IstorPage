@@ -188,6 +188,8 @@ INCLUDES = {
     "exeligmos-tall":  (SOURCE / "figures" / "exeligmos-tall.svg",  "svg"),
     "shelf-wide":      (SOURCE / "figures" / "shelf-wide.svg",      "svg"),
     "shelf-tall":      (SOURCE / "figures" / "shelf-tall.svg",      "svg"),
+    "gate-wide":       (SOURCE / "figures" / "gate-wide.svg",       "svg"),
+    "gate-tall":       (SOURCE / "figures" / "gate-tall.svg",       "svg"),
     "two-rings-wide":  (SOURCE / "figures" / "two-rings-wide.svg",  "svg"),
     "two-rings-tall":  (SOURCE / "figures" / "two-rings-tall.svg",  "svg"),
     "hero-gears":     (SOURCE / "figures" / "hero-gears.svg",     "svg"),

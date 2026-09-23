@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 465.4"
+     class="gate-plate gate-tall" role="img" focusable="false"
+     aria-labelledby="gate-tall-title">
+  <title id="gate-tall-title">The gate, drawn: the small model's question decides between the library's own answer and the better model.</title>
+  <path class="gn-edge" d="M170 53.925 L170 97.925"/>
+  <path class="gn-edge" d="M170 169.775 L170 213.775"/>
+  <path class="gn-edge" d="M170 169.775 C170 191.775 146 261.662 77.4 281.662"/>
+  <text class="gn-elabel" x="180" y="199.775" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">yes</text>
+  <text class="gn-elabel" x="71.4" y="285.662" font-size="16.5" font-family="Inter, sans-serif" text-anchor="end">not yet</text>
+  <g class="gn" data-x="109" data-y="6" data-w="122" data-h="47.925">
+    <rect class="gn-box gn-plain" x="109" y="6" width="122" height="47.925" rx="6"/>
+    <text class="gn-t gn-plain" x="170" y="23.61" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">the question</text>
+  </g>
+  <g class="gn" data-x="38.45" data-y="97.925" data-w="263.1" data-h="71.85">
+    <rect class="gn-box gn-azure" x="38.45" y="97.925" width="263.1" height="71.85" rx="6"/>
+    <text class="gn-t gn-azure" x="170" y="115.535" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">the small model</text>
+    <text class="gn-t gn-azure" x="170" y="139.46" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">is this already answered here?</text>
+  </g>
+  <g class="gn" data-x="79.4" data-y="213.775" data-w="181.2" data-h="95.775">
+    <rect class="gn-box gn-plain" x="79.4" y="213.775" width="181.2" height="95.775" rx="6"/>
+    <text class="gn-t gn-plain" x="170" y="231.385" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">the library</text>
+    <text class="gn-t gn-plain" x="170" y="255.31" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">answers from them,</text>
+    <text class="gn-t gn-plain" x="170" y="279.235" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">never goes online</text>
+  </g>
+  <g class="gn" data-x="79.4" data-y="353.55" data-w="196.4" data-h="71.85">
+    <rect class="gn-box gn-plain" x="79.4" y="353.55" width="196.4" height="71.85" rx="6"/>
+    <text class="gn-t gn-plain" x="177.6" y="371.16" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">the better model</text>
+    <text class="gn-t gn-plain" x="177.6" y="395.085" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">slow, and can be right</text>
+  </g>
+
+  <text class="gn-cap" x="170" y="457.4" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">the cheap question goes first</text></svg>
