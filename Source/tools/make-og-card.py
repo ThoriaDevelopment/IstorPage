@@ -173,6 +173,23 @@ def _hex_rgb(h):
     h = h.lstrip("#")
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
+
+def _arc_band(im, cx, cy, r, width, opacity):
+    """One limb stroke: a circle arc rasterised as an ellipse ring,
+    composited by alpha the way the svg's stroke-opacity does. Pillow has no
+    translucent stroke on an RGB image, so the band is drawn on its own tile
+    and pasted through its own alpha."""
+    ink = _hex_rgb(TOKENS["field-ink"])
+    R = int(r * SS)
+    wpx = max(1, int(width * SS / 2))
+    tile = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
+    td = ImageDraw.Draw(tile)
+    cx_s, cy_s = int(cx * SS), int(cy * SS)
+    td.ellipse([cx_s - R - wpx, cy_s - R - wpx, cx_s + R + wpx, cy_s + R + wpx],
+               outline=ink + (int(255 * opacity),), width=wpx * 2)
+    tile = tile.resize((W, H), Image.LANCZOS)
+    im.paste(tile, (0, 0), tile)
+
 N1, N2 = 223, 60
 
 
@@ -288,11 +305,67 @@ def paint_mark(im):
     w_dot = d.textlength(".", font=face)
     x = (W - (w_letters + w_dot)) / 2
     y = MARK_Y
+    # The veil's rim, UNDER the letters: the canopy limb the page draws, its
+    # four stacked strokes, apex at the letters' cap line. Drawn here first so
+    # the mark paints over it, and then paint_veil() crosses the beads over.
+    _veil_limb(im)
     d.text((x, y), "ἵστωρ", font=face, fill=TOKENS["azure-lift"])
     d.text((x + w_letters, y), ".", font=face, fill=TOKENS["azure"])
 
 
 TAGLINE = "Local. Offline. Every claim points at its passage."
+
+# --- the veil -------------------------------------------------------------------
+# M35's second ring, translated to the card: a canopy of 355 beads crossing the
+# letters' middle, beads IN FRONT of the type - the one crossing where the
+# machine goes over the brand. Radius scaled from the page's 2600 at a 220px
+# mark to the card's 168px mark (same composition, same fractions); the apex
+# sits mid-letter, at the MEASURED middle of the rendered cap band: the
+# wordmark face's pixels were measured on the drawn card itself (azure rows
+# 191..330 at MARK_SIZE 168), not taken from font-metric guesses - the same
+# discipline the page's 0.889 baseline fraction sets. Mid-band = 0.654 of the
+# mark box, and the self-test's pixel scan below holds the drawing to it.
+
+R_VEIL = 2600.0 * (168.0 / 220.0)      # 1985.5 - the canopy at card scale
+VEIL_APEX_FRACTION = 0.654
+
+
+def veil_apex_y():
+    """The veil's apex: the letters' cap line plus half the cap band. The page
+    positions the veil's y=0 at the cap line (0.115 of the type size below the
+    mark box's top, the stylesheet's measured fraction for this face) and the
+    svg's apex sits 80/420 into its frame; the card draws the same crossing
+    directly: cap line + half the band = 0.115 + 0.35 of MARK_SIZE."""
+    return MARK_Y + MARK_SIZE * VEIL_APEX_FRACTION
+
+
+def _veil_limb(im):
+    """The canopy's limb under the letters: the horizon's four-stroke recipe,
+    widest and faintest first, apex up."""
+    cx = W / 2.0
+    cy = veil_apex_y() + R_VEIL
+    for width, op in ((44, 0.05), (20, 0.075), (8, 0.11), (2.4, 0.34)):
+        _arc_band(im, cx, cy, R_VEIL, width, op)
+
+
+def paint_veil(im):
+    """The beads, over the letters. Same arithmetic as the horizon's, same
+    last-hole-at-apex rotation, at the canopy radius - and the disputed
+    355th bead at the apex in --azure, as on the page."""
+    cx = W / 2.0
+    cy = veil_apex_y() + R_VEIL
+    d = ImageDraw.Draw(im)
+    pitch = 2 * math.pi * R_VEIL / HOLES
+    alpha = math.degrees((HOLES - 0.5) * pitch / R_VEIL)
+    start = -90.0 - alpha
+    for i in range(HOLES):
+        a = math.radians(start + i * math.degrees(pitch / R_VEIL))
+        x, y = cx + R_VEIL * math.cos(a), cy + R_VEIL * math.sin(a)
+        if -DOT <= x <= W + DOT and -DOT <= y <= H + DOT:
+            disputed = i == HOLES - 1
+            r = DOT * 0.72 if disputed else DOT / 2
+            fill = TOKENS["azure"] if disputed else TOKENS["field-ink-2"]
+            d.ellipse([x - r, y - r, x + r, y + r], fill=fill)
 
 
 def paint_tagline(im):
@@ -319,7 +392,8 @@ def main():
     paint_field(im)
     paint_world(im)
     paint_horizon(im)
-    paint_mark(im)
+    paint_mark(im)      # paints the veil's limb under the letters
+    paint_veil(im)      # the beads, over them: the close's own order
     paint_tagline(im)
 
     if "--self-test" in sys.argv:
@@ -337,7 +411,29 @@ def main():
         d_actual = math.hypot(c2[0] - c1[0], c2[1] - c1[1])
         assert abs(d_actual - dist) < 1e-9, "rider is not at the mesh distance"
         assert abs(R2 - R1 * N2 / N1) < 1e-9, "rider is not on the module"
-        print("self-test ok - rider at the internal mesh distance, on the module")
+        # The veil crosses mid-letter, held on the DRAWN pixels: scan the card's
+        # azure rows (the letters), find the band, and demand the apex bead sit
+        # inside its middle third. This is the check that keeps the crossing at
+        # the composition the page draws, even if the face's metrics move.
+        px = im.load()
+        rows = []
+        for yy in range(H):
+            n = 0
+            for xx in range(0, W, 2):
+                r, g, b = px[xx, yy]
+                if b > 220 and 60 < r < 110 and 140 < g < 190:
+                    n += 1
+            if n > 3:
+                rows.append(yy)
+        cap_top, band_end = rows[0], rows[-1]
+        apex = MARK_Y + MARK_SIZE * VEIL_APEX_FRACTION
+        mid_lo = cap_top + (band_end - cap_top) * 0.33
+        mid_hi = cap_top + (band_end - cap_top) * 0.72
+        assert mid_lo <= apex <= mid_hi, (
+            "veil apex at %.0f is outside the letters' middle band %.0f..%.0f"
+            % (apex, mid_lo, mid_hi))
+        print("self-test ok - rider at the internal mesh distance, on the module; "
+              "veil apex crosses mid-letter (%.0f in %.0f..%.0f)" % (apex, mid_lo, mid_hi))
 
     im.save(OUT, "PNG", optimize=True)
     print(f"{OUT.relative_to(ROOT)} written: {OUT.stat().st_size:,} B")
