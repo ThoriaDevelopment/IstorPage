@@ -1,0 +1,17 @@
+<symbol id="i-mark" viewBox="0 0 64 64" aria-hidden="true"
+          focusable="false">
+  <!-- The brand gear, lifted from Assets/brand/istor-gear.svg
+       by Source/tools/make-win-mark.py - do not hand-edit.
+       Strokes are currentColor so the gear re-inks with its
+       row; the pinion is .mark-pinion, coral by default and
+       --coral-lift in the field and poster worlds. -->
+  <g fill="none" stroke="currentColor" stroke-width="4.5"
+     stroke-linecap="round">
+    <circle cx="30.00" cy="34.00" r="23.00"/>
+    <path d="M33.68 37.68L44.85 48.85 M26.32 37.68L15.15 48.85 M26.32 30.32L15.15 19.15 M33.68 30.32L44.85 19.15"/>
+    <path d="M44.72 17.65L47.67 14.38 M49.86 24.53L53.83 22.63 M51.97 32.85L56.36 32.62 M50.74 41.34L54.89 42.81 M46.35 48.72L49.62 51.67 M39.47 53.86L41.37 57.83 M31.15 55.97L31.38 60.36 M22.66 54.74L21.19 58.89 M15.28 50.35L12.33 53.62 M10.14 43.47L6.17 45.37 M8.03 35.15L3.64 35.38 M9.26 26.66L5.11 25.19 M13.65 19.28L10.38 16.33 M20.53 14.14L18.63 10.17 M28.85 12.03L28.62 7.64 M37.34 13.26L38.81 9.11"/>
+    <path d="M33.68 37.68L44.85 48.85 M26.32 37.68L15.15 48.85 M26.32 30.32L15.15 19.15 M33.68 30.32L44.85 19.15"/>
+    <circle class="mark-pinion" cx="30.00" cy="34.00" r="4.6"
+          fill="var(--coral)" stroke="none"/>
+  </g>
+</symbol>

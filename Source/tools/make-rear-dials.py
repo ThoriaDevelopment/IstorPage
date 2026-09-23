@@ -52,6 +52,17 @@ name the page does not have. Both variants carry a <title> and role="img":
 these plates carry their act's meaning, so a screen reader gets the composition
 the prose already states.
 
+ENCODING. The paths are written M absolute once, then relative integer steps,
+the house standard the calendar ring sets (355 holes as one dashed circle in
+1.7KB) and the gears run. First written at absolute %.1f, these two plates
+cost 46.9KB of the document - the biggest single reason the document crossed
+its budget ceiling. The same geometry, relative integers, is a quarter of
+that, and nothing a reader can see changes: the widest render of either plate
+is one to one, where a half-unit lattice is finer than one screen pixel, and
+the self-test still decodes the paths back to points and measures the same
+turns and slots it demanded before. Geometry lives at the lattice the
+rendering cannot resolve past; bytes are part of the design too.
+
 SELF-TEST. The invariants a doctored copy would break: turn counts measured by
 accumulating the spiral path's swept angle, month-slot counts counted inside
 the slots path only, the count labels present, exactly one azure statement per
@@ -61,6 +72,7 @@ the same two dials.
 
 import gzip
 import math
+import re
 import sys
 from pathlib import Path
 
@@ -109,8 +121,10 @@ TALL_MET_CY, TALL_SAR_CY = 128.0, 408.0
 WIDE_GUTTER_X = 321.0
 
 
-def spiral_points(cx, cy, r_out, pitch, turns, samples_per_turn=90):
-    """The spiral as (x, y) samples: r = r_out - pitch * turns * (t/total)."""
+def spiral_points(cx, cy, r_out, pitch, turns, samples_per_turn=72):
+    """The spiral as (x, y) samples: r = r_out - pitch * turns * (t/total).
+    72 samples a turn: the chord's sagitta at the innermost radius (26 units)
+    is 0.008 user units, invisible at one to one where a unit is a pixel."""
     r_in = r_out - pitch * turns
     total = turns * 2 * math.pi
     n = turns * samples_per_turn
@@ -122,26 +136,53 @@ def spiral_points(cx, cy, r_out, pitch, turns, samples_per_turn=90):
     return pts, r_in
 
 
+def _rel(pts):
+    """The house encoding: M absolute once, then relative integer steps. The
+    lattice is half a user unit (rounding to integers on a cumulative sum),
+    finer than any pixel either plate is ever rendered at, so the drawn curve
+    does not move. Returned with the points, so the caller names the azure dot
+    from the same lattice rather than inventing a second one."""
+    out = ["M%d %d" % (round(pts[0][0]), round(pts[0][1]))]
+    lat = [pts[0]]
+    px, py = pts[0]
+    for x, y in pts[1:]:
+        gx, gy = round(x), round(y)
+        if (gx, gy) == (round(lat[-1][0]), round(lat[-1][1])):
+            continue
+        out.append("l%d %d" % (gx - round(lat[-1][0]), gy - round(lat[-1][1])))
+        lat.append((float(gx), float(gy)))
+        px, py = gx, gy
+    return "".join(out), lat
+
+
 def line_path(pts):
-    d = "M%.1f %.1f" % pts[0] + "".join(" L%.1f %.1f" % p for p in pts[1:])
+    d, _ = _rel(pts)
     return d
 
 
 def slot_path(cx, cy, r_out, pitch, turns, months):
     """The month marks: one path element whose subpaths are radial ticks, each
     centred on its slot's point on the spiral line. One element per spiral,
-    not one per month."""
+    not one per month. First tick M absolute; every tick after rides an m
+    relative step from the previous tick's end, so a tick costs its two
+    integer deltas and nothing else."""
     r_in = r_out - pitch * turns
     total = turns * 2 * math.pi
     parts = []
+    pe = None  # previous tick's end, absolute
     for i in range(months):
         t = total * i / months
         r = r_out - (r_out - r_in) * (t / total)
         ux, uy = math.cos(t), math.sin(t)
-        parts.append("M%.1f %.1f L%.1f %.1f"
-                     % (cx + (r - TICK_HALF) * ux, cy + (r - TICK_HALF) * uy,
-                        cx + (r + TICK_HALF) * ux, cy + (r + TICK_HALF) * uy))
-    return " ".join(parts)
+        x1, y1 = round(cx + (r - TICK_HALF) * ux), round(cy + (r - TICK_HALF) * uy)
+        x2, y2 = round(cx + (r + TICK_HALF) * ux), round(cy + (r + TICK_HALF) * uy)
+        if pe is None:
+            parts.append("M%d %d" % (x1, y1))
+        else:
+            parts.append("m%d %d" % (x1 - pe[0], y1 - pe[1]))
+        parts.append("l%d %d" % (x2 - x1, y2 - y1))
+        pe = (x2, y2)
+    return "".join(parts)
 
 
 def first_slot(cx, cy, r_out, pitch, turns, months):
@@ -158,7 +199,8 @@ def spiral_block(cx, cy, r_out, pitch, turns, months, count, sub, start_px,
     on the axis it names, and the default `start` would run each one rightward
     off its spiral."""
     pts, r_in = spiral_points(cx, cy, r_out, pitch, turns)
-    fx, fy = first_slot(cx, cy, r_out, pitch, turns, months)
+    _, lat = _rel(pts)
+    fx, fy = lat[0]  # the lattice's first point IS the inner terminus
     g = []
     g.append('  <g class="dials-spiral" data-dial="%s">'
              % ("metonic" if months == METONIC_MONTHS else "saros"))
@@ -252,12 +294,29 @@ for name, svg in (("rear-dials-wide", wide), ("rear-dials-tall", tall)):
 
 # --- self-test ----------------------------------------------------------------
 
+def decode_path(d):
+    """Decode the house encoding - M/m absolute-or-relative moves, l relative
+    lines, integer pairs - back to absolute points. The only three commands
+    this generator emits, so a decoder that knows exactly those three is not a
+    shortcut, it is the file's own contract: a doctored path with anything
+    else in it decodes to junk and fails the turns test downstream."""
+    pts = []
+    x = y = 0.0
+    for cmd, a, b in re.findall(r"([Mml])(-?\d+) (-?\d+)", d):
+        a, b = float(a), float(b)
+        if cmd == "M":
+            x, y = a, b
+        else:
+            x, y = x + a, y + b
+        pts.append((x, y))
+    return pts
+
+
 def swept_turns(d, cx, cy):
-    """Turns measured the only honest way: walk the polyline and accumulate the
+    """Turns measured the only honest way: decode the path and accumulate the
     angle it sweeps around the spiral's centre. A first-and-last-points test
     would measure nothing - both ends sit on the same ray by construction."""
-    nums = [float(v) for v in __import__("re").findall(r"-?\d+\.?\d*", d)]
-    pts = list(zip(nums[0::2], nums[1::2]))
+    pts = decode_path(d)
     swept = 0.0
     prev = math.atan2(pts[0][1] - cy, pts[0][0] - cx)
     for x, y in pts[1:]:
@@ -273,7 +332,6 @@ def swept_turns(d, cx, cy):
 
 
 def self_test() -> int:
-    import re
     worst = 0
 
     def check(label, good, detail=""):
@@ -307,7 +365,10 @@ def self_test() -> int:
             m = re.search(r'class="dials-slots" d="([^"]+)"', blob)
             check("%s/%s: slots path present" % (variant, which), m is not None)
             if m:
-                n_slots = m.group(1).count("M")
+                # one move per tick: M on the first, m relative on every tick
+                # after - so moves, not Ms, count the slots
+                dd = m.group(1)
+                n_slots = dd.count("M") + dd.count("m")
                 check("%s/%s: %d month slots" % (variant, which, months),
                       n_slots == months, "found %d" % n_slots)
             m = re.search(r'class="dials-line" d="([^"]+)"', blob)
