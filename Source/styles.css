@@ -2345,15 +2345,16 @@ h3 {
 .shelf-title { fill: var(--ink); font-weight: 500; }
 .shelf-head { fill: var(--ink); font-weight: 600; }
 .shelf-foot { fill: var(--ink-2); }
-.shelf-band { fill: rgb(255 255 255 / 0.05); }
+/* The zebra band is --fill-row, the same token the dispute table's stripes
+   use: sampled off the exhibit-13 capture, the app's own row fill. The shelf
+   lives on the page's paper ground (the library act is not a field), so the
+   token is used directly, no field remap. */
+.shelf-band { fill: var(--fill-row); }
 .shelf-rule { stroke: var(--rule); stroke-width: 1; }
 .shelf-dot { fill: var(--azure); }
 
-/* The band and rule tokens are the app's own; the paper world needs their
-   dark counterparts, exactly as the dispute table's zebra does. */
 .field .shelf-title, .field .shelf-head { fill: var(--field-ink); }
 .field .shelf-foot { fill: var(--field-ink-2); }
-.field .shelf-band { fill: rgb(255 255 255 / 0.05); }
 .field .shelf-rule { stroke: var(--field-ink-2); }
 .field .shelf-dot { fill: var(--azure-lift); }
 
