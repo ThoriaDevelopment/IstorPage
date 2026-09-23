@@ -176,6 +176,8 @@ INCLUDES = {
     "etymology-tall": (SOURCE / "figures" / "etymology-tall.svg", "svg"),
     "rear-dials-wide": (SOURCE / "figures" / "rear-dials-wide.svg", "svg"),
     "rear-dials-tall": (SOURCE / "figures" / "rear-dials-tall.svg", "svg"),
+    "games-dial-wide": (SOURCE / "figures" / "games-dial-wide.svg", "svg"),
+    "games-dial-tall": (SOURCE / "figures" / "games-dial-tall.svg", "svg"),
     "hero-gears":     (SOURCE / "figures" / "hero-gears.svg",     "svg"),
     "close-gears":    (SOURCE / "figures" / "close-gears.svg",    "svg"),
     "boundary-wide":  (SOURCE / "figures" / "boundary-wide.svg",  "svg"),

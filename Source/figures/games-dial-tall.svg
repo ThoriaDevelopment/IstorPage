@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 404"
+     class="games-plate games-tall" role="img" focusable="false"
+     aria-labelledby="games-tall-title">
+  <title id="games-tall-title">The games dial: four sectors carrying the year
+    ordinals LΑ, LΒ, LΓ and LΔ, and the two games held in each year -
+    Isthmia and Olympia, Nemea and Naa, Isthmia and Pythia, Nemea and
+    Halieia. The pointer's arrow runs anticlockwise, the only one that does.</title>
+  <g class="games-dial">
+    <path class="gd-sector" d="M173.7 30.0 A140.0 140.0 0 0 1 310.0 166.3 L171.3 119.6 Z"/>
+    <path class="gd-arc" d="M173.7 30.0 A140.0 140.0 0 0 1 310.0 166.3"/>
+    <path class="gd-arc" d="M171.3 119.6 A50.4 50.4 0 0 1 220.4 168.7"/>
+    <path class="gd-spoke" d="M171.3 119.6 L173.7 30.0"/>
+    <text class="gd-ordinal" x="253.8" y="86.2" font-size="19.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">LΑ</text>
+    <text class="gd-name" x="235.7" y="104.3" font-size="16.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΙΣΘΜΙΑ</text>
+    <text class="gd-name" x="217.7" y="122.3" font-size="16.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΟΛΥΜΠΙΑ</text>
+    <path class="gd-sector" d="M310.0 173.7 A140.0 140.0 0 0 1 173.7 310.0 L220.4 171.3 Z"/>
+    <path class="gd-arc" d="M310.0 173.7 A140.0 140.0 0 0 1 173.7 310.0"/>
+    <path class="gd-arc" d="M220.4 171.3 A50.4 50.4 0 0 1 171.3 220.4"/>
+    <path class="gd-spoke" d="M220.4 171.3 L310.0 173.7"/>
+    <text class="gd-ordinal" x="253.8" y="253.8" font-size="19.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">LΒ</text>
+    <text class="gd-name" x="235.7" y="235.7" font-size="16.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΝΕΜΕΑ</text>
+    <text class="gd-name" x="217.7" y="217.7" font-size="16.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΝΑΑ</text>
+    <path class="gd-sector" d="M166.3 310.0 A140.0 140.0 0 0 1 30.0 173.7 L168.7 220.4 Z"/>
+    <path class="gd-arc" d="M166.3 310.0 A140.0 140.0 0 0 1 30.0 173.7"/>
+    <path class="gd-arc" d="M168.7 220.4 A50.4 50.4 0 0 1 119.6 171.3"/>
+    <path class="gd-spoke" d="M168.7 220.4 L166.3 310.0"/>
+    <text class="gd-ordinal" x="86.2" y="253.8" font-size="19.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">LΓ</text>
+    <text class="gd-name" x="104.3" y="235.7" font-size="16.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΙΣΘΜΙΑ</text>
+    <text class="gd-name" x="122.3" y="217.7" font-size="16.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΠΥΘΙΑ</text>
+    <path class="gd-sector" d="M30.0 166.3 A140.0 140.0 0 0 1 166.3 30.0 L119.6 168.7 Z"/>
+    <path class="gd-arc" d="M30.0 166.3 A140.0 140.0 0 0 1 166.3 30.0"/>
+    <path class="gd-arc" d="M119.6 168.7 A50.4 50.4 0 0 1 168.7 119.6"/>
+    <path class="gd-spoke" d="M119.6 168.7 L30.0 166.3"/>
+    <text class="gd-ordinal" x="86.2" y="86.2" font-size="19.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">LΔ</text>
+    <text class="gd-name" x="104.3" y="104.3" font-size="16.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΝΕΜΕΑ</text>
+    <text class="gd-name" x="122.3" y="122.3" font-size="16.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΑΛΙΕΙΑ</text>
+    <path class="gd-spoke" d="M220.4 171.3 L310.0 173.7"/>
+    <path class="gd-spoke" d="M168.7 220.4 L166.3 310.0"/>
+    <path class="gd-spoke" d="M119.6 168.7 L30.0 166.3"/>
+  </g>
+  <g class="gd-pointer">
+    <path class="gd-shaft" d="M170.0 113.6 L170.0 16.0"/>
+    <path class="gd-arrow" d="M178.2 19.7 L170.0 16.0 L178.2 12.3"/>
+  </g>
+  <text class="games-count" x="170.0" y="358.0"
+        font-size="16.5" text-anchor="middle">four years</text>
+</svg>

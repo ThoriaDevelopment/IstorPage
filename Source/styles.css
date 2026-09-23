@@ -226,8 +226,17 @@
    iota-with-rough-breathing-and-acute can render, and without the base iota that
    form falls through both faces to Georgia.
 
-   Measured: gfs-didot.woff2 219 codepoints / 0 in Greek; istor-wordmark.woff2 16
-   codepoints / 12 in Greek; inter-var.woff2 230 codepoints / 0 in Greek.
+   Measured, 2026-09-23: gfs-didot.woff2 550 codepoints, Greek complete
+   (rebuilt from the OFL master by make-didot-greek.py, which keeps every
+   codepoint and advance the old 219-glyph Latin subset had and adds the
+   Greek and Greek Extended blocks); istor-wordmark.woff2 16 codepoints /
+   12 in Greek; inter-var.woff2 230 codepoints / 0 in Greek.
+
+   The rebuild exists because the old subset shipped ZERO Greek, and every
+   Greek glyph on the page - the wordmark included - was silently falling
+   back to Georgia. The games-dial plate's uppercase ordinals could not be
+   drawn in a fallback face; the wordmark benefits too, and renders
+   identically, since the wordmark file is cut from the same master.
 
    GFS Didot ships in ONE WEIGHT — Regular. There is no bold and no italic. Every
    display emphasis on this page is therefore carried by size, tracking and the
@@ -249,8 +258,11 @@
     U+2039-203A, U+2044, U+20AC, U+2122, U+2191, U+2193, U+2212, U+FEFF;
 }
 
-/* The display face. Latin only — it has no Greek, which is why the wordmark
-   needs its own file and its own range rather than a subset in this one. */
+/* The display face. Its Greek arrived in the 2026-09-23 rebuild
+   (Source/tools/make-didot-greek.py); before that the range below stopped at
+   Latin and every Greek glyph fell through to Georgia. The wordmark rule
+   that follows is declared later, so it keeps winning the 16 codepoints of
+   its own file - the same master's glyphs either way. */
 @font-face {
   font-family: "GFS Didot";
   src: url("/fonts/gfs-didot.woff2") format("woff2");
@@ -260,6 +272,7 @@
   unicode-range:
     U+0020-007E, U+00A0-00AC, U+00AE, U+00B0-00FF, U+0131, U+0152-0153,
     U+02C6, U+02DA, U+02DC, U+0300-0301, U+0303, U+0308-0309, U+0323,
+    U+0370-03FF, U+1F00-1FFF,
     U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+2032-2033,
     U+2039-203A, U+2044, U+20AC, U+2122, U+2212;
 }
@@ -2067,6 +2080,62 @@ h3 {
   .rear-dials .field.is-inset { padding: 18px 16px; }
 }
 
+/* -------------------------------------------------------------------------
+   14d3 · The games-dial plate, in the evidence act, after the rear dials.
+
+   The friendliest face of the machine, and the one dial that runs against all
+   the others: its pointer is the only anticlockwise one on the instrument
+   (source 1). The plate is generated from the source's own sector table
+   (Source/tools/make-games-dial.py), so the four sectors, the cycle order and
+   the six names cannot drift from what the page's citation supports; the
+   self-test demands all of them plus the arrow.
+
+   Ink: structure is --ink-3, ordinals and names are the ink they earn as
+   display text, and the plate's one azure statement is the pointer - the
+   direction is the claim. The Greek labels pin the display face inline in the
+   generator (measured in it; the font rebuild made that real, see 2 above).
+   Classes, so the field remaps them the way it remaps the rear-dials plate.
+   ------------------------------------------------------------------------- */
+.games-dial-fig { margin: 56px 0 0; }
+.games-dial-fig .field.is-inset { max-width: 700px; }
+.games-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.games-wide { max-width: 640px; }
+.games-tall { display: none; max-width: 340px; }
+
+.gd-sector { fill: transparent; stroke: none; }
+.gd-arc, .gd-spoke { stroke: var(--ink-3); stroke-width: 1.1; fill: none; }
+.gd-name { fill: var(--ink); font-weight: 500; letter-spacing: 0.02em; }
+.gd-ordinal { fill: var(--ink); }
+.gd-shaft { stroke: var(--azure); stroke-width: 1.8; stroke-linecap: round; }
+.gd-arrow { stroke: var(--azure); stroke-width: 1.8; fill: none;
+            stroke-linecap: round; stroke-linejoin: round; }
+
+.games-count { font-family: Inter, sans-serif; font-weight: 600;
+               fill: var(--ink); font-variant-numeric: tabular-nums; }
+.games-sub { font-family: Inter, sans-serif; fill: var(--ink-2); }
+
+/* In the dark field: the rear-dials division exactly. Structure takes
+   --field-ink-2 (6.07:1 there, measured); text takes the field's inks; the
+   claim takes --azure-lift, the blue that passes on teal. */
+.field .gd-sector { fill: transparent; }
+.field .gd-arc, .field .gd-spoke { stroke: var(--field-ink-2); }
+.field .gd-name { fill: var(--field-ink); }
+.field .gd-ordinal { fill: var(--field-ink); }
+.field .gd-shaft, .field .gd-arrow { stroke: var(--azure-lift); }
+.field .games-count { fill: var(--field-ink); }
+.field .games-sub { fill: var(--field-ink-2); }
+
+/* The swap is the rear-dials arithmetic restated: the tall plate's 16.5-unit
+   Greek labels clear the 11px floor at its 0.68 render scale on a 320px
+   phone; the wide plate's 11.5-unit names do not, and its long sub line
+   (197 units in Inter) does not fit the tall width at all - on the phone the
+   caption carries that line, the house's tall-plate pattern. */
+@media (max-width: 700px) {
+  .games-wide { display: none; }
+  .games-tall { display: block; }
+  .games-dial-fig .field.is-inset { padding: 18px 16px; }
+}
+
 /* ---------------------------------------------------------------------------
    14e · The act index.
 
@@ -2405,6 +2474,7 @@ h3 {
   .reveal .exhibit img,
   .boundary .bnd,
   .rear-dials .dials-plate,
+  .games-dial-fig .games-plate,
   .etymology {
     transition: opacity calc(var(--arrive) * 700ms) var(--ease),
                 transform calc(var(--arrive) * 700ms) var(--ease);
@@ -2413,6 +2483,7 @@ h3 {
   .reveal.is-cold .exhibit img,
   .boundary.is-cold .bnd,
   .rear-dials.is-cold .dials-plate,
+  .games-dial-fig.is-cold .games-plate,
   .etymology.is-cold {
     opacity: 0;
     transform: translateY(24px) scale(0.97);

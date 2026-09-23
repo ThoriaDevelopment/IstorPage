@@ -363,6 +363,7 @@ SCENARIO = r"""
   // honestly rather than passing on a state nobody drove.
   out.boundaryPlate = await plateRead('.boundary');
   out.dialsPlate = await plateRead('.rear-dials');
+  out.gamesPlate = await plateRead('.games-dial-fig');
   await home();
   return out;
 })(d, w)
@@ -1258,7 +1259,8 @@ def check(doc: dict, failures: list) -> None:
     # page fact - so the claim records it and fails loudly rather than passing
     # on a state nobody drove.
     for key, label in (("boundaryPlate", "the boundary plate arrives from its own cold state"),
-                       ("dialsPlate", "the rear dials arrive from their own cold state")):
+                       ("dialsPlate", "the rear dials arrive from their own cold state"),
+                       ("gamesPlate", "the games dial arrives from its own cold state")):
         p = v.get(key) or {}
         if p.get("error"):
             ok(label, False, p["error"])
@@ -1535,6 +1537,9 @@ SELF_TESTS = [
     ("the landing's whole-SVG cold state dropped, so a waiting plate is visible",
      [(".boundary.is-cold .bnd,", "")],
      "the boundary plate arrives from its own cold state", ("index.html", "/")),
+    ("the games dial's cold rule dropped, so the waiting plate is visible",
+     [(".games-dial-fig.is-cold .games-plate,", "")],
+     "the games dial arrives from its own cold state", ("index.html", "/")),
     # M22's five, each the failure of one of the dwell's claims. The clock is
     # three constants, a guard and two call sites; each patch removes exactly
     # one of the things a reader can catch.
