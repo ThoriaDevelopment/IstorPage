@@ -2285,6 +2285,46 @@ h3 {
 }
 
 /* ---------------------------------------------------------------------------
+   14d7 · The pin-and-slot plate, inside the hero's cycles answer.
+
+   The page's prose names the mechanism and no drawing carried it; this plate
+   lives in the answer that names it, not in the evidence act, because its
+   claim belongs to the sentence it illustrates. The inks are the window's
+   OWN tokens (--ink/--ink-2/--ink-3/--azure from .win), not the page's:
+   the plate is drawn inside the app's dark pane and reads as part of it.
+   The azure is the pin, the one thing that does the work; the deviation
+   ring's lead half is azure-lifted by the same token, its lag half is
+   --ink-2, so "ahead" reads hotter than "behind" without a second accent.
+   k2's dashed rim and the legend's dashed sample are one class: the key is
+   drawn in the ink it describes.
+   ------------------------------------------------------------------------- */
+.pin-slot-fig { margin: 20px 0 0; }
+.pin-slot-fig .ps-field { max-width: 640px; margin-inline: auto; }
+.ps-plate { display: block; width: 100%; height: auto; }
+.ps-wide { max-width: 640px; }
+.ps-tall { display: none; max-width: 340px; margin-inline: auto; }
+
+.ps-gear { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.ps-gear-b { fill: none; stroke: var(--ink-2); stroke-width: 1.3;
+             stroke-dasharray: 3.2 2.6; }
+.ps-centres, .ps-pinarm { stroke: var(--ink-3); stroke-width: 1; }
+.ps-centre { fill: var(--ink-3); }
+.ps-slot { stroke: var(--ink); stroke-width: 7; stroke-linecap: round;
+           opacity: 0.9; }
+.ps-pin { fill: var(--azure); }
+.ps-devframe { stroke: var(--ink-3); stroke-width: 1; }
+.ps-devlead, .ps-devlag { stroke-width: 1.1; stroke-linecap: round; }
+.ps-devlead { stroke: var(--azure); }
+.ps-devlag { stroke: var(--ink-2); }
+.ps-amp { fill: var(--ink); font-weight: 500; }
+.ps-ahead, .ps-behind, .ps-legend-t { fill: var(--ink-2); }
+
+@media (max-width: 700px) {
+  .ps-wide { display: none; }
+  .ps-tall { display: block; }
+}
+
+/* ---------------------------------------------------------------------------
    14e · The act index.
 
    The one device taken from the Awwwards pass (G36): the fixed edge navigation
@@ -2493,6 +2533,12 @@ h3 {
   .hero .win .answer > *:nth-child(4) { animation: rise 520ms 1060ms var(--ease) both; }
   .hero .win .answer > *:nth-child(5) { animation: rise 520ms 1160ms var(--ease) both; }
   .hero .win .answer > *:nth-child(6) { animation: rise 520ms 1260ms var(--ease) both; }
+  /* The pin-and-slot plate is the cycles answer's seventh child, and the
+     sequence's one-liner extension: without a slot here the plate sits fully
+     painted from the first frame while the prose around it rises, which is
+     the exact seam M2 exists to close. 1360ms is the family's own step, and
+     the citations still arrive last at 1500ms. */
+  .hero .win .answer > *:nth-child(7) { animation: rise 520ms 1360ms var(--ease) both; }
   /* The chips last, at 1500ms — after the prose that carries them has landed. */
   .hero .win .cite      { animation: pop 280ms 1500ms var(--ease) both; }
   .hero .win .rail      { animation: fade 600ms 900ms var(--ease) both; }

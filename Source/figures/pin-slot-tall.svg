@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 560"
+     class="ps-plate ps-tall" role="img" focusable="false"
+     aria-labelledby="ps-tall-title">
+  <title id="ps-tall-title">The pin-and-slot mechanism drawn exactly, with k2's phase deviation ring: ahead 6.29 degrees, then behind, once per turn.</title>
+  <g class="ps-mech">
+    <circle class="ps-gear" cx="170.00" cy="138.00" r="78.00"/>
+    <circle class="ps-gear ps-gear-b" cx="178.55" cy="138.00" r="78.00"/>
+    <path class="ps-centres" d="M170.00 138.00 L256.55 138.00"/>
+    <path class="ps-slot" d="M194.82 127.25 L243.62 94.99"/>
+    <circle class="ps-pin" cx="237.55" cy="99.00" r="3.0"/>
+    <path class="ps-pinarm" d="M170.00 138.00 L237.55 99.00"/>
+    <circle class="ps-centre" cx="170.00" cy="138.00" r="1.6"/>
+    <circle class="ps-centre" cx="178.55" cy="138.00" r="1.6"/>
+  </g>
+  <g class="ps-dev" aria-hidden="true">
+    <path class="ps-devframe" d="M170.00 306.00 L170.00 310.50"/>
+    <path class="ps-devframe" d="M218.00 318.86 L216.90 320.77"/>
+    <path class="ps-devframe" d="M253.14 354.00 L251.23 355.10"/>
+    <path class="ps-devframe" d="M266.00 402.00 L263.80 402.00"/>
+    <path class="ps-devframe" d="M253.14 450.00 L251.23 448.90"/>
+    <path class="ps-devframe" d="M218.00 485.14 L216.90 483.23"/>
+    <path class="ps-devframe" d="M170.00 498.00 L170.00 493.50"/>
+    <path class="ps-devframe" d="M122.00 485.14 L123.10 483.23"/>
+    <path class="ps-devframe" d="M86.86 450.00 L88.77 448.90"/>
+    <path class="ps-devframe" d="M74.00 402.00 L76.20 402.00"/>
+    <path class="ps-devframe" d="M86.86 354.00 L88.77 355.10"/>
+    <path class="ps-devframe" d="M122.00 318.86 L123.10 320.77"/>
+    <path class="ps-devlead" d="M173.35 306.06 L173.36 305.66"/>
+    <path class="ps-devlead" d="M176.70 306.23 L176.75 305.45"/>
+    <path class="ps-devlead" d="M180.03 306.53 L180.16 305.35"/>
+    <path class="ps-devlead" d="M183.36 306.93 L183.58 305.38"/>
+    <path class="ps-devlead" d="M186.67 307.46 L187.01 305.53"/>
+    <path class="ps-devlead" d="M189.96 308.10 L190.45 305.81"/>
+    <path class="ps-devlead" d="M193.22 308.85 L193.88 306.21"/>
+    <path class="ps-devlead" d="M196.46 309.72 L197.31 306.74"/>
+    <path class="ps-devlead" d="M199.67 310.70 L200.74 307.40"/>
+    <path class="ps-devlead" d="M202.83 311.79 L204.14 308.19"/>
+    <path class="ps-devlead" d="M205.96 312.99 L207.53 309.11"/>
+    <path class="ps-devlead" d="M209.05 314.30 L210.89 310.15"/>
+    <path class="ps-devlead" d="M212.08 315.72 L214.22 311.33"/>
+    <path class="ps-devlead" d="M215.07 317.24 L217.52 312.63"/>
+    <path class="ps-devlead" d="M218.00 318.86 L220.77 314.06"/>
+    <path class="ps-devlead" d="M220.87 320.59 L223.98 315.62"/>
+    <path class="ps-devlead" d="M223.68 322.41 L227.13 317.30"/>
+    <path class="ps-devlead" d="M226.43 324.33 L230.23 319.10"/>
+    <path class="ps-devlead" d="M229.10 326.35 L233.26 321.03"/>
+    <path class="ps-devlead" d="M231.71 328.46 L236.23 323.07"/>
+    <path class="ps-devlead" d="M234.24 330.66 L239.12 325.23"/>
+    <path class="ps-devlead" d="M236.69 332.94 L241.94 327.51"/>
+    <path class="ps-devlead" d="M239.06 335.31 L244.67 329.89"/>
+    <path class="ps-devlead" d="M241.34 337.76 L247.31 332.39"/>
+    <path class="ps-devlead" d="M243.54 340.29 L249.87 334.98"/>
+    <path class="ps-devlead" d="M245.65 342.90 L252.32 337.68"/>
+    <path class="ps-devlead" d="M247.67 345.57 L254.67 340.48"/>
+    <path class="ps-devlead" d="M249.59 348.32 L256.92 343.37"/>
+    <path class="ps-devlead" d="M251.41 351.13 L259.06 346.35"/>
+    <path class="ps-devlead" d="M253.14 354.00 L261.08 349.41"/>
+    <path class="ps-devlead" d="M254.76 356.93 L262.99 352.56"/>
+    <path class="ps-devlead" d="M256.28 359.92 L264.78 355.77"/>
+    <path class="ps-devlead" d="M257.70 362.95 L266.44 359.06"/>
+    <path class="ps-devlead" d="M259.01 366.04 L267.98 362.41"/>
+    <path class="ps-devlead" d="M260.21 369.17 L269.39 365.82"/>
+    <path class="ps-devlead" d="M261.30 372.33 L270.67 369.29"/>
+    <path class="ps-devlead" d="M262.28 375.54 L271.82 372.80"/>
+    <path class="ps-devlead" d="M263.15 378.78 L272.83 376.36"/>
+    <path class="ps-devlead" d="M263.90 382.04 L273.70 379.96"/>
+    <path class="ps-devlead" d="M264.54 385.33 L274.44 383.59"/>
+    <path class="ps-devlead" d="M265.07 388.64 L275.03 387.24"/>
+    <path class="ps-devlead" d="M265.47 391.97 L275.49 390.91"/>
+    <path class="ps-devlead" d="M265.77 395.30 L275.80 394.60"/>
+    <path class="ps-devlead" d="M265.94 398.65 L275.97 398.30"/>
+    <path class="ps-devlead" d="M266.00 402.00 L276.01 402.00"/>
+    <path class="ps-devlead" d="M265.94 405.35 L275.90 405.70"/>
+    <path class="ps-devlead" d="M265.77 408.70 L275.65 409.39"/>
+    <path class="ps-devlead" d="M265.47 412.03 L275.26 413.06"/>
+    <path class="ps-devlead" d="M265.07 415.36 L274.73 416.72"/>
+    <path class="ps-devlead" d="M264.54 418.67 L274.07 420.35"/>
+    <path class="ps-devlead" d="M263.90 421.96 L273.27 423.95"/>
+    <path class="ps-devlead" d="M263.15 425.22 L272.33 427.51"/>
+    <path class="ps-devlead" d="M262.28 428.46 L271.26 431.04"/>
+    <path class="ps-devlead" d="M261.30 431.67 L270.06 434.51"/>
+    <path class="ps-devlead" d="M260.21 434.83 L268.73 437.94"/>
+    <path class="ps-devlead" d="M259.01 437.96 L267.28 441.30"/>
+    <path class="ps-devlead" d="M257.70 441.05 L265.70 444.61"/>
+    <path class="ps-devlead" d="M256.28 444.08 L264.01 447.85"/>
+    <path class="ps-devlead" d="M254.76 447.07 L262.19 451.02"/>
+    <path class="ps-devlead" d="M253.14 450.00 L260.26 454.11"/>
+    <path class="ps-devlead" d="M251.41 452.87 L258.22 457.13"/>
+    <path class="ps-devlead" d="M249.59 455.68 L256.08 460.06"/>
+    <path class="ps-devlead" d="M247.67 458.43 L253.83 462.91"/>
+    <path class="ps-devlead" d="M245.65 461.10 L251.48 465.66"/>
+    <path class="ps-devlead" d="M243.54 463.71 L249.04 468.32"/>
+    <path class="ps-devlead" d="M241.34 466.24 L246.50 470.88"/>
+    <path class="ps-devlead" d="M239.06 468.69 L243.88 473.34"/>
+    <path class="ps-devlead" d="M236.69 471.06 L241.17 475.70"/>
+    <path class="ps-devlead" d="M234.24 473.34 L238.39 477.95"/>
+    <path class="ps-devlead" d="M231.71 475.54 L235.53 480.10"/>
+    <path class="ps-devlead" d="M229.10 477.65 L232.60 482.13"/>
+    <path class="ps-devlead" d="M226.43 479.67 L229.61 484.05"/>
+    <path class="ps-devlead" d="M223.68 481.59 L226.56 485.85"/>
+    <path class="ps-devlead" d="M220.87 483.41 L223.45 487.54"/>
+    <path class="ps-devlead" d="M218.00 485.14 L220.29 489.11"/>
+    <path class="ps-devlead" d="M215.07 486.76 L217.09 490.56"/>
+    <path class="ps-devlead" d="M212.08 488.28 L213.84 491.89"/>
+    <path class="ps-devlead" d="M209.05 489.70 L210.56 493.09"/>
+    <path class="ps-devlead" d="M205.96 491.01 L207.24 494.18"/>
+    <path class="ps-devlead" d="M202.83 492.21 L203.90 495.14"/>
+    <path class="ps-devlead" d="M199.67 493.30 L200.53 495.97"/>
+    <path class="ps-devlead" d="M196.46 494.28 L197.15 496.69"/>
+    <path class="ps-devlead" d="M193.22 495.15 L193.76 497.28"/>
+    <path class="ps-devlead" d="M189.96 495.90 L190.35 497.75"/>
+    <path class="ps-devlead" d="M186.67 496.54 L186.94 498.09"/>
+    <path class="ps-devlead" d="M183.36 497.07 L183.54 498.31"/>
+    <path class="ps-devlead" d="M180.03 497.47 L180.13 498.42"/>
+    <path class="ps-devlead" d="M176.70 497.77 L176.74 498.40"/>
+    <path class="ps-devlead" d="M173.35 497.94 L173.36 498.26"/>
+    <path class="ps-devlag" d="M166.65 497.94 L166.66 497.63"/>
+    <path class="ps-devlag" d="M163.30 497.77 L163.35 497.14"/>
+    <path class="ps-devlag" d="M159.97 497.47 L160.06 496.53"/>
+    <path class="ps-devlag" d="M156.64 497.07 L156.81 495.82"/>
+    <path class="ps-devlag" d="M153.33 496.54 L153.60 494.99"/>
+    <path class="ps-devlag" d="M150.04 495.90 L150.43 494.06"/>
+    <path class="ps-devlag" d="M146.78 495.15 L147.31 493.02"/>
+    <path class="ps-devlag" d="M143.54 494.28 L144.23 491.87"/>
+    <path class="ps-devlag" d="M140.33 493.30 L141.20 490.63"/>
+    <path class="ps-devlag" d="M137.17 492.21 L138.23 489.28"/>
+    <path class="ps-devlag" d="M134.04 491.01 L135.32 487.84"/>
+    <path class="ps-devlag" d="M130.95 489.70 L132.46 486.31"/>
+    <path class="ps-devlag" d="M127.92 488.28 L129.67 484.68"/>
+    <path class="ps-devlag" d="M124.93 486.76 L126.95 482.97"/>
+    <path class="ps-devlag" d="M122.00 485.14 L124.29 481.17"/>
+    <path class="ps-devlag" d="M119.13 483.41 L121.71 479.29"/>
+    <path class="ps-devlag" d="M116.32 481.59 L119.19 477.32"/>
+    <path class="ps-devlag" d="M113.57 479.67 L116.76 475.28"/>
+    <path class="ps-devlag" d="M110.90 477.65 L114.40 473.17"/>
+    <path class="ps-devlag" d="M108.29 475.54 L112.12 470.98"/>
+    <path class="ps-devlag" d="M105.76 473.34 L109.92 468.73"/>
+    <path class="ps-devlag" d="M103.31 471.06 L107.80 466.41"/>
+    <path class="ps-devlag" d="M100.94 468.69 L105.77 464.03"/>
+    <path class="ps-devlag" d="M98.66 466.24 L103.82 461.59"/>
+    <path class="ps-devlag" d="M96.46 463.71 L101.96 459.10"/>
+    <path class="ps-devlag" d="M94.35 461.10 L100.18 456.55"/>
+    <path class="ps-devlag" d="M92.33 458.43 L98.50 453.95"/>
+    <path class="ps-devlag" d="M90.41 455.68 L96.90 451.30"/>
+    <path class="ps-devlag" d="M88.59 452.87 L95.40 448.62"/>
+    <path class="ps-devlag" d="M86.86 450.00 L93.99 445.89"/>
+    <path class="ps-devlag" d="M85.24 447.07 L92.67 443.12"/>
+    <path class="ps-devlag" d="M83.72 444.08 L91.44 440.32"/>
+    <path class="ps-devlag" d="M82.30 441.05 L90.30 437.48"/>
+    <path class="ps-devlag" d="M80.99 437.96 L89.26 434.62"/>
+    <path class="ps-devlag" d="M79.79 434.83 L88.31 431.73"/>
+    <path class="ps-devlag" d="M78.70 431.67 L87.46 428.82"/>
+    <path class="ps-devlag" d="M77.72 428.46 L86.70 425.89"/>
+    <path class="ps-devlag" d="M76.85 425.22 L86.03 422.94"/>
+    <path class="ps-devlag" d="M76.10 421.96 L85.46 419.97"/>
+    <path class="ps-devlag" d="M75.46 418.67 L84.99 416.99"/>
+    <path class="ps-devlag" d="M74.93 415.36 L84.60 414.00"/>
+    <path class="ps-devlag" d="M74.53 412.03 L84.31 411.01"/>
+    <path class="ps-devlag" d="M74.23 408.70 L84.12 408.01"/>
+    <path class="ps-devlag" d="M74.06 405.35 L84.02 405.00"/>
+    <path class="ps-devlag" d="M74.00 402.00 L84.01 402.00"/>
+    <path class="ps-devlag" d="M74.06 398.65 L84.09 399.00"/>
+    <path class="ps-devlag" d="M74.23 395.30 L84.27 396.01"/>
+    <path class="ps-devlag" d="M74.53 391.97 L84.54 393.02"/>
+    <path class="ps-devlag" d="M74.93 388.64 L84.90 390.04"/>
+    <path class="ps-devlag" d="M75.46 385.33 L85.35 387.07"/>
+    <path class="ps-devlag" d="M76.10 382.04 L85.90 384.12"/>
+    <path class="ps-devlag" d="M76.85 378.78 L86.53 381.19"/>
+    <path class="ps-devlag" d="M77.72 375.54 L87.25 378.27"/>
+    <path class="ps-devlag" d="M78.70 372.33 L88.07 375.38"/>
+    <path class="ps-devlag" d="M79.79 369.17 L88.97 372.51"/>
+    <path class="ps-devlag" d="M80.99 366.04 L89.96 369.66"/>
+    <path class="ps-devlag" d="M82.30 362.95 L91.04 366.85"/>
+    <path class="ps-devlag" d="M83.72 359.92 L92.21 364.06"/>
+    <path class="ps-devlag" d="M85.24 356.93 L93.47 361.31"/>
+    <path class="ps-devlag" d="M86.86 354.00 L94.81 358.59"/>
+    <path class="ps-devlag" d="M88.59 351.13 L96.23 355.91"/>
+    <path class="ps-devlag" d="M90.41 348.32 L97.75 353.26"/>
+    <path class="ps-devlag" d="M92.33 345.57 L99.34 350.66"/>
+    <path class="ps-devlag" d="M94.35 342.90 L101.02 348.11"/>
+    <path class="ps-devlag" d="M96.46 340.29 L102.79 345.60"/>
+    <path class="ps-devlag" d="M98.66 337.76 L104.63 343.14"/>
+    <path class="ps-devlag" d="M100.94 335.31 L106.56 340.73"/>
+    <path class="ps-devlag" d="M103.31 332.94 L108.56 338.38"/>
+    <path class="ps-devlag" d="M105.76 330.66 L110.65 336.09"/>
+    <path class="ps-devlag" d="M108.29 328.46 L112.82 333.85"/>
+    <path class="ps-devlag" d="M110.90 326.35 L115.06 331.68"/>
+    <path class="ps-devlag" d="M113.57 324.33 L117.38 329.57"/>
+    <path class="ps-devlag" d="M116.32 322.41 L119.77 327.53"/>
+    <path class="ps-devlag" d="M119.13 320.59 L122.23 325.56"/>
+    <path class="ps-devlag" d="M122.00 318.86 L124.77 323.66"/>
+    <path class="ps-devlag" d="M124.93 317.24 L127.38 321.84"/>
+    <path class="ps-devlag" d="M127.92 315.72 L130.06 320.10"/>
+    <path class="ps-devlag" d="M130.95 314.30 L132.80 318.44"/>
+    <path class="ps-devlag" d="M134.04 312.99 L135.61 316.87"/>
+    <path class="ps-devlag" d="M137.17 311.79 L138.48 315.39"/>
+    <path class="ps-devlag" d="M140.33 310.70 L141.40 313.99"/>
+    <path class="ps-devlag" d="M143.54 309.72 L144.39 312.69"/>
+    <path class="ps-devlag" d="M146.78 308.85 L147.43 311.49"/>
+    <path class="ps-devlag" d="M150.04 308.10 L150.53 310.39"/>
+    <path class="ps-devlag" d="M153.33 307.46 L153.67 309.38"/>
+    <path class="ps-devlag" d="M156.64 306.93 L156.86 308.49"/>
+    <path class="ps-devlag" d="M159.97 306.53 L160.09 307.70"/>
+    <path class="ps-devlag" d="M163.30 306.23 L163.36 307.02"/>
+    <path class="ps-devlag" d="M166.65 306.06 L166.66 306.45"/>
+  </g>
+  <g class="ps-legend">
+    <path class="ps-gear" d="M52.0 246.0 h20"/>
+    <text class="ps-legend-t" x="80.0" y="252.3" font-size="18.0" font-family="Inter, sans-serif">constant rate</text>
+    <path class="ps-gear-b" d="M216.0 246.0 h20" stroke-dasharray="3.2 2.6"/>
+    <text class="ps-legend-t" x="244.0" y="252.3" font-size="18.0" font-family="Inter, sans-serif">varied rate</text>
+    <circle class="ps-pin" cx="55.0" cy="273.9" r="2.6"/>
+    <text class="ps-legend-t" x="62.0" y="280.2" font-size="18.0" font-family="Inter, sans-serif">pin and slot</text>
+  </g>
+  <text class="ps-amp" x="170.0" y="408.3" font-size="18.0" font-family="Inter, sans-serif" text-anchor="middle">6.29 degrees</text>
+  <text class="ps-ahead" x="170.0" y="290.3" font-size="18.0" font-family="Inter, sans-serif" text-anchor="middle">runs ahead</text>
+  <text class="ps-behind" x="170.0" y="526.3" font-size="18.0" font-family="Inter, sans-serif" text-anchor="middle">falls behind</text>
+</svg>

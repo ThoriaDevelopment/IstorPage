@@ -797,6 +797,41 @@ HERO_SCENARIO = r"""
     firsts: firsts,
     maskRoom: { line1: room(lines[0]), line2: room(lines[1]) },
   };
+  // M43 · the answer's seventh child. The cycles answer gained a drawn plate
+  // (the pin-and-slot, the sentence that names it made visible), and M2's
+  // sequence gained a seventh slot for it. The claim is the family's own:
+  // at rest it is the authored state (fully visible), and in the sequence it
+  // lands AFTER the sixth child (the last prose paragraph), so the drawing
+  // arrives after the words that introduce it.
+  const answer = d.querySelector('.hero .answer#ans-cycles') ||
+                 d.querySelector('.hero .answer');
+  const kids = answer ? answer.children : [];
+  if (kids.length >= 7) {
+    const fig = kids[6];
+    const figState = () => {
+      const cs = getComputedStyle(fig);
+      return { op: parseFloat(cs.opacity), tf: cs.transform };
+    };
+    // its own first-visible timestamp, on the same poll's clock
+    let figFirst = null;
+    const figPoll = setInterval(() => {
+      const s = figState();
+      if (figFirst === null && s.op >= 0.9 && (s.tf === 'none' ||
+          Math.abs(parseFloat(/matrix\(([^)]+)\)/.exec(s.tf)[1].split(',')[5])) < 3)) {
+        figFirst = Math.round(performance.now() - t0);
+      }
+    }, 40);
+    await wait(1700 - 0);
+    clearInterval(figPoll);
+    const fs = figState();
+    result.answerPlate = {
+      seventhChild: fig.tagName.toLowerCase() + '.' + (fig.className || ''),
+      atRest: fs.op >= 0.95 && (fs.tf === 'none' ||
+               Math.abs(parseFloat(/matrix\(([^)]+)\)/.exec(fs.tf)[1].split(',')[5] || 0)) < 2),
+      first: figFirst,
+      afterProse: figFirst !== null && firsts.cue !== undefined ? true : figFirst !== null,
+    };
+  }
 
   // Re-arm the cold state and hold it long enough for the hiding to finish
   // (the lede's own clock is 560ms of delay plus 560ms of travel; the cue's is
@@ -1057,6 +1092,7 @@ HERO_CLAIMS = (
     "released, the hero arrives a second time",
     "the dawn holds the light sunk in the cold state",
     "and releases it on the cast's own clock",
+    "the cycles answer's plate arrives last, at rest",
 )
 
 
@@ -1101,6 +1137,21 @@ def check_hero(doc: dict, failures: list) -> None:
     ok("released, the hero arrives a second time",
        all(r.get(k) for k in ("line1", "line2", "lede", "cta", "cue")),
        "the same words at rest again - is-cold must not be a one-way door")
+
+    # M43 · the answer's drawn plate. The scenario read the cycles answer's
+    # seventh child on the same clock as the words; the claim is that it
+    # arrived (fully painted at rest) and last (after the prose that names
+    # the mechanism it draws).
+    ap = doc.get("answerPlate") or {}
+    if ap:
+        ok("the cycles answer's plate arrives last, at rest",
+           ap.get("atRest") is True and ap.get("first") is not None
+           and ap.get("first") >= (f.get("cue") or 0),
+           "child %s first visible at %s ms (cue at %s)"
+           % (ap.get("seventhChild", "?"), ap.get("first"), f.get("cue")))
+    else:
+        ok("the cycles answer's plate arrives last, at rest", False,
+           "the scenario found no seventh child to read")
 
     # M27 · the dawn's two claims, read off the rendered gradient the way the
     # sun's are: the computed background is the only honest reading of a
@@ -1410,6 +1461,7 @@ PAGE_COLD_LINE = "  .hero.is-cold .h1-reveal .h1-line { transform: translateY(11
 PAGE_ARM_COND = "  if (heroField && !reduced) {"
 PAGE_MASK_PAD = ("                   padding-block: 0.14em; margin-block: -0.14em; }")
 PAGE_LEDE_D = "  .hero .lede        { transition-delay: calc(var(--arrive) * 560ms),"
+PAGE_ANS7 = "  .hero .win .answer > *:nth-child(7) { animation: rise 520ms 1360ms var(--ease) both; }"
 
 # M24's claim family and its doctors' anchors, quoted from the page itself, on
 # the same contract as M23's: if the page's wording drifts, the doctor FAILS
@@ -1575,6 +1627,13 @@ SELF_TESTS = [
     ("M23 · a lede that arrives out of order",
      [(PAGE_LEDE_D, "  .hero .lede        { transition-delay: calc(var(--arrive) * 5000ms),")],
      "the arrival is ordered: line1, line2, lede, CTA, cue", ("index.html", "/")),
+    # M43's own doctor: the plate's sequence slot dropped means the seventh
+    # child sits painted from the first frame while the prose rises - exactly
+    # the seam M2 closes. The claim reads the first-visible timestamp, which
+    # the slotless page produces before the prose finishes.
+    ("M43 · the answer plate lost its sequence slot",
+     [(PAGE_ANS7, "")],
+     "the cycles answer's plate arrives last, at rest", ("index.html", "/")),
     ("M23 · a cold state that never hides the line",
      [(PAGE_COLD_LINE, "  .hero.is-cold .h1-reveal .h1-line { transform: translateY(0%); }")],
      "is-cold hides the hero's arrival again"),

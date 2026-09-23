@@ -232,6 +232,40 @@
             <p>The mechanism's gearing incorporated a pin-and-slot mechanism that matches
               Hipparchus's lunar theory, replicating the Moon's variable
               velocity<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
+
+            <!-- The pin-and-slot, drawn for the first time on this page, in the
+                 answer that names it. Source 4 states the mechanism: k1 and k2
+                 "are an identical pair of gears that do not mesh, but rather,
+                 they operate face-to-face, with a short pin on k1 inserted into
+                 a slot in k2"; the centres differ, so "the pin must move back
+                 and forth in the slot", varying the radius k2 is driven at and
+                 "necessarily" its angular velocity, while "over an entire
+                 revolution the average velocities are the same". The plate
+                 draws exactly that, and the ring derives from the drawing the
+                 one number that makes the claim land: the phase deviation's
+                 6.29-degree amplitude, the principal term of the lunar
+                 equation of centre, the anomaly Hipparchus's theory models.
+                 The eccentricity is a stated choice (e/r = 0.1096, solved for
+                 that amplitude); no tooth counts, no orbit ellipse: the source
+                 names none for k1/k2, and the plate is not free to claim more
+                 than the sentence it illustrates. Generated:
+                 make-pin-slot.py, with the self-test that demands the exact
+                 constraint curve, the amplitude at 6.29, and the pin inside
+                 the slot at the drawn instant. -->
+            <figure class="pin-slot-fig">
+              <div class="ps-field">
+                <!--#include pin-slot-wide-->
+                <!--#include pin-slot-tall-->
+              </div>
+              <figcaption>The mechanism that makes the Moon's pointer speed up
+                and slow down<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.
+                k1 turns at a constant rate and carries the pin; k2, an
+                identical gear on a different centre, carries the slot, so the
+                pin slides back and forth and k2's rate varies with it. The
+                ring plots k2's phase against k1's around the whole turn:
+                ahead by up to 6.29 degrees, then behind, the Moon's equation
+                of centre made of gears.</figcaption>
+            </figure>
           </div>
 
           <details class="hero-more" data-hero-more>
