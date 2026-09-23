@@ -1053,6 +1053,14 @@ h3 {
 .nav-links a { color: var(--ink-2); text-decoration: none; }
 .nav-links a:hover { color: var(--ink); }
 
+/* M31 · the act label. The desktop band never shows it: the three links ARE
+   the header's answer there. Below 900px the links are hidden and the phone
+   reader had a progress line (how far) with no name for where; the label is
+   the name, written on the same promote moment every other wayfinding surface
+   rides. Quietest ink, the small label size, and it grows out of the mark
+   rather than taking a slot: the wrap's flex row just carries one more span. */
+.act-label { display: none; }
+
 /* M30 · the header's answer to "where am I". The hero's rail and its act-index
    ring name the current act, but both scroll away with the hero; the header is
    the one navigation that persists, and until now its three links were the
@@ -2500,6 +2508,29 @@ h3 {
   .plate figcaption { margin-block-start: 16px; }
 
   .nav-links { display: none; }
+  /* M31 · the label's compact-band shape: after the mark, before the CTA's
+     auto margin, so it takes no room the CTA needs. Three measurements set
+     the shape. The wrap's gap is 32px, so the label pays its own leading by
+     taking margin-inline-start: -16px, landing at the visual 16px the nav's
+     own compact row uses. The CTA must not wrap (it wrapped to two lines at
+     390px when the label took flex room), so it gets nowrap; the label is the
+     flexible member and shrinks first. max-width caps the flexible member so
+     a long act name truncates rather than pushing the bar. The over-field ink
+     pair keeps it legible on the hero's teal. */
+  .act-label {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    margin-inline-start: -16px;
+    max-width: 16ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--ink-3);
+    font-size: var(--t-label);
+  }
+  .nav.over-field .act-label { color: var(--field-ink-2); }
+  .nav .cta { white-space: nowrap; }
 
   /* Keep the reference-style section nav on compact desktop widths. The
      content columns still stack here, but the header has enough room for a

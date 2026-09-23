@@ -46,6 +46,16 @@
 <nav class="nav" id="nav" aria-label="Main">
   <div class="wrap">
     <a class="nav-mark" href="#what-it-is">ἵστωρ<span class="mark-dot">.</span></a>
+    <!-- M31 · the act label. Below 900px the header's three links are hidden
+         (the row will not fit), and so are the rail, the dots and the ring:
+         a phone reader has the progress line, which says how far but never
+         where. This span is the where. It is empty until the reader is inside
+         a named act, and the SAME promote moment the rail, the dots, the ring
+         and now the header links ride writes it, so every wayfinding surface
+         on the page answers from one computation. aria-hidden: it is a mirror
+         of the rail's aria-current, and a screen reader reading both would
+         hear the act twice. -->
+    <span class="act-label" aria-hidden="true"></span>
     <div class="nav-links">
       <a href="#how-it-answers">How it answers</a>
       <a href="#on-your-machine">On your machine</a>
@@ -1523,6 +1533,8 @@
     // (the rail scrolls away with its window), so they learn the same state the
     // rail already computes. Collected once, beside the rail's own links.
     var navLinks = nav ? Array.prototype.slice.call(nav.querySelectorAll('.nav-links a')) : [];
+    // M31 · the phone's act label, the where for the widths the links cannot fit.
+    var actLabel = nav ? nav.querySelector('.act-label') : null;
     var measure = function () {
       if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
       if (closePoster) {
@@ -1569,6 +1581,11 @@
           if (here && a.getAttribute('href') === here) a.setAttribute('aria-current', 'location');
           else a.removeAttribute('aria-current');
         });
+        // M31 · the act label's half of the same moment. The name comes from
+        // the rail row the reader is in (its own text is the act's name), so
+        // the label cannot drift from the rail by a rename: one source. Empty
+        // above the first act and on the close, where nothing is named.
+        if (actLabel) actLabel.textContent = next ? next.textContent : '';
         // M11's half of the same arithmetic. `k` is -1 above the first act,
         // which clears every dot: no dot claims a position the reader is not in.
         var k = railLinks.indexOf(next);
