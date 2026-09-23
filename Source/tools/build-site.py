@@ -171,6 +171,7 @@ INCLUDES = {
     "win-mark":      (SOURCE / "win-mark.partial",             "svg"),
     "calendar-ring": (SOURCE / "figures" / "calendar-ring.svg", "svg"),
     "poster-horizon": (SOURCE / "figures" / "poster-horizon.svg", "svg"),
+    "poster-veil":    (SOURCE / "figures" / "poster-veil.svg",    "svg"),
     "etymology":      (SOURCE / "figures" / "etymology.svg",      "svg"),
     "etymology-tall": (SOURCE / "figures" / "etymology-tall.svg", "svg"),
     "rear-dials-wide": (SOURCE / "figures" / "rear-dials-wide.svg", "svg"),

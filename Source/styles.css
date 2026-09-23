@@ -1526,6 +1526,33 @@ h3 {
      poster above still crops the band, which is what keeps it full-bleed. */
   overflow: visible;
 }
+
+/* M35 · the veil: the ring crosses the LETTERS. One drawing, one job: the
+   second pass of the 355-hole ring, draped over the wordmark's middle, its
+   beads in front of the type - the one crossing on the page where art goes
+   over brand, so the mark sits inside the machine instead of before it.
+
+   THE CANVAS CONTRACT. The svg's own y=0 is the letters' CAP LINE, and this
+   rule is where that contract is kept: the mark's box hangs a negative
+   half-leading (about 14px at the design size) above the poster's padding
+   edge, and the cap line sits a fixed fraction of the type size below the
+   box's top - 0.115 of --mark-size for this face, re-measurable with the
+   browser against the same note the horizon's 0.889 carries. The width is
+   the mark's box's own, scaled with it, so the crossing holds at every
+   clamp size. left/translate centre it on the word the way the horizon's
+   100vw centres the limb on the page. */
+.poster-veil {
+  position: absolute;
+  left: 50%;
+  width: 100vw;
+  max-width: none;
+  transform: translateX(-50%);
+  top: calc(var(--mark-size) * var(--mark-line) * 0.889 - var(--mark-size) * 0.615);
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
+}
 .poster .win,
 .poster .body,
 .poster .reading,
