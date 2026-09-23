@@ -2136,6 +2136,53 @@ h3 {
   .games-dial-fig .field.is-inset { padding: 18px 16px; }
 }
 
+/* -------------------------------------------------------------------------
+   14d4 · The front-dial plate, in the evidence act, after the games dial.
+
+   The face the hero's answer names. Its parts are exactly the source's: the
+   zodiac ring (twelve 30-degree sectors, the twelve Greek sign names), the
+   outer day-hole ring drawn in the calendar-ring figure's own dashed-circle
+   language because its count is that dispute and the drawing does not take a
+   side, the three attested month names, and the sun and moon marks - the
+   plate's one azure statement, the two things the face exists to show.
+   Greek labels pin the display face inline (M37a's rebuild); the count line
+   is Inter, the dials-count convention. Classes, so the field remaps them
+   the way it remaps the other two plates.
+   ------------------------------------------------------------------------- */
+.front-dial-fig { margin: 56px 0 0; }
+.front-dial-fig .field.is-inset { max-width: 700px; }
+.front-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.front-wide { max-width: 640px; }
+.front-tall { display: none; max-width: 340px; }
+
+.fd-frame { stroke: var(--ink-3); stroke-width: 1; fill: none; }
+.fd-holes { stroke: var(--ink-3); stroke-width: 2.8; }
+.fd-arc, .fd-spoke { stroke: var(--ink-3); stroke-width: 1; fill: none; }
+.fd-sign { fill: var(--ink); font-weight: 500; letter-spacing: 0.02em; }
+.fd-month { fill: var(--ink-2); letter-spacing: 0.02em; }
+.fd-sun { fill: var(--azure); }
+.fd-ray { stroke: var(--azure); stroke-width: 1.1; stroke-linecap: round; }
+.fd-moon { fill: var(--paper); stroke: var(--azure); stroke-width: 1.4; }
+.front-count { font-family: Inter, sans-serif; font-weight: 600;
+               fill: var(--ink); }
+
+/* In the dark field: the house division. The moon's disc takes the field's
+   ground so it reads as a body against the teal, its rim the azure. */
+.field .fd-frame, .field .fd-holes { stroke: var(--field-ink-2); }
+.field .fd-arc, .field .fd-spoke { stroke: var(--field-ink-2); }
+.field .fd-sign { fill: var(--field-ink); }
+.field .fd-month { fill: var(--field-ink-2); }
+.field .fd-sun { fill: var(--azure-lift); }
+.field .fd-ray { stroke: var(--azure-lift); }
+.field .fd-moon { fill: var(--field-base); stroke: var(--azure-lift); }
+.field .front-count { fill: var(--field-ink); }
+
+@media (max-width: 700px) {
+  .front-wide { display: none; }
+  .front-tall { display: block; }
+  .front-dial-fig .field.is-inset { padding: 18px 16px; }
+}
+
 /* ---------------------------------------------------------------------------
    14e · The act index.
 
@@ -2475,6 +2522,7 @@ h3 {
   .boundary .bnd,
   .rear-dials .dials-plate,
   .games-dial-fig .games-plate,
+  .front-dial-fig .front-plate,
   .etymology {
     transition: opacity calc(var(--arrive) * 700ms) var(--ease),
                 transform calc(var(--arrive) * 700ms) var(--ease);
@@ -2484,6 +2532,7 @@ h3 {
   .boundary.is-cold .bnd,
   .rear-dials.is-cold .dials-plate,
   .games-dial-fig.is-cold .games-plate,
+  .front-dial-fig.is-cold .front-plate,
   .etymology.is-cold {
     opacity: 0;
     transform: translateY(24px) scale(0.97);
