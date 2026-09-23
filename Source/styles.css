@@ -2676,6 +2676,33 @@ h3 {
   .field.is-cold .readlog li { opacity: 0; transform: translateY(10px); }
   .field.is-cold .readlog-tick { opacity: 0; transition: none; }
 
+  /* M40 · The dispute table prints itself. The act's prose says the app
+     "answers with the dispute intact, row by row" - the motion is that
+     sentence performed: twelve rows arriving at the 90ms step M16 reads as
+     sequence, inside the window that is already arriving (M3's panel
+     entrance). Same contract as M13: the delay lives on the BASE rule (the
+     transition reads its timing from the state it is heading to), the cold
+     state carries only the hidden values, and both live inside this guard,
+     so a reduced reader gets the finished table with no arming at all. The
+     dispute-lead rows above the table stay with the window's own arrival:
+     they are prose, not the table the act is about. */
+  .win-dispute .dispute-table tbody tr {
+    transition: opacity calc(var(--arrive) * 420ms) var(--ease),
+                transform calc(var(--arrive) * 420ms) var(--ease);
+  }
+  .win-dispute .dispute-table tbody tr:nth-child(2)  { transition-delay: calc(var(--arrive) * 90ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(3)  { transition-delay: calc(var(--arrive) * 180ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(4)  { transition-delay: calc(var(--arrive) * 270ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(5)  { transition-delay: calc(var(--arrive) * 360ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(6)  { transition-delay: calc(var(--arrive) * 450ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(7)  { transition-delay: calc(var(--arrive) * 540ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(8)  { transition-delay: calc(var(--arrive) * 630ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(9)  { transition-delay: calc(var(--arrive) * 720ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(10) { transition-delay: calc(var(--arrive) * 810ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(11) { transition-delay: calc(var(--arrive) * 900ms); }
+  .win-dispute .dispute-table tbody tr:nth-child(12) { transition-delay: calc(var(--arrive) * 990ms); }
+  .field.is-cold .win-dispute .dispute-table tbody tr { opacity: 0; transform: translateY(8px); }
+
   /* M5 · The numbers. The content genuinely is a sequence, so a stagger is
      honest here rather than decorative.
 
