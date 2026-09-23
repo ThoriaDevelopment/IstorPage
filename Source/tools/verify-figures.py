@@ -50,11 +50,24 @@ FIGURES = SOURCE / "figures"
 # Each generator, the figures it owns, and its self-test flag where it has one.
 # The outputs are listed rather than discovered: a generator that quietly stops
 # writing one variant should say so here, not pass because nothing looked for it.
+#
+# The third field is the self-test flag; an optional fourth is an equivalence
+# module name. A figure whose generator cannot promise byte-identical
+# regeneration (the WOFF2 encoder: fontTools' subsetter is not deterministic
+# at the byte level, empirically, even with the hash seed pinned) declares an
+# equivalence module in Source/tools/, which must expose test(data: bytes)
+# -> None, raising on any way the file may not differ from a fresh rebuild.
+# For those outputs the harness compares semantically: regenerate, run
+# test(), restore. Everything else stays byte-exact.
 GENERATORS: list[tuple[str, tuple[str, ...], bool]] = [
     ("make-boundary.py", ("figures/boundary-wide.svg", "figures/boundary-mid.svg", "figures/boundary-tall.svg"), True),
     ("make-calendar-ring.py", ("figures/calendar-ring.svg",), False),
+    ("make-didot-greek.py", ("../Assets/fonts/gfs-didot.woff2",
+                             "../OldVersion/assets/fonts/gfs-didot.woff2"), True,
+     "eq_didot"),
     ("make-etymology.py", ("figures/etymology.svg", "figures/etymology-tall.svg"), False),
     ("make-rear-dials.py", ("figures/rear-dials-wide.svg", "figures/rear-dials-tall.svg"), True),
+    ("make-games-dial.py", ("figures/games-dial-wide.svg", "figures/games-dial-tall.svg"), True),
     ("make-hero-gears.py", ("figures/hero-gears.svg",), True),
     ("make-close-gears.py", ("figures/close-gears.svg",), True),
     ("make-poster-horizon.py", ("figures/poster-horizon.svg",), False),
@@ -118,7 +131,14 @@ def first_difference(a: bytes, b: bytes) -> str:
 def main() -> int:
     rep = Report()
 
-    for tool, outputs, has_self_test in GENERATORS:
+    for entry in GENERATORS:
+        tool, outputs, has_self_test = entry[:3]
+        eq_module = entry[3] if len(entry) > 3 else None
+        eq_test = None
+        if eq_module:
+            import importlib
+            eq_test = importlib.import_module(eq_module).test
+
         # 1. Snapshot, so the tree can be restored exactly as it was found --
         #    including uncommitted work, which is the normal state of this repo.
         before = {}
@@ -150,6 +170,15 @@ def main() -> int:
             elif old is None:
                 rep.fail(f"{name}", "not in the repository — a figure has to be committed, "
                                     "since the build inlines it")
+            elif eq_test is not None:
+                # Semantic equality: the committed file and the fresh rebuild
+                # must be the same font by the equivalence module's own test.
+                try:
+                    eq_test(old, new)
+                    rep.ok(f"{name} matches its generator (semantic)", f"{len(old):,} B")
+                except AssertionError as exc:
+                    rep.fail(f"{name} differs semantically",
+                             f"{exc} — rerun {tool} and commit the result")
             elif old == new:
                 rep.ok(f"{name} matches its generator", f"{len(new):,} B")
             else:
