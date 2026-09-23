@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 352"
+     class="shelf-plate shelf-wide" role="img" focusable="false"
+     aria-labelledby="shelf-wide-title">
+  <title id="shelf-wide-title">The library's ten sources, drawn as the rows the app prints them as: one document per row, its title, and its status dot at the right. The titles are the page's own transcription of the notes rail - ten notes, one for each source it read.</title>
+  <text class="shelf-head" x="16.0" y="28.0" font-size="13.5" font-family="Inter, sans-serif">10 sources</text>
+  <g class="shelf-rows">
+    <text class="shelf-title" x="16.0" y="53.9" font-size="12.5" font-family="Inter, sans-serif">ancient astronomical computer</text>
+    <circle class="shelf-dot" cx="626.0" cy="55.0" r="3.4"/>
+    <rect class="shelf-band" x="0" y="70.0" width="640" height="30"/>
+    <text class="shelf-title" x="16.0" y="83.8" font-size="12.5" font-family="Inter, sans-serif">The National Archaeological Museum in Athens</text>
+    <circle class="shelf-dot" cx="626.0" cy="85.0" r="3.4"/>
+    <path class="shelf-rule" d="M0 70.0 H640"/>
+    <text class="shelf-title" x="16.0" y="113.8" font-size="12.5" font-family="Inter, sans-serif">The Saros cycle</text>
+    <circle class="shelf-dot" cx="626.0" cy="115.0" r="3.4"/>
+    <path class="shelf-rule" d="M0 100.0 H640"/>
+    <rect class="shelf-band" x="0" y="130.0" width="640" height="30"/>
+    <text class="shelf-title" x="16.0" y="143.8" font-size="12.5" font-family="Inter, sans-serif">The Metonic cycle</text>
+    <circle class="shelf-dot" cx="626.0" cy="145.0" r="3.4"/>
+    <path class="shelf-rule" d="M0 130.0 H640"/>
+    <text class="shelf-title" x="16.0" y="173.8" font-size="12.5" font-family="Inter, sans-serif">X-ray data from the Antikythera mechanism's broken calendar ring</text>
+    <circle class="shelf-dot" cx="626.0" cy="175.0" r="3.4"/>
+    <path class="shelf-rule" d="M0 160.0 H640"/>
+    <rect class="shelf-band" x="0" y="190.0" width="640" height="30"/>
+    <text class="shelf-title" x="16.0" y="203.8" font-size="12.5" font-family="Inter, sans-serif">Fragment C of the Antikythera mechanism</text>
+    <circle class="shelf-dot" cx="626.0" cy="205.0" r="3.4"/>
+    <path class="shelf-rule" d="M0 190.0 H640"/>
+    <text class="shelf-title" x="16.0" y="233.8" font-size="12.5" font-family="Inter, sans-serif">Reconstruction of the missing front dial gearing of the Antikythera mechanism.</text>
+    <circle class="shelf-dot" cx="626.0" cy="235.0" r="3.4"/>
+    <path class="shelf-rule" d="M0 220.0 H640"/>
+    <rect class="shelf-band" x="0" y="250.0" width="640" height="30"/>
+    <text class="shelf-title" x="16.0" y="263.9" font-size="12.5" font-family="Inter, sans-serif">Antikythera mechanism</text>
+    <circle class="shelf-dot" cx="626.0" cy="265.0" r="3.4"/>
+    <path class="shelf-rule" d="M0 250.0 H640"/>
+    <text class="shelf-title" x="16.0" y="293.9" font-size="12.5" font-family="Inter, sans-serif">Antikythera wreck</text>
+    <circle class="shelf-dot" cx="626.0" cy="295.0" r="3.4"/>
+    <path class="shelf-rule" d="M0 280.0 H640"/>
+    <rect class="shelf-band" x="0" y="310.0" width="640" height="30"/>
+    <text class="shelf-title" x="16.0" y="323.9" font-size="12.5" font-family="Inter, sans-serif">Decoding Antikythera mechanism</text>
+    <circle class="shelf-dot" cx="626.0" cy="325.0" r="3.4"/>
+    <path class="shelf-rule" d="M0 310.0 H640"/>
+  </g>
+  <text class="shelf-foot" x="626.0" y="342.0" font-size="12.5" font-family="Inter, sans-serif" text-anchor="end">every one a document on this machine</text></svg>

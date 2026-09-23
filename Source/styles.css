@@ -2327,7 +2327,44 @@ h3 {
 }
 
 /* ---------------------------------------------------------------------------
-   14d8 · The pin-and-slot plate, inside the hero's cycles answer.
+   14d8 · The shelf, in the library act, after the two rail captures.
+
+   The act's claim ("everything Istor knows is a document you put there")
+   drawn as its own objects: the ten documents as the rail's rows, at plate
+   scale. Inks are the rail's own grammar - titles --ink, the zebra band the
+   app's --fill-row equivalent drawn as a low-opacity white wash like the
+   dispute table's, dots --azure. The rows wrap where the rail wraps, so the
+   tall plate keeps every name whole at the type floor.
+   ------------------------------------------------------------------------- */
+.shelf-fig { margin: 40px 0 0; }
+.shelf-fig .field.is-inset { max-width: 700px; }
+.shelf-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.shelf-wide { max-width: 640px; }
+.shelf-tall { display: none; max-width: 340px; }
+
+.shelf-title { fill: var(--ink); font-weight: 500; }
+.shelf-head { fill: var(--ink); font-weight: 600; }
+.shelf-foot { fill: var(--ink-2); }
+.shelf-band { fill: rgb(255 255 255 / 0.05); }
+.shelf-rule { stroke: var(--rule); stroke-width: 1; }
+.shelf-dot { fill: var(--azure); }
+
+/* The band and rule tokens are the app's own; the paper world needs their
+   dark counterparts, exactly as the dispute table's zebra does. */
+.field .shelf-title, .field .shelf-head { fill: var(--field-ink); }
+.field .shelf-foot { fill: var(--field-ink-2); }
+.field .shelf-band { fill: rgb(255 255 255 / 0.05); }
+.field .shelf-rule { stroke: var(--field-ink-2); }
+.field .shelf-dot { fill: var(--azure-lift); }
+
+@media (max-width: 700px) {
+  .shelf-wide { display: none; }
+  .shelf-tall { display: block; }
+  .shelf-fig .field.is-inset { padding: 18px 16px; }
+}
+
+/* ---------------------------------------------------------------------------
+   14d9 · The pin-and-slot plate, inside the hero's cycles answer.
 
    The page's prose names the mechanism and no drawing carried it; this plate
    lives in the answer that names it, not in the evidence act, because its
