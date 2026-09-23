@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 430"
+     class="two-rings two-tall" role="img" focusable="false"
+     aria-labelledby="two-rings-tall-title">
+  <title id="two-rings-tall-title">The disputed count drawn twice on the same radius, anchored at 12
+    o’clock, with the far side magnified twelve times in the lens.</title>
+  <g class="tr-band">
+    <circle class="tr-frame" cx="170.0" cy="150.0" r="132.0"/>
+    <circle class="tr-frame" cx="170.0" cy="150.0" r="106.0"/>
+  </g>
+    <circle class="tr-ring-a" cx="170.0" cy="150.0" r="118.0" stroke-dasharray="0.02 2.074395" transform="rotate(-90 170.0 150.0)"/>
+    <circle class="tr-ring-b" cx="170.0" cy="150.0" r="118.0" stroke-dasharray="0.02 2.068495" transform="rotate(-90 170.0 150.0)"/>
+  <g class="tr-anchor">
+    <circle class="tr-anchor-dot" cx="170.00" cy="32.00" r="1.4"/>
+  </g>
+  <g class="tr-lens">
+    <clipPath id="tr-lens-clip-tall">      <circle cx="170.0" cy="246.0" r="36.0"/>    </clipPath>
+    <g clip-path="url(#tr-lens-clip-tall)">
+      <g transform="translate(170.00 246.00) scale(12.0) translate(-170.00 -268.00)">
+        <g class="tr-lens-strokes">
+      <circle class="tr-lens-a" cx="170.0" cy="150.0" r="118.0" stroke-dasharray="0.02 2.074395" transform="rotate(-90 170.0 150.0)"/>
+      <circle class="tr-lens-b" cx="170.0" cy="150.0" r="118.0" stroke-dasharray="0.02 2.068495" transform="rotate(-90 170.0 150.0)"/>
+        </g>
+      </g>
+    </g>
+    <circle class="tr-lens-glass" cx="170.0" cy="246.0" r="36.0"/>
+    <path class="tr-lens-line" d="M170.00 265.00 L170.00 210.00"/>
+  </g>
+  <g class="tr-labels">
+    <text class="tr-count-a" x="160.0" y="308.4" font-size="16.5" font-family="Inter, sans-serif" font-weight="600" text-anchor="end">354 holes</text>
+    <text class="tr-count-b" x="180.0" y="308.4" font-size="16.5" font-family="Inter, sans-serif" font-weight="600" text-anchor="start">355 holes</text>
+  </g>
+  <text class="tr-mag" x="170.0" y="336.4" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">twelve times larger</text>
+</svg>

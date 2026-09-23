@@ -2183,6 +2183,62 @@ h3 {
   .front-dial-fig .field.is-inset { padding: 18px 16px; }
 }
 
+/* -------------------------------------------------------------------------
+   14d5 · The two-rings plate, in the evidence act, after the dl.
+
+   The dispute's first row made visible: 354 and 355 on the SAME radius,
+   anchored at 12, with an x8 lens at the far side. Two neutral inks, one per
+   stream - --ink-3 and --ink-2 - because the plate takes no side; the lens
+   glass and line are --rule. The lens's magnified dashes keep their streams'
+   inks so the eye can trace which is which. The one --azure on the plate is
+   the anchor bead, the hole both counts agree on: the same claim-as-mark the
+   calendar-ring figure makes.
+   ------------------------------------------------------------------------- */
+.two-rings-fig { margin: 56px 0 0; }
+.two-rings-fig .field.is-inset { max-width: 700px; }
+.two-rings { display: block; width: 100%; height: auto; margin-inline: auto; }
+.two-wide { max-width: 640px; }
+.two-tall { display: none; max-width: 340px; }
+
+.tr-frame { stroke: var(--rule); stroke-width: 1; fill: none; }
+.tr-ring-a { stroke: var(--ink-3); stroke-width: 2.8; stroke-linecap: round; fill: none; }
+.tr-ring-b { stroke: var(--ink-2); stroke-width: 2.8; stroke-linecap: round; fill: none; }
+.tr-anchor-dot { fill: var(--azure); }
+.tr-lens-glass { stroke: var(--rule); stroke-width: 1; fill: none; }
+.tr-lens-line { stroke: var(--rule); stroke-width: 1; fill: none; }
+.tr-a { stroke: var(--ink-3); stroke-width: 2.2; stroke-linecap: round; fill: none; }
+.tr-b { stroke: var(--ink-2); stroke-width: 2.2; stroke-linecap: round; fill: none; }
+/* Inside the lens the geometry is x8 but the ink is not: the lens magnifies
+   POSITION, not weight (see make-two-rings.py). The circles live inside the
+   x8 transform, so their LOCAL stroke is 7/8: it renders 7 units, the same
+   beads closer together, streams separated enough to count. */
+.tr-lens-a { stroke: var(--ink-3); stroke-width: 0.875; stroke-linecap: round; fill: none; }
+.tr-lens-b { stroke: var(--ink-2); stroke-width: 0.875; stroke-linecap: round; fill: none; }
+.tr-count-a { fill: var(--ink-2); }
+.tr-count-b { fill: var(--ink); }
+.tr-mag { fill: var(--ink-2); }
+
+/* In the dark field: the house division. --rule and the grays remap; the
+   anchor stays azure (lifted, as every field mark is). */
+.field .tr-frame { stroke: var(--field-ink-2); }
+.field .tr-ring-a { stroke: var(--field-ink-2); }
+.field .tr-ring-b { stroke: var(--field-ink); }
+.field .tr-anchor-dot { fill: var(--azure-lift); }
+.field .tr-lens-glass, .field .tr-lens-line { stroke: var(--field-ink-2); }
+.field .tr-a { stroke: var(--field-ink-2); }
+.field .tr-b { stroke: var(--field-ink); }
+.field .tr-lens-a { stroke: var(--field-ink-2); }
+.field .tr-lens-b { stroke: var(--field-ink); }
+.field .tr-count-a { fill: var(--field-ink-2); }
+.field .tr-count-b { fill: var(--field-ink); }
+.field .tr-mag { fill: var(--field-ink-2); }
+
+@media (max-width: 700px) {
+  .two-wide { display: none; }
+  .two-tall { display: block; }
+  .two-rings-fig .field.is-inset { padding: 18px 16px; }
+}
+
 /* ---------------------------------------------------------------------------
    14e · The act index.
 
@@ -2523,6 +2579,7 @@ h3 {
   .rear-dials .dials-plate,
   .games-dial-fig .games-plate,
   .front-dial-fig .front-plate,
+  .two-rings-fig .two-rings,
   .etymology {
     transition: opacity calc(var(--arrive) * 700ms) var(--ease),
                 transform calc(var(--arrive) * 700ms) var(--ease);
@@ -2533,6 +2590,7 @@ h3 {
   .rear-dials.is-cold .dials-plate,
   .games-dial-fig.is-cold .games-plate,
   .front-dial-fig.is-cold .front-plate,
+  .two-rings-fig.is-cold .two-rings,
   .etymology.is-cold {
     opacity: 0;
     transform: translateY(24px) scale(0.97);
@@ -3143,11 +3201,27 @@ h3 {
      they cost little ink, and `exact` is what stops a browser dropping the fill
      and leaving white text on white paper. Every ground above them still prints
      as paper. */
-  .cta,
   .chip,
   .cite-btn {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* The CTA is the exception: a printed pill keeps its shape and loses its
+     fill, because a button the reader cannot click is a label, and a label is
+     ink on paper. White ink needed the fill to survive; teal ink on the sheet
+     with the pill drawn as a hairline ring needs nothing to survive. The
+     selector repeats the screen rule's .field/.poster prefix because a media
+     block adds no specificity: unwrapped, plain `.cta` would lose to the
+     screen rule's white ink. (With the fill dropped and white ink kept, the
+     audit's print pass measured 1.00:1 against the sheet - the one state
+     where the exact-rule above cannot reach.) */
+  .cta,
+  .field .cta,
+  .poster .cta {
+    background: none;
+    color: var(--azure);
+    box-shadow: inset 0 0 0 1px var(--azure);
   }
 
   /* M24 · the close's cold state has no print release of its own: a reader who
