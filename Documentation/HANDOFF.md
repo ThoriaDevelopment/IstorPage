@@ -84,8 +84,11 @@ uncommitted-pass entries):
   it measures, and what it deliberately leaves absent.
 - The `14d*` blocks in `Source/styles.css` - each plate's ink grammar and its
   per-ground remaps.
+- `.improvement/SESSION_SUMMARY.md` - the session's one-screen summary: what
+  shipped, what was fixed, what was proven, what remains open.
 - `.improvement/OVERNIGHT_LOG.md` - the per-milestone reasoning, M42 through
-  M55, including every gate defect the session found in its own instruments.
+  M55 and the CI fixes, including every gate defect the session found in its
+  own instruments.
 
 ## Working-tree state at handoff
 
