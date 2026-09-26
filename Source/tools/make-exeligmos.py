@@ -94,6 +94,20 @@ MEASURED = {
     ("54 years", 16.5): 68.0, ("3 turns of the Saros", 16.5): 148.0,
     ("one Saros", 16.5): 75.0, ("+ 8 h", 16.5): 50.0,
     ("= 24 h", 16.5): 57.0, ("one day", 16.5): 62.0,
+    # the legend's glyphs and notes at the wide plate's 14 units, measured
+    # for the extents gate (the tall legend reuses the 16.5 sums' labels)
+    ("o", 14.0): 8.5, ("H", 14.0): 10.4, ("Iϛ", 14.0): 9.7,
+    ("add nothing", 14.0): 79.7, ("add 8 hours", 14.0): 79.8,
+    ("add 16 hours", 14.0): 85.6, ("8 + 8 + 8 = 24", 14.0): 94.5,
+    # the tall plate's legend and sums at its 16.5 units, and the sub-labels
+    # at the scales the hub draws them (11.9 = 16.5 x 0.72, 15.2 = 16.5 x
+    # 0.92), all measured for the extents gate
+    ("o", 16.5): 9.97, ("H", 16.5): 12.29, ("Iϛ", 16.5): 11.42,
+    ("add nothing", 16.5): 93.92, ("add 8 hours", 16.5): 94.04,
+    ("add 16 hours", 16.5): 100.89, ("3 x 8 h", 14.0): 45.01,
+    ("3 x 8 h", 16.5): 53.04, ("one day", 11.9): 45.28, ("one day", 15.2): 57.84,
+    ("54 years · 3 turns of the Saros", 14.0): 201.9,
+    ("54 years · 3 turns of the Saros", 16.5): 237.95,
 }
 
 

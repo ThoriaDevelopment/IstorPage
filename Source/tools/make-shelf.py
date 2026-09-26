@@ -103,6 +103,24 @@ MEASURED = {
     ("Antikythera mechanism", 16.5): 186.5,
     ("Antikythera wreck", 16.5): 143.9,
     ("Decoding Antikythera mechanism", 16.5): 266.5,
+    # The head, the tall wrap lines and the footer, measured for the extents
+    # gate: the gate recomputes every drawn label's extent from these
+    # numbers, so every string the plate can draw needs its width at the
+    # size it draws at - including the tall wrap lines (the titles' 16.5)
+    # and the tall head's 17.82 (16.5 x 1.08).
+    ("10 sources", 13.5): 69.4, ("10 sources", 17.82): 91.6, ("10 sources", 18.0): 92.6,
+    ("The National Archaeological Museum", 16.5): 294.7,
+    ("in Athens", 16.5): 73.9,
+    ("X-ray data from the Antikythera", 16.5): 249.3,
+    ("mechanism’s broken calendar ring", 16.5): 270.2,
+    ("Fragment C of the Antikythera", 16.5): 237.6,
+    ("mechanism", 16.5): 90.8,
+    ("Reconstruction of the missing front", 16.5): 277.4,
+    ("dial gearing of the Antikythera", 16.5): 238.6,
+    ("mechanism.", 16.5): 95.8,
+    ("every one of them a document on this machine", 12.5): 280.2,
+    ("every one of them a document", 16.5): 240.9,
+    ("on this machine", 16.5): 124.5,
 }
 
 # Row geometry. TEXT_X is the title's left edge; DOT_X the dot's centre, at

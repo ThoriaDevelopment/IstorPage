@@ -273,6 +273,81 @@ def main() -> int:
             rep.ok(f"{fam} census",
                    f"{printed} printed, {attested} attested in {gen}")
 
+    # 6. The extents gate. The cold read at 390px caught two labels their own
+    #    type-floor and contrast passes could not see: a wrapped footer drawn
+    #    start-anchored from the dot column ran off its plate's clipped edge,
+    #    and longer attested strings pushed a two-row legend past a 340-unit
+    #    viewBox. Both were static facts - anchor, x, measured width,
+    #    viewBox - so they are checked statically, for EVERY figure, on every
+    #    run: each <text>'s horizontal extent is computed from its anchor and
+    #    the generator's own MEASURED table (the same numbers that sized the
+    #    node it sits in), and the result must land inside the viewBox. A
+    #    string whose measured width is missing from the generator is a FAIL,
+    #    not a skip: an unmeasured label is the failure mode the generators'
+    #    own tw() exists to refuse. Families without a MEASURED table (the
+    #    etymology's fixed layout) are skipped here and held by their
+    #    self-tests instead.
+    import importlib.util
+    import re as _re2
+    for fam, gen, names in census:
+        gen_path = HERE / gen
+        spec = importlib.util.spec_from_file_location(gen[:-3] + "_extents",
+                                                      gen_path)
+        mod = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(mod)
+        except Exception as exc:
+            rep.fail(f"{fam} extents", f"{gen} did not import: {exc}")
+            continue
+        measured = getattr(mod, "MEASURED", None)
+        if not isinstance(measured, dict):
+            rep.ok(f"{fam} extents", "no MEASURED table (self-test holds it)")
+            continue
+
+        def width_of(t: str, size: float):
+            for key in ((t, size), (t, size, "didot"), (t, size, "inter")):
+                if key in measured:
+                    return float(measured[key])
+            return None
+
+        off: list[str] = []
+        for name in names:
+            svg = (FIGURES / name).read_text(encoding="utf-8")
+            vb = _re2.search(r'viewBox="[\d.\-]+ [\d.\-]+ ([\d.]+) ([\d.]+)"',
+                             svg)
+            if not vb:
+                off.append(f"{name}: no viewBox")
+                continue
+            w_box = float(vb.group(1))
+            for m in _re2.finditer(r"<text([^>]*)>([^<]+)</text>", svg):
+                attrs, t = m.group(1), m.group(2).strip()
+                if not t or "tspan" in attrs:
+                    continue
+                sm = _re2.search(r'font-size="([\d.]+)"', attrs)
+                xm = _re2.search(r'\bx="(-?[\d.]+)"', attrs)
+                am = _re2.search(r'text-anchor="(\w+)"', attrs)
+                if not sm or not xm:
+                    continue
+                size, x = float(sm.group(1)), float(xm.group(1))
+                anchor = am.group(1) if am else "start"
+                w = width_of(t, size)
+                if w is None:
+                    off.append(f"{name}: {t[:28]!r} unmeasured at {size}")
+                    continue
+                left, right = {"start": (x, x + w),
+                               "middle": (x - w / 2, x + w / 2),
+                               "end": (x - w, x)}[anchor]
+                # A point of slack each side: the drawings' own frames sit a
+                # unit from the edge, and the gate is for labels PAST it.
+                if left < -1.0 or right > w_box + 1.0:
+                    off.append(f"{name}: {t[:28]!r} {anchor} "
+                               f"{left:.0f}..{right:.0f} of {w_box:.0f}")
+        if off:
+            rep.fail(f"{fam} extents", "; ".join(off[:3]) +
+                     (" …" if len(off) > 3 else ""))
+        else:
+            rep.ok(f"{fam} extents", "every measured label inside its viewBox")
+
     print()
     if rep.failures:
         print(f"FAILED - {len(rep.failures)} of {rep.checks} checks", file=sys.stderr)
