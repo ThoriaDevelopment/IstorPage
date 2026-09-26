@@ -4194,6 +4194,17 @@ h3 {
   .plate.is-cold > svg .ring-holes { stroke-dashoffset: 0; }
   .plate.is-cold > svg .ring-claim { opacity: 1; }
 
+  /* The library's articles carry the cold state on the figure itself: the
+     shared reveal rule arms .is-cold on any block below the fold, and an
+     article's plate printed from the top of the page showed prose with the
+     drawing blank - the same hole M60 closed for the landing, one arm of the
+     shared stylesheet later. Released on paper by the same principle and the
+     same mechanism: position in this block beats the arming rule, value for
+     value. The landing's own .reveal blocks release with it, which is what
+     the M60 children releases already assumed. */
+  .enter.is-cold,
+  .reveal.is-cold { opacity: 1; transform: none; }
+
   /* A disclosure is a click the paper cannot make. The questions act is a
      <details> accordion - one answer open on screen, the rest one click away -
      and a closed panel prints as a question with no answer, which on a sheet

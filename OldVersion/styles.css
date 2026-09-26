@@ -2192,6 +2192,25 @@ a { color: inherit; }
     --dot: #8A1C1C;
   }
 
+  /* The article's own cold state, released: the reveal rule above arms
+     `.is-cold` on any block below the fold, and an article's plate printed
+     from the top of the page showed prose with the drawing blank - the same
+     hole the landing's print block closed (M60), one stylesheet later (M65).
+     Position in this block beats the arming rule, value for value: paper is
+     not a scroll position, and the authored page - what a reader whose
+     script never ran sees - is what a sheet should carry. */
+  .enter.is-cold,
+  .reveal.is-cold,
+  .reveal.is-cold .win,
+  .reveal.is-cold .exhibit img,
+  .boundary.is-cold .bnd,
+  .rear-dials.is-cold .dials-plate,
+  .games-dial-fig.is-cold .games-plate,
+  .front-dial-fig.is-cold .front-plate,
+  .two-rings-fig.is-cold .two-rings,
+  .parapegma-fig.is-cold .pp-plate,
+  .etymology.is-cold { opacity: 1; transform: none; }
+
   /* The theme control cannot be clicked on paper, and the pair at the foot of an
      article is navigation for a pointer. The brand stays: a printed article
      should say what it is. */

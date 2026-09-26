@@ -75,10 +75,25 @@ CHROME_CANDIDATES = [
 ]
 
 # The landing is the page the cold states live on: the reveal family, the
-# stop ring's roll, the ruler's estimate, the accordion. The gate's default
-# scope is that page and nothing else - a library article has no cold state
-# to release - and --pages widens it when a future page earns a probe.
-DEFAULT_PAGES = ["/"]
+# stop ring's roll, the ruler's estimate, the accordion. The library shares
+# the same stylesheet and arms the same cold state on an article's figure
+# itself (M65: the vram-split plate printed blank from the top of the page,
+# one arm of the shared rule later), so one article rides in the default
+# scope with its plate's own drawn strings as probes.
+DEFAULT_PAGES = ["/", "/what-is-vram/"]
+
+# Per-page probes: the landing's claims are the shared PROBES list; a library
+# page's claims are the drawn strings of its own plate. Keyed by page path.
+PAGE_PROBES = {
+    "/what-is-vram/": [
+        ("the vram-split plate's title line", "one model, one card, two bit-widths"),
+        ("the 8-bit rung's label", "at 8 bits"),
+        ("the 8-bit rung's VRAM bar", "VRAM 4 GB"),
+        ("the split's own sentence", "16 of 32 layers fit"),
+        ("the split's cost", "every token pays the trip"),
+        ("the 4-bit rung's label", "at 4 bits"),
+    ],
+}
 
 # Every probe: (name, string that must appear in the sheet's extracted text).
 # Each one is rendered prose or a drawn plate string, and each was verifiably
@@ -203,7 +218,9 @@ def main() -> int:
                                  "note": "PDF unreadable: %s" % e})
                 worst = 1
                 continue
-            for name, needle in PROBES:
+            # A library page's claims are its own plate's strings, not the
+            # landing's - the vram article legitimately lacks the reading log.
+            for name, needle in PAGE_PROBES.get(page, PROBES):
                 ok = needle in text
                 findings.append({"page": page, "probe": name, "ok": ok,
                                  "needle": needle})
