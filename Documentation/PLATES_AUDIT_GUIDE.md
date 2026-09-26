@@ -13,14 +13,19 @@ reproduces from a fresh clone of `main` with nothing else.
 
 Checks HEAD out into a temporary worktree, builds there, and runs every gate
 against nothing but what the commit carries - one signed line per gate, the
-worktree removed whatever happens. `--quick` skips the two headless audits,
+worktree removed whatever happens. `--quick` skips the three browser gates,
 `--report` files a signed markdown beside the audit JSONs (the directory is
 created if absent). The claim above - a fresh clone, nothing else - was
 executed, not just stated: cloned to an empty directory, `--report` run in
 full, green (figures 189 | budget 24 | copy 7 | links 123 | contrast 0 below
-AA across all twelve passes, the printed sheet included | motion 58/58) - and
-re-executed at the handoff commit 5f13d67, green again in 5.4 minutes, so
-the line the reader is standing on is the line that was proven.
+AA across all twelve passes, the printed sheet included | motion 58/58),
+re-executed at the handoff commit 5f13d67, green again in 5.4 minutes, and
+renewed at b5d74c9 after the print gate joined the battery and the Metonic
+coincidence became the fifteenth family (figures 201 | budget 24 | copy 7 |
+links 123 | print 10 claims read off an actual PDF of the sheet | contrast
+0 below AA across all twelve passes | motion 58/58, 5.0 minutes from the
+clone to the signed report) - so the line the reader is standing on is the
+line that was proven.
 
 ## The individual gates
 
