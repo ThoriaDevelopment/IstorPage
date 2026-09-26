@@ -261,26 +261,30 @@ def plate(wide):
               'font-family="%s" text-anchor="middle">behind</text>\n'
               % (bxx, byy + label * 0.35, label, INTER))
     # The legend's geometry: the wide plate has room for one row of three;
-    # the tall plate's 340-wide column would push the third entry off the
-    # edge (measured: 391 of 340), so it breaks into two rows the way the
-    # parapegma's register stacks its columns. Same entries, same inks.
+    # the tall plate's 340-wide column cannot hold one line of the attested
+    # strings ("variable velocity" 133.3 and "pin-and-slot" 100.6 at 18
+    # units: three entries minimum 351.2 of 340), and the cold read caught
+    # the two-row draft pushing the second label past the plate's clipped
+    # edge. So the tall legend stacks THREE rows at the rail's left column,
+    # 1.3 line height, the third still clear of the deviation ring below.
+    # Same entries, same inks.
     if wide:
         leg_y = mech_cy + mech_r + 34
         s1_x = mech_cx - 118
         s2_x = mech_cx + 4
         s3_x = mech_cx + 126
-        rows = [(s1_x, "constant rate", "line"), (s2_x, "variable velocity", "dash"),
-                (s3_x, "pin-and-slot", "pin")]
+        rows = [(s1_x, "constant rate", "line", 0.0),
+                (s2_x, "variable velocity", "dash", 0.0),
+                (s3_x, "pin-and-slot", "pin", 1.55)]
     else:
         leg_y = mech_cy + mech_r + 30
-        s1_x = mech_cx - 118
-        s2_x = mech_cx + 46
-        s3_x = mech_cx - 118
-        rows = [(s1_x, "constant rate", "line"), (s2_x, "variable velocity", "dash"),
-                (s3_x, "pin-and-slot", "pin2")]
+        s1_x = s2_x = s3_x = mech_cx - 118
+        rows = [(s1_x, "constant rate", "line", 0.0),
+                (s2_x, "variable velocity", "dash", 1.3),
+                (s3_x, "pin-and-slot", "pin2", 2.6)]
     legend = ['  <g class="ps-legend">']
-    for sx, text, kind in rows:
-        ty = leg_y + (label * 1.55 if kind == "pin2" else 0)
+    for sx, text, kind, dy in rows:
+        ty = leg_y + dy * label
         if kind == "line":
             legend.append('    <path class="ps-gear" d="M%.1f %.1f h20"/>' % (sx, ty))
         elif kind == "dash":

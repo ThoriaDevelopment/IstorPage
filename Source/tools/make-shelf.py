@@ -231,14 +231,15 @@ def plate(wide):
     # page's prose, so the old compression ("every one a document on this
     # machine") fails the gate. The tall plate's width cannot hold it on one
     # line at 16.5 units, so it wraps the way the rows wrap: measured halves,
-    # at the rail's line height.
+    # at the rail's line height - BOTH lines end-anchored at the dot column
+    # like the wide plate's, after the cold read caught the first draft
+    # drawing them start-anchored from x=dot_x, off the plate's clipped edge.
     foot_lines = ["every one of them a document", "on this machine"] \
         if not wide else ["every one of them a document on this machine"]
     foot = "".join(
         '  <text class="shelf-foot" x="%.1f" y="%.1f" font-size="%g" '
-        'font-family="%s"%s>%s</text>\n'
-        % (dot_x, H - 10.0 - i * size * 1.3, size, INTER,
-           ' text-anchor="end"' if wide else '', line)
+        'font-family="%s" text-anchor="end">%s</text>\n'
+        % (dot_x, H - 10.0 - i * size * 1.3, size, INTER, line)
         for i, line in enumerate(foot_lines))
 
     variant = "wide" if wide else "tall"
