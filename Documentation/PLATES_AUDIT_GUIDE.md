@@ -51,10 +51,12 @@ Every push to `main` runs the figures, build, budget, links, copy and print
 gates on the runner (`.github/workflows/deploy.yml`), then deploy-pages,
 then a
 **post-deploy smoke test** that fetches the live site and asserts the
-handoff markers in the served bytes (the chip relabel, the skip-link target,
-`xml:lang="el"`, the curly-apostrophe typography, the figure apostrophes on a
-library page). The gated path's one external dependency - `fonttools` plus
-`brotli`, which make-didot-greek's WOFF2 encoder needs - is installed in the
+handoff markers and one marker per act of the act-index nav in the served
+bytes (the chip relabel, the skip-link target, `xml:lang="el"`, the
+curly-apostrophe typography, the figure apostrophes on a library page, and
+each act's own prose). The gated path's external dependencies - `fonttools`
+plus `brotli`, which make-didot-greek's WOFF2 encoder needs, and `pypdf`,
+which verify-print reads the sheet back with - are installed in the
 workflow; the smoke test is what caught-and-would-catch a stale artifact
 shipping quietly (it happened: three days of red deploys while local gates
 stayed green, fixed 2026-09-26).

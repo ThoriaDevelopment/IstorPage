@@ -9,7 +9,7 @@ the commands re-prove them.
 
     python Source/tools/verify-all.py --report
 
-Checks HEAD out into a temporary worktree, builds it there, and runs all seven
+Checks HEAD out into a temporary worktree, builds it there, and runs all eight
 gates against nothing but what the commit carries - build, figures, budget,
 copy, links, contrast, motion - then removes the worktree whatever happens.
 Green in about 5.5 minutes. `--report` writes a signed markdown verdict into
@@ -32,22 +32,24 @@ deploy, a CDN serving a cached generation, or a gate added to build but not
 to the workflow now fails the run instead of shipping quietly.
 
 Why the dependencies step exists: M37a made the figures gate rebuild the
-display face from the committed master, which needs `fonttools` + `brotli` -
-the only third-party packages the gated path imports (verified by an import
-sweep of `Source/tools`; PIL/numpy live in tools CI does not run). For three
-days the deploy failed at that step while every local run passed, and
-istor.fyi served a stale build; the smoke test is what keeps that from
-recurring silently.
+display face from the committed master, which needs `fonttools` + `brotli`,
+and M61 added verify-print, which reads the printed sheet back with
+`pypdf` - the third-party packages the gated path imports (verified by an
+import sweep of `Source/tools`; PIL/numpy live in tools CI does not run).
+For three days the deploy failed at that step while every local run
+passed, and istor.fyi served a stale build; the smoke test is what keeps
+that from recurring silently.
 
 ## What each gate guarantees
 
 | gate | asserts |
 |---|---|
 | build | the site compiles; every figure include has a page marker |
-| figures (189) | every committed SVG is byte-identical to its generator's output; every drawn string is printed page prose or declared in its generator with its citation (the **census**); every label's measured extent lands inside its viewBox (the **extents gate**); every SVG parses as XML (well-formedness) |
+| figures (201) | every committed SVG is byte-identical to its generator's output; every drawn string is printed page prose or declared in its generator with its citation (the **census**); every label's measured extent lands inside its viewBox (the **extents gate**); every SVG parses as XML (well-formedness) |
 | budget (24) | every byte size the design plan asserts, HTML/JS/gzip/figures |
 | copy (7) | no em/en dashes in any visible string; the release-claim rule |
 | links (123) | every link resolves; no colour outside a token; the act rhythm; LF-only files; the previous/next walk through all 75 articles |
+| print (10) | the built page, printed headlessly and read back, carries what its cold states hide: the reading-log rows, the plates' drawn strings, the accordion's answers open - self-tested against its own released/doctored fixture pair |
 | contrast | 0 below AA across twelve passes: light/dark x (plain, contrast-more), no-JS, the printed sheet, separators, reduced motion, layout CLS at slow fonts, and the type floor (11px rendered, 320-1440 plus the sheet) |
 | motion (58) | the reduced-motion world is honest; arrivals get the authored clock; the counter keeps the rows' clock (median-of-gaps, jitter-immune); a page-sized jump is not a gesture; the harness's own self-test catches 54/54 doctored pages |
 

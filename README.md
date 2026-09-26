@@ -129,22 +129,23 @@ The timer is the reliable mode. Freebuff does not currently expose a documented 
 
     python Source/tools/build-site.py      # Source/ + Assets/ + OldVersion/ -> _site/
     python Source/tools/verify-all.py       # ALL gates below, from a worktree of HEAD, ~5.5 min
-    python Source/tools/verify-figures.py   # the twelve generated figure families, against their generators
+    python Source/tools/verify-figures.py   # the fifteen generated figure families, against their generators
     python Source/tools/verify-budget.py    # every asserted byte size
     python Source/tools/verify-links.py     # every link in the artifact
     python Source/tools/verify-copy.py      # the humanizer pass, and the release-claim rule
+    python Source/tools/verify-print.py     # headless Chrome prints the sheet and reads it back
     python Source/tools/audit-contrast.py --pages /   # headless Chrome; contrast, type floor, print
     python Source/tools/audit-motion.py     # headless Chrome; the reduced world and the arrivals
     python -m http.server --directory _site 8080
 
 `verify-all.py` is the audit entry point: it checks HEAD out into a temporary
 worktree, builds there, and runs every gate against nothing but what the commit
-carries (`--quick` skips the two browser audits, `--report` files a signed
+carries (`--quick` skips the three browser gates, `--report` files a signed
 verdict into the gitignored `.improvement/audits/`). A developer auditing the
 site should start with `Documentation/HANDOFF.md`, which states what each gate
 guarantees and what was hand-checked beyond the gates.
 
-Artwork is generated and committed rather than stored, so the twelve SVG families in
+Artwork is generated and committed rather than stored, so the fifteen SVG families in
 `Source/figures/` are rebuilt by `verify-figures.py` and compared to what is in the repository. It
 restores the working tree whatever it finds, so it is safe to run in the middle of an edit.
 
