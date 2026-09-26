@@ -185,6 +185,31 @@ tall += '</svg>\n'
 # "../figures/" until 2026-09-20, which is right only from Source/tools and, from
 # the repository root the docstring names, lands in the repository's parent.
 FIG = Path(__file__).resolve().parent.parent / "figures"
+
+# Every drawn string's measured width, for the extents gate: the gate
+# recomputes each label's extent from these numbers and its start anchor, and
+# holds it inside the viewBox. The words render in the display serif (Georgia
+# metrics; the file is a Didot subset with the same widths at these sizes),
+# the glosses in Inter at the page's label size - 13 units on the wide plate,
+# 16 on the tall one below 430px, where the stylesheet moves the column 22
+# units left to pay for the wider type (the note at .etym-tall .etym-gloss).
+# The stylesheet's own media-query resize is why the tall glosses are measured
+# at 16: that is the size they actually draw at in the plate's narrowest
+# window, which is the width the cold read audits.
+MEASURED = {
+    ("*weyd-", 13.0): 46.0, ("root · to see", 13.0): 73.7,
+    ("videre", 26.0): 71.2, ("latin · to see", 13.0): 74.9,
+    ("wit", 26.0): 35.8, ("english · to know", 13.0): 104.9,
+    ("ἵστωρ", 46.0): 118.0, ("greek · a witness", 13.0): 105.0,
+    ("*weyd-", 16.0): 56.6, ("root · to see", 16.0): 90.7,
+    ("videre", 28.0): 76.7, ("latin · to see", 16.0): 92.2,
+    ("wit", 28.0): 38.5, ("english · to know", 16.0): 129.1,
+    ("ἵστωρ", 34.0): 87.2, ("greek · a witness", 16.0): 129.2,
+    # the tall plate's name at its viewBox size (40): the stylesheet's 34px
+    # is a sub-430px render adjustment, and the gate holds the geometry the
+    # viewBox states
+    ("ἵστωρ", 40.0): 102.6,
+}
 for name, svg in (("etymology", wide), ("etymology-tall", tall)):
     out = FIG / ("%s.svg" % name)
     with open(out, "w", encoding="utf-8", newline="\n") as fh:

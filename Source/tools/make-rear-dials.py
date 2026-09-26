@@ -103,6 +103,18 @@ TICK_HALF = 1.6
 # reason.
 START_LABEL_WIDE_PX = 14
 
+# Every drawn string's measured width, browser (Inter 500), for the extents
+# gate: the gate recomputes each label's extent from these numbers and the
+# anchor, and holds it inside the viewBox. The wide plate's "one month" sits
+# at the spiral's start (14px); the gutter counts are 16.5 and their glosses
+# 14; the tall plate draws all four count lines at 16.5 centred on its axis.
+MEASURED = {
+    ("one month", 13.0): 66.2, ("one month", 14.0): 71.3,
+    ("235 months", 16.5): 93.9, ("223 months", 16.5): 94.1,
+    ("5 turns · 19 years", 14.0): 114.0, ("4 turns · eclipses", 14.0): 114.7,
+    ("5 turns · 19 years", 16.5): 134.4, ("4 turns · eclipses", 16.5): 135.2,
+}
+
 WIDE_W, WIDE_H = 640, 300
 TALL_W, TALL_H = 340, 560
 
