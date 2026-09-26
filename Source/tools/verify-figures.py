@@ -198,6 +198,47 @@ def main() -> int:
             elif path.is_file():
                 path.unlink()
 
+    # 5. The verbatim census. The house rule is that a drawn label must be a
+    #    phrase the page already prints - "the drawing is arithmetic on the
+    #    page's own words" - and nothing held the plates to it. It broke in
+    #    silence twice: 4a8f843 normalized the page's apostrophes and seven
+    #    plates kept the straight quote; the M47 plate carried a node label
+    #    whose phrase existed nowhere outside a markup comment. The census
+    #    reads every <text> the three flow plates draw (the gate, the shelf,
+    #    the unverified mark - the plates whose honest content IS their
+    #    labels), strips the aria <title> prose, and demands each string
+    #    appear in the page's visible text: comments stripped, tags stripped,
+    #    entities unescaped, whitespace folded. The dial plates stay outside
+    #    the census by design: their <title>s are descriptive prose, their
+    #    drawn labels are transcriptions attested in the log, and the
+    #    contrast and type gates audit those strings where they render.
+    import re as _re
+    import html as _html
+    page = (SOURCE / "index.html").read_text(encoding="utf-8")
+    page = _re.sub(r"<!--.*?-->", " ", page, flags=_re.S)
+    page = _re.sub(r"<[^>]+>", " ", page)
+    page = _html.unescape(page)
+    page = _re.sub(r"\s+", " ", page)
+    census = (
+        ("gate", ("gate-wide.svg", "gate-tall.svg")),
+        ("shelf", ("shelf-wide.svg", "shelf-tall.svg")),
+        ("unverified", ("unverified-wide.svg", "unverified-tall.svg")),
+    )
+    for fam, names in census:
+        miss: list[str] = []
+        for name in names:
+            svg = (FIGURES / name).read_text(encoding="utf-8")
+            svg = _re.sub(r"<title[^>]*>.*?</title>", " ", svg, flags=_re.S)
+            for t in _re.findall(r"<text[^>]*>([^<]+)</text>", svg):
+                t = t.strip()
+                if t and t not in page:
+                    miss.append(f"{name}: {t!r}")
+        if miss:
+            rep.fail(f"{fam} census", "; ".join(miss[:3]) +
+                     (" …" if len(miss) > 3 else ""))
+        else:
+            rep.ok(f"{fam} census", "every drawn string is printed prose")
+
     print()
     if rep.failures:
         print(f"FAILED - {len(rep.failures)} of {rep.checks} checks", file=sys.stderr)

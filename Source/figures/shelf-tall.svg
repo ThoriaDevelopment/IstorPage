@@ -44,4 +44,6 @@
     <circle class="shelf-dot" cx="326.0" cy="495.2" r="3.4"/>
     <path class="shelf-rule" d="M0 477.2 H340"/>
   </g>
-  <text class="shelf-foot" x="326.0" y="517.2" font-size="16.5" font-family="Inter, sans-serif" text-anchor="end">every one a document on this machine</text></svg>
+  <text class="shelf-foot" x="326.0" y="517.2" font-size="16.5" font-family="Inter, sans-serif">every one of them a document</text>
+  <text class="shelf-foot" x="326.0" y="495.8" font-size="16.5" font-family="Inter, sans-serif">on this machine</text>
+</svg>

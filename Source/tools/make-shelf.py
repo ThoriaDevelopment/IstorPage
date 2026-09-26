@@ -226,10 +226,20 @@ def plate(wide):
     head = ('  <text class="shelf-head" x="%.1f" y="%.1f" font-size="%g" '
             'font-family="%s">10 sources</text>'
             % (TEXT_X, (28.0 if wide else 32.0), size * 1.08, INTER))
-    foot = ('  <text class="shelf-foot" x="%.1f" y="%.1f" font-size="%g" '
-            'font-family="%s" text-anchor="end">every one a document on '
-            'this machine</text>'
-            % (dot_x, H - 10.0, size, INTER))
+    # The footer is the library caption's own sentence, verbatim - the
+    # verbatim census in verify-figures.py holds every drawn string to the
+    # page's prose, so the old compression ("every one a document on this
+    # machine") fails the gate. The tall plate's width cannot hold it on one
+    # line at 16.5 units, so it wraps the way the rows wrap: measured halves,
+    # at the rail's line height.
+    foot_lines = ["every one of them a document", "on this machine"] \
+        if not wide else ["every one of them a document on this machine"]
+    foot = "".join(
+        '  <text class="shelf-foot" x="%.1f" y="%.1f" font-size="%g" '
+        'font-family="%s"%s>%s</text>\n'
+        % (dot_x, H - 10.0 - i * size * 1.3, size, INTER,
+           ' text-anchor="end"' if wide else '', line)
+        for i, line in enumerate(foot_lines))
 
     variant = "wide" if wide else "tall"
     title = (

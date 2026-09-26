@@ -16,9 +16,9 @@
     <text class="uv-t uv-coral" x="170" y="139.46" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">Unverified,</text>
     <text class="uv-t uv-coral" x="170" y="163.385" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">check the source.</text>
   </g>
-  <g class="uv" data-x="84.2" data-y="237.7" data-w="171.6" data-h="47.925">
-    <rect class="uv-box uv-plain" x="84.2" y="237.7" width="171.6" height="47.925" rx="6"/>
-    <text class="uv-t uv-plain" x="170" y="255.31" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">the answer's claim</text>
+  <g class="uv" data-x="99.9" data-y="237.7" data-w="140.2" data-h="47.925">
+    <rect class="uv-box uv-plain" x="99.9" y="237.7" width="140.2" height="47.925" rx="6"/>
+    <text class="uv-t uv-plain" x="170" y="255.31" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">a good answer</text>
   </g>
   <g class="uv" data-x="42.6" data-y="329.625" data-w="254.8" data-h="47.925">
     <rect class="uv-box uv-plain" x="42.6" y="329.625" width="254.8" height="47.925" rx="6"/>

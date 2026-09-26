@@ -28,7 +28,7 @@ Source/index.html's gate act: "the question", "the small model", "is this
 already answered here?", "the library", "answers from them,", "never goes
 online", "the better model", "slow, and can be right", and the caption line
 "the cheap question goes first". The branch edges are the act's own two
-answers to the test, "yes" and "not yet", because that is what a yes-or-no
+answers to the test, "Yes" and "Not yet", because that is what a yes-or-no
 question's edges are called. Nothing is invented; the drawing is arithmetic
 on the act's own words.
 
@@ -41,7 +41,7 @@ question), the one moving part in the diagram.
 THE LAYOUT IS DERIVED. Nodes are boxes sized from MEASURED string widths,
 not hand-fitted; the branch geometry is computed from the box positions;
 the plate height follows the tall plate's stacked flow. The self-test
-demands the eleven labels verbatim, the two edges named yes and not yet,
+demands the eleven labels verbatim, the two edges named Yes and Not yet,
 every drawn line inside its plate, token inks only, and both variants
 carrying the same decision.
 
@@ -66,13 +66,21 @@ MEASURED = {
     ("is this already answered here?", 16.5): 239.1,
     ("the library", 12.5): 60.6, ("the library", 16.5): 80.0,
     ("answers from them,", 12.5): 119.1, ("answers from them,", 16.5): 157.2,
+    # the node line, without the sentence's comma (the census reads drawn
+    # text as its own string)
+    ("answers from them", 12.5): 115.3, ("answers from them", 16.5): 152.2,
     ("never goes online", 12.5): 106.0, ("never goes online", 16.5): 139.9,
     ("the better model", 12.5): 98.2, ("the better model", 16.5): 129.7,
     ("slow, and can be right", 12.5): 130.6, ("slow, and can be right", 16.5): 172.4,
     ("the cheap question goes first", 12.5): 174.3,
     ("the cheap question goes first", 16.5): 230.2,
-    ("yes", 12.5): 21.0, ("yes", 16.5): 27.8,
-    ("not yet", 12.5): 41.2, ("not yet", 16.5): 54.4,
+    # The edge labels are the page's own capitalization: the FAQ's answer
+    # prints "Yes, and that is the case it is built for" and the refusal's
+    # "Not yet. The repository is public and empty." The verbatim census in
+    # verify-figures.py holds drawn strings to the page's prose, so the
+    # earlier lowercase forms fail it.
+    ("Yes", 12.5): 21.7, ("Yes", 16.5): 28.6,
+    ("Not yet", 12.5): 43.1, ("Not yet", 16.5): 56.9,
 }
 
 
@@ -129,7 +137,7 @@ def plate(wide):
         out_x = sm_x + sm_w + 54.0
         lib_y = 8.0
         lib_g, lib_w, lib_h = node(out_x, lib_y,
-                                   ["the library", "answers from them,",
+                                   ["the library", "answers from them",
                                     "never goes online"], "gn-plain")
         bm_y = H - (PAD * 2 + 2 * size * LINE_H) - 8.0
         bm_g, bm_w, bm_h = node(out_x, bm_y,
@@ -145,6 +153,9 @@ def plate(wide):
         e2 = ('  <path class="gn-edge" d="M%g %g C%g %g %g %g %g %g"/>'
               % (sm_x + sm_w, sm_mid, sm_x + sm_w + 27.0, sm_mid,
                  out_x - 27.0, lib_mid, out_x, lib_mid))
+        # "answers from them" is the node's line, minus the comma the page's
+        # sentence adds for its own grammar; the census reads the drawn text
+        # as its own string, so the node line drops the mark.
         e3 = ('  <path class="gn-edge" d="M%g %g C%g %g %g %g %g %g"/>'
               % (sm_x + sm_w, sm_mid, sm_x + sm_w + 27.0, sm_mid,
                  out_x - 27.0, bm_mid, out_x, bm_mid))
@@ -157,10 +168,10 @@ def plate(wide):
                % (sm_x + sm_w / 2.0, H - 6.0, size, INTER))
         edges = (e1, e2, e3,
                  '  <text class="gn-elabel" x="%g" y="%g" font-size="%g" '
-                 'font-family="%s" text-anchor="middle">yes</text>'
+                 'font-family="%s" text-anchor="middle">Yes</text>'
                  % (yes_x, yes_y, size, INTER),
                  '  <text class="gn-elabel" x="%g" y="%g" font-size="%g" '
-                 'font-family="%s" text-anchor="middle">not yet</text>'
+                 'font-family="%s" text-anchor="middle">Not yet</text>'
                  % (ny_x, ny_y, size, INTER))
         body = q_g + sm_g + lib_g + bm_g
         head_y = 0.0
@@ -176,12 +187,12 @@ def plate(wide):
         sm_g, sm_w, sm_h = node(sm_x, sm_y,
                                 ["the small model",
                                  "is this already answered here?"], "gn-azure")
-        lib_w2 = node_w(["the library", "answers from them,", "never goes online"],
+        lib_w2 = node_w(["the library", "answers from them", "never goes online"],
                         size)
         lib_x = (W - lib_w2) / 2.0
         lib_y = sm_y + sm_h + 44.0
         lib_g, lib_w, lib_h = node(lib_x, lib_y,
-                                   ["the library", "answers from them,",
+                                   ["the library", "answers from them",
                                     "never goes online"], "gn-plain")
         bm_y = lib_y + lib_h + 44.0
         bm_g, bm_w, bm_h = node(lib_x, bm_y,
@@ -199,10 +210,10 @@ def plate(wide):
                  lib_y + lib_h / 2.0, lib_x - 2.0, lib_y + lib_h / 2.0 + 20.0))
         edges = (e1, e2, e3,
                  '  <text class="gn-elabel" x="%g" y="%g" font-size="%g" '
-                 'font-family="%s" text-anchor="middle">yes</text>'
+                 'font-family="%s" text-anchor="middle">Yes</text>'
                  % (sm_x + sm_w / 2.0 + 10.0, sm_y + sm_h + 30.0, size, INTER),
                  '  <text class="gn-elabel" x="%g" y="%g" font-size="%g" '
-                 'font-family="%s" text-anchor="end">not yet</text>'
+                 'font-family="%s" text-anchor="end">Not yet</text>'
                  % (lib_x - 8.0, lib_y + lib_h / 2.0 + 20.0 + 4.0, size, INTER))
         body = q_g + sm_g + lib_g + bm_g
         cap = ('  <text class="gn-cap" x="%g" y="%g" font-size="%g" '
@@ -249,9 +260,9 @@ def self_test():
 
     labels = ("the question", "the small model",
               "is this already answered here?", "the library",
-              "answers from them,", "never goes online", "the better model",
+              "answers from them", "never goes online", "the better model",
               "slow, and can be right", "the cheap question goes first",
-              "yes", "not yet")
+              "Yes", "Not yet")
     for name, svg, wide in (("wide", build_wide(), True),
                             ("tall", build_tall(), False)):
         size = 12.5 if wide else 16.5
@@ -272,7 +283,7 @@ def self_test():
                 r'data-w="([\d.]+)" data-h="([\d.]+)">(.*?)</g>', svg, __import__("re").S):
             x, y, w, h = (float(m.group(i)) for i in (1, 2, 3, 4))
             for t in re.findall(r'>([^<]+)</text>', m.group(5)):
-                if t in ("yes", "not yet"):
+                if t in ("Yes", "Not yet"):
                     continue
                 if tw(t, size) > w - PAD * 2 + 0.5:
                     bad.append(t[:30])

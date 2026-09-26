@@ -35,8 +35,9 @@ EVERY LABEL IS A PHRASE THE PAGE ALREADY PRINTS, transcribed verbatim:
 "fit a citation" (the act's "to fit a citation quickly"),
 "Unverified," and "check the source." (the act's own mark, comma and
 full stop included, exactly as the strong element prints it),
-"the answer's claim" (the act: "a good answer" whose citation is fitted;
-claim is the page's word in the gate act caption),
+"a good answer" (the act's own phrase, the answer whose citation is
+fitted: "Sometimes the model writes a good answer and forgets to cite as
+it goes"),
 "the passage behind the claim" (act 3's caption: "the passage behind the
 claim"), "does not end" (the drawing's dashed-edge label - the act's figure
 of speech: the plate draws what the prose says is open as open), and the
@@ -83,7 +84,7 @@ MEASURED = {
     ("fit a citation", 12.5): 70.2, ("fit a citation", 16.5): 92.7,
     ("Unverified,", 12.5): 65.7, ("Unverified,", 16.5): 86.8,
     ("check the source.", 12.5): 106.8, ("check the source.", 16.5): 141.0,
-    ("the answer's claim", 12.5): 111.8, ("the answer's claim", 16.5): 147.6,
+    ("a good answer", 12.5): 88.0, ("a good answer", 16.5): 116.2,
     ("the passage behind the claim", 12.5): 174.9,
     ("the passage behind the claim", 16.5): 230.8,
     ("does not end", 12.5): 77.9, ("does not end", 16.5): 102.9,
@@ -150,7 +151,7 @@ def plate(wide):
         H = 252.0
         n1 = ["the small model", "fit a citation"]
         mk = ["Unverified,", "check the source."]
-        n3 = ["the answer's claim"]
+        n3 = ["a good answer"]
         n4 = ["the passage behind the claim"]
         widths = [node_w(n, size) for n in (n1, mk, n3)]
         x = (W - sum(widths) - GAP_W * 2) / 2.0
@@ -191,7 +192,7 @@ def plate(wide):
     else:
         n1 = ["the small model", "fit a citation"]
         mk = ["Unverified,", "check the source."]
-        n3 = ["the answer's claim"]
+        n3 = ["a good answer"]
         n4 = ["the passage behind the claim"]
         x1 = (W - node_w(n1, size)) / 2.0
         y1 = 6.0
@@ -264,7 +265,7 @@ def self_test():
             worst = 1
 
     labels = ("the small model", "fit a citation", "Unverified,",
-              "check the source.", "the answer's claim",
+              "check the source.", "a good answer",
               "the passage behind the claim", "does not end",
               "That word is not a guess about truth.")
     for name, svg, wide in (("wide", build_wide(), True),

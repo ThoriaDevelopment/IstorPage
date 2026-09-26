@@ -5,8 +5,8 @@
   <path class="gn-edge" d="M106.2 21.0625 L160.2 128"/>
   <path class="gn-edge" d="M365.3 128 C392.3 128 392.3 47.1875 419.3 47.1875"/>
   <path class="gn-edge" d="M365.3 128 C392.3 128 392.3 261.875 419.3 261.875"/>
-  <text class="gn-elabel" x="392.3" y="37.1875" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">yes</text>
-  <text class="gn-elabel" x="392.3" y="276.875" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">not yet</text>
+  <text class="gn-elabel" x="392.3" y="37.1875" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">Yes</text>
+  <text class="gn-elabel" x="392.3" y="276.875" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">Not yet</text>
   <g class="gn" data-x="8" data-y="0" data-w="98.2" data-h="42.125">
     <rect class="gn-box gn-plain" x="8" y="0" width="98.2" height="42.125" rx="6"/>
     <text class="gn-t gn-plain" x="57.1" y="16.25" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the question</text>
@@ -16,11 +16,11 @@
     <text class="gn-t gn-azure" x="262.75" y="114.125" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the small model</text>
     <text class="gn-t gn-azure" x="262.75" y="132.25" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">is this already answered here?</text>
   </g>
-  <g class="gn" data-x="419.3" data-y="8" data-w="143.1" data-h="78.375">
-    <rect class="gn-box gn-plain" x="419.3" y="8" width="143.1" height="78.375" rx="6"/>
-    <text class="gn-t gn-plain" x="490.85" y="24.25" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the library</text>
-    <text class="gn-t gn-plain" x="490.85" y="42.375" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">answers from them,</text>
-    <text class="gn-t gn-plain" x="490.85" y="60.5" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">never goes online</text>
+  <g class="gn" data-x="419.3" data-y="8" data-w="139.3" data-h="78.375">
+    <rect class="gn-box gn-plain" x="419.3" y="8" width="139.3" height="78.375" rx="6"/>
+    <text class="gn-t gn-plain" x="488.95" y="24.25" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the library</text>
+    <text class="gn-t gn-plain" x="488.95" y="42.375" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">answers from them</text>
+    <text class="gn-t gn-plain" x="488.95" y="60.5" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">never goes online</text>
   </g>
   <g class="gn" data-x="419.3" data-y="231.75" data-w="154.6" data-h="60.25">
     <rect class="gn-box gn-plain" x="419.3" y="231.75" width="154.6" height="60.25" rx="6"/>
