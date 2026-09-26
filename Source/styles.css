@@ -4106,6 +4106,64 @@ h3 {
     transform: none;
   }
 
+  /* The landing's own cold states, and the same reader as M24's: a reader who
+     prints from the top of the page has armed the whole reveal family without
+     arriving anywhere, and every window, exhibit image, plate root, evidence
+     number, dispute row, reading-log row, the stop ring's strokes and the
+     ruler's estimate would print as nothing at all. M24 released the close;
+     this releases the landing, on the same principle - paper is not a scroll
+     position. Each rule restates its cold selector verbatim with the warm end
+     state (the authored page's own values, which is what a reader whose script
+     never ran sees), and wins by position: a media block adds no specificity,
+     so the tie falls to the last declaration in the file. The ring's dash
+     offsets return to the SVG's own 0 - the roll removes itself; the claim is
+     simply visible. */
+  .hero.is-cold .h1-reveal .h1-line { transform: none; }
+  .hero.is-cold .kicker,
+  .hero.is-cold .lede,
+  .hero.is-cold .cta,
+  .hero.is-cold .scroll-cue { opacity: 1; transform: none; }
+  .hero.is-cold .hero-world { opacity: 1; }
+
+  .reveal.is-cold .win,
+  .reveal.is-cold .exhibit img,
+  .boundary.is-cold .bnd,
+  .rear-dials.is-cold .dials-plate,
+  .games-dial-fig.is-cold .games-plate,
+  .front-dial-fig.is-cold .front-plate,
+  .two-rings-fig.is-cold .two-rings,
+  .parapegma-fig.is-cold .pp-plate,
+  .etymology.is-cold {
+    opacity: 1;
+    transform: none;
+  }
+
+  .field.is-cold .readlog li { opacity: 1; transform: none; }
+  .field.is-cold .readlog-tick { opacity: 1; }
+  .field.is-cold .win-dispute .dispute-table tbody tr { opacity: 1; transform: none; }
+  .evidence.is-cold > div { opacity: 1; transform: none; }
+  .confidence-ruler.is-cold .ruler-fill { transform: scaleX(1); }
+  .confidence-ruler.is-cold .ruler-point { opacity: 1;
+    transform: translate(-50%, -50%) scale(1); }
+
+  .plate.is-cold > svg .ring-frame { stroke-dashoffset: 0; }
+  .plate.is-cold > svg .ring-frame + .ring-frame { stroke-dashoffset: 0; }
+  .plate.is-cold > svg .ring-holes { stroke-dashoffset: 0; }
+  .plate.is-cold > svg .ring-claim { opacity: 1; }
+
+  /* A disclosure is a click the paper cannot make. The questions act is a
+     <details> accordion - one answer open on screen, the rest one click away -
+     and a closed panel prints as a question with no answer, which on a sheet
+     is a promise the document does not keep. The hiding a closed panel does is
+     the UA's `content-visibility: hidden` on its ::details-content pseudo, so
+     that is the level the release works at (a child-level display rule sits
+     inside the skipped pseudo and is never reached); the second line is the
+     engine-agnostic fallback for browsers whose closed hiding is plain child
+     display instead. The questions and their answers are the act's whole
+     argument, so on paper every panel reads open. */
+  .qa details::details-content { content-visibility: visible; block-size: auto; }
+  .qa details:not([open]) > *:not(summary) { display: block; }
+
   /* A link whose only life was to be clicked says where it went. Inherited
      colour, because a printed address on a printed pill should look like the
      rest of the pill.
