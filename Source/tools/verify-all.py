@@ -86,10 +86,19 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true",
                     help="skip the two headless audits")
+    ap.add_argument("--report", action="store_true",
+                    help="write a signed, timestamped report beside the "
+                         "audit JSONs (in .improvement/audits/, which is "
+                         "gitignored - a paper trail, never tree noise)")
     args = ap.parse_args()
 
     sha = short("HEAD")
+    full_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(REPO),
+                              capture_output=True, text=True).stdout.strip()
     started = time.time()
+    stamp = time.strftime("%Y%m%d-%H%M%S", time.gmtime(started))
+    report_dir = REPO / ".improvement" / "audits"
+    report_path = report_dir / f"audit-{sha}-{stamp}.md" if args.report else None
 
     tmp = Path(tempfile.mkdtemp(prefix="istor-audit-"))
     print(f"verify-all: auditing commit {sha} in {tmp}", flush=True)
@@ -119,7 +128,8 @@ def main() -> int:
         record("build", b.returncode == 0,
                tail(b.stdout, 1) if b.returncode == 0 else tail(b.stderr, 2))
         if b.returncode != 0:
-            return finish(results, sha, started)
+            return finish(results, sha, started, report_path, full_sha,
+                          args.quick)
 
         for name, tool in (
             ("figures", "verify-figures.py"),
@@ -132,7 +142,8 @@ def main() -> int:
                    tail(g.stdout, 1) if g.returncode == 0 else tail(g.stderr, 2))
 
         if args.quick:
-            return finish(results, sha, started)
+            return finish(results, sha, started, report_path, full_sha,
+                          args.quick)
 
         # The two audits, SEQUENTIALLY. The first draft ran them in parallel
         # and the parallelism was a finding of its own: motion's claims read
@@ -145,10 +156,14 @@ def main() -> int:
         for name, cmd in (
             ("contrast",
              [sys.executable, "Source/tools/audit-contrast.py",
-              "--pages", "/", "--json", "audit-contrast.json"]),
+              "--pages", "/",
+              "--json", str((report_dir / f"contrast-{stamp}.json")
+                            if args.report else "audit-contrast.json")]),
             ("motion",
              [sys.executable, "Source/tools/audit-motion.py",
-              "--jobs", "4"]),
+              "--jobs", "4"] +
+             (["--json", str(report_dir / f"motion-{stamp}.json")]
+              if args.report else [])),
         ):
             print(f"verify-all: {name} starting (headless Chrome)",
                   flush=True)
@@ -166,24 +181,43 @@ def main() -> int:
             record(name, p.returncode == 0,
                    ok_line.strip() if p.returncode == 0 else tail(out, 2))
 
-        return finish(results, sha, started)
+        return finish(results, sha, started, report_path, full_sha, args.quick)
     finally:
         run(["git", "worktree", "remove", "--force", str(tmp)], cwd=REPO)
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-def finish(results, sha: str, started: float) -> int:
+def finish(results, sha: str, started: float, report_path=None,
+           full_sha: str = "", quick: bool = False) -> int:
     bad = [n for n, ok, _ in results if not ok]
     mins = (time.time() - started) / 60.0
     print(flush=True)
     if bad:
-        print(f"verify-all FAILED - commit {sha}, {len(bad)} of "
-              f"{len(results)} gates: {', '.join(bad)} ({mins:.1f} min)",
-              file=sys.stderr)
-        return 1
-    print(f"verify-all ok - commit {sha}, every gate green with nothing but "
-          f"what HEAD carries ({mins:.1f} min)")
-    return 0
+        verdict = (f"verify-all FAILED - commit {sha}, {len(bad)} of "
+                   f"{len(results)} gates: {', '.join(bad)} ({mins:.1f} min)")
+        print(verdict, file=sys.stderr)
+    else:
+        verdict = (f"verify-all ok - commit {sha}, every gate green with "
+                   f"nothing but what HEAD carries ({mins:.1f} min)")
+        print(verdict)
+    if report_path:
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        lines = [
+            "# verify-all report", "",
+            f"- commit: {sha} ({full_sha})",
+            f"- mode: {'quick' if quick else 'full (contrast + motion driven under headless Chrome)'}",
+            f"- started (UTC): {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(started))}"
+            f"   duration: {mins:.1f} min",
+            "", "| gate | verdict | detail |", "|---|---|---|",
+        ]
+        for name, ok, detail in results:
+            lines.append(f"| {name} | {'ok' if ok else 'FAIL'} | {detail} |")
+        lines += ["", f"**verdict:** {verdict}", "",
+                  "Reproduce from a fresh clone: `python Source/tools/"
+                  "verify-all.py` (+ `--quick` to skip the audits).", ""]
+        report_path.write_text("\n".join(lines), encoding="utf-8")
+        print(f"verify-all: report written {report_path}")
+    return 1 if bad else 0
 
 
 if __name__ == "__main__":
