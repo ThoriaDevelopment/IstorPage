@@ -86,7 +86,7 @@ wide = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}"
     from it: Latin videre, English wit, and the Greek word for a witness, which is
     the name of this tool.</title>
   <!-- One root, three descendants. Regenerate with Source/tools/make-etymology.py
-       -- do not hand-edit. Positions are derived from the row pitch above; the
+       - do not hand-edit. Positions are derived from the row pitch above; the
        ink/contrast argument is in that file's docstring. -->
 
   <g stroke="var(--rule)" stroke-width="1" fill="none">
@@ -160,7 +160,7 @@ tall = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {TW} {TH}"
     the name of this tool.</title>
   <!-- The same descent as etymology.svg, read downward so a phone gets a
        composition rather than a scaled one. Regenerate with
-       Source/tools/make-etymology.py -- do not hand-edit. -->
+       Source/tools/make-etymology.py - do not hand-edit. -->
 
   <text class="etym-root" x="{T_WORD_X:g}" y="{T_ROOT_BASE:g}">*weyd-</text>
   <text class="etym-gloss" x="{T_GLOSS_X:g}" y="{T_ROOT_BASE:g}">root · to see</text>

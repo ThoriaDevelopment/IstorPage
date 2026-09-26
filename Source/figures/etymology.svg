@@ -5,7 +5,7 @@
     from it: Latin videre, English wit, and the Greek word for a witness, which is
     the name of this tool.</title>
   <!-- One root, three descendants. Regenerate with Source/tools/make-etymology.py
-       -- do not hand-edit. Positions are derived from the row pitch above; the
+       - do not hand-edit. Positions are derived from the row pitch above; the
        ink/contrast argument is in that file's docstring. -->
 
   <g stroke="var(--rule)" stroke-width="1" fill="none">

@@ -6,7 +6,7 @@
     the name of this tool.</title>
   <!-- The same descent as etymology.svg, read downward so a phone gets a
        composition rather than a scaled one. Regenerate with
-       Source/tools/make-etymology.py -- do not hand-edit. -->
+       Source/tools/make-etymology.py - do not hand-edit. -->
 
   <text class="etym-root" x="52" y="60">*weyd-</text>
   <text class="etym-gloss" x="176" y="60">root · to see</text>

@@ -165,7 +165,7 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VB_W} {VB_H}"
           stroke-opacity="0.5" stroke-dasharray="0.02 {GAP:.5f}"
           transform="rotate({THETA:.5f} {CX:g} {CY:.1f})"/>
 
-  <!-- The disputed hole, at the apex, in the plate's own --azure. The figure's
+  <!-- The disputed hole, at the apex, in the plate's own azure. The figure's
        single piece of information, as it is on the plate. -->
   <circle cx="{CX:g}" cy="{APEX_Y:g}" r="{DOT * 0.72:.2f}" fill="var(--azure)"/>
 </svg>

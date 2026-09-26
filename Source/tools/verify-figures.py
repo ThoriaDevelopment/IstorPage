@@ -273,7 +273,31 @@ def main() -> int:
             rep.ok(f"{fam} census",
                    f"{printed} printed, {attested} attested in {gen}")
 
-    # 6. The extents gate. The cold read at 390px caught two labels their own
+    # 6. Well-formedness. The M47 plate shipped with an unclosed <path> - a
+    #    missing "/>" in one generator line - and the whole battery was blind
+    #    to it: byte-identity compared a broken output to an identically
+    #    broken committed file, the self-tests and the census match strings
+    #    and regexes, and the page rendered 3 of 15 elements for two days
+    #    until a screenshot tour saw the empty box. So: every committed
+    #    figure is parsed by a real XML parser, and one that does not parse
+    #    is a FAIL whatever its bytes say. A figure is a document, not a
+    #    string the generator happens to write.
+    import xml.etree.ElementTree as ET
+
+    for entry in GENERATORS:
+        for name in entry[1]:
+            if not name.endswith(".svg"):
+                continue
+            path = SOURCE / name
+            if not path.is_file():
+                continue
+            try:
+                ET.fromstring(path.read_bytes())
+                rep.ok(f"{name} well-formed")
+            except ET.ParseError as exc:
+                rep.fail(f"{name} is not well-formed XML", str(exc))
+
+    # 7. The extents gate. The cold read at 390px caught two labels their own
     #    type-floor and contrast passes could not see: a wrapped footer drawn
     #    start-anchored from the dot column ran off its plate's clipped edge,
     #    and longer attested strings pushed a two-row legend past a 340-unit

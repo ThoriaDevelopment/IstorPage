@@ -176,7 +176,7 @@ def plate(wide):
         edges = (
             edge(n1_end, e_mid, mark_x, e_mid),
             edge(mark_x + wm, e_mid, n3_x, e_mid),
-            '  <path class="uv-edge uv-dashed" d="M%g %g C%g %g %g %g %g %g"'
+            '  <path class="uv-edge uv-dashed" d="M%g %g C%g %g %g %g %g %g"/>'
             % (n3_x + w3 / 2.0, y3 + h3,
                n3_x + w3 / 2.0, y3 + h3 + 22.0,
                n4_x + w4 / 2.0 + 24.0, y4 - 22.0,

@@ -72,15 +72,15 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VB_W} {VB_H}"
 
   <!-- 355 holes in one dashed circle rather than 355 elements. pathLength is not
        used, so the dash arithmetic is literal and cannot drift between renderers.
-       --ink-3 because the holes are the subject, not the frame: at --rule they
-       measured 1.20:1 on --paper. Why, in full, is in make-calendar-ring.py.
+       ink-3 because the holes are the subject, not the frame: at rule they
+       measured 1.20:1 on paper. Why, in full, is in make-calendar-ring.py.
        class=ring-holes: M12's roll, one dash period, styles.css motion block. -->
   <circle class="ring-holes" cx="{CX:g}" cy="{CY:g}" r="{R_HOLES:g}" fill="none"
           stroke="var(--ink-3)" stroke-width="{DOT:g}" stroke-linecap="round"
           stroke-dasharray="0.02 {GAP:.6f}"
           transform="rotate({THETA:.4f} {CX:g} {CY:g})"/>
 
-  <!-- The hole in question: the figure's only --azure, and the one thing in it that
+  <!-- The hole in question: the figure's only azure, and the one thing in it that
        is a claim rather than a measure. class=ring-claim: lands last in M12. -->
   <g class="ring-claim">
     <circle cx="{mx:.4f}" cy="{my:.4f}" r="{DOT / 2:.2f}" fill="var(--azure)"/>

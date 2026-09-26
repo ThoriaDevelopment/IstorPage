@@ -4,7 +4,7 @@
   <title id="uv-wide-title">The unverified mark, drawn: the small model fits a citation, the answer carries the mark, and the dotted line from the claim does not end until the passage behind the claim closes it.</title>
   <path class="uv-edge" d="M225.55 42.125 L257.55 42.125"/>
   <path class="uv-edge" d="M388.35 42.125 L420.35 42.125"/>
-  <path class="uv-edge uv-dashed" d="M476.35 63.1875 C476.35 85.1875 344 94.25 320 116.25"
+  <path class="uv-edge uv-dashed" d="M476.35 63.1875 C476.35 85.1875 344 94.25 320 116.25"/>
   <text class="uv-elabel" x="429.45" y="98.625" font-size="12.5" font-family="Inter, sans-serif" text-anchor="start">does not end</text>
   <g class="uv" data-x="107.65" data-y="12" data-w="117.9" data-h="60.25">
     <rect class="uv-box uv-plain" x="107.65" y="12" width="117.9" height="60.25" rx="6"/>
