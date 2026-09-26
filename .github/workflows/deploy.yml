@@ -90,6 +90,6 @@ jobs:
           echo "$PAGE" | grep -q 'mechanism’s own manual' \
             || fail "the curly-apostrophe typography is not live"
           LIBPAGE=$(curl -fsSL --max-time 30 https://istor.fyi/what-is-quantization/)
-          echo "$LIBPAGE" | grep -q 'bar lengths are the files’s true proportions' \
+          echo "$LIBPAGE" | grep -q 'bar lengths are the files’ true proportions' \
             || fail "the gap session's figure apostrophes are not live"
           echo "smoke ok - the shipped page carries the handoff markers"
