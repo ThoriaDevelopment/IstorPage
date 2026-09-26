@@ -58,7 +58,7 @@ MIST = "var(--mist)"
 SUBTLE = "var(--subtle)"
 WITNESS = "var(--witness)"
 
-TITLE = "the axis is the page's own: pieces per second"
+TITLE = "the axis is the page’s own: pieces per second"
 
 # The bar, at six: inside the five-to-ten yardstick the prose gives, and the
 # number every check holds the claims against.

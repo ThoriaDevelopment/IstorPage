@@ -203,10 +203,18 @@ nav was painted *inside a screenshot*. It also carries the page's one scroll ind
 second navigation system."*
 
 **The bar has two surfaces, and the change is content rather than paint.** While the nav is inside the
-hero's field it owns no surface at all — no background, no blur, no hairline — with its mark and links
-switched to the field's ink and its CTA to `--azure-lift`. Paper, blur and hairline arrive together
-once the field has scrolled past (`.nav.over-field`; §4 defines the two accents, because an accent
-that has to survive on teal cannot be the one that was chosen for paper).
+hero's field at rest — `scrollY` 8 or less, before any of the page has gone under the bar — it owns no
+surface at all: no background, no blur, no hairline, with its mark and links switched to the field's
+ink and its CTA to `--azure-lift` (`.nav.over-field`; §4 defines the two accents, because an accent
+that has to survive on teal cannot be the one that was chosen for paper). Paper, blur and hairline
+arrive together once the field has scrolled past.
+There is a third state, and it was found by measurement rather than by eye. The bar is sticky, so from
+the first scrolled pixel it has the act beneath it to cover, and the four acts that stand on a field
+carry prose: with `#on-your-machine`'s second paragraph parked under the bar, the bar composited to
+`rgba(0, 0, 0, 0)` and the paragraph's first 48px sat across the three links. `.nav.over-field.is-stuck`
+now takes the paper state's own recipe with the field's ground in place of the paper — `88%` of
+`--field-base` behind the same 12px blur — which separates the two layers while the hairline stays
+transparent, so the bar still joins the field rather than being laid over it.
 A reader whose browser never runs a script keeps the paper state throughout, which is the safe way to
 be wrong.
 
@@ -329,10 +337,10 @@ faithful: `Black/verifiedsource.png`.
    │                             │   ║   collapse tells the    ║
    │                             │   ║   story in one glance   ║
    └────────────────────────────┘   ╚═════════════════════════╝
-     480px on paper (--col-text)    696px field (--field), 600px window
+     504px on paper (--col-text)    696px field (--field), 600px window
 ```
 
-Measured at 1440: the text column is **480** wide at x=100, the field **696** at x=620, and the
+Measured at 1440: the text column is **504** wide at x=100, the field **696** at x=620, and the
 exhibit inside it **600**, its file's own width (§3.1). This is the reference pattern for every C2
 act below, and the only thing that changes between them is which side the field sits on.
 
@@ -617,7 +625,7 @@ All widths derive from one measured fact: **every capture is 1918px wide and is 
 | `--win-lg` | **959px** | crop ÷ 2 — the full-window exhibits, and the replica |
 | `--field-pad` | **48px** | inside a field, and between the pair's two windows |
 | `--field` | **696px** | `--win-sm` + 2 × `--field-pad` |
-| `--col-text` | **480px** | the C2 text column |
+| `--col-text` | **504px** | the C2 text column: `--page` minus `--gap` minus `--field`, so the pair fills the page (it was 480, which left 24px of every C2 row unused) |
 | `--gap` | **40px** | between the text column and the field |
 | `--page` | **1240px** | genre range 1150–1300 |
 | `--nav-h` | **68px** | the bar's height, and how far the hero is pulled under it |

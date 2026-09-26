@@ -108,7 +108,7 @@ def wide():
                          TOK_WITNESS if accent else TOK_INK,
                          gb_label(gb, approx) + " " + UNIT, FONTS_SANS, weight="600"))
     rows.append(text(X0, H - 8, 16, TOK_MIST,
-                     "bar lengths are the files' true proportions", FONTS_SANS))
+                     "bar lengths are the files’ true proportions", FONTS_SANS))
     return svg(W, H, rows, "wide")
 
 
@@ -140,7 +140,7 @@ def tall():
                          TOK_WITNESS if accent else TOK_INK,
                          gb_label(gb, approx) + " " + UNIT, FONTS_SANS, weight="600"))
     rows.append(text(X0, H - 8, 14, TOK_MIST,
-                     "bar lengths are the files' true proportions", FONTS_SANS))
+                     "bar lengths are the files’ true proportions", FONTS_SANS))
     return svg(W, H, rows, "tall")
 
 
@@ -183,7 +183,7 @@ def self_test():
         for s in ("8 GB", "4 GB", "~2.5 GB"):
             if s not in doc:
                 fails.append(f"{name}: missing value {s}")
-        if "bar lengths are the files' true proportions" not in doc:
+        if "bar lengths are the files’ true proportions" not in doc:
             fails.append(f"{name}: missing the honesty caption")
     # column fits (wide): name at 116, bar starts 210, span 280, value after
     if 116 + len("Q4_K_M") * 19 * ADV_MONO > 210 - 8:

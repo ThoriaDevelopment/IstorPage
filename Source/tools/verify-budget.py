@@ -277,6 +277,27 @@ def main(argv: list[str]) -> int:
     # markup's, and the shipped script is 12,671 B of behavior. The ceiling stays
     # where it was: it was never the problem, and behavior that doubles still
     # trips it.
+    #
+    # RE-BASELINED 2026-09-24, to a round 24 KiB. The trigger was M38 (the bar's
+    # CTA stands down while a primary action is on screen), which took the
+    # shipped script 20,659 B, 179 B over the 20 KiB line. The line is not being
+    # moved for M38 alone: it was set at M24 on 16,856 B measured, and the
+    # headroom it left has been spent since by the act index, M26's bearing,
+    # M31's act label, M34's field bands and now M38's CTA bands, every one an
+    # addition decided on purpose rather than an accident. So the waste was
+    # looked for before the line moved, the way the rear-dials plates were fixed
+    # rather than baselined when the raw ceiling crossed: the shipped script was
+    # read end to end and holds no whole-line comment (the stripper's job), no
+    # dead branch and no constant twice - the 1.25 px/ms inequality at the close
+    # is a pasted read of ARRIVE_MS and is recorded as one where it sits. The
+    # 575 B of trailing `//` labels are the only thing that would fit under the
+    # old line, and they stay, because build-site.py's own docstring says why the
+    # stripper takes whole lines only: telling a trailing `//` from one inside a
+    # string is a parser's question, not a preference. What is left is honest, so
+    # the line moves to the next round step above the measured figure, 24 KiB on
+    # 20,659 B - the same rule the raw ceiling followed when a round 256 KiB was
+    # no longer available. The shape is unchanged: doubling 20,659 B is 41,318 B
+    # and still trips it.
     told_js = budget["document"].get("inline_js_bytes_ceiling")
     blocks = re.findall(r"<script>(.*?)</script>", html.decode("utf-8"), re.S)
     js = sum(len(b.encode()) for b in blocks)

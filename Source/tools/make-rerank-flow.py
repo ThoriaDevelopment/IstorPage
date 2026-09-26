@@ -87,7 +87,7 @@ def ranks(stage: dict) -> dict:
 
 COL1_LABEL = "the first pass"
 COL2_LABEL = "the reranker"
-ZONE_LABEL = "the budget's four"
+ZONE_LABEL = "the budget’s four"
 NM_LABEL = "sounds alike"
 TA_LABEL = "answers it"
 
@@ -256,9 +256,9 @@ def draw(spec: dict) -> str:
            'data-variant="%s">'
            % (spec["w"], spec["h"], spec["w"], spec["h"],
               esc("Twenty candidates ranked by the first pass and ranked again "
-                  "by the reranker. The near-miss that shares the question's "
+                  "by the reranker. The near-miss that shares the question’s "
                   "wording falls out of the top four; the passage that answers "
-                  "it, whose wording differs, rises in. The budget's four go "
+                  "it, whose wording differs, rises in. The budget’s four go "
                   "to the model that writes."),
               spec["name"])]
     out.append(draw_lines(spec))

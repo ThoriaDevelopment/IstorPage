@@ -126,11 +126,11 @@ def pct_of(kind: str, at: int, of: str) -> int:
     return round(100 * ws[at] / best)
 
 
-PANELS = (("document", "the whole document, one window", "of the end's weight"),
-          ("window", "the handful that bear on the question", "of this window's best"))
+PANELS = (("document", "the whole document, one window", "of the end’s weight"),
+          ("window", "the handful that bear on the question", "of this window’s best"))
 
-LINE_DOC = "the early detail: %d%% of the end's weight"
-LINE_WIN = "the same detail: %d%% of this window's best"
+LINE_DOC = "the early detail: %d%% of the end’s weight"
+LINE_WIN = "the same detail: %d%% of this window’s best"
 LINE_DOC %= pct_of("document", DETAIL_DOC, "end")
 LINE_WIN %= pct_of("window", DETAIL_WIN, "best")
 

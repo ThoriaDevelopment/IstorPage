@@ -12,5 +12,5 @@
 <text x="320" y="208.0" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="end">4 bit</text>
 <rect x="20" y="216.0" width="72.5" height="30.0" fill="var(--ink)" fill-opacity="0.22" stroke="var(--hairline)" stroke-width="1"/>
 <text x="102.5" y="236.0" font-family="Inter, system-ui, sans-serif" font-size="16" fill="var(--witness)" text-anchor="start" font-weight="600">~2.5 GB</text>
-<text x="6" y="284" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">bar lengths are the files' true proportions</text>
+<text x="6" y="284" font-family="Inter, system-ui, sans-serif" font-size="14" fill="var(--mist)" text-anchor="start">bar lengths are the files’ true proportions</text>
 </svg>

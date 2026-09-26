@@ -236,7 +236,7 @@ def draw(spec: dict) -> str:
            'height="%g" role="img" aria-label="%s" focusable="false" '
            'data-variant="%s">'
            % (spec["w"], spec["h"], spec["w"], spec["h"],
-              esc("A library's passages as positions. The two phrasings of one "
+              esc("A library’s passages as positions. The two phrasings of one "
                   "finding sit nearest each other; keywords reach the note that "
                   "shares the words, and the near-neighbour circle reaches the "
                   "subject across the wording."),
