@@ -2526,21 +2526,29 @@ h3 {
 .uv-tall { display: none; max-width: 340px; }
 
 .uv-box { fill: none; stroke: var(--ink-3); stroke-width: 1.2; }
-.uv-box.uv-coral { stroke: var(--coral); }
+/* The mark is the one filled node: --coral carrying white, like the app's own
+   citation chips. The fill is the contrast arithmetic's answer - the sampled
+   dark field leaves every red INK under 4.5:1 (coral-lift 3.64), while white
+   on --coral is 5.56:1 on screen and 9.28:1 in print, on every theme state. */
+.uv-box.uv-coral { fill: var(--coral); stroke: var(--coral); }
 .uv-edge { fill: none; stroke: var(--ink-3); stroke-width: 1.1; }
 .uv-t { fill: var(--ink); font-weight: 500; }
-.uv-t.uv-coral { fill: var(--coral); font-weight: 600; }
+.uv-t.uv-coral { fill: var(--on-azure); font-weight: 600; }
 .uv-elabel { fill: var(--ink-2); font-style: italic; }
 .uv-cap { fill: var(--ink-2); }
 
 /* In the dark field: the gate plate's own division, with the mark lifted to
-   the field's coral. Print needs no block of its own here - the print world
-   remaps the field tokens at :root, and these rules follow. */
+   the field's coral. The screen world samples pixels, so the white-on-coral
+   node is measured against the fill that is really behind it; the sheet's own
+   treatment of the mark lives in the print block below. */
 .field .uv-box { stroke: var(--field-ink-2); }
-.field .uv-box.uv-coral { stroke: var(--coral-lift); }
+/* The fill stays --coral on the field too: a filled node sits on its own fill,
+   so the lifted variant (a red INK's lift for the dark ground) is not needed -
+   white on --coral is 5.56:1, and print maps --coral to #8A1C1C (9.28:1). */
+.field .uv-box.uv-coral { fill: var(--coral); stroke: var(--coral); }
 .field .uv-edge { stroke: var(--field-ink-2); }
 .field .uv-t { fill: var(--field-ink); }
-.field .uv-t.uv-coral { fill: var(--coral-lift); }
+.field .uv-t.uv-coral { fill: var(--on-azure); }
 .field .uv-elabel, .field .uv-cap { fill: var(--field-ink-2); }
 
 @media (max-width: 700px) {
@@ -4001,6 +4009,24 @@ h3 {
   .cite-btn {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* The unverified mark is a DRAWING, not a control, and the sheet's rule for
+     drawings is the CTA's: the fill is dropped, the box keeps its shape as a
+     ring, and the words print in the coral ink itself (the sheet's #8A1C1C on
+     white paper is 9.28:1). White ink was the screen's answer because the
+     screen audit samples the pixels behind a glyph - where the coral node
+     actually is - while a sheet is measured from the cascade, and a cascade
+     cannot see an SVG sibling's fill: white text would be measured against
+     paper and rightly fail. Ink on paper needs nothing to survive. */
+  .uv-box.uv-coral,
+  .field .uv-box.uv-coral {
+    fill: none;
+    stroke: var(--coral);
+  }
+  .uv-t.uv-coral,
+  .field .uv-t.uv-coral {
+    fill: var(--coral);
   }
 
   /* The CTA is the exception: a printed pill keeps its shape and loses its

@@ -509,6 +509,35 @@ PROBE = r"""
                [rec.rect.x - svgOff, rec.rect.y + rec.rect.h / 2],
                [rec.rect.x + rec.rect.w + svgOff, rec.rect.y + rec.rect.h / 2]]
             : [];
+          /* AN SVG BOX THAT STRADDLES THE SHOT'S EDGE CANNOT BE SAMPLED IN IT.
+             The sampler reads a plate's word at a quarter, a half and three
+             quarters of its box, so a box whose bottom hangs past the picture
+             has probes past it too, and those clamp to the image's last row.
+             That row is not the word's field, because the same probe reads plus
+             and minus 21px OUTSIDE the box horizontally, which on a plate is
+             where the frame stroke is.
+
+             Measured, not imagined: at 1440 the front-dial plate's twelve signs
+             sat in the band whose shot began 13,500px down, and two of the
+             twelve ended below that shot's 900px - one at 925, one at 928. Both
+             clamped, and the one whose ring points met the frame came back at
+             1.95:1 against rgb(157, 174, 178), which is --field-ink-2, the
+             frame's own colour. In the same run the ten signs that fit inside
+             their shot measured 0.012 to 0.014 luminance and 14:1: one plate,
+             one field, twelve words, and only the clipped ones disagreed.
+
+             So a clipped box is photographed where it is whole, which is what a
+             box under a fixed bar already gets. Same field, second reason, and
+             the cost is the same one extra screenshot per anchor. */
+          if (rec.svg) {
+            const boxTop = rec.rect.y - w.scrollY;
+            if (boxTop < 0 || boxTop + rec.rect.h > vh) {
+              const maxScroll = Math.max(0, d.documentElement.scrollHeight - vh);
+              rec.covered = Math.max(0, Math.min(maxScroll,
+                Math.round(rec.rect.y + rec.rect.h / 2 - vh / 2)));
+              rec.coveredBy = 'the shot edge';
+            }
+          }
           for (let pi = 0; pi < pts.length + ringPts.length; pi++) {
             const p = pi < pts.length ? pts[pi] : ringPts[pi - pts.length];
             const pvx = p[0] - w.scrollX, pvy = p[1] - w.scrollY;
@@ -2743,10 +2772,20 @@ def main(argv):
     layout_passes = [f for f in findings if f.get("layout")]
     if layout_passes:
         delays = sorted({f["fontDelayMs"] for f in layout_passes})
-        print("\n%d layout passes with every font response held %s: worst shift "
-              "%.4f, ceiling %.2f"
+        # BOTH NUMBERS, because the verdict is not made on either one alone. The
+        # pass fails on a page's TOTAL - run_layout_pass compares `total` against
+        # the ceiling and only then builds `fails` - so a run can carry failing
+        # pages while this line prints a worst SINGLE shift that sits under the
+        # ceiling. That is what happened on 2026-09-24: the summary read "worst
+        # shift 0.0194, ceiling 0.02" next to a verdict of "6 shifting more than
+        # the layout ceiling", and the two sentences looked like a contradiction
+        # because they were counting different things. `worst` is the one jump a
+        # reader would feel; `total` is what they accumulate walking the page.
+        print("\n%d layout passes with every font response held %s: worst total "
+              "%.4f, worst single shift %.4f, ceiling %.2f"
               % (len(layout_passes),
                  " and ".join("%dms" % d for d in delays),
+                 max(f["total"] for f in layout_passes),
                  max(f["worst"] for f in layout_passes), LAYOUT_CEILING))
 
     # One line per world, because a printed sheet and a screen are not the same

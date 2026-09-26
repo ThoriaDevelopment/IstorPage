@@ -45,12 +45,19 @@ caption line "That word is not a guess about truth." (the act, verbatim).
 Nothing is invented; the drawing is arithmetic on the act's own words.
 
 INKS. The rear-dials family, like the gate: structure --ink-3 on paper, text
---ink/--ink-2, and the mark's node and label in --coral - the page's
-unverified ink elsewhere (the citation anatomy draws the invented locator's
-field in red; the mark here is that red given its node). The coral is the
-plate's single accent, on the one thing the act is about. The dashed edge is
-NOT coral: the open citation is structure, not alarm - the mark is the
-alarm, and it is already red.
+--ink/--ink-2, and the mark's node FILLED with --coral carrying white text
+- the page's unverified ink elsewhere (the citation anatomy draws the
+invented locator's field in red; the mark here is that red given its
+node). The fill is also the contrast arithmetic's own answer: the page's
+sampled dark field leaves every red INK under 4.5:1 (coral-lift 3.64),
+while white on --coral is 5.56:1 on screen on every state (the print sheet
+is a different treatment, recorded in styles.css's print block: the fill
+is dropped there and the words print as #8A1C1C ink, 9.28:1), on every
+theme state - and the app's own citation chips are white on a fill, so
+the plate draws the mark the way the app draws the thing it marks. The
+coral is the plate's single accent, on the one thing the act is about.
+The dashed edge is NOT coral: the open citation is structure, not alarm -
+the mark is the alarm, and it is already red.
 
 TWO VARIANTS, the house rule. Wide 640 units in a 700px field (~0.944
 scale), tall 340 units at phone width (0.729 scale at 320px), so the base
