@@ -38,6 +38,19 @@ The contrast audit measures all six theme states (`single-theme`,
 `+contrast-more`, `+os-dark`, both combined, `+print-on`, plus the separator,
 reduced-motion, layout and type-floor passes) and prints `0 below AA` in
 each. The motion audit drives the page in both motion worlds; its own
+
+## CI: the same gates, and a guard on what ships
+
+Every push to `main` runs the figures, build, budget, links and copy gates on
+the runner (`.github/workflows/deploy.yml`), then deploy-pages, then a
+**post-deploy smoke test** that fetches the live site and asserts the
+handoff markers in the served bytes (the chip relabel, the skip-link target,
+`xml:lang="el"`, the curly-apostrophe typography, the figure apostrophes on a
+library page). The gated path's one external dependency - `fonttools` plus
+`brotli`, which make-didot-greek's WOFF2 encoder needs - is installed in the
+workflow; the smoke test is what caught-and-would-catch a stale artifact
+shipping quietly (it happened: three days of red deploys while local gates
+stayed green, fixed 2026-09-26).
 truthfulness is checkable with `audit-motion.py --self-test --family land`,
 which doctors pages and demands the audit catch each doctoring.
 

@@ -19,6 +19,26 @@ write reports too. `--quick` skips the two browser audits for a ~15-second
 mid-edit check. The fresh-clone path itself was executed on 2026-09-26:
 clone to an empty directory, full run, green at `b80612a`.
 
+## CI: the deploy workflow proves the artifact AND the shipping
+
+Every push to `main` runs the same gates on the runner (`.github/workflows/
+deploy.yml`): the figures gate, the build, budget, links and copy gates, then
+deploy-pages - and then, new as of 2026-09-26, a **smoke test against the
+live site**. It fetches `https://istor.fyi/` (plus the quantization article
+for a library-page marker) and asserts the handoff markers in the served
+bytes: the chip relabel, the skip-link target, `xml:lang="el"`, the
+curly-apostrophe typography, and the figure apostrophes. A silent no-op
+deploy, a CDN serving a cached generation, or a gate added to build but not
+to the workflow now fails the run instead of shipping quietly.
+
+Why the dependencies step exists: M37a made the figures gate rebuild the
+display face from the committed master, which needs `fonttools` + `brotli` -
+the only third-party packages the gated path imports (verified by an import
+sweep of `Source/tools`; PIL/numpy live in tools CI does not run). For three
+days the deploy failed at that step while every local run passed, and
+istor.fyi served a stale build; the smoke test is what keeps that from
+recurring silently.
+
 ## What each gate guarantees
 
 | gate | asserts |
