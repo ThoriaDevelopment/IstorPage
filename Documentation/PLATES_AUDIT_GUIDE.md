@@ -13,9 +13,13 @@ reproduces from a fresh clone of `main` with nothing else.
 
 Checks HEAD out into a temporary worktree, builds there, and runs every gate
 against nothing but what the commit carries - one signed line per gate, the
-worktree removed whatever happens. `--quick` skips the two headless audits.
-Proven green at 20b02bb in 5.4 minutes: figures 103 | budget 24 | copy 7 |
-links 123 | contrast 0 below AA across all six state passes | motion 58/58.
+worktree removed whatever happens. `--quick` skips the two headless audits,
+`--report` files a signed markdown beside the audit JSONs (the directory is
+created if absent). The claim above - a fresh clone, nothing else - was
+executed, not just stated: cloned to an empty directory, `--report` run in
+full, green in 5.4 minutes at 61ab5b4: figures 189 | budget 24 | copy 7 |
+links 123 | contrast 0 below AA across all twelve passes, the printed sheet
+included | motion 58/58.
 
 ## The individual gates
 
