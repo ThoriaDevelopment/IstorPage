@@ -204,14 +204,18 @@ def main() -> int:
     #    silence twice: 4a8f843 normalized the page's apostrophes and seven
     #    plates kept the straight quote; the M47 plate carried a node label
     #    whose phrase existed nowhere outside a markup comment. The census
-    #    reads every <text> the three flow plates draw (the gate, the shelf,
-    #    the unverified mark - the plates whose honest content IS their
-    #    labels), strips the aria <title> prose, and demands each string
-    #    appear in the page's visible text: comments stripped, tags stripped,
-    #    entities unescaped, whitespace folded. The dial plates stay outside
-    #    the census by design: their <title>s are descriptive prose, their
-    #    drawn labels are transcriptions attested in the log, and the
-    #    contrast and type gates audit those strings where they render.
+    #    reads every <text> every plate family draws, strips the aria
+    #    <title> prose, and demands each string be PRINTED PROSE (the page's
+    #    visible text: comments stripped, tags stripped, entities unescaped,
+    #    whitespace folded) or DECLARED IN ITS GENERATOR. The second arm is
+    #    the attestation for the classes that cannot be page prose: source
+    #    transcriptions (the parapegma's slab rows, the zodiac and games
+    #    names, the exeligmos legend - quoted from the cited source, not the
+    #    page), derived arithmetic (= 24 h), and a diagram's own grammar
+    #    (the etymology's middot glosses). The generator is where the
+    #    citation lives, its self-test is what holds it to the source, and
+    #    the byte-identity check above binds figure to generator - so an
+    #    undeclared string has no path into a figure at all.
     import re as _re
     import html as _html
     page = (SOURCE / "index.html").read_text(encoding="utf-8")
@@ -220,24 +224,54 @@ def main() -> int:
     page = _html.unescape(page)
     page = _re.sub(r"\s+", " ", page)
     census = (
-        ("gate", ("gate-wide.svg", "gate-tall.svg")),
-        ("shelf", ("shelf-wide.svg", "shelf-tall.svg")),
-        ("unverified", ("unverified-wide.svg", "unverified-tall.svg")),
+        ("gate", "make-gate.py",
+         ("gate-wide.svg", "gate-tall.svg")),
+        ("shelf", "make-shelf.py",
+         ("shelf-wide.svg", "shelf-tall.svg")),
+        ("unverified", "make-unverified.py",
+         ("unverified-wide.svg", "unverified-tall.svg")),
+        ("boundary", "make-boundary.py",
+         ("boundary-wide.svg", "boundary-mid.svg", "boundary-tall.svg")),
+        ("etymology", "make-etymology.py",
+         ("etymology.svg", "etymology-tall.svg")),
+        ("two-rings", "make-two-rings.py",
+         ("two-rings-wide.svg", "two-rings-tall.svg")),
+        ("pin-slot", "make-pin-slot.py",
+         ("pin-slot-wide.svg", "pin-slot-tall.svg")),
+        ("exeligmos", "make-exeligmos.py",
+         ("exeligmos-wide.svg", "exeligmos-tall.svg")),
+        ("games-dial", "make-games-dial.py",
+         ("games-dial-wide.svg", "games-dial-tall.svg")),
+        ("front-dial", "make-front-dial.py",
+         ("front-dial-wide.svg", "front-dial-tall.svg")),
+        ("rear-dials", "make-rear-dials.py",
+         ("rear-dials-wide.svg", "rear-dials-tall.svg")),
+        ("parapegma", "make-parapegma.py",
+         ("parapegma-wide.svg", "parapegma-tall.svg")),
     )
-    for fam, names in census:
+    for fam, gen, names in census:
+        gen_src = (HERE / gen).read_text(encoding="utf-8")
         miss: list[str] = []
+        printed = attested = 0
         for name in names:
             svg = (FIGURES / name).read_text(encoding="utf-8")
             svg = _re.sub(r"<title[^>]*>.*?</title>", " ", svg, flags=_re.S)
             for t in _re.findall(r"<text[^>]*>([^<]+)</text>", svg):
                 t = t.strip()
-                if t and t not in page:
+                if not t:
+                    continue
+                if t in page:
+                    printed += 1
+                elif t in gen_src:
+                    attested += 1
+                else:
                     miss.append(f"{name}: {t!r}")
         if miss:
             rep.fail(f"{fam} census", "; ".join(miss[:3]) +
                      (" …" if len(miss) > 3 else ""))
         else:
-            rep.ok(f"{fam} census", "every drawn string is printed prose")
+            rep.ok(f"{fam} census",
+                   f"{printed} printed, {attested} attested in {gen}")
 
     print()
     if rep.failures:

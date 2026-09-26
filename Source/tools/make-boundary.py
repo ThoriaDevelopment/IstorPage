@@ -46,15 +46,20 @@ from pathlib import Path
 FIG = Path(__file__).resolve().parent.parent / "figures"
 
 # The three things that run on the machine, in the order the page introduces them,
-# and the one thing that does not.
+# and the one thing that does not. The glosses are the page's own phrases,
+# verbatim - the verbatim census holds drawn strings to printed prose:
+# "a document you gave it" (the library act), "the answer in the middle"
+# (the same act's three regions). The backend row's title is attested, not
+# printed: the questions act prints "Istor needs Ollama or llama.cpp
+# installed", capitals included, and that is the drawn string.
 INSIDE = [
-    ("your library", "the documents you gave it"),
-    ("istor", "search, reading and answers"),
-    ("ollama or llama.cpp", "the model you choose"),
+    ("your library", "a document you gave it"),
+    ("istor", "the answer in the middle"),
+    ("Ollama or llama.cpp", "the model you choose"),
 ]
 OUTSIDE = "web research"
 CROSS = "off until you turn it on"
-NOTE = "no account, no key"
+NOTE = "no account and no key"   # the privacy prose's own words
 BOUNDARY = "your machine"
 
 # EVERY STRING'S RENDERED WIDTH, in user units, keyed by the string and the size it
@@ -72,14 +77,14 @@ BOUNDARY = "your machine"
 # the refusal is the reminder to spend one command re-measuring.
 MEASURED = {
     ("your library", 15.0): 81.3,
-    ("the documents you gave it", 11.5): 144.8,
+    ("a document you gave it", 11.5): 127.9,
     ("istor", 15.0): 31.3,
-    ("search, reading and answers", 11.5): 156.9,
-    ("ollama or llama.cpp", 15.0): 137.8,
+    ("the answer in the middle", 11.5): 134.4,
+    ("Ollama or llama.cpp", 15.0): 141.9,
     ("the model you choose", 11.5): 121.6,
     ("web research", 15.0): 96.4,
     ("off until you turn it on", 11.5): 116.3,
-    ("no account, no key", 11.5): 103.8,
+    ("no account and no key", 11.5): 124.4,
     ("your machine", 12.5): 83.7,
     # The tall plate's own step, measured at the sizes T_TALL_* below. The phone
     # column is narrower than the drawing, so this variant's type has to be bigger
@@ -87,7 +92,7 @@ MEASURED = {
     # boxes are wider than the wide plate's for the same words.
     ("your library", 17.0): 91.9,
     ("istor", 17.0): 35.7,
-    ("ollama or llama.cpp", 17.0): 156.2,
+    ("Ollama or llama.cpp", 17.0): 160.9,
     ("web research", 17.0): 109.2,
     # 2026-09-23: the tall subs stepped 13.5 -> 14.5. The earlier note measured
     # the plate's 320px render at 0.824 of its units; the real floor is lower -
@@ -97,11 +102,11 @@ MEASURED = {
     # 11px type floor the contrast audit now asserts. 14.5 lands at 11.2 there
     # and at 14.5px from 390 up. The five widths below are measured live in the
     # rendered page (wide variant at 11.5, scaled per unit), not estimated.
-    ("the documents you gave it", 14.5): 177.0,
-    ("search, reading and answers", 14.5): 191.8,
+    ("a document you gave it", 14.5): 161.3,
+    ("the answer in the middle", 14.5): 169.5,
     ("the model you choose", 14.5): 148.2,
     ("off until you turn it on", 14.5): 142.0,
-    ("no account, no key", 14.5): 126.4,
+    ("no account and no key", 14.5): 156.8,
 }
 
 # What the layout is allowed to assume: how much air a label keeps inside its box,

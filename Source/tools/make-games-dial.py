@@ -94,8 +94,8 @@ MEASURED = {
     ("LΓ", 16.5): 19.6,
     ("LΔ", 16.5): 20.9,
     # wide plate, Latin in Inter, stepped with the names
-    ("four years", 12.5): 55.4,
-    ("the only pointer that runs anticlockwise", 12.5): 214.6,
+    ("the four-year cycle", 12.5): 113.4,
+    ("runs anticlockwise", 12.5): 111.7,
     # tall variant's real step: 16.5 units clear the 11px type floor at the
     # plate's 0.68 render scale on a 320px phone (rear-dials arithmetic).
     # Greek in GFS Didot.
@@ -109,7 +109,7 @@ MEASURED = {
     ("LΒ", 19.5): 24.5,
     ("LΓ", 19.5): 23.1,
     ("LΔ", 19.5): 24.6,
-    ("four years", 16.5): 73.3,
+    ("the four-year cycle", 16.5): 149.7,
 }
 
 
@@ -262,9 +262,9 @@ wide = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDE_W} {WIDE_H
 {dial(WIDE_CX, WIDE_CY, WIDE_R, 12.5, 16.5, "games-dial")}
 {pointer(WIDE_CX, WIDE_CY, WIDE_R, hub_k=0.36)}
   <text class="games-count" x="{WIDE_CX}" y="{WIDE_CY + WIDE_R + 44}"
-        font-size="16.5" text-anchor="middle">four years</text>
+        font-size="16.5" text-anchor="middle">the four-year cycle</text>
   <text class="games-sub" x="{WIDE_CX}" y="{WIDE_CY + WIDE_R + 66}"
-        font-size="12.5" text-anchor="middle">the only pointer that runs anticlockwise</text>
+        font-size="12.5" text-anchor="middle">runs anticlockwise</text>
 </svg>
 '''
 
@@ -287,7 +287,7 @@ tall = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {TALL_W} {TALL_H
 {dial(TALL_CX, TALL_CY, TALL_R, 16.5, 19.5, "games-dial")}
 {pointer(TALL_CX, TALL_CY, TALL_R, hub_k=0.36)}
   <text class="games-count" x="{TALL_CX}" y="{TALL_CY + TALL_R + 48}"
-        font-size="16.5" text-anchor="middle">four years</text>
+        font-size="16.5" text-anchor="middle">the four-year cycle</text>
 </svg>
 '''
 
@@ -326,7 +326,7 @@ def self_test() -> int:
         check("%s: no hex colour" % name, not hexes, str(hexes[:3]))
         check("%s: one pointer, arrow" % name,
               svg.count('class="gd-arrow"') == 1)
-        check("%s: count line" % name, ">four years<" in svg)
+        check("%s: count line" % name, ">the four-year cycle<" in svg)
 
     # the anticlockwise claim: the arrow barbs are swept to NEGATIVE angles
     # from the tip's tangent (a + 90 - 24 and + 90 + 24 both bow the head

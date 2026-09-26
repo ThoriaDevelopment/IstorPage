@@ -79,12 +79,16 @@ DRAWN_T_DEG = 60.0
 # floor, so 12.5 and 16.5 came back at 10.63px and 10.37px - under the 11px
 # floor. 13.5 and 18 clear it at every swept width (11.48 and 11.30).
 MEASURED = {
-    ("constant rate", 13.5): 85.2, ("varied rate", 13.5): 69.2,
-    ("constant rate", 18.0): 113.6, ("varied rate", 18.0): 92.2,
-    ("runs ahead", 13.5): 72.2, ("falls behind", 13.5): 74.5,
-    ("runs ahead", 18.0): 96.3, ("falls behind", 18.0): 99.3,
+    # The legend names the rates with source 4's own words: k2's
+    # "necessarily" variable velocity, the page's printed phrase. The
+    # ring's halves are named by the words the caption prints, "ahead"
+    # and "behind"; the sample is the printed hyphenate "pin-and-slot".
+    ("constant rate", 13.5): 85.2, ("variable velocity", 13.5): 105.8,
+    ("constant rate", 18.0): 113.6, ("variable velocity", 18.0): 133.3,
+    ("ahead", 13.5): 39.9, ("behind", 13.5): 44.3,
+    ("ahead", 18.0): 48.7, ("behind", 18.0): 54.1,
     ("6.29 degrees", 13.5): 85.3, ("6.29 degrees", 18.0): 113.8,
-    ("pin and slot", 13.5): 74.6, ("pin and slot", 18.0): 99.5,
+    ("pin-and-slot", 13.5): 79.9, ("pin-and-slot", 18.0): 100.6,
 }
 
 
@@ -242,8 +246,8 @@ def plate(wide):
     # and just below the ring sits ALONG the tangent - the one placement where
     # the whole text box clears the frame circle and every tick's outward tip
     # (dmin = dev_r + 22 - baseline shift, measured 21 units of daylight).
-    # The labels read with the halves they name: "runs ahead" at 12 (the lead
-    # half opens at 0 and runs to 180), "falls behind" at 6 (the lag half).
+    # The labels read with the halves they name: "ahead" at 12 (the lead
+    # half opens at 0 and runs to 180), "behind" at 6 (the lag half).
     # (Placement history: 90/270 ran off the box AND through the frame; 15/195
     # with line-start anchors grazed the frame at the tall plate's box corner.
     # The tangent placement is the first one the DOM audit passes at both
@@ -251,10 +255,10 @@ def plate(wide):
     ax, ay = dev_cx, dev_cy - dev_r - 22
     bxx, byy = dev_cx, dev_cy + dev_r + 22
     ahead = ('  <text class="ps-ahead" x="%.1f" y="%.1f" font-size="%s" '
-             'font-family="%s" text-anchor="middle">runs ahead</text>\n'
+             'font-family="%s" text-anchor="middle">ahead</text>\n'
              % (ax, ay + label * 0.35, label, INTER))
     behind = ('  <text class="ps-behind" x="%.1f" y="%.1f" font-size="%s" '
-              'font-family="%s" text-anchor="middle">falls behind</text>\n'
+              'font-family="%s" text-anchor="middle">behind</text>\n'
               % (bxx, byy + label * 0.35, label, INTER))
     # The legend's geometry: the wide plate has room for one row of three;
     # the tall plate's 340-wide column would push the third entry off the
@@ -265,15 +269,15 @@ def plate(wide):
         s1_x = mech_cx - 118
         s2_x = mech_cx + 4
         s3_x = mech_cx + 126
-        rows = [(s1_x, "constant rate", "line"), (s2_x, "varied rate", "dash"),
-                (s3_x, "pin and slot", "pin")]
+        rows = [(s1_x, "constant rate", "line"), (s2_x, "variable velocity", "dash"),
+                (s3_x, "pin-and-slot", "pin")]
     else:
         leg_y = mech_cy + mech_r + 30
         s1_x = mech_cx - 118
         s2_x = mech_cx + 46
         s3_x = mech_cx - 118
-        rows = [(s1_x, "constant rate", "line"), (s2_x, "varied rate", "dash"),
-                (s3_x, "pin and slot", "pin2")]
+        rows = [(s1_x, "constant rate", "line"), (s2_x, "variable velocity", "dash"),
+                (s3_x, "pin-and-slot", "pin2")]
     legend = ['  <g class="ps-legend">']
     for sx, text, kind in rows:
         ty = leg_y + (label * 1.55 if kind == "pin2" else 0)
@@ -400,8 +404,8 @@ def self_test():
         check(name + ": the 90-degree lead tick is the arithmetic",
               got_90 is not None and abs(got_90 - want_90) < 0.05,
               "%.2f vs %.2f" % (got_90 or -1, want_90))
-        for s in ("constant rate", "varied rate", "pin and slot",
-                  "runs ahead", "falls behind", "6.29 degrees"):
+        for s in ("constant rate", "variable velocity", "pin-and-slot",
+                  "ahead", "behind", "6.29 degrees"):
             if ">%s<" % s not in svg:
                 check(name + ": label %r" % s, False)
                 break
@@ -424,8 +428,8 @@ def self_test():
               sizes == {str(want)}, str(sizes))
         check(name + ": every string measured",
               all((s, want) in MEASURED for s in
-                  ("constant rate", "varied rate", "runs ahead",
-                   "falls behind", "6.29 degrees")))
+                  ("constant rate", "variable velocity", "ahead",
+                   "behind", "6.29 degrees")))
 
     print("pin-slot self-test %s" % ("ok" if not worst else "FAILED"))
     return worst

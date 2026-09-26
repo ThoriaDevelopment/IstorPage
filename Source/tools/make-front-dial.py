@@ -91,7 +91,9 @@ MEASURED = {
     # the three attested months at 16.5 (tall)
     ("ΠΑΧΩΝ", 16.5): 62.8, ("ΠΑΥΝΙ", 16.5): 53.4, ("ΕΠΙΦΙ", 16.5): 49.7,
     # count line, Inter (only size drawn)
-    ("the sun and the moon", 16.5): 169.4,
+    # The centre line is the hero answer's own phrase: "the front dial shows
+# where the sun and moon are". The draft's "and the" was the draft's.
+("the sun and moon", 16.5): 141.2,
 }
 
 
@@ -237,7 +239,7 @@ def dial(cx, cy, r_zodiac_out, name_size, cls, r_months):
         g.append('    <text class="fd-month" x="%.2f" y="%.2f" font-size="%s" '
                  'font-family="%s" text-anchor="middle">%s</text>'
                  % (lx, ly, name_size, DIDOT, label))
-    # the sun and the moon, the plate's one azure statement. The sun is the
+    # the sun and moon, the plate's one azure statement. The sun is the
     # rayed mark at the ecliptic longitude; the moon the small disc beside
     # it. Both sit INSIDE the zodiac ring, in the empty hub: the marks read
     # as a hand's tip seen from within, and no sign label can ever collide
@@ -300,7 +302,7 @@ def build_wide():
 {band_g}
 {dial_g}
   <text class="front-count" x="{cx}" y="{count_y}"
-        font-size="16.5" text-anchor="middle">the sun and the moon</text>
+        font-size="16.5" text-anchor="middle">the sun and moon</text>
 </svg>
 '''
     # the dashed-circle arithmetic must survive the f-string round trip
@@ -332,7 +334,7 @@ def build_tall():
 {band_g}
 {dial_g}
   <text class="front-count" x="{cx}" y="{count_y}"
-        font-size="16.5" text-anchor="middle">the sun and the moon</text>
+        font-size="16.5" text-anchor="middle">the sun and moon</text>
 </svg>
 '''
     svg = svg.replace('class="fd-holes" cx="%.1f" cy="%.1f" r="%.2f"',
@@ -410,7 +412,7 @@ def self_test():
               "#" not in svg.replace('href="#', "") or
               all(t not in svg for t in ('fill="#', 'stroke="#')))
         check(name + ": count line present",
-              ">the sun and the moon<" in svg)
+              ">the sun and moon<" in svg)
         # every text has a measured size
         import re
         sizes = set(re.findall(r'font-size="([\d.]+)"', svg))

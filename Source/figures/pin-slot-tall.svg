@@ -208,11 +208,11 @@
     <path class="ps-gear" d="M52.0 246.0 h20"/>
     <text class="ps-legend-t" x="80.0" y="252.3" font-size="18.0" font-family="Inter, sans-serif">constant rate</text>
     <path class="ps-gear-b" d="M216.0 246.0 h20" stroke-dasharray="3.2 2.6"/>
-    <text class="ps-legend-t" x="244.0" y="252.3" font-size="18.0" font-family="Inter, sans-serif">varied rate</text>
+    <text class="ps-legend-t" x="244.0" y="252.3" font-size="18.0" font-family="Inter, sans-serif">variable velocity</text>
     <circle class="ps-pin" cx="55.0" cy="273.9" r="2.6"/>
-    <text class="ps-legend-t" x="62.0" y="280.2" font-size="18.0" font-family="Inter, sans-serif">pin and slot</text>
+    <text class="ps-legend-t" x="62.0" y="280.2" font-size="18.0" font-family="Inter, sans-serif">pin-and-slot</text>
   </g>
   <text class="ps-amp" x="170.0" y="408.3" font-size="18.0" font-family="Inter, sans-serif" text-anchor="middle">6.29 degrees</text>
-  <text class="ps-ahead" x="170.0" y="290.3" font-size="18.0" font-family="Inter, sans-serif" text-anchor="middle">runs ahead</text>
-  <text class="ps-behind" x="170.0" y="526.3" font-size="18.0" font-family="Inter, sans-serif" text-anchor="middle">falls behind</text>
+  <text class="ps-ahead" x="170.0" y="290.3" font-size="18.0" font-family="Inter, sans-serif" text-anchor="middle">ahead</text>
+  <text class="ps-behind" x="170.0" y="526.3" font-size="18.0" font-family="Inter, sans-serif" text-anchor="middle">behind</text>
 </svg>

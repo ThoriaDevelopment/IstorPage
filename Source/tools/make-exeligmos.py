@@ -66,11 +66,18 @@ YEARS = 54
 # The three divisions and what each instructs: (label, hours, note).
 # The blank sector's label is the source's "o" mark ("blank or o,
 # representing the number zero, assumed, not yet observed").
+# The legend is source 1's own key, verbatim: blank (zero, "add nothing"),
+# H ("add 8 hours"), Iϛ ("add 16 hours") - the last glyph written as the
+# literal character so the verbatim census can match the drawn string to
+# this declaration.
 SECTORS = (
     ("o", 0, "add nothing"),
     ("H", 8, "add 8 hours"),
-    ("I\u03db", 16, "add 16 hours"),
+    ("Iϛ", 16, "add 16 hours"),
 )
+
+# The cycle line, declared as the census reads it: one drawn string.
+CYCLE_LINE = "54 years · 3 turns of the Saros"
 
 # Sector boundaries at exact thirds, starting at 12 o'clock, clockwise.
 SECTOR_DEG = 120.0
@@ -213,9 +220,8 @@ def plate(wide):
         g.append("\n".join(leg_g))
         # the cycle line under the dial
         cycle = ('  <text class="ex-cycle" x="%.1f" y="%.1f" font-size="%s" '
-                 'font-family="%s" text-anchor="middle">54 years · '
-                 '3 turns of the Saros</text>'
-                 % (cx, cy + r_out + 30, label_size, INTER))
+                 'font-family="%s" text-anchor="middle">%s</text>'
+                 % (cx, cy + r_out + 30, label_size, INTER, CYCLE_LINE))
         g.append(cycle)
     else:
         leg_g = ['  <g class="ex-legend">']
@@ -232,9 +238,8 @@ def plate(wide):
         leg_g.append('  </g>')
         g.append("\n".join(leg_g))
         cycle = ('  <text class="ex-cycle" x="%.1f" y="%.1f" font-size="%s" '
-                 'font-family="%s" text-anchor="middle">54 years · '
-                 '3 turns of the Saros</text>'
-                 % (cx, ly0 + label_size * 4.9, label_size, INTER))
+                 'font-family="%s" text-anchor="middle">%s</text>'
+                 % (cx, ly0 + label_size * 4.9, label_size, INTER, CYCLE_LINE))
         g.append(cycle)
 
     variant = "wide" if wide else "tall"

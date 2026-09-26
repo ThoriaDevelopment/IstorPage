@@ -44,7 +44,7 @@
     <path class="gd-arrow" d="M328.2 29.7 L320.0 26.0 L328.2 22.3"/>
   </g>
   <text class="games-count" x="320.0" y="340.0"
-        font-size="16.5" text-anchor="middle">four years</text>
+        font-size="16.5" text-anchor="middle">the four-year cycle</text>
   <text class="games-sub" x="320.0" y="362.0"
-        font-size="12.5" text-anchor="middle">the only pointer that runs anticlockwise</text>
+        font-size="12.5" text-anchor="middle">runs anticlockwise</text>
 </svg>

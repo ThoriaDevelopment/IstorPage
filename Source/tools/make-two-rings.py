@@ -59,7 +59,10 @@ PITCH_355 = 360.0 / 355
 MEASURED = {
     ("354 holes", 12.5): 59.9, ("355 holes", 12.5): 59.2,
     ("354 holes", 16.5): 79.0, ("355 holes", 16.5): 78.1,
-    ("twelve times larger", 12.5): 115.0, ("twelve times larger", 16.5): 151.8,
+    # The lens label is the caption's own adverbial phrase, verbatim: "The
+# lens magnifies the drawing twelve times". "larger" was the draft's
+# comparative; the census reads drawn strings as their own phrases.
+("twelve times", 12.5): 75.4, ("twelve times", 16.5): 99.5,
 }
 
 
@@ -168,9 +171,9 @@ def plate(W, H, cx, cy, r_holes, r_band_out, r_band_in, r_lens, lens_dy,
               '  </g>\n'
               % (cx - 10, y_lab, label_size, INTER, "354 holes",
                  cx + 10, y_lab, label_size, INTER, "355 holes"))
-    mag_w = tw("twelve times larger", label_size)
+    mag_w = tw("twelve times", label_size)
     mag = ('  <text class="tr-mag" x="%.1f" y="%.1f" font-size="%s" '
-           'font-family="%s" text-anchor="middle">twelve times larger</text>\n'
+           'font-family="%s" text-anchor="middle">twelve times</text>\n'
            % (cx, y_lab + label_size * 1.7, label_size, INTER))
     title = ('The disputed count drawn twice: a ring of 354 holes and a ring of\n'
              '    355 on the same radius, anchored at 12 o\u2019clock, parting company as\n'
@@ -229,7 +232,7 @@ def self_test():
               shown > 2.8, "split through lens %.2f units, stroke 2.8" % shown)
         check(name + ": anchor at 12 o'clock",
               svg.count('class="tr-anchor-dot"') == 1)
-        for s in ("354 holes", "355 holes", "twelve times larger"):
+        for s in ("354 holes", "355 holes", "twelve times"):
             if ">%s<" % s not in svg:
                 check(name + ": label %r" % s, False)
                 break
@@ -242,7 +245,7 @@ def self_test():
         sizes = set(re.findall(r'font-size="([\d.]+)"', svg))
         check(name + ": every string measured",
               all((s, float(v)) in MEASURED for s in
-                  ("354 holes", "355 holes", "twelve times larger")
+                  ("354 holes", "355 holes", "twelve times")
                   for v in sizes if True) or True)
         # stricter: exactly the labels drawn at the plate's own size
         want = 12.5 if name == "wide" else 16.5
