@@ -65,3 +65,31 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      # THE STALE-ARTIFACT GUARD. The deploy was red for three days (2026-09-23
+      # to 26) while every local gate stayed green: istor.fyi served a build that
+      # predated the Greek language tags, the skip-link target, the chip relabel
+      # and the last five figure families, and nothing in this workflow noticed,
+      # because every step before this one runs against the artifact BEFORE it
+      # ships. This step runs against the site AFTER it ships, and asserts the
+      # markers of the current handoff in the served bytes. A deploy that
+      # silently no-ops, a CDN serving a cached generation, a future gate added
+      # to build but not to this workflow - anything that leaves production
+      # behind the repository now fails the run instead of shipping quietly.
+      - name: Smoke-test what actually shipped
+        run: |
+          sleep 20
+          PAGE=$(curl -fsSL --max-time 30 https://istor.fyi/)
+          fail() { echo "STALE DEPLOY: $1"; exit 1; }
+          echo "$PAGE" | grep -q 'What are the cycles?' \
+            || fail "the ask-chip relabel is not live"
+          echo "$PAGE" | grep -q 'id="the-answer" tabindex="-1"' \
+            || fail "the skip-link target is not live"
+          echo "$PAGE" | grep -q 'xml:lang="el"' \
+            || fail "the Greek language tags are not live"
+          echo "$PAGE" | grep -q 'mechanism’s own manual' \
+            || fail "the curly-apostrophe typography is not live"
+          LIBPAGE=$(curl -fsSL --max-time 30 https://istor.fyi/what-is-quantization/)
+          echo "$LIBPAGE" | grep -q 'bar lengths are the files’s true proportions' \
+            || fail "the gap session's figure apostrophes are not live"
+          echo "smoke ok - the shipped page carries the handoff markers"
