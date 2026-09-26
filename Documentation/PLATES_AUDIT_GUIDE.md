@@ -88,7 +88,12 @@ dispute; see the evidence act.
 radius, an x12 lens, the dash pitches reproducing 360/354 and 360/355),
 `parapegma` (forty-four keyed rows transcribed whole, damage brackets kept),
 `rear-dials` (Metonic 5 turns / 235 slots, Saros 4 / 223), `exeligmos`
-(three exact thirds, H = +8h, Iϛ = +16h, 8 + 8 + 8 = 24), `games-dial`
+(three exact thirds, H = +8h, Iϛ = +16h, 8 + 8 + 8 = 24),
+`callippic` (the fifth named cycle, in the exeligmos's grammar: four exact
+quarters, one Metonic turn each, the four-turn product in the hub and the
+cycle line *76 years · 4 turns of the Metonic* under it; the cycle's
+arithmetic, not the dial's archaeology - no physical reconstruction, no
+month counts on the ring), `games-dial`
 (four sectors, six games twice each, the one anticlockwise arrow),
 `front-dial` (twelve zodiac sectors, the three recovered month names, the
 two lights; the hole count left uncounted on purpose).
@@ -118,4 +123,5 @@ Each generator's header records what the source states and what is
 deliberately absent; each plate's ink grammar is its 14d block in
 `Source/styles.css`; the per-milestone decisions, the gap-session
 reconciliation, and every instrument lesson are in
-`.improvement/OVERNIGHT_LOG.md` (M42-M49, then FINALIZATION).
+`.improvement/OVERNIGHT_LOG.md` (M42 onward, the M50-M56 sections carrying
+the plates after the reconciliation).
