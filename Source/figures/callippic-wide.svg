@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320"
+     class="cl-plate cl-wide" role="img" focusable="false"
+     aria-labelledby="cl-wide-title">
+  <title id="cl-wide-title">The Callippic sub-dial: four turns of the Metonic cycle are 76 years, the dial the prose names on the upper rear plate. Each turn is one Metonic cycle of 19 tropical years; the plate draws the four quarters and the product.</title>
+  <g class="cl-sectors">
+    <path class="cl-sector" d="M301.20 112.10 L302.93 46.04 A112.00 112.00 0 0 1 411.96 155.07 L345.90 156.80"/>
+    <text class="cl-turn" x="355.8" y="107.1" font-size="14" font-family="Inter, sans-serif" text-anchor="middle">I</text>
+    <path class="cl-sector" d="M345.90 159.20 L411.96 160.93 A112.00 112.00 0 0 1 302.93 269.96 L301.20 203.90"/>
+    <text class="cl-turn" x="355.8" y="218.7" font-size="14" font-family="Inter, sans-serif" text-anchor="middle">II</text>
+    <path class="cl-sector" d="M298.80 203.90 L297.07 269.96 A112.00 112.00 0 0 1 188.04 160.93 L254.10 159.20"/>
+    <text class="cl-turn" x="244.2" y="218.7" font-size="14" font-family="Inter, sans-serif" text-anchor="middle">III</text>
+    <path class="cl-sector" d="M254.10 156.80 L188.04 155.07 A112.00 112.00 0 0 1 297.07 46.04 L298.80 112.10"/>
+    <text class="cl-turn" x="244.2" y="107.1" font-size="14" font-family="Inter, sans-serif" text-anchor="middle">IV</text>
+    <circle class="cl-hub" cx="300.0" cy="158.0" r="45.9"/>
+  </g>
+  <g class="cl-hubtext">
+    <text class="cl-arith" x="300.0" y="142.6" font-size="11.9" font-family="Inter, sans-serif" text-anchor="middle">one Metonic</text>
+    <text class="cl-arith" x="300.0" y="160.1" font-size="11.9" font-family="Inter, sans-serif" text-anchor="middle">x 4</text>
+    <text class="cl-claim" x="300.0" y="177.6" font-size="14" font-family="Inter, sans-serif" text-anchor="middle">= 76 years</text>
+  </g>
+  <text class="cl-cycle" x="300.0" y="300.0" font-size="14" font-family="Inter, sans-serif" text-anchor="middle">76 years · 4 turns of the Metonic</text></svg>

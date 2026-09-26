@@ -2439,6 +2439,43 @@ h3 {
 }
 
 /* ---------------------------------------------------------------------------
+   14d7b · The Callippic plate, in the evidence act, after the exeligmos.
+
+   The fifth named cycle, drawn in the exeligmos's own grammar: four exact
+   quarters (1.5-degree gaps either side of each boundary), the turn ordinals
+   I-II-III-IV on the ring, the four-turn product in the hub (the azure, the
+   drawing's one claim, like the exeligmos's 8 + 8 + 8 = 24). The arithmetic
+   is the page's own: 19 tropical years printed in the Metonic paragraph,
+   76-year sub-dial printed in the captured answer, 4 x 19 = 76 the product.
+   ------------------------------------------------------------------------- */
+.callippic-fig { margin: 56px 0 0; }
+.cl-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.cl-wide { max-width: 640px; }
+.cl-tall { display: none; max-width: 340px; }
+
+.cl-sector { fill: none; stroke: var(--ink-3); stroke-width: 1.2; }
+.cl-hub { fill: none; stroke: var(--ink-3); stroke-width: 1; }
+.cl-turn { font-family: Inter, sans-serif; font-weight: 600;
+           fill: var(--ink); }
+.cl-arith { font-family: Inter, sans-serif; font-weight: 600;
+            fill: var(--ink); font-variant-numeric: tabular-nums; }
+.cl-claim { font-family: Inter, sans-serif; font-weight: 600;
+            fill: var(--azure); font-variant-numeric: tabular-nums; }
+.cl-cycle { font-family: Inter, sans-serif; fill: var(--ink-2); }
+
+/* In the dark field: the exeligmos plate's own division. */
+.field .cl-sector, .field .cl-hub { stroke: var(--field-ink-2); }
+.field .cl-turn, .field .cl-arith { fill: var(--field-ink); }
+.field .cl-claim { fill: var(--azure-lift); }
+.field .cl-cycle { fill: var(--field-ink-2); }
+
+@media (max-width: 700px) {
+  .cl-wide { display: none; }
+  .cl-tall { display: block; }
+  .callippic-fig .field.is-inset { padding: 18px 16px; }
+}
+
+/* ---------------------------------------------------------------------------
    14d8 · The shelf, in the library act, after the two rail captures.
 
    The act's claim ("everything Istor knows is a document you put there")

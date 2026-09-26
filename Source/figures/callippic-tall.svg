@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 430"
+     class="cl-plate cl-tall" role="img" focusable="false"
+     aria-labelledby="cl-tall-title">
+  <title id="cl-tall-title">The Callippic sub-dial: four turns of the Metonic cycle are 76 years. Each quarter is one Metonic cycle.</title>
+  <g class="cl-sectors">
+    <path class="cl-sector" d="M171.39 89.02 L172.62 42.03 A100.00 100.00 0 0 1 269.97 139.38 L222.98 140.61"/>
+    <text class="cl-turn" x="224.1" y="93.7" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">I</text>
+    <path class="cl-sector" d="M222.98 143.39 L269.97 144.62 A100.00 100.00 0 0 1 172.62 241.97 L171.39 194.98"/>
+    <text class="cl-turn" x="224.1" y="201.9" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">II</text>
+    <path class="cl-sector" d="M168.61 194.98 L167.38 241.97 A100.00 100.00 0 0 1 70.03 144.62 L117.02 143.39"/>
+    <text class="cl-turn" x="115.9" y="201.9" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">III</text>
+    <path class="cl-sector" d="M117.02 140.61 L70.03 139.38 A100.00 100.00 0 0 1 167.38 42.03 L168.61 89.02"/>
+    <text class="cl-turn" x="115.9" y="93.7" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">IV</text>
+    <circle class="cl-hub" cx="170.0" cy="142.0" r="53.0"/>
+  </g>
+  <g class="cl-hubtext">
+    <text class="cl-arith" x="170.0" y="123.8" font-size="14" font-family="Inter, sans-serif" text-anchor="middle">one Metonic</text>
+    <text class="cl-arith" x="170.0" y="144.5" font-size="14" font-family="Inter, sans-serif" text-anchor="middle">x 4</text>
+    <text class="cl-claim" x="170.0" y="165.1" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">= 76 years</text>
+  </g>
+  <text class="cl-cycle" x="170.0" y="272.0" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">76 years · 4 turns of the Metonic</text></svg>

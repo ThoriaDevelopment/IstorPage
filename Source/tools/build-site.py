@@ -186,6 +186,8 @@ INCLUDES = {
     "pin-slot-tall":   (SOURCE / "figures" / "pin-slot-tall.svg",   "svg"),
     "exeligmos-wide":  (SOURCE / "figures" / "exeligmos-wide.svg",  "svg"),
     "exeligmos-tall":  (SOURCE / "figures" / "exeligmos-tall.svg",  "svg"),
+    "callippic-wide":  (SOURCE / "figures" / "callippic-wide.svg",  "svg"),
+    "callippic-tall":  (SOURCE / "figures" / "callippic-tall.svg",  "svg"),
     "shelf-wide":      (SOURCE / "figures" / "shelf-wide.svg",      "svg"),
     "shelf-tall":      (SOURCE / "figures" / "shelf-tall.svg",      "svg"),
     "gate-wide":       (SOURCE / "figures" / "gate-wide.svg",       "svg"),
