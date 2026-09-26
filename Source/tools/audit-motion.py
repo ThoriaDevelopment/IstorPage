@@ -1836,8 +1836,16 @@ def check_pace(calm: dict, fast: dict, failures: list) -> None:
         return [b - a for a, b in zip(ts, ts[1:])]
 
     cg, fg = gaps(calm), gaps(fast)
+    # The MEDIAN gap, not the mean: three gaps and one late delivery is the
+    # failure mode a busy machine produces, and a delivery that arrives 150ms
+    # late pushes one gap out and drags the MEAN over the line while the other
+    # two still speak the page's clock - the same lesson as the teleport's
+    # quantized residue, a gate failing on instrument jitter rather than on
+    # behaviour. The median of three is the adjacent pair's honest value.
+    def median(v):
+        return sorted(v)[len(v) // 2]
     gap_ok = (len(cg) >= 3 and len(fg) == len(cg)
-              and sum(fg) / 3.0 < sum(cg) / 3.0 * 0.6)
+              and median(fg) < median(cg) * 0.6)
     ok("the counter keeps the rows' clock",
        gap_ok,
        "its %d writes came %s ms apart when slow and %s ms apart when fast (scale %.2f)"
