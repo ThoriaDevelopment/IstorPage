@@ -70,17 +70,11 @@ uncommitted-pass entries):
 ## Working-tree state at handoff
 
 HEAD is green and self-contained; verify-all proves exactly that from the
-commit. The working tree additionally carries work that is **uncommitted on
-purpose**:
+commit. The gap session's curly-apostrophe figure work, the budget
+re-baseline note and the design plan's nav-state record were landed at
+`a7e460f` (verify-all green there), so the working tree now carries exactly
+one deliberate rider:
 
 - `Source/tools/freebuff-continue.py` - the operator's own macro-tuning edit;
   never commit it as part of site work.
-- `AvailableTools.txt`, `.freebuff/` - session scaffolding.
-- Curly-apostrophe and sampler improvements in five figure families
-  (attention-profile, embedding-map, quant-ladder, reading-bar, rerank-flow)
-  plus their generators, the design-plan doc, and the budget re-baseline
-  note. Both worlds are green: HEAD is self-consistent, and the working tree
-  passes the same gates (the figures gate compares generators to figures, and
-  each side of that equation is satisfied in both worlds). Committing or
-  reverting that work is the maintainer's call; neither branch of the choice
-  leaves the gates red.
+- (untracked, session scaffolding): `AvailableTools.txt`, `.freebuff/`.
