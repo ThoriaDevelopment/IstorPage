@@ -318,7 +318,7 @@ def svg_doc(variant, W, H, title, body):
 
 WIDE_TITLE = ("The parapegma: the register inscribed above and beneath the "
               "dials, forty-four rows keyed by Greek letters, transcribed "
-              "whole from the source's tables, damage marks included.")
+              "whole from the source’s tables, damage marks included.")
 TALL_TITLE = ("The parapegma: the register inscribed above and beneath the "
               "dials, forty-four rows keyed by Greek letters, damage marks "
               "included.")

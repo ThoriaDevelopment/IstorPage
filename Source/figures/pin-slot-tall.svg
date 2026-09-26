@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 560"
      class="ps-plate ps-tall" role="img" focusable="false"
      aria-labelledby="ps-tall-title">
-  <title id="ps-tall-title">The pin-and-slot mechanism drawn exactly, with k2's phase deviation ring: ahead 6.29 degrees, then behind, once per turn.</title>
+  <title id="ps-tall-title">The pin-and-slot mechanism drawn exactly, with k2’s phase deviation ring: ahead 6.29 degrees, then behind, once per turn.</title>
   <g class="ps-mech">
     <circle class="ps-gear" cx="170.00" cy="138.00" r="78.00"/>
     <circle class="ps-gear ps-gear-b" cx="178.55" cy="138.00" r="78.00"/>

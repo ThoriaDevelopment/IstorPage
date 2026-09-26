@@ -216,8 +216,8 @@ def plate(wide):
         "asks whether the documents in the library already settle it. Yes: "
         "the answer comes from the library and never goes online. Not yet: "
         "the better model takes it, and can be slow to be right." if wide else
-        "The gate, drawn: the small model's question decides between the "
-        "library's own answer and the better model.")
+        "The gate, drawn: the small model’s question decides between the "
+        "library’s own answer and the better model.")
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W:g} {H:g}"
      class="gate-plate gate-{variant}" role="img" focusable="false"
      aria-labelledby="gate-{variant}-title">

@@ -4,7 +4,7 @@
   <title id="games-tall-title">The games dial: four sectors carrying the year
     ordinals LΑ, LΒ, LΓ and LΔ, and the two games held in each year -
     Isthmia and Olympia, Nemea and Naa, Isthmia and Pythia, Nemea and
-    Halieia. The pointer's arrow runs anticlockwise, the only one that does.</title>
+    Halieia. The pointer’s arrow runs anticlockwise, the only one that does.</title>
   <g class="games-dial">
     <path class="gd-sector" d="M173.7 30.0 A140.0 140.0 0 0 1 310.0 166.3 L171.3 119.6 Z"/>
     <path class="gd-arc" d="M173.7 30.0 A140.0 140.0 0 0 1 310.0 166.3"/>

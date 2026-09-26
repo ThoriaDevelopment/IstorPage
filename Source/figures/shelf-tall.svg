@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 527.25"
      class="shelf-plate shelf-tall" role="img" focusable="false"
      aria-labelledby="shelf-tall-title">
-  <title id="shelf-tall-title">The library's ten sources as the app's rows: one document per row, title and status dot.</title>
+  <title id="shelf-tall-title">The library’s ten sources as the app’s rows: one document per row, title and status dot.</title>
   <text class="shelf-head" x="16.0" y="32.0" font-size="17.82" font-family="Inter, sans-serif">10 sources</text>
   <g class="shelf-rows">
     <text class="shelf-title" x="16.0" y="63.1" font-size="16.5" font-family="Inter, sans-serif">ancient astronomical computer</text>
@@ -19,7 +19,7 @@
     <circle class="shelf-dot" cx="326.0" cy="193.4" r="3.4"/>
     <path class="shelf-rule" d="M0 175.4 H340"/>
     <text class="shelf-title" x="16.0" y="224.3" font-size="16.5" font-family="Inter, sans-serif">X-ray data from the Antikythera</text>
-    <text class="shelf-title" x="16.0" y="245.8" font-size="16.5" font-family="Inter, sans-serif">mechanism's broken calendar ring</text>
+    <text class="shelf-title" x="16.0" y="245.8" font-size="16.5" font-family="Inter, sans-serif">mechanism’s broken calendar ring</text>
     <circle class="shelf-dot" cx="326.0" cy="240.2" r="3.4"/>
     <path class="shelf-rule" d="M0 211.4 H340"/>
     <rect class="shelf-band" x="0" y="268.9" width="340" height="57.45"/>

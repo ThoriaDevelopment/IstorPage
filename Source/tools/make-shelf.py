@@ -61,7 +61,7 @@ TITLES = (
     "The National Archaeological Museum in Athens",
     "The Saros cycle",
     "The Metonic cycle",
-    "X-ray data from the Antikythera mechanism's broken calendar ring",
+    "X-ray data from the Antikythera mechanism’s broken calendar ring",
     "Fragment C of the Antikythera mechanism",
     "Reconstruction of the missing front dial gearing of the Antikythera mechanism.",
     "Antikythera mechanism",
@@ -77,7 +77,7 @@ MEASURED = {
     ("The National Archaeological Museum in Athens", 12.5): 282.5,
     ("The Saros cycle", 12.5): 95.3,
     ("The Metonic cycle", 12.5): 109.6,
-    ("X-ray data from the Antikythera mechanism's broken calendar ring", 12.5): 398.2,
+    ("X-ray data from the Antikythera mechanism’s broken calendar ring", 12.5): 396.7,
     ("Fragment C of the Antikythera mechanism", 12.5): 252.0,
     ("Reconstruction of the missing front dial gearing of the Antikythera mechanism.", 12.5): 469.9,
     ("Antikythera mechanism", 12.5): 141.3,
@@ -87,7 +87,7 @@ MEASURED = {
     ("The National Archaeological Museum in Athens", 15.5): 350.3,
     ("The Saros cycle", 15.5): 118.2,
     ("The Metonic cycle", 15.5): 135.9,
-    ("X-ray data from the Antikythera mechanism's broken calendar ring", 15.5): 493.9,
+    ("X-ray data from the Antikythera mechanism’s broken calendar ring", 15.5): 492.0,
     ("Fragment C of the Antikythera mechanism", 15.5): 312.5,
     ("Reconstruction of the missing front dial gearing of the Antikythera mechanism.", 15.5): 582.8,
     ("Antikythera mechanism", 15.5): 175.2,
@@ -97,7 +97,7 @@ MEASURED = {
     ("The National Archaeological Museum in Athens", 16.5): 372.9,
     ("The Saros cycle", 16.5): 125.9,
     ("The Metonic cycle", 16.5): 144.7,
-    ("X-ray data from the Antikythera mechanism's broken calendar ring", 16.5): 525.7,
+    ("X-ray data from the Antikythera mechanism’s broken calendar ring", 16.5): 523.7,
     ("Fragment C of the Antikythera mechanism", 16.5): 332.7,
     ("Reconstruction of the missing front dial gearing of the Antikythera mechanism.", 16.5): 620.4,
     ("Antikythera mechanism", 16.5): 186.5,
@@ -110,13 +110,14 @@ MEASURED = {
 # box runs from TEXT_X to DOT_X - 14: every title must fit inside it, and
 # the self-test measures that rather than trusting the layout.
 #
-# THE TALL PLATE WRAPS, and the wrap points are measured, not guessed: two
-# of the rail's titles cannot hold one line at the tall plate's floor-safe
-# 15.5 units in a 340-wide row (the longest needs 582.8 of a 296-unit text
-# box). The app's own rail wraps its rows, so the plate wraps too: a title
-# that does not fit breaks at the last space whose prefix fits, word widths
-# from WORDS (same browser measurement as MEASURED). A wrapped row grows to
-# hold its lines; the zebra band follows the row's real height.
+# THE TALL PLATE WRAPS, and the wrap points are measured, not guessed: at
+# the plate's own 16.5 units in a 340-wide row, five of the rail's ten
+# titles cannot hold one line (the longest, "Reconstruction of the missing
+# front dial gearing of the Antikythera mechanism.", needs 620.4 of a
+# 296-unit text box). The app's own rail wraps its rows, so the plate wraps
+# too: a title that does not fit breaks at the last space whose prefix fits,
+# word widths from WORDS (same browser measurement as MEASURED). A wrapped
+# row grows to hold its lines; the zebra band follows the row's real height.
 WIDE_W, WIDE_H = 640.0, 372.0
 TALL_W, TALL_H = 340.0, 500.0
 ROW_H_WIDE, ROW_H_TALL = 30.0, 36.0
@@ -124,13 +125,19 @@ TEXT_X = 16.0
 DOT_INSET = 14.0
 TITLE_DY = 0.32   # baseline factor: title sits centred in its row
 
-# Word widths at 15.5, Inter 500, browser-measured 2026-09-23. Only the
-# titles that can wrap on the tall plate need their words here.
+# Word widths at 16.5, Inter 500, browser-measured 2026-09-23, and the
+# apostrophe word re-measured 2026-09-24 when the rail's titles moved to the
+# curly form: `mechanism's` was 104.7 straight and is 102.7 curly, which
+# changes the drawn glyph and not the wrap points (the longest line still
+# ends at "ring", 270.2 of the 296-unit box). Only the titles that can wrap
+# on the tall plate need their words here, and the table is keyed by the
+# title's own spelling: a title whose punctuation moves must move here too,
+# or the generator refuses the string rather than guessing a width.
 WORDS = {
     "The": 30.4, "National": 65.0, "Archaeological": 117.9, "Museum": 68.1,
     "in": 14.1, "Athens": 55.4, "Saros": 44.9, "cycle": 41.8,
     "Metonic": 63.8, "X-ray": 43.5, "data": 34.6, "from": 36.9, "the": 25.3,
-    "Antikythera": 91.3, "mechanism's": 104.7, "broken": 54.7,
+    "Antikythera": 91.3, "mechanism’s": 102.7, "broken": 54.7,
     "calendar": 68.8, "ring": 30.8, "Fragment": 75.1, "C": 12.1, "of": 16.2,
     "mechanism": 90.8, "Reconstruction": 119.6, "missing": 60.9,
     "front": 37.8, "dial": 27.9, "gearing": 60.3, "mechanism.": 95.8,
@@ -226,11 +233,11 @@ def plate(wide):
 
     variant = "wide" if wide else "tall"
     title = (
-        "The library's ten sources, drawn as the rows the app prints them "
+        "The library’s ten sources, drawn as the rows the app prints them "
         "as: one document per row, its title, and its status dot at the "
-        "right. The titles are the page's own transcription of the notes "
+        "right. The titles are the page’s own transcription of the notes "
         "rail - ten notes, one for each source it read." if wide else
-        "The library's ten sources as the app's rows: one document per "
+        "The library’s ten sources as the app’s rows: one document per "
         "row, title and status dot.")
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W:g} {H:g}"
      class="shelf-plate shelf-{variant}" role="img" focusable="false"

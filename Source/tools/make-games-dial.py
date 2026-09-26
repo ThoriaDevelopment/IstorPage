@@ -257,7 +257,7 @@ wide = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDE_W} {WIDE_H
   <title id="games-wide-title">The games dial of the Antikythera mechanism:
     four sectors carrying the year ordinals LΑ, LΒ, LΓ and LΔ, and the names
     of the two games held in each year of the cycle - Isthmia and Olympia,
-    Nemea and Naa, Isthmia and Pythia, Nemea and Halieia. The pointer's arrow
+    Nemea and Naa, Isthmia and Pythia, Nemea and Halieia. The pointer’s arrow
     runs anticlockwise, the only one on the mechanism that does.</title>
 {dial(WIDE_CX, WIDE_CY, WIDE_R, 12.5, 16.5, "games-dial")}
 {pointer(WIDE_CX, WIDE_CY, WIDE_R, hub_k=0.36)}
@@ -283,7 +283,7 @@ tall = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {TALL_W} {TALL_H
   <title id="games-tall-title">The games dial: four sectors carrying the year
     ordinals LΑ, LΒ, LΓ and LΔ, and the two games held in each year -
     Isthmia and Olympia, Nemea and Naa, Isthmia and Pythia, Nemea and
-    Halieia. The pointer's arrow runs anticlockwise, the only one that does.</title>
+    Halieia. The pointer’s arrow runs anticlockwise, the only one that does.</title>
 {dial(TALL_CX, TALL_CY, TALL_R, 16.5, 19.5, "games-dial")}
 {pointer(TALL_CX, TALL_CY, TALL_R, hub_k=0.36)}
   <text class="games-count" x="{TALL_CX}" y="{TALL_CY + TALL_R + 48}"

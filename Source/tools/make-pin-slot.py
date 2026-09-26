@@ -293,10 +293,10 @@ def plate(wide):
     title = ("The pin-and-slot mechanism, drawn exactly: k1 turns at a constant "
              "rate and carries a pin; k2, an identical gear with a different "
              "centre of rotation, carries the slot the pin rides. The ring "
-             "shows the consequence, k2's phase against k1's: ahead by up to "
+             "shows the consequence, k2’s phase against k1’s: ahead by up to "
              "6.29 degrees through half the turn, behind through the other "
              "half." if wide else
-             "The pin-and-slot mechanism drawn exactly, with k2's phase "
+             "The pin-and-slot mechanism drawn exactly, with k2’s phase "
              "deviation ring: ahead 6.29 degrees, then behind, once per turn.")
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}"
      class="ps-plate ps-{variant}" role="img" focusable="false"

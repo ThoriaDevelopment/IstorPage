@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 465.4"
      class="gate-plate gate-tall" role="img" focusable="false"
      aria-labelledby="gate-tall-title">
-  <title id="gate-tall-title">The gate, drawn: the small model's question decides between the library's own answer and the better model.</title>
+  <title id="gate-tall-title">The gate, drawn: the small model’s question decides between the library’s own answer and the better model.</title>
   <path class="gn-edge" d="M170 53.925 L170 97.925"/>
   <path class="gn-edge" d="M170 169.775 L170 213.775"/>
   <path class="gn-edge" d="M170 169.775 C170 191.775 146 261.662 77.4 281.662"/>

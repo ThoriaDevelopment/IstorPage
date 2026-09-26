@@ -4,7 +4,7 @@
   <title id="games-wide-title">The games dial of the Antikythera mechanism:
     four sectors carrying the year ordinals LΑ, LΒ, LΓ and LΔ, and the names
     of the two games held in each year of the cycle - Isthmia and Olympia,
-    Nemea and Naa, Isthmia and Pythia, Nemea and Halieia. The pointer's arrow
+    Nemea and Naa, Isthmia and Pythia, Nemea and Halieia. The pointer’s arrow
     runs anticlockwise, the only one on the mechanism that does.</title>
   <g class="games-dial">
     <path class="gd-sector" d="M323.4 40.0 A128.0 128.0 0 0 1 448.0 164.6 L321.2 121.9 Z"/>

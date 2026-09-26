@@ -132,12 +132,23 @@ def plate(wide):
         W, H = 340, 480
         cx, cy, r_out = 170.0, 150.0, 104.0
         legend_x = None
-    # the label ring: sectors are annular. The tall plate's hub grows to hold
-    # the three hub rows at 16.5 units: at 0.34 of r_out the widest row's
-    # corner pokes past the hub circle (dmax 44 vs r 35.4, DOM-measured);
-    # 0.45 clears it with 2.8 to spare, and the sector ring stays 57 units
-    # wide - still the dial's dominant band.
-    r_in = r_out * (0.45 if not wide else 0.34)
+    # the label ring: sectors are annular. The hub has to hold the three hub
+    # rows with air around them, and the ratio that does it was measured rather
+    # than guessed. The widest row's furthest corner sits 37.3 units from the
+    # centre on the wide plate and 44.0 on the tall, and the contrast audit
+    # probes SVG text 10.1 units OUTSIDE its box at three heights, so its
+    # furthest probe lands at 41.7 units on the wide plate and 49.3 on the tall
+    # (both DOM-measured; the probe offsets scale with the plate, so these
+    # ratios hold at every width the page renders). At the old 0.34 and 0.45 the
+    # hub circle fell INSIDE that probe band - 40.1 against 41.7, 46.8 against
+    # 49.3 - so the audit read the ring's own 1px stroke instead of the ground
+    # and reported the azure hub text at 3.78:1 against a line the text never
+    # touches; the ground under it measures 6.19:1. 0.41 and 0.53 put the ring
+    # clear of the probes with room to spare and give the claim 11 units of air
+    # on both plates instead of 3, which is the bigger half of the fix: the hub
+    # is the plate's focal point and it was crowding its own text. The sector
+    # band stays 69.6 and 48.9 units wide, still the dial's dominant ring.
+    r_in = r_out * (0.53 if not wide else 0.41)
     r_label = (r_in + r_out) / 2.0
 
     g = []
@@ -234,7 +245,7 @@ def plate(wide):
         "hours, one whole day, which is what makes the third cycle land on "
         "the calendar." if wide else
         "The exeligmos sub-dial: three divisions, adding nothing, 8 hours, "
-        "or 16 hours to the Saros dial's times. Three 8-hour corrections are "
+        "or 16 hours to the Saros dial’s times. Three 8-hour corrections are "
         "one whole day.")
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}"
      class="ex-plate ex-{variant}" role="img" focusable="false"

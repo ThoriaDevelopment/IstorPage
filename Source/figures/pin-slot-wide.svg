@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"
      class="ps-plate ps-wide" role="img" focusable="false"
      aria-labelledby="ps-wide-title">
-  <title id="ps-wide-title">The pin-and-slot mechanism, drawn exactly: k1 turns at a constant rate and carries a pin; k2, an identical gear with a different centre of rotation, carries the slot the pin rides. The ring shows the consequence, k2's phase against k1's: ahead by up to 6.29 degrees through half the turn, behind through the other half.</title>
+  <title id="ps-wide-title">The pin-and-slot mechanism, drawn exactly: k1 turns at a constant rate and carries a pin; k2, an identical gear with a different centre of rotation, carries the slot the pin rides. The ring shows the consequence, k2’s phase against k1’s: ahead by up to 6.29 degrees through half the turn, behind through the other half.</title>
   <g class="ps-mech">
     <circle class="ps-gear" cx="190.00" cy="180.00" r="96.00"/>
     <circle class="ps-gear ps-gear-b" cx="200.52" cy="180.00" r="96.00"/>

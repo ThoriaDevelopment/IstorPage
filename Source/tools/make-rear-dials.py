@@ -240,9 +240,9 @@ wide = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDE_W} {WIDE_H
      aria-labelledby="dials-wide-title">
   <title id="dials-wide-title">The two settled rear dials of the Antikythera
     mechanism: the Metonic spiral, five turns holding 235 lunar months, and the
-    Saros spiral, four turns holding 223 months, the counts this page's own
+    Saros spiral, four turns holding 223 months, the counts this page’s own
     answer prints. Each radial tick is one month; the azure dot sits where each
-    dial's count ends.</title>
+    dial’s count ends.</title>
   <!-- The Metonic and Saros spirals as arithmetic: 5 turns / 235 slots and
        4 turns / 223 slots. The counts stand in the gutter between the dials,
        the one band of empty paper the composition owns. Regenerate with
@@ -268,8 +268,8 @@ tall = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {TALL_W} {TALL_H
   <title id="dials-tall-title">The two settled rear dials of the Antikythera
     mechanism, read downward: the Metonic spiral, five turns holding 235 lunar
     months, and the Saros spiral, four turns holding 223 months, the counts
-    this page's own answer prints. Each radial tick is one month; the azure dot
-    sits where each dial's count ends.</title>
+    this page’s own answer prints. Each radial tick is one month; the azure dot
+    sits where each dial’s count ends.</title>
   <!-- The same two dials as the wide plate, stacked for a phone column, with
        type sized for this plate's 0.76 render scale. Regenerate with
        Source/tools/make-rear-dials.py - do not hand-edit. -->
