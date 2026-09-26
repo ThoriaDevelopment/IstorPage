@@ -367,7 +367,7 @@ def build_wide():
                              'font-size="%s" font-family="%s">%s</text>'
                              % (x_key, y, S, DIDOT, key))
                 g.append('    <text class="pp-greek" x="%.1f" y="%.1f" '
-                         'font-size="%s" font-family="%s">%s</text>'
+                         'font-size="%s" font-family="%s" xml:lang="el">%s</text>'
                          % (x_greek, y, S, DIDOT, joined(row[0])))
             if row[1]:
                 key, lines = row[1]
@@ -376,7 +376,7 @@ def build_wide():
                              'font-size="%s" font-family="%s">%s</text>'
                              % (x_key2, y, S, DIDOT, key))
                 g.append('    <text class="pp-greek" x="%.1f" y="%.1f" '
-                         'font-size="%s" font-family="%s">%s</text>'
+                         'font-size="%s" font-family="%s" xml:lang="el">%s</text>'
                          % (x_greek2, y, S, DIDOT, joined(row[1])))
             y += pitch
         y += 18.0
@@ -430,7 +430,7 @@ def build_tall():
                          % (x_key, y, S, DIDOT, key))
             for i, ln in enumerate(lines):
                 g.append('    <text class="pp-greek" x="%.1f" y="%.1f" '
-                         'font-size="%s" font-family="%s">%s</text>'
+                         'font-size="%s" font-family="%s" xml:lang="el">%s</text>'
                          % (x_greek, y + i * cont, S, DIDOT, ln))
             y += (len(lines) - 1) * cont + pitch + rowgap
         y += 14.0

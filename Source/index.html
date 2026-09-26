@@ -73,7 +73,10 @@
   </div>
 </nav>
 
-<main id="the-answer">
+<!-- tabindex=-1: the skip link's target must be able to TAKE focus when a
+     keyboard reader jumps to it - an id alone is not a focus stop, and without
+     this the jump's destination depends on the browser's mood. -->
+<main id="the-answer" tabindex="-1">
 
 <!-- =====================================================================
      Act 1 · C1, field-full.  The hero, and the page's one bold moment.

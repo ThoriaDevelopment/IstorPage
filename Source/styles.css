@@ -388,6 +388,15 @@ a:hover { text-decoration-thickness: 2px; }
 .field :focus-visible,
 .poster :focus-visible { outline-color: var(--azure-lift); }
 
+/* The skip link's target: focus delivered PROGRAMMATICALLY (the jump from the
+   skip link to main's tabindex="-1") does not reliably match :focus-visible,
+   so the one element that receives focus on purpose carries its own ring. A
+   keyboard reader who jumps to the answer must see where they landed. */
+#the-answer:focus {
+  outline: 2px solid var(--azure);
+  outline-offset: -2px;
+}
+
 /* ---------------------------------------------------------------------------
    4 · Type.
    --------------------------------------------------------------------------- */

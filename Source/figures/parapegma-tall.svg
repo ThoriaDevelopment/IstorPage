@@ -10,104 +10,104 @@
     <circle class="pp-moon" cx="182" cy="828.0" r="3.2"/>
   </g>
     <text class="pp-key" x="16.0" y="92.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Α</text>
-    <text class="pp-greek" x="44.0" y="92.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΑΙΓΟΚΕΡΩΣ ΑΡΧΕΤΑΙ</text>
-    <text class="pp-greek" x="44.0" y="110.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΑΝΑΤΕΛΛΕΙΝ [...] Α</text>
-    <text class="pp-greek" x="44.0" y="136.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΤΡΟΠΑΙ ΧΕΙΜΕΡΙΝΑΙ [...] Α</text>
+    <text class="pp-greek" x="44.0" y="92.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΑΙΓΟΚΕΡΩΣ ΑΡΧΕΤΑΙ</text>
+    <text class="pp-greek" x="44.0" y="110.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΑΝΑΤΕΛΛΕΙΝ [...] Α</text>
+    <text class="pp-greek" x="44.0" y="136.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΤΡΟΠΑΙ ΧΕΙΜΕΡΙΝΑΙ [...] Α</text>
     <text class="pp-key" x="16.0" y="162.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Β</text>
-    <text class="pp-greek" x="44.0" y="162.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] ΕΙ ΕΣΠΕΡΙ</text>
+    <text class="pp-greek" x="44.0" y="162.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] ΕΙ ΕΣΠΕΡΙ</text>
     <text class="pp-key" x="16.0" y="188.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Γ</text>
-    <text class="pp-greek" x="44.0" y="188.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] ΙΕΣΠΕΡΙ</text>
+    <text class="pp-greek" x="44.0" y="188.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] ΙΕΣΠΕΡΙ</text>
     <text class="pp-key" x="16.0" y="214.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Δ</text>
-    <text class="pp-greek" x="44.0" y="214.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] ΥΔΡΟΧΟΟΣ ΑΡΧΕΤΑΙ</text>
-    <text class="pp-greek" x="44.0" y="232.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΠΙΤΕΛΛΕΙΝΑ</text>
+    <text class="pp-greek" x="44.0" y="214.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] ΥΔΡΟΧΟΟΣ ΑΡΧΕΤΑΙ</text>
+    <text class="pp-greek" x="44.0" y="232.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΠΙΤΕΛΛΕΙΝΑ</text>
     <text class="pp-key" x="16.0" y="258.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ε</text>
-    <text class="pp-greek" x="44.0" y="258.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] ΕΣΠΕΡΙΟΣ [...] Ι{Ο}</text>
+    <text class="pp-greek" x="44.0" y="258.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] ΕΣΠΕΡΙΟΣ [...] Ι{Ο}</text>
     <text class="pp-key" x="16.0" y="284.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ζ</text>
-    <text class="pp-greek" x="44.0" y="284.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] ΡΙΑΙ [...] Κ</text>
+    <text class="pp-greek" x="44.0" y="284.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] ΡΙΑΙ [...] Κ</text>
     <text class="pp-key" x="16.0" y="310.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Η</text>
-    <text class="pp-greek" x="44.0" y="310.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΙΧΘΥΕΣ ΑΡΧΟΝΤΑΙ</text>
-    <text class="pp-greek" x="44.0" y="328.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
+    <text class="pp-greek" x="44.0" y="310.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΙΧΘΥΕΣ ΑΡΧΟΝΤΑΙ</text>
+    <text class="pp-greek" x="44.0" y="328.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
     <text class="pp-key" x="16.0" y="354.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Θ</text>
-    <text class="pp-greek" x="44.0" y="354.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] {Ι}Α</text>
+    <text class="pp-greek" x="44.0" y="354.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] {Ι}Α</text>
     <text class="pp-key" x="16.0" y="380.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ι</text>
-    <text class="pp-greek" x="44.0" y="380.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΚΡΙΟΣ ΑΡΧΕΤΑΙ ΕΠΙΤΕΛΛΕΙΝ</text>
-    <text class="pp-greek" x="44.0" y="398.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] Α</text>
-    <text class="pp-greek" x="44.0" y="424.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΙΣΗΜΕΡΙΑ ΕΑΡΙΝΗ [...] Α</text>
+    <text class="pp-greek" x="44.0" y="380.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΚΡΙΟΣ ΑΡΧΕΤΑΙ ΕΠΙΤΕΛΛΕΙΝ</text>
+    <text class="pp-greek" x="44.0" y="398.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] Α</text>
+    <text class="pp-greek" x="44.0" y="424.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΙΣΗΜΕΡΙΑ ΕΑΡΙΝΗ [...] Α</text>
     <text class="pp-key" x="16.0" y="450.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Κ</text>
-    <text class="pp-greek" x="44.0" y="450.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] ΕΣΠΕΡΙΑ [...] ΙΑ</text>
+    <text class="pp-greek" x="44.0" y="450.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] ΕΣΠΕΡΙΑ [...] ΙΑ</text>
     <text class="pp-key" x="16.0" y="476.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Λ</text>
-    <text class="pp-greek" x="44.0" y="476.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΥΑΔΕΣ ΔΥΝΟΥΣΙΝ</text>
-    <text class="pp-greek" x="44.0" y="494.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΣΠΕΡΙΑΙ [...] ΚΑ</text>
+    <text class="pp-greek" x="44.0" y="476.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΥΑΔΕΣ ΔΥΝΟΥΣΙΝ</text>
+    <text class="pp-greek" x="44.0" y="494.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΣΠΕΡΙΑΙ [...] ΚΑ</text>
     <text class="pp-key" x="16.0" y="520.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Μ</text>
-    <text class="pp-greek" x="44.0" y="520.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΤΑΥΡΟΣ ΑΡΧΕΤΑΙ</text>
-    <text class="pp-greek" x="44.0" y="538.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ε{Π}ΙΤΕΛΛΕΙΝΑ</text>
+    <text class="pp-greek" x="44.0" y="520.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΤΑΥΡΟΣ ΑΡΧΕΤΑΙ</text>
+    <text class="pp-greek" x="44.0" y="538.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">Ε{Π}ΙΤΕΛΛΕΙΝΑ</text>
     <text class="pp-key" x="16.0" y="564.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ν</text>
-    <text class="pp-greek" x="44.0" y="564.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΛΥΡΑ ΕΠΙΤΕΛΛΕΙ</text>
-    <text class="pp-greek" x="44.0" y="582.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΣΠΕΡΙΛ [...] Δ</text>
+    <text class="pp-greek" x="44.0" y="564.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΛΥΡΑ ΕΠΙΤΕΛΛΕΙ</text>
+    <text class="pp-greek" x="44.0" y="582.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΣΠΕΡΙΛ [...] Δ</text>
     <text class="pp-key" x="16.0" y="608.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ξ</text>
-    <text class="pp-greek" x="44.0" y="608.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΠΛΕΙΑΣ ΕΠΙΤΕΛΛΕΙ</text>
-    <text class="pp-greek" x="44.0" y="626.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΩΙΑ [...] Ι</text>
+    <text class="pp-greek" x="44.0" y="608.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΠΛΕΙΑΣ ΕΠΙΤΕΛΛΕΙ</text>
+    <text class="pp-greek" x="44.0" y="626.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΩΙΑ [...] Ι</text>
     <text class="pp-key" x="16.0" y="652.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ο</text>
-    <text class="pp-greek" x="44.0" y="652.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΥΑΣ ΕΠΙΤΕΛΛΕΙ ΕΩΙΑ [...] Δ</text>
+    <text class="pp-greek" x="44.0" y="652.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΥΑΣ ΕΠΙΤΕΛΛΕΙ ΕΩΙΑ [...] Δ</text>
     <text class="pp-key" x="16.0" y="678.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Π</text>
-    <text class="pp-greek" x="44.0" y="678.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΔΙΔΥΜΟΙ ΑΡΧΟΝΤΑ</text>
-    <text class="pp-greek" x="44.0" y="696.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
+    <text class="pp-greek" x="44.0" y="678.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΔΙΔΥΜΟΙ ΑΡΧΟΝΤΑ</text>
+    <text class="pp-greek" x="44.0" y="696.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
     <text class="pp-key" x="16.0" y="722.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ρ</text>
-    <text class="pp-greek" x="44.0" y="722.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΑΕΤΟΣ ΕΠΙΤΕΛΛΕΙ ΕΣΠΕΡΙΟΣ</text>
+    <text class="pp-greek" x="44.0" y="722.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΑΕΤΟΣ ΕΠΙΤΕΛΛΕΙ ΕΣΠΕΡΙΟΣ</text>
     <text class="pp-key" x="16.0" y="748.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Σ</text>
-    <text class="pp-greek" x="44.0" y="748.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΑΡΚΤΟΥΡΟΣ ΔΥΝΕΙ Ε{Ω}{Ι}ΟΣ</text>
+    <text class="pp-greek" x="44.0" y="748.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΑΡΚΤΟΥΡΟΣ ΔΥΝΕΙ Ε{Ω}{Ι}ΟΣ</text>
   <text class="pp-head" x="170.0" y="788.0" font-size="16" font-family="Inter, sans-serif" text-anchor="middle">BENEATH THE DIALS</text>
     <text class="pp-key" x="16.0" y="862.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Α</text>
-    <text class="pp-greek" x="44.0" y="862.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΧΗΛΑΙ ΑΡΧΟΝΤΑ</text>
-    <text class="pp-greek" x="44.0" y="880.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
-    <text class="pp-greek" x="44.0" y="906.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">{Ι}ΣΗΜΕΡΙΑ ΦΘΙΝΟΠΩΡΙΝΗ</text>
-    <text class="pp-greek" x="44.0" y="924.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] Α</text>
+    <text class="pp-greek" x="44.0" y="862.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΧΗΛΑΙ ΑΡΧΟΝΤΑ</text>
+    <text class="pp-greek" x="44.0" y="880.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
+    <text class="pp-greek" x="44.0" y="906.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">{Ι}ΣΗΜΕΡΙΑ ΦΘΙΝΟΠΩΡΙΝΗ</text>
+    <text class="pp-greek" x="44.0" y="924.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] Α</text>
     <text class="pp-key" x="16.0" y="950.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Β</text>
-    <text class="pp-greek" x="44.0" y="950.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] ΑΝΑΤΕΛΛΟΥΣΙΝ</text>
-    <text class="pp-greek" x="44.0" y="968.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΣΠΕΡΙΟΙΙΑ</text>
+    <text class="pp-greek" x="44.0" y="950.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] ΑΝΑΤΕΛΛΟΥΣΙΝ</text>
+    <text class="pp-greek" x="44.0" y="968.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΣΠΕΡΙΟΙΙΑ</text>
     <text class="pp-key" x="16.0" y="994.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Γ</text>
-    <text class="pp-greek" x="44.0" y="994.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] ΑΝΑΤΕΛΛΕΙ ΕΣΠΕΡΙΑΙΔ</text>
+    <text class="pp-greek" x="44.0" y="994.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] ΑΝΑΤΕΛΛΕΙ ΕΣΠΕΡΙΑΙΔ</text>
     <text class="pp-key" x="16.0" y="1020.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Δ</text>
-    <text class="pp-greek" x="44.0" y="1020.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] ΤΕΛΛΕΙΙ{Ο}</text>
+    <text class="pp-greek" x="44.0" y="1020.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] ΤΕΛΛΕΙΙ{Ο}</text>
     <text class="pp-key" x="16.0" y="1046.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ε</text>
-    <text class="pp-greek" x="44.0" y="1046.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΣΚΟΡΠΙΟΣ ΑΡΧΕΤΑΙ</text>
-    <text class="pp-greek" x="44.0" y="1064.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΑΝΑΤΕΛΛΕΙΝΑ</text>
+    <text class="pp-greek" x="44.0" y="1046.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΣΚΟΡΠΙΟΣ ΑΡΧΕΤΑΙ</text>
+    <text class="pp-greek" x="44.0" y="1064.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΑΝΑΤΕΛΛΕΙΝΑ</text>
     <text class="pp-key" x="16.0" y="1090.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ζ</text>
-    <text class="pp-greek" x="44.0" y="1090.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1090.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1116.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Η</text>
-    <text class="pp-greek" x="44.0" y="1116.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1116.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1142.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Θ</text>
-    <text class="pp-greek" x="44.0" y="1142.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1142.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1168.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ι</text>
-    <text class="pp-greek" x="44.0" y="1168.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΤΟΞΟΤΗΣ ΑΡΧΕΤΑΙ</text>
-    <text class="pp-greek" x="44.0" y="1186.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
+    <text class="pp-greek" x="44.0" y="1168.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΤΟΞΟΤΗΣ ΑΡΧΕΤΑΙ</text>
+    <text class="pp-greek" x="44.0" y="1186.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
     <text class="pp-key" x="16.0" y="1212.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Κ</text>
-    <text class="pp-greek" x="44.0" y="1212.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1212.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1238.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Λ</text>
-    <text class="pp-greek" x="44.0" y="1238.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1238.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1264.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Μ</text>
-    <text class="pp-greek" x="44.0" y="1264.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΚΑΡΚΙΝΟΣ ΑΡΧΕΤΑΙ</text>
-    <text class="pp-greek" x="44.0" y="1282.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...] Α</text>
-    <text class="pp-greek" x="44.0" y="1308.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΤΡΟΠΑΙ ΘΕΡΙΝΑΙ [...] Α</text>
+    <text class="pp-greek" x="44.0" y="1264.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΚΑΡΚΙΝΟΣ ΑΡΧΕΤΑΙ</text>
+    <text class="pp-greek" x="44.0" y="1282.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...] Α</text>
+    <text class="pp-greek" x="44.0" y="1308.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΤΡΟΠΑΙ ΘΕΡΙΝΑΙ [...] Α</text>
     <text class="pp-key" x="16.0" y="1334.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ν</text>
-    <text class="pp-greek" x="44.0" y="1334.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΩΡΙΩΝ ΑΝΤΕΛΛΕΙ ΕΩΙΟΣ</text>
+    <text class="pp-greek" x="44.0" y="1334.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΩΡΙΩΝ ΑΝΤΕΛΛΕΙ ΕΩΙΟΣ</text>
     <text class="pp-key" x="16.0" y="1360.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ξ</text>
-    <text class="pp-greek" x="44.0" y="1360.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">{Κ}ΥΩΝ ΑΝΤΕΛΛΕΙ ΕΩΙΟΣ</text>
+    <text class="pp-greek" x="44.0" y="1360.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">{Κ}ΥΩΝ ΑΝΤΕΛΛΕΙ ΕΩΙΟΣ</text>
     <text class="pp-key" x="16.0" y="1386.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ο</text>
-    <text class="pp-greek" x="44.0" y="1386.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΑΕΤΟΣ ΔΥΝΕΙ ΕΩΙΟΣ</text>
+    <text class="pp-greek" x="44.0" y="1386.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΑΕΤΟΣ ΔΥΝΕΙ ΕΩΙΟΣ</text>
     <text class="pp-key" x="16.0" y="1412.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Π</text>
-    <text class="pp-greek" x="44.0" y="1412.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΛΕΩΝ ΑΡΧΕΤΑΙ</text>
-    <text class="pp-greek" x="44.0" y="1430.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
+    <text class="pp-greek" x="44.0" y="1412.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΛΕΩΝ ΑΡΧΕΤΑΙ</text>
+    <text class="pp-greek" x="44.0" y="1430.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">ΕΠΙΤΕΛΛΕΙΝ [...] Α</text>
     <text class="pp-key" x="16.0" y="1456.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Ρ</text>
-    <text class="pp-greek" x="44.0" y="1456.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1456.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1482.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Σ</text>
-    <text class="pp-greek" x="44.0" y="1482.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1482.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1508.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Τ</text>
-    <text class="pp-greek" x="44.0" y="1508.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1508.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1534.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Υ</text>
-    <text class="pp-greek" x="44.0" y="1534.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1534.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1560.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Φ</text>
-    <text class="pp-greek" x="44.0" y="1560.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1560.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
     <text class="pp-key" x="16.0" y="1586.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">Χ</text>
-    <text class="pp-greek" x="44.0" y="1586.0" font-size="16.5" font-family="GFS Didot, Georgia, serif">[...]</text>
+    <text class="pp-greek" x="44.0" y="1586.0" font-size="16.5" font-family="GFS Didot, Georgia, serif" xml:lang="el">[...]</text>
 </svg>

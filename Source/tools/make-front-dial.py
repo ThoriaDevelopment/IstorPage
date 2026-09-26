@@ -218,6 +218,7 @@ def dial(cx, cy, r_zodiac_out, name_size, cls, r_months):
         rot = (amid + 90.0) if flip else (amid - 90.0)
         g.append('    <text class="fd-sign" x="%.2f" y="%.2f" '
                  'font-size="%s" font-family="%s" text-anchor="middle" '
+                 'xml:lang="el" '
                  'transform="rotate(%.2f %.2f %.2f)">%s</text>'
                  % (lx, ly, name_size, DIDOT, rot, lx, ly, name))
     # the three surviving month names, outside the calendar band, at their
@@ -237,7 +238,7 @@ def dial(cx, cy, r_zodiac_out, name_size, cls, r_months):
                      % (label, name_size, w, chord))
         lx, ly = pt(cx, cy, r_label, deg)
         g.append('    <text class="fd-month" x="%.2f" y="%.2f" font-size="%s" '
-                 'font-family="%s" text-anchor="middle">%s</text>'
+                 'font-family="%s" text-anchor="middle" xml:lang="el">%s</text>'
                  % (lx, ly, name_size, DIDOT, label))
     # the sun and moon, the plate's one azure statement. The sun is the
     # rayed mark at the ecliptic longitude; the moon the small disc beside
@@ -294,6 +295,9 @@ def build_wide():
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}"
      class="front-plate front-wide" role="img" focusable="false"
      aria-labelledby="front-wide-title">
+  <!-- xml:lang=el on the Greek rows: a screen reader voices them with a
+       Greek engine instead of mangling them through the page's English
+       one. The attribute costs 15 bytes a row and carries no id. -->
   <title id="front-wide-title">The front dial: an inner zodiac ring of twelve
     Greek signs in thirty-degree sectors, an outer ring of day holes whose
     count is the question this page is about, the three month names that
@@ -328,6 +332,7 @@ def build_tall():
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}"
      class="front-plate front-tall" role="img" focusable="false"
      aria-labelledby="front-tall-title">
+  <!-- xml:lang=el on the Greek rows: see the wide variant's note. -->
   <title id="front-tall-title">The front dial: twelve Greek zodiac signs, the
     outer ring of day holes whose count is disputed, the three surviving month
     names, and the sun and moon marks.</title>

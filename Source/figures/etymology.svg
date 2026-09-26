@@ -29,6 +29,6 @@
   <text class="etym-word" x="340" y="169" font-size="26">wit</text>
   <text class="etym-gloss" x="340" y="197">english · to know</text>
   <path class="etym-claim" d="M340 272 H472"/>
-  <text class="etym-name" x="340" y="264" font-size="46">ἵστωρ</text>
+  <text class="etym-name" x="340" y="264" font-size="46" xml:lang="el">ἵστωρ</text>
   <text class="etym-gloss" x="340" y="292">greek · a witness</text>
 </svg>

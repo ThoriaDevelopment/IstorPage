@@ -1,6 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 448"
      class="front-plate front-wide" role="img" focusable="false"
      aria-labelledby="front-wide-title">
+  <!-- xml:lang=el on the Greek rows: a screen reader voices them with a
+       Greek engine instead of mangling them through the page's English
+       one. The attribute costs 15 bytes a row and carries no id. -->
   <title id="front-wide-title">The front dial: an inner zodiac ring of twelve
     Greek signs in thirty-degree sectors, an outer ring of day holes whose
     count is the question this page is about, the three month names that
@@ -14,54 +17,54 @@
   <g class="front-dial">
     <path class="fd-arc" d="M320.00 62.00 A148.00 148.00 0 0 1 394.00 81.83"/>
     <path class="fd-arc" d="M320.00 155.30 A54.70 54.70 0 0 1 347.35 162.63"/>
-    <text class="fd-sign" x="346.23" y="112.10" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(-75.00 346.23 112.10)">ΚΡΙΟΣ</text>
+    <text class="fd-sign" x="346.23" y="112.10" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(-75.00 346.23 112.10)">ΚΡΙΟΣ</text>
     <path class="fd-arc" d="M394.00 81.83 A148.00 148.00 0 0 1 448.17 136.00"/>
     <path class="fd-arc" d="M347.35 162.63 A54.70 54.70 0 0 1 367.37 182.65"/>
     <path class="fd-spoke" d="M347.35 162.63 L394.00 81.83"/>
-    <text class="fd-sign" x="391.67" y="138.33" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(-45.00 391.67 138.33)">ΤΑΥΡΟΣ</text>
+    <text class="fd-sign" x="391.67" y="138.33" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(-45.00 391.67 138.33)">ΤΑΥΡΟΣ</text>
     <path class="fd-arc" d="M448.17 136.00 A148.00 148.00 0 0 1 468.00 210.00"/>
     <path class="fd-arc" d="M367.37 182.65 A54.70 54.70 0 0 1 374.70 210.00"/>
     <path class="fd-spoke" d="M367.37 182.65 L448.17 136.00"/>
-    <text class="fd-sign" x="417.90" y="183.77" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(-15.00 417.90 183.77)">ΔΙΔΥΜΟΙ</text>
+    <text class="fd-sign" x="417.90" y="183.77" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(-15.00 417.90 183.77)">ΔΙΔΥΜΟΙ</text>
     <path class="fd-arc" d="M468.00 210.00 A148.00 148.00 0 0 1 448.17 284.00"/>
     <path class="fd-arc" d="M374.70 210.00 A54.70 54.70 0 0 1 367.37 237.35"/>
     <path class="fd-spoke" d="M374.70 210.00 L468.00 210.00"/>
-    <text class="fd-sign" x="417.90" y="236.23" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(15.00 417.90 236.23)">ΚΑΡΚΙΝΟΣ</text>
+    <text class="fd-sign" x="417.90" y="236.23" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(15.00 417.90 236.23)">ΚΑΡΚΙΝΟΣ</text>
     <path class="fd-arc" d="M448.17 284.00 A148.00 148.00 0 0 1 394.00 338.17"/>
     <path class="fd-arc" d="M367.37 237.35 A54.70 54.70 0 0 1 347.35 257.37"/>
     <path class="fd-spoke" d="M367.37 237.35 L448.17 284.00"/>
-    <text class="fd-sign" x="391.67" y="281.67" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(45.00 391.67 281.67)">ΛΕΩΝ</text>
+    <text class="fd-sign" x="391.67" y="281.67" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(45.00 391.67 281.67)">ΛΕΩΝ</text>
     <path class="fd-arc" d="M394.00 338.17 A148.00 148.00 0 0 1 320.00 358.00"/>
     <path class="fd-arc" d="M347.35 257.37 A54.70 54.70 0 0 1 320.00 264.70"/>
     <path class="fd-spoke" d="M347.35 257.37 L394.00 338.17"/>
-    <text class="fd-sign" x="346.23" y="307.90" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(75.00 346.23 307.90)">ΠΑΡΘΕΝΟΣ</text>
+    <text class="fd-sign" x="346.23" y="307.90" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(75.00 346.23 307.90)">ΠΑΡΘΕΝΟΣ</text>
     <path class="fd-arc" d="M320.00 358.00 A148.00 148.00 0 0 1 246.00 338.17"/>
     <path class="fd-arc" d="M320.00 264.70 A54.70 54.70 0 0 1 292.65 257.37"/>
     <path class="fd-spoke" d="M320.00 264.70 L320.00 358.00"/>
-    <text class="fd-sign" x="293.77" y="307.90" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(285.00 293.77 307.90)">ΧΗΛΑΙ</text>
+    <text class="fd-sign" x="293.77" y="307.90" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(285.00 293.77 307.90)">ΧΗΛΑΙ</text>
     <path class="fd-arc" d="M246.00 338.17 A148.00 148.00 0 0 1 191.83 284.00"/>
     <path class="fd-arc" d="M292.65 257.37 A54.70 54.70 0 0 1 272.63 237.35"/>
     <path class="fd-spoke" d="M292.65 257.37 L246.00 338.17"/>
-    <text class="fd-sign" x="248.33" y="281.67" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(315.00 248.33 281.67)">ΣΚΟΡΠΙΟΣ</text>
+    <text class="fd-sign" x="248.33" y="281.67" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(315.00 248.33 281.67)">ΣΚΟΡΠΙΟΣ</text>
     <path class="fd-arc" d="M191.83 284.00 A148.00 148.00 0 0 1 172.00 210.00"/>
     <path class="fd-arc" d="M272.63 237.35 A54.70 54.70 0 0 1 265.30 210.00"/>
     <path class="fd-spoke" d="M272.63 237.35 L191.83 284.00"/>
-    <text class="fd-sign" x="222.10" y="236.23" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(345.00 222.10 236.23)">ΤΟΞΟΤΗΣ</text>
+    <text class="fd-sign" x="222.10" y="236.23" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(345.00 222.10 236.23)">ΤΟΞΟΤΗΣ</text>
     <path class="fd-arc" d="M172.00 210.00 A148.00 148.00 0 0 1 191.83 136.00"/>
     <path class="fd-arc" d="M265.30 210.00 A54.70 54.70 0 0 1 272.63 182.65"/>
     <path class="fd-spoke" d="M265.30 210.00 L172.00 210.00"/>
-    <text class="fd-sign" x="222.10" y="183.77" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(375.00 222.10 183.77)">ΑΙΓΟΚΕΡΩΣ</text>
+    <text class="fd-sign" x="222.10" y="183.77" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(375.00 222.10 183.77)">ΑΙΓΟΚΕΡΩΣ</text>
     <path class="fd-arc" d="M191.83 136.00 A148.00 148.00 0 0 1 246.00 81.83"/>
     <path class="fd-arc" d="M272.63 182.65 A54.70 54.70 0 0 1 292.65 162.63"/>
     <path class="fd-spoke" d="M272.63 182.65 L191.83 136.00"/>
-    <text class="fd-sign" x="248.33" y="138.33" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(405.00 248.33 138.33)">ΥΔΡΟΧΟΟΣ</text>
+    <text class="fd-sign" x="248.33" y="138.33" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(405.00 248.33 138.33)">ΥΔΡΟΧΟΟΣ</text>
     <path class="fd-arc" d="M246.00 81.83 A148.00 148.00 0 0 1 320.00 62.00"/>
     <path class="fd-arc" d="M292.65 162.63 A54.70 54.70 0 0 1 320.00 155.30"/>
     <path class="fd-spoke" d="M292.65 162.63 L246.00 81.83"/>
-    <text class="fd-sign" x="293.77" y="112.10" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" transform="rotate(435.00 293.77 112.10)">ΙΧΘΥΕΣ</text>
-    <text class="fd-month" x="371.76" y="403.19" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΠΑΧΩΝ</text>
-    <text class="fd-month" x="268.24" y="403.19" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΠΑΥΝΙ</text>
-    <text class="fd-month" x="178.58" y="351.42" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle">ΕΠΙΦΙ</text>
+    <text class="fd-sign" x="293.77" y="112.10" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el" transform="rotate(435.00 293.77 112.10)">ΙΧΘΥΕΣ</text>
+    <text class="fd-month" x="371.76" y="403.19" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el">ΠΑΧΩΝ</text>
+    <text class="fd-month" x="268.24" y="403.19" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el">ΠΑΥΝΙ</text>
+    <text class="fd-month" x="178.58" y="351.42" font-size="12.5" font-family="GFS Didot, Georgia, serif" text-anchor="middle" xml:lang="el">ΕΠΙΦΙ</text>
     <g class="fd-lights">
       <circle class="fd-sun" cx="320.00" cy="167.30" r="7.69"/>
       <path class="fd-ray" d="M320.00 155.77 L320.00 151.16"/>

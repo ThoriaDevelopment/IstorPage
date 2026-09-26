@@ -105,9 +105,11 @@ wide += ('  </g>\n\n'
          % (ROOT_X, ROOT_BASE, ROOT_X, ROOT_BASE + GLOSS_LIFT))
 
 
-def wide_entry(y, word, gloss, cls="etym-word", size=26, lift=9, rule=False):
+def wide_entry(y, word, gloss, cls="etym-word", size=26, lift=9, rule=False,
+               lang=None):
+    langattr = f' xml:lang="{lang}"' if lang else ''
     out = (f'  <text class="{cls}" x="{WORD_X:g}" y="{y + lift:g}"'
-           f' font-size="{size:g}">{word}</text>\n'
+           f' font-size="{size:g}"{langattr}>{word}</text>\n'
            f'  <text class="etym-gloss" x="{WORD_X:g}" y="{y + lift + GLOSS_LIFT:g}">'
            f'{gloss}</text>\n')
     if rule:
@@ -119,7 +121,7 @@ def wide_entry(y, word, gloss, cls="etym-word", size=26, lift=9, rule=False):
 wide += wide_entry(rows()[0], "videre", "latin · to see")
 wide += wide_entry(rows()[1], "wit", "english · to know")
 wide += wide_entry(rows()[2], "ἵστωρ", "greek · a witness", cls="etym-name",
-                   size=46, lift=16, rule=True)
+                   size=46, lift=16, rule=True, lang="el")
 wide += '</svg>\n'
 
 # --- the tall plate: the same descent as a ledger ----------------------------
@@ -139,11 +141,13 @@ T_TOP = 92.0              # the rail starts below the root row
 T_ROWS = [120.0, 220.0, 320.0]
 
 
-def tall_entry(y, word, gloss, cls="etym-word", size=28, lift=9, rule=False):
+def tall_entry(y, word, gloss, cls="etym-word", size=28, lift=9, rule=False,
+               lang=None):
     """One row of the ledger: word in the left column, gloss in the right, both
     sitting on the row's line so the two columns read across."""
+    langattr = f' xml:lang="{lang}"' if lang else ''
     out = (f'  <text class="{cls}" x="{T_WORD_X:g}" y="{y + lift:g}"'
-           f' font-size="{size:g}">{word}</text>\n'
+           f' font-size="{size:g}"{langattr}>{word}</text>\n'
            f'  <text class="etym-gloss" x="{T_GLOSS_X:g}" y="{y + lift:g}">'
            f'{gloss}</text>\n')
     if rule:
@@ -178,7 +182,7 @@ tall += '  </g>\n\n'
 tall += tall_entry(T_ROWS[0], "videre", "latin · to see")
 tall += tall_entry(T_ROWS[1], "wit", "english · to know")
 tall += tall_entry(T_ROWS[2], "ἵστωρ", "greek · a witness", cls="etym-name",
-                   size=40, lift=14, rule=True)
+                   size=40, lift=14, lang="el", rule=True)
 tall += '</svg>\n'
 
 # Anchored to this file rather than to the shell's directory: this wrote to
