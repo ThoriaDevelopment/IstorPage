@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 210.375"
+     class="uv-plate uv-wide" role="img" focusable="false"
+     aria-labelledby="uv-wide-title">
+  <title id="uv-wide-title">The unverified mark, drawn: the small model fits a citation, the answer carries the mark, and the dotted line from the claim does not end until the passage behind the claim closes it.</title>
+  <path class="uv-edge" d="M213.65 42.125 L245.65 42.125"/>
+  <path class="uv-edge" d="M376.45 42.125 L408.45 42.125"/>
+  <path class="uv-edge uv-dashed" d="M476.35 63.1875 C476.35 85.1875 344 94.25 320 116.25"
+  <text class="uv-elabel" x="429.45" y="98.625" font-size="12.5" font-family="Inter, sans-serif" text-anchor="start">does not end</text>
+  <g class="uv" data-x="95.75" data-y="12" data-w="117.9" data-h="60.25">
+    <rect class="uv-box uv-plain" x="95.75" y="12" width="117.9" height="60.25" rx="6"/>
+    <text class="uv-t uv-plain" x="154.7" y="28.25" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the small model</text>
+    <text class="uv-t uv-plain" x="154.7" y="46.375" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">fit a citation</text>
+  </g>
+  <g class="uv" data-x="245.65" data-y="12" data-w="130.8" data-h="60.25">
+    <rect class="uv-box uv-coral" x="245.65" y="12" width="130.8" height="60.25" rx="6"/>
+    <text class="uv-t uv-coral" x="311.05" y="28.25" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">Unverified,</text>
+    <text class="uv-t uv-coral" x="311.05" y="46.375" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">check the source.</text>
+  </g>
+  <g class="uv" data-x="408.45" data-y="21.0625" data-w="135.8" data-h="42.125">
+    <rect class="uv-box uv-plain" x="408.45" y="21.0625" width="135.8" height="42.125" rx="6"/>
+    <text class="uv-t uv-plain" x="476.35" y="37.3125" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the answer's claim</text>
+  </g>
+  <g class="uv" data-x="220.55" data-y="116.25" data-w="198.9" data-h="42.125">
+    <rect class="uv-box uv-plain" x="220.55" y="116.25" width="198.9" height="42.125" rx="6"/>
+    <text class="uv-t uv-plain" x="320" y="132.5" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the passage behind the claim</text>
+  </g>
+
+  <text class="uv-cap" x="320" y="200.375" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">That word is not a guess about truth.</text></svg>

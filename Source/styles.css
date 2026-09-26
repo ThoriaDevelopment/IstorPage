@@ -116,13 +116,25 @@
 
   /* geometry. See the header: --win-sm is crop/2, and it is not a taste call. */
   --page:      1240px;
-  --col-text:  480px;
+  --col-text:  504px;   /* the C2 text column: the page minus the gap and the field */
   --gap:       40px;
   --field-pad: 48px;
   --win-sm:    600px;   /* the pane exhibits, at native app scale      */
   --win-lg:    959px;   /* the full-window exhibits, and the replica   */
   --field:     696px;   /* --win-sm + 2 x --field-pad                  */
-  --measure:   66ch;
+  /* ONE TEXT MEASURE, and it is the split's column. The unit is ch because a
+     measure is a count of characters, not a width; 47ch resolves to 504px at
+     the body's 17px, which is --col-text exactly, and the split's text column
+     cannot be wider than that: the field beside it holds a 600px capture at
+     native scale, so the text takes the remainder of the page. The number the
+     split forces is therefore the number the whole page reads at, and the two
+     that must agree are one. At the caption's 15px the same 47ch is 444.7px,
+     so a caption is the same measure of text set on a narrower column, which
+     is what a caption is - never wider than the body it belongs to.
+     Measured at 66ch, what this replaces: body lines ran 83 to 115 characters
+     (the FAQ reached 115) and captions 86 to 100, both outside the 45 to 75 a
+     reader holds in one line. At 47ch: 61 to 66 for body, 62 for captions. */
+  --measure:   47ch;
   --gutter:    clamp(20px, 5vw, 40px);
   /* The hero's world band. --world-h is capped at the figure's own viewBox
      height (420), so above 1448px the drawing fills the width and crops
@@ -355,7 +367,13 @@ body {
 img, svg, picture { display: block; max-width: 100%; height: auto; }
 
 figure { margin: 0; }
-figcaption { text-wrap: pretty; }
+/* The measure is the default here, not an opt-in. Eight plate captions on this
+   page ran 130-odd characters because the rule only asked for `pretty`, and a
+   caption is prose: it is set to the same reading measure as every other block
+   of prose on the page, and the figures that want a different one (the wide
+   exhibits, the plates, the etymology, each already carrying its own) still
+   override this by name. */
+figcaption { max-width: var(--measure); text-wrap: pretty; }
 
 a { color: var(--azure); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 a:hover { text-decoration-thickness: 2px; }
@@ -530,6 +548,13 @@ h3 {
    not full-bleed, which is the difference between C2 and C4. */
 .split {
   display: grid;
+  /* The text column is the page's remainder beside the field: 1240 - 40 - 696 =
+     504. It was 480, so the pair stopped 24px short of the page's far edge and
+     every C2 row carried 24px of unused paper. Measured at 1440: text column at
+     x=100, field at x=620, the field's far edge at 1316, the page's at 1340.
+     This column is also the page's one text measure: --measure's 47ch resolves
+     to this width at the body's 17px, so a paragraph in an act without a field
+     beside it reads at the same line length as a paragraph here. */
   grid-template-columns: minmax(0, var(--col-text)) minmax(0, var(--field));
   gap: var(--gap);
   align-items: center;
@@ -715,7 +740,14 @@ h3 {
 .dispute-table th {
   text-align: left;
   font-weight: 400;
-  color: var(--ink-3);
+  /* --ink-2, not --ink-3. A column header IS text, and the token block says
+     plainly that --ink-3 is a GRAPHIC ink that draws rules: it is 3.12:1 on
+     --paper, and the header sits on the --fill wash, where the audit measured
+     3.17:1. --ink-2 is 4.70:1 there, which is the same fix the token note
+     already prescribes for "caption TEXT". The header is quieter than the
+     cells by weight and by wash, which is the hierarchy; it does not need to
+     be quieter than legible to be quiet. */
+  color: var(--ink-2);
   padding: 6px 8px;
   background: var(--fill);
   border-block-end: 1px solid var(--rule);
@@ -1054,9 +1086,24 @@ h3 {
 .nav.over-field .nav-mark { color: var(--field-ink); }
 .nav.over-field .nav-links a { color: var(--field-ink-2); }
 .nav.over-field .nav-links a:hover { color: var(--field-ink); }
-.nav.over-field .cta { background: var(--azure-lift); color: var(--on-azure-lift); }
-.nav.over-field .cta:hover { background: var(--azure-lift-hi); }
 .nav.over-field .reading-progress > span { background: var(--azure-lift); }
+
+/* Transparent is right only while the bar has nothing behind it but the hero's
+   own field - which is the case at rest, and only at rest. The bar is sticky,
+   so from the first scrolled pixel it has the act beneath it to cover, and the
+   acts on a field carry prose. Measured at 1442 on the built page, with
+   #on-your-machine's second paragraph parked under the bar: the bar composited
+   to rgba(0, 0, 0, 0), backdrop-filter none, and the paragraph's first 48px sat
+   across the three links. So the field state takes the paper state's own recipe
+   - its ground in place of the paper, the same 12px blur - which separates the
+   two layers without breaking the band. The hairline stays transparent, so the
+   bar still joins the field rather than being laid over it; at scrollY 8 or
+   less, before any of the page has gone under the bar, the seamless state is
+   kept, because there it was the point. */
+.nav.over-field.is-stuck {
+  background: color-mix(in srgb, var(--field-base) 88%, transparent);
+  backdrop-filter: blur(12px);
+}
 
 /* The accent has two values and each has a ground. --azure is the light-ground
    blue; --azure-lift is documented as "the same blue as it must appear on teal"
@@ -1068,6 +1115,23 @@ h3 {
 .field .mark-dot,
 .poster .mark-dot,
 .poster a { color: var(--azure-lift); }
+/* M37 · the bar's CTA is the hero's CTA one register down. The first screen
+   carried two identical filled azure pills saying the same words four lines
+   apart, which spends the accent twice on one decision and leaves the reader
+   no way to tell which is the page's actual ask. It is the hero's: the pill
+   stays down there. Up here the same link is drawn as an outline of it --
+   same azure, same ground, so it is legible as the same control at a glance,
+   one weight quieter. --azure on --paper is 5.33:1 and --azure-lift is the
+   token the field already measured at 5.19:1, so both states keep the 4.5:1
+   the text needs, and the border is the link's own colour at the same ratio. */
+.nav.over-field .cta {
+  background: none;
+  color: var(--azure-lift);
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+.nav.over-field .cta:hover {
+  background: color-mix(in srgb, var(--azure-lift) 16%, transparent);
+}
 .nav .wrap { display: flex; align-items: center; gap: 32px; width: min(var(--page), 100% - var(--gutter) * 2); }
 .nav-mark {
   font-family: var(--serif);
@@ -1157,7 +1221,19 @@ h3 {
 .cta:hover { background: var(--azure-deep); text-decoration: none; }
 .field .cta, .poster .cta { background: var(--azure-lift); color: var(--on-azure-lift); }
 .field .cta:hover, .poster .cta:hover { background: var(--azure-lift-hi); }
-.nav .cta { margin-inline-start: 8px; }
+/* M37 · the bar's CTA on the paper ground is the same outline as its over-field
+   state above, in the paper's azure. This is the half that actually shows on
+   most of the page: the header is a pale bar over pale ground for twenty
+   screenfuls, and a filled pill there competes with the content for a role the
+   hero owns. The hover fill is the accent at a tenth, which is the wash the
+   page already uses for the table header's row. */
+.nav .cta {
+  margin-inline-start: 8px;
+  background: none;
+  color: var(--azure);
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+.nav .cta:hover { background: color-mix(in srgb, var(--azure) 10%, transparent); }
 
 /* The progress line is a quiet orientation cue, not a second navigation system.
    It lives under the sticky nav so the page's long, evidence-led shape stays
@@ -1228,6 +1304,23 @@ h3 {
   stroke-width: 1;
 }
 .hero h1 { max-width: 16ch; }
+/* M36 · the kicker. The page's one category sentence, and the only Latin
+   writing of the product's name above the fold: it is the label the headline
+   answers. Set in the label size and the field's secondary ink, letterspaced
+   the way a caption plate is, and capped at a measure the line cannot run past
+   on a wide screen (at 13px it is one line from 620px up, two below). The name
+   itself takes the field's primary ink so it reads as a proper noun rather
+   than as the sentence's first word, and the whole line is one element so the
+   M2 order can hand it a single slot. */
+.kicker {
+  margin: 0 0 18px;
+  max-width: 62ch;
+  font-size: var(--t-label);
+  letter-spacing: 0.04em;
+  color: var(--field-ink-2);
+  text-wrap: pretty;
+}
+.kicker-name { color: var(--field-ink); font-weight: 500; letter-spacing: 0.01em; }
 /* M23 · the hero's own arrival. The genre's staple: the headline's lines rise
    out of their own mask and land as type — the first thing the page does is
    typeset itself, one line after the other. The SPANS here are structural only
@@ -1252,7 +1345,19 @@ h3 {
    room; the light-ground --azure would be 2.9:1 here, which is why the span
    names the lift token and the print world maps it back. */
 .h1-see { color: var(--azure-lift); }
-.hero .lede { max-width: 44ch; margin-block-start: 22px; }
+/* BALANCED, because the default wrap orphans two words at the narrowest width
+   the site is built for. Measured in the browser at a true 390 CSS px, on the
+   built page, reading the lede's own text node one character at a time and
+   grouping the characters by their line box: under `text-wrap: wrap` the line
+   boxes are "Local. Offline. Every claim points at " and "its passage.", so a
+   three-word sentence ends as a two-word second line. Under `balance` they are
+   "Local. Offline. Every claim " and "points at its passage." - 258px over
+   210px in a 350.4px box, which is a ragged edge of 48px instead of 150px, and
+   no line left holding a scrap. The declaration is scoped to this element and
+   not added to the global prose rule on purpose: balance is worth its cost on
+   a two-line lede that has to read as a title, and on a 66ch paragraph that
+   runs to eight lines it is a cost with nothing to buy. */
+.hero .lede { max-width: 44ch; margin-block-start: 22px; text-wrap: balance; }
 .hero .cta { margin-block-start: 32px; }
 .scroll-cue {
   display: inline-flex;
@@ -1365,7 +1470,7 @@ h3 {
   font-size: 22px;
 }
 .confidence-ruler figcaption {
-  max-width: 52ch;
+  max-width: var(--measure);
   margin-block-start: 16px;
   color: var(--ink-2);
   font-size: var(--t-sm);
@@ -1382,7 +1487,12 @@ h3 {
    --------------------------------------------------------------------------- */
 .qa {
   border-block-start: 1px solid var(--rule);
-  max-width: 46rem;
+  /* The page's one measure, not 46rem. 46rem is 736px, which is 88 of its own
+     characters against --measure's 47, and the answers inside it were already
+     at --measure, so every question ran 292px wider than the answer below it.
+     It was the last of §6.2's four measures. No question wraps for the change:
+     the longest is 36 characters. */
+  max-width: var(--measure);
 }
 .qa details { border-block-end: 1px solid var(--rule); }
 .qa summary {
@@ -1889,8 +1999,7 @@ h3 {
    tool is named after. One accent, one claim. The generator carries the full
    argument: Source/tools/make-etymology.py. */
 .etymology { margin: 42px 0 0; }
-.etymology .field.is-inset { max-width: 780px; }
-.etymology figcaption { max-width: var(--measure); }
+.etymology.plate-row { --card-w: 780px; }
 .etym { display: block; width: 100%; height: auto; margin-inline: auto; }
 .etym-wide { max-width: 605px; }
 .etym-tall { max-width: 320px; }
@@ -1964,7 +2073,7 @@ h3 {
 .bnd-sub, .bnd-claim, .bnd-label { fill: var(--ink-2); }
 .bnd-label { font-size: var(--t-label); }
 .boundary figcaption {
-  max-width: 52ch;
+  max-width: var(--measure);
   margin-block-start: 18px;
   color: var(--ink-2);
   font-size: var(--t-sm);
@@ -2034,7 +2143,6 @@ h3 {
    the etymology plate: --field-ink-2 for structure, --azure-lift for the claim.
    --------------------------------------------------------------------------- */
 .rear-dials { margin: 56px 0 0; }
-.rear-dials .field.is-inset { max-width: 700px; }
 .dials-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
 .dials-wide { max-width: 640px; }
 .dials-tall { display: none; max-width: 340px; }
@@ -2097,7 +2205,6 @@ h3 {
    Classes, so the field remaps them the way it remaps the rear-dials plate.
    ------------------------------------------------------------------------- */
 .games-dial-fig { margin: 56px 0 0; }
-.games-dial-fig .field.is-inset { max-width: 700px; }
 .games-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
 .games-wide { max-width: 640px; }
 .games-tall { display: none; max-width: 340px; }
@@ -2150,7 +2257,6 @@ h3 {
    the way it remaps the other two plates.
    ------------------------------------------------------------------------- */
 .front-dial-fig { margin: 56px 0 0; }
-.front-dial-fig .field.is-inset { max-width: 700px; }
 .front-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
 .front-wide { max-width: 640px; }
 .front-tall { display: none; max-width: 340px; }
@@ -2195,7 +2301,6 @@ h3 {
    calendar-ring figure makes.
    ------------------------------------------------------------------------- */
 .two-rings-fig { margin: 56px 0 0; }
-.two-rings-fig .field.is-inset { max-width: 700px; }
 .two-rings { display: block; width: 100%; height: auto; margin-inline: auto; }
 .two-wide { max-width: 640px; }
 .two-tall { display: none; max-width: 340px; }
@@ -2252,7 +2357,6 @@ h3 {
    the headers are Inter, tracked like the window chips.
    ------------------------------------------------------------------------- */
 .parapegma-fig { margin: 56px 0 0; }
-.parapegma-fig .field.is-inset { max-width: 700px; }
 .pp-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
 .pp-wide { max-width: 640px; }
 .pp-tall { display: none; max-width: 340px; }
@@ -2295,7 +2399,6 @@ h3 {
    legend is complete, so the labels are its verbatim marks: o, H, Iϛ.
    ------------------------------------------------------------------------- */
 .exeligmos-fig { margin: 56px 0 0; }
-.exeligmos-fig .field.is-inset { max-width: 700px; }
 .ex-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
 .ex-wide { max-width: 640px; }
 .ex-tall { display: none; max-width: 340px; }
@@ -2337,7 +2440,6 @@ h3 {
    tall plate keeps every name whole at the type floor.
    ------------------------------------------------------------------------- */
 .shelf-fig { margin: 40px 0 0; }
-.shelf-fig .field.is-inset { max-width: 700px; }
 .shelf-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
 .shelf-wide { max-width: 640px; }
 .shelf-tall { display: none; max-width: 340px; }
@@ -2374,7 +2476,6 @@ h3 {
    measured strings in the generator; the stylesheet only sets inks.
    ------------------------------------------------------------------------- */
 .gate-fig { margin: 40px 0 0; }
-.gate-fig .field.is-inset { max-width: 700px; }
 .gate-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
 .gate-wide { max-width: 640px; }
 .gate-tall { display: none; max-width: 340px; }
@@ -2402,6 +2503,50 @@ h3 {
   .gate-wide { display: none; }
   .gate-tall { display: block; }
   .gate-fig .field.is-inset { padding: 18px 16px; }
+}
+
+/* ---------------------------------------------------------------------------
+   14d11 · The unverified-mark plate, in the passage act (#the-passage),
+   under the exhibit.
+
+   The act's second half drawn: the mark the answer carries when the small
+   model fitted its citation after the fact. Same grammar as the gate plate
+   (structure --ink-3, text --ink/--ink-2, nodes sized from measured strings;
+   the stylesheet only sets inks), with one difference: the mark's node and
+   label are --coral, the page's unverified ink, because the mark is the
+   plate's one subject and its one accent. The plate's one dashed edge is the
+   fitted citation, drawn open between the claim's foot and the passage's
+   top, and the dashed ink stays --ink-3 - the open line is structure, not
+   alarm; the mark is already the alarm.
+   ------------------------------------------------------------------------- */
+.uv-fig { margin: 40px 0 0; }
+.uv-fig .field.is-inset { max-width: 700px; }
+.uv-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.uv-wide { max-width: 640px; }
+.uv-tall { display: none; max-width: 340px; }
+
+.uv-box { fill: none; stroke: var(--ink-3); stroke-width: 1.2; }
+.uv-box.uv-coral { stroke: var(--coral); }
+.uv-edge { fill: none; stroke: var(--ink-3); stroke-width: 1.1; }
+.uv-t { fill: var(--ink); font-weight: 500; }
+.uv-t.uv-coral { fill: var(--coral); font-weight: 600; }
+.uv-elabel { fill: var(--ink-2); font-style: italic; }
+.uv-cap { fill: var(--ink-2); }
+
+/* In the dark field: the gate plate's own division, with the mark lifted to
+   the field's coral. Print needs no block of its own here - the print world
+   remaps the field tokens at :root, and these rules follow. */
+.field .uv-box { stroke: var(--field-ink-2); }
+.field .uv-box.uv-coral { stroke: var(--coral-lift); }
+.field .uv-edge { stroke: var(--field-ink-2); }
+.field .uv-t { fill: var(--field-ink); }
+.field .uv-t.uv-coral { fill: var(--coral-lift); }
+.field .uv-elabel, .field .uv-cap { fill: var(--field-ink-2); }
+
+@media (max-width: 700px) {
+  .uv-wide { display: none; }
+  .uv-tall { display: block; }
+  .uv-fig .field.is-inset { padding: 18px 16px; }
 }
 
 /* ---------------------------------------------------------------------------
@@ -2443,6 +2588,139 @@ h3 {
   .ps-wide { display: none; }
   .ps-tall { display: block; }
 }
+
+/* ---------------------------------------------------------------------------
+   14d11 · The plate row: a dark card and its caption on one line.
+
+   Nine figures on this page are the same shape, a `field is-inset` card
+   holding one drawing with its caption beneath it: the six evidence plates,
+   the gate, the shelf, the etymology. Measured on the built page at 1442 wide,
+   all nine shipped the caption at the body size (17px) sitting at zero distance
+   from the card's lower edge, while the page's four other captions - .exhibit,
+   .plate, .boundary, .confidence-ruler - are set at --t-sm in the second ink
+   below a gap. So the caption changed voice from act to act, and it read as
+   part of the drawing rather than as a note about it.
+
+   The same rule fixes the row. Every one of the nine was a 700px card inside
+   the act's 1240px column: 540px, 43.5%, of every row was empty paper while
+   the caption paid its own height again underneath. At 1200 and over the card
+   and its caption share one row. The card keeps its exact width and therefore
+   its exact height, so no drawing changes; the caption moves into the column
+   that was already empty; and the ink follows the ground, through the same
+   division .field .exhibit figcaption already makes.
+
+   1200, not the house's 1081: the card needs its full 700, and a sidenote needs
+   about 300 more before it reads as a sidenote, and 1081 would leave it 253.
+   Below 1200 there is no second column and the row stacks, the caption still
+   set at the page's caption type, which is the half of this fix that every
+   width gets.
+
+   The caption keeps the page's measure in the second column rather than filling
+   it. `max-width: none` was here, and the column is 1240 - 700 - 48 = 492, so
+   the nine captions in this row read at 492 while the page's other captions read
+   at 444.7 - two caption measures, one of them set by what the card happened to
+   leave over. The measure is the page's, so the caption is set at it, and the
+   47px the column has spare is the caption's ragged right edge, which no reader
+   has ever mistaken for an alignment. */
+.plate-row { --card-w: 700px; }
+.plate-row .field.is-inset { max-width: var(--card-w); }
+.plate-row figcaption {
+  margin-block-start: 18px;
+  max-width: var(--measure);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.field .plate-row figcaption { color: var(--field-ink-2); }
+
+@media (min-width: 1200px) {
+  .plate-row {
+    display: grid;
+    grid-template-columns: minmax(0, var(--card-w)) minmax(0, 1fr);
+    gap: 48px;
+    align-items: start;
+  }
+  .plate-row figcaption { margin-block-start: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   14d.1 · The gallery: six readings on one ground.
+
+   THE JURY PASS'S TWO MIDDLE-ACT FINDINGS, ANSWERED WITH ONE MOVE. §5.1 counted
+   "eighteen dark rounded rectangles" as one shape repeated and named the six
+   evidence plates as the clearest case: six separate objects, each on its own
+   inset panel. The reference set's own answer is a single consistent panel whose
+   content changes (Gemini Notebook's media panel carries four rows "so four
+   different capabilities read as four views of one product"), and the critique's
+   own words for this act are "one shape, six states" - which is also what the
+   plates conceptually are, six readings from one instrument. §5.2 found the page
+   "opens dark, closes dark, spends 60% pale", so its identity is a promise the
+   pale middle never keeps.
+
+   So the act takes the field and the six plates stop being cards: no ground, no
+   seam, no shadow, no radius. What is left is one dark ground with six drawings
+   on it, ruled apart by hairlines, which reads as a register of readings from one
+   instrument rather than six panels laid on paper. Nothing is hidden and nothing
+   collapses: all six figures stay in the document, in order, for a reader and for
+   a search engine.
+
+   `padding: 0` is the load-bearing declaration, and it is not only about the
+   card's disappearance. The inset panel's 48px of padding was doing the field's
+   old job - holding a dark object clear of pale paper - and with the ground gone
+   it only insets the drawing from the rule it sits under. Removing it starts the
+   drawing at the same x as that rule, and it hands each plate back the 96px of
+   width the padding was holding. Measured on the built page at 1440: the wide
+   plates render 586px before and 621px after, which takes them from 0.915x of
+   their own authored 640 to 0.97x, with the exeligmos plate landing exactly on
+   1.00x. The six plates are where the page's smallest type lives - the type-floor
+   pass puts the whole site's smallest text at 11.05px against an 11.0px floor -
+   so drawing them nearer their own size is the point, not a side effect.
+
+   Nothing here touches an SVG byte, because the six plates were always drawn in
+   the library's own `--field-ink` tokens: every fill and every stroke resolves
+   from whatever ground it is standing on. They only ever needed a field.
+
+   The act comes out SHORTER by 191px (4,671 to 4,480, and the page 19,218 to
+   19,018), because the padding it lost was six rows' worth of 96px and the
+   drawings grew by less than that. That is a side effect and not a fix: §6.3's
+   finding is that the page runs past the design plan's own 14 viewports, and
+   191px out of 19,018 is not an answer to it. The finding stays open.
+   --------------------------------------------------------------------------- */
+.plate-gallery .plate-row > .field.is-inset {
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* Ruled apart, like a register. 52px either side of the hairline, so the rule
+   lands in the middle of the gap the six rows already had (56px, from each
+   figure's own `margin: 56px 0 0`) instead of standing a second rhythm beside it.
+   The seam is the field's own token, the same 10% white the windows on a field
+   are seamed with, so the rule reads as the ground's rather than as a line drawn
+   on top of it. */
+.plate-gallery .plate-row + .plate-row {
+  margin-block-start: 52px;
+  padding-block-start: 52px;
+  border-block-start: 1px solid var(--field-rule);
+}
+/* The act's own ink, on the ground the act now stands on. Only the elements that
+   name a light-ground token need saying; everything else inherits --field-ink
+   from `.field` itself. `.cite` is left alone on purpose: it is a chip with its
+   own wash and its own measured pair, so it carries its contrast with it and
+   reads on either ground. */
+.plate-gallery .evidence dt { color: var(--field-ink); }
+.plate-gallery .evidence dd { color: var(--field-ink-2); }
+.plate-gallery .ruler-head span { color: var(--field-ink-2); }
+.plate-gallery .ruler-track { background: var(--field-rule); }
+.plate-gallery .ruler-fill { background: var(--azure-lift); }
+.plate-gallery .ruler-point {
+  border-color: var(--field-base);
+  background: var(--azure-lift);
+  box-shadow: 0 0 0 1px var(--azure-lift);
+}
+.plate-gallery .ruler-labels { color: var(--field-ink-2); }
+.plate-gallery .confidence-ruler figcaption { color: var(--field-ink-2); }
 
 /* ---------------------------------------------------------------------------
    14e · The act index.
@@ -2487,12 +2765,36 @@ h3 {
   justify-content: center;
   /* M26 · the dot pitch is a named constant because the bearing's travel
      reads it too: gap and travel are one arithmetic, and two copies of 26px
-     would be two places to disagree. */
+     would be two places to disagree. --n and --dot are the other two terms of
+     that same arithmetic, because the ring's rest position IS the column's own
+     height: centre, minus half the column, plus half a dot. A tenth act or a
+     larger target then costs one number here, and the calc below stays one
+     expression rather than a constant re-derived by hand each time (it was
+     written as a literal 7 before this, which is the bug this removes). */
   --pitch: 26px;
-  gap: calc(var(--pitch) - 8px);
+  --dot: 24px;
+  --n: 9;
+  gap: calc(var(--pitch) - var(--dot));
   z-index: 9;
 }
+/* M35 · the target is 24px; the dot is still 8px. M11's dot was the anchor
+   itself at 8px square, so the page's smallest control was also its smallest
+   target - a third of the 24px a pointer needs, on a column a reader aims at
+   while scrolling. The mark is unchanged in every way that shows (size, ink,
+   the 160ms fill, the lean): it is drawn by ::after inside a target only the
+   pointer can feel, and the centre-to-centre pitch stays exactly 26px, so the
+   bearing's travel and the audit's ty+12 == i*26 both still hold. */
 .act-index a {
+  position: relative;
+  width: var(--dot);
+  height: var(--dot);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: none;
+}
+.act-index a::after {
+  content: "";
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -2526,11 +2828,11 @@ h3 {
 .act-index::before {
   content: "";
   position: absolute;
-  /* the column's horizontal centre: the nav's width IS the dots' 8px */
-  left: 4px;
-  /* the first dot's centre, from the flex column's own arithmetic:
-     centre minus half the column (7 pitches + one dot) plus half a dot */
-  top: calc(50% - (7 * var(--pitch) + 8px) / 2 + 4px);
+  /* the column's horizontal centre: the column's width IS --dot */
+  left: calc(var(--dot) / 2);
+  /* the first dot's centre, from the flex column's own arithmetic: centre,
+     minus half the column (n dots and n-1 gaps), plus half a dot */
+  top: calc(50% - ((var(--n) - 1) * var(--pitch) + var(--dot)) / 2 + var(--dot) / 2);
   width: 24px;
   height: 24px;
   border: 1.5px solid var(--azure-deep);
@@ -2539,12 +2841,174 @@ h3 {
   pointer-events: none;
 }
 /* The pointer answer is motion, so it lives in the reduced-motion guard with
-   the page's other transitions (§15); the base rule above is the still page. */
-.act-index a:hover { background: var(--azure); transform: scale(1.3); }
-.act-index a[aria-current],
-.act-index a[aria-current]:hover {
+   the page's other transitions (§15); the base rule above is the still page.
+   Both states ride the MARK, not the target: an 8px dot leaning to 1.45 is the
+   gesture, and scaling the 24px target would move the hit area under the
+   pointer for no visual gain. */
+.act-index a:hover::after { background: var(--azure); transform: scale(1.3); }
+.act-index a[aria-current]::after,
+.act-index a[aria-current]:hover::after {
   background: var(--azure-deep);
   transform: scale(1.45);
+}
+
+/* ---------------------------------------------------------------------------
+   14g · Two more moments that leave the container.
+
+   The jury's §5.1, verbatim: "18 dark rounded rectangles ... exactly one
+   full-bleed moment (a 1463px plate in #where-it-stops) across 19,752px ...
+   Next step. Choose two more moments to break the container." The device bank
+   it offered is "a full-bleed image, a typographic-only spread, a colour field
+   that is not the page's accent, an asymmetric grid, a break in scale", and
+   this block is two of them, both of which the page already owns: nothing here
+   adds a byte of artwork, and nothing here adds a pixel of height except the
+   boundary's own doubling.
+
+   THE TWO RAILS. #the-library's act says "Sources on the left, notes on the
+   right, the answer in the middle." Its two captures are at the app's own true
+   size, 959px, and both sat inside the 1240 column as two more objects in the
+   stack. They are the act's left and the act's right drawn, so they leave the
+   column: the first is placed against the viewport's left edge and the second
+   against its right, 16.4px in, which is the 24px gap less the scrollbar's
+   7.5px share of 100vw. The 959px capture then overhangs the column by 76px on
+   its own side, which is what "leaves the column" means at this size: the
+   column is 1240 and the capture is 959, so the most a capture can overhang
+   while still reading as a capture is 76. A wider overhang would have to be
+   bought by scaling them up, and these two are evidence of what the app looks
+   like, so they render at the size the app draws them.
+
+   Both captions counter-shift by the same arithmetic and land exactly where
+   they always were, at x=92.4 in a 444.8 measure: the page's notes stay on the
+   page's one left axis while the app's two rails leave it. That counter-shift
+   is the whole reason this reads as one page and not as two screenshots
+   falling off it.
+
+   `position: relative`, not a negative margin, and the difference is
+   load-bearing here for the same reason `clip` was at .act-bleed: a relative
+   offset does not reflow, so the two rails cost zero layout shift. The page's
+   ceiling is 0.02 and the worst page in the sweep is 0.0194, so a break that
+   reflowed would be a break this site cannot afford. Measured on the built
+   page at 1440: left rail 16.4 to 975.4, right rail 449.4 to 1408.4, captions
+   92.4 to 537.2, document width 1425 against a client width of 1425, which is
+   to say no overflow, because a relative offset cannot create any.
+
+   The rails' gate is 1360 and the grid's is 1320, and both are derived rather
+   than chosen. The column is 1240 and the gutter is at its 40px maximum by
+   then, so 1320 CLIENT width is the first at which .wrap has reached its full
+   width. A media query matches the viewport, which is the client width plus the
+   scrollbar, so a query at 1320 can still be answering for a 1305 client and a
+   1224.8 wrap; the grid comes out of the reading column when that happens and
+   the rails would put their captions 7.6px off the text axis, which is why the
+   rails pay the extra 40 and the grid does not. Below each gate the captures
+   stay in the column exactly as they were.
+
+   THE HEADING IN THE MARGIN, THE DRAWING IN THE COLUMN. #questions is the one
+   act that had no figure until the boundary plate was drawn for it, and the
+   plate arrived below the heading as a third stacked thing: a heading, then a
+   drawing, then seven answers. The drawing's own caption is "Four of the seven
+   answers below are the same answer, and this is it", so the drawing and the
+   answers are one thought, and the act now sets them as one: at 1320 and over
+   the act is a two-column grid, the page's reading column on the left carrying
+   the heading and the seven answers, and the drawing in the column the page
+   never uses, at the right.
+
+   The arithmetic is the page's own, not a fit. The reading column is
+   `--measure`, which is character-based, so it is 504px at the body's own 17px
+   and not the 444.8 the captions render it at: 504 + 32 + 704 = 1240 exactly,
+   the drawing at its authored 704 so nothing is scaled, and no object steps
+   outside the container to be here. (The first build got this wrong by using
+   the captions' 444.8; the drawing's track was then squeezed to 687.95 and the
+   plate rendered at 0.948x, which would have set its 11.5px glosses at 10.9,
+   under the 11.0 floor. The plate's track is pinned at 704 for that reason and
+   the reading column takes what is left.) Measured on the built page at 1440:
+   the drawing spans 628.4 to 1332.4 where it spanned 92.4 to 796.4, which is
+   the wrap's own right edge to the tenth, and the heading and the seven answers
+   hold 92.4 to 596.4 in the 504 measure; the drawing's captions and labels are
+   untouched at their authored size, the act comes out shorter (1612 to 1292)
+   and the page with it, which is §6.3's finding and a small payment on it.
+
+   This is the second of §5.1's two moments, and it is a weaker one than the
+   rails: a heading that leaves the stack for the margin is a composition the
+   page has nowhere else, but it is not a full-bleed. THE FULL-BLEED WAS TRIED
+   AND REJECTED. Rendered at the window's width the plate is 2.045x its 704
+   units, and its labels are in user units, so 11.5 and 15 render at 23.5 and
+   30.7 and its ink, which runs from 6.0 to 695.6 units, lands 5px from the
+   window's left edge and 12 from its right: the plate is authored to fill a 704
+   column and carries no bleed margin of its own, so magnifying it fights the
+   page's own gutter. The screenshot is the record
+   (.improvement/audit/shots/boundary-bleed-1440.png): "no account, no key" sat
+   87px left of the page's text axis and the drawing read as a zoom rather than
+   as a plate. A break this page has to build should be built for the width it
+   breaks at, which is what the ring plate does and what this one is not.
+
+   `.qa` was 46rem - 736px, 88 of its own characters - while every other body
+   measure on the page is `--measure`, and its answers were already at
+   `--measure` inside it, so each question ran 292px wider than the answer under
+   it. It is the leftover of §6.2's four measures, and it is set to the page's
+   one measure here. No question wraps differently for it: the longest is 36
+   characters. */
+#the-library {
+  --rail-gap: 24px;
+  /* from the wrap's edge out to the window's: the column's own margin, plus
+     whatever the window has beyond the column */
+  --rail-inset: calc((var(--page) - var(--win-lg)) / 2 + max(0px, calc((100vw - var(--page)) / 2)));
+}
+
+/* The rails' own gate is one step higher than the grid's, and the step is
+   measured rather than chosen. The caption's algebra assumes the capture's cell
+   sits (--page - --win-lg) / 2 inside the wrap, which is true only while the
+   wrap has reached its full 1240; the wrap reaches 1240 at a CLIENT width of
+   1320, and a media query matches the VIEWPORT, which is the client width plus
+   the scrollbar. At a 1320 viewport with a 15px scrollbar the client is 1305,
+   the wrap is 1224.8, and the caption lands 7.6px - half the shortfall - left of
+   the page's text axis. Measured at that width: caption 32.4 against a wrap at
+   40. 1360 buys enough room that any scrollbar up to 40px still leaves a full
+   column, so the algebra holds as written rather than approximately. Below the
+   gate the captures simply stay in the column, which is how the act read before
+   this pass. */
+@media (min-width: 1360px) {
+  .band .exhibit.rail-left,
+  .band .exhibit.rail-right,
+  .band .exhibit.rail-left figcaption,
+  .band .exhibit.rail-right figcaption { position: relative; }
+  .band .exhibit.rail-left  { left: calc(var(--rail-gap) - var(--rail-inset)); }
+  .band .exhibit.rail-right { left: calc(var(--rail-inset) - var(--rail-gap)); }
+  /* The caption's own shift is the rail's undone. The capture's cell sits
+     (--page - --win-lg) / 2 inside the wrap, so the two 140.5s cancel and the
+     caption lands on the wrap's x whatever the window's width and whatever the
+     scrollbar is doing: at 1440 it is 92.4, the page's one text axis, in the
+     444.8 measure the page's captions are set in. Alignment by algebra rather
+     than by arithmetic is the point. */
+  .band .exhibit.rail-left figcaption {
+    left: calc(var(--rail-inset) - var(--rail-gap) - (var(--page) - var(--win-lg)) / 2);
+  }
+  .band .exhibit.rail-right figcaption {
+    left: calc(var(--rail-gap) - var(--rail-inset) - (var(--page) - var(--win-lg)) / 2);
+  }
+}
+
+/* The grid's gate can be the lower one because the grid degrades correctly: the
+   drawing's track is pinned, so a wrap that is 15px short of 1240 comes out of
+   the reading column and the drawing still renders at its authored 704.
+   Measured at a 1305 client width: columns 488.8 and 704, the drawing 704 wide
+   at the wrap's right edge, nothing scaled and nothing overflowing. */
+@media (min-width: 1320px) {
+  #questions .wrap {
+    display: grid;
+    /* The drawing's track is its authored 704, pinned, and the reading column
+       takes what is left. `1fr` would have been the other way round and is
+       wrong: the plate is drawn at 704 and any other width is it scaled, which
+       is the whole reason the full-bleed was rejected below. At a full 1240
+       column this leaves the reading column 1240 - 32 - 704 = 504, which is
+       what `--measure` resolves to in the body's own 17px; the 32 gap is the
+       page's `--gap` less its 8. */
+    grid-template-columns: minmax(0, 1fr) 704px;
+    column-gap: 32px;
+    align-items: start;
+  }
+  #questions .wrap > h2 { grid-column: 1; grid-row: 1; }
+  #questions .wrap > .boundary { grid-column: 2; grid-row: 1; margin-block-end: 0; }
+  #questions .wrap > .qa { grid-column: 1; grid-row: 2; margin-block-start: 56px; }
 }
 
 /* ---------------------------------------------------------------------------
@@ -2596,8 +3060,10 @@ h3 {
   .skip { transition: top 150ms var(--ease); }
   .scroll-cue:hover span { transform: translateY(1px) rotate(45deg); }
   /* M11's pointer answer: the dot fills toward the accent and leans out. Same
-     160ms family as every other hover; the base rule (§14e) stays still. */
-  .act-index a { transition: background-color 160ms var(--ease), transform 160ms var(--ease); }
+     160ms family as every other hover; the base rule (§14e) stays still. The
+     transition rides ::after with the mark it animates (M35), so the target
+     never interpolates and a reduced reader gets the same still page. */
+  .act-index a::after { transition: background-color 160ms var(--ease), transform 160ms var(--ease); }
   /* M26 · the bearing glides on freebuff's own clock: the tab indicator its
      rebuilt page slides between tabs reads 0.34s, and the bearing keeps that
      duration rather than inventing a second one. Ease is the page's, and the
@@ -2685,11 +3151,17 @@ h3 {
      110ms of step, the same read-as-sequence interval M16 uses. */
   .hero .h1-reveal .h1-line:nth-of-type(1) { transition-delay: calc(var(--arrive) * 150ms); }
   .hero .h1-reveal .h1-line:nth-of-type(2) { transition-delay: calc(var(--arrive) * 260ms); }
-  .hero .lede, .hero .cta, .hero .scroll-cue {
+  .hero .lede, .hero .cta, .hero .scroll-cue, .hero .kicker {
     transition: opacity calc(var(--arrive) * 560ms) var(--ease),
                 transform calc(var(--arrive) * 560ms) var(--ease),
                 color 160ms var(--ease), background-color 160ms var(--ease);
   }
+  /* M36 · the kicker opens the order at 60ms, ahead of the first headline line
+     at 150ms: a label arrives before the claim it labels, and the page's own
+     measured order (bubble 120, line 150, line 260, prose 560, CTA 680, cue
+     800) simply gains its first term rather than being re-timed. */
+  .hero .kicker      { transition-delay: calc(var(--arrive) * 60ms),
+                                   calc(var(--arrive) * 60ms), 0ms; }
   .hero .lede        { transition-delay: calc(var(--arrive) * 560ms),
                                    calc(var(--arrive) * 560ms), 0ms; }
   .hero .cta         { transition-delay: calc(var(--arrive) * 680ms),
@@ -2698,6 +3170,7 @@ h3 {
                                    calc(var(--arrive) * 800ms), 0ms; }
   .hero-world { transition: opacity 900ms var(--ease); }
   .hero.is-cold .h1-reveal .h1-line { transform: translateY(118%); }
+  .hero.is-cold .kicker,
   .hero.is-cold .lede,
   .hero.is-cold .cta,
   .hero.is-cold .scroll-cue { opacity: 0; transform: translateY(14px); }
@@ -3068,10 +3541,33 @@ h3 {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: var(--ink-3);
+    /* --ink-2, not --ink-3: this is text, and the token block reserves
+       --ink-3 for rules. The over-field pair below still keeps it legible on
+       the hero's teal. */
+    color: var(--ink-2);
     font-size: var(--t-label);
+    text-decoration: none;
   }
+  /* The marker: the act-index's own 8px dot at the bearing's own current-act
+     ink, so the header's label reads as the bearing carried into the bar. It
+     is an inline-block rather than a flex child on purpose -- the label keeps
+     `text-overflow: ellipsis`, which a flex container cannot give it, and a
+     long act name must still truncate rather than push the CTA. */
+  .act-label::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-inline-end: 7px;
+    border-radius: 50%;
+    background: var(--azure-deep);
+    vertical-align: 1px;
+  }
+  /* Authored empty and cleared whenever no act is current, so the dot never
+     floats alone in the bar with no name under it. */
+  .act-label:empty { display: none; }
   .nav.over-field .act-label { color: var(--field-ink-2); }
+  .nav.over-field .act-label::before { background: var(--azure-lift); }
   .nav .cta { white-space: nowrap; }
 
   /* Keep the reference-style section nav on compact desktop widths. The
@@ -3084,6 +3580,10 @@ h3 {
       margin-inline-start: auto;
       font-size: 13px;
     }
+    /* One wayfinding per band: once the three links are back, the label has
+       nothing left to add and two answers to "where am I" in one bar is one
+       too many. */
+    .act-label { display: none; }
     .nav .wrap { gap: 16px; }
     .nav .cta { margin-inline-start: 0; padding-inline: 14px; }
   }
@@ -3097,6 +3597,62 @@ h3 {
   .poster .win { width: 92%; margin-block-start: -32px; }
   .colophon { margin-block-start: 64px; }
   .reading + .colophon { margin-block-start: 44px; }
+}
+
+/* M38 · the bar's CTA stands down while a primary action is on screen.
+
+   MEASURED AT 390. Both pills above the fold 180px apart, saying the same
+   words, and the duplication cost more than a repeated ask: the CTA is nowrap
+   and takes all the room the flex row has left, so the act label - the phone's
+   ONLY answer to "where am I", the rail and the three links both being hidden
+   here - was squeezed to 76px and cut to "What it...". Two findings, one cause:
+   a bar that cannot carry the page's action and its position at once. It
+   carries the position, and the CTA arrives the moment the reader leaves the
+   hero's own, which is what the reference set does (the nav's action appears
+   when it is wanted and leaves when it is not).
+
+   MEASURED AT 1440, and the same duplicate is here: the bar's pill is 148x41
+   with its right edge on the wrap's right at 1332, the hero's filled pill is
+   484px down, and both are on screen at scroll 0. An awards-jury finding in its
+   own right - one accent spent twice on one decision, four lines apart - so the
+   wider band stands down too. The two bands stand down differently, because the
+   two bars lose different things.
+
+   Below 900 the CTA leaves the flow (display: none), because the act label is
+   the thing that needs the room and the row hands the label everything the pill
+   gives up.
+
+   At 900 and above the CTA keeps its box and goes invisible (visibility:
+   hidden), which is the phone rule's opposite for one measured reason. `display:
+   none` would hand the three links the 188px the pill occupies, because they
+   carry `margin-inline-start: auto` and that margin is exactly the free space to
+   their right: on the frame the class clears, three labels of text would travel
+   188px sideways. The layout pass holds every shift a reader can see against a
+   0.02 ceiling, and the library's own worst page already spends 0.0194 of it, so
+   a bar that moves is not affordable. A hidden box is also the more honest
+   state: `visibility` takes the link out of the tab order and the accessible
+   tree, so a control that is not on screen is not in a reader's way either.
+
+   What that costs is the bar's right end. With the pill invisible the three
+   links end 188px short of the wrap's right edge while the hero's own action is
+   on screen, which is the one screen where the page is centred and nothing else
+   asks for that edge. The genre does not enforce the edge either: measured at
+   1440, freebuff insets its nav's content 67px from its container's right edge
+   and tempo 84px from its window's, so neither reaches the gutter with its last
+   item, and tempo's bar carries a 506px empty middle between its links and its
+   action at every scroll. A right end that is empty for one screen is quieter
+   than a bar that shifts, and quieter than a second pill saying the same words.
+
+   The class itself is the script's and is set at every width. No fade on the
+   swap: this is one control changing state on a single scroll frame, not a block
+   arriving, and the page's arrival family is for blocks. Reduced motion would
+   have to be answered separately, and a swap that is already instant has nothing
+   to reduce. */
+@media (min-width: 900px) {
+  .nav.cta-standdown .cta { visibility: hidden; }
+}
+@media (max-width: 899px) {
+  .nav.cta-standdown .cta { display: none; }
 }
 
 @media (max-width: 560px) {

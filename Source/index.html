@@ -16,7 +16,7 @@
 <meta property="og:image" content="https://istor.fyi/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The name Istor in Greek letters, azure on the site's deep teal field, a horizon of 355 beads crossing it and the mechanism's geared wheels rising behind.">
+<meta property="og:image:alt" content="The name Istor in Greek letters, azure on the site’s deep teal field, a horizon of 355 beads crossing it and the mechanism’s geared wheels behind it.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/gfs-didot.woff2" as="font" type="font/woff2" crossorigin>
@@ -52,13 +52,17 @@
     <!-- M31 · the act label. Below 900px the header's three links are hidden
          (the row will not fit), and so are the rail, the dots and the ring:
          a phone reader has the progress line, which says how far but never
-         where. This span is the where. It is empty until the reader is inside
-         a named act, and the SAME promote moment the rail, the dots, the ring
-         and now the header links ride writes it, so every wayfinding surface
-         on the page answers from one computation. aria-hidden: it is a mirror
-         of the rail's aria-current, and a screen reader reading both would
-         hear the act twice. -->
-    <span class="act-label" aria-hidden="true"></span>
+         where. This is the where. It is authored as a bare <a> with no href
+         and no text, which is not a link and not a tab stop, so a reader whose
+         script never ran gets nothing announced and nothing to click; the SAME
+         promote moment the rail, the dots, the ring and the header links ride
+         writes its href and its name together, and it is never one without the
+         other. It is NOT aria-hidden: the rail it mirrors is itself hidden at
+         this width, so the duplication the old aria-hidden guarded against
+         cannot occur here, and hiding a real link from the readers who have
+         only this one was the wrong half of that trade. An 8px azure dot marks
+         it as the bearing in the header rather than as loose text. -->
+    <a class="act-label"></a>
     <div class="nav-links">
       <a href="#how-it-answers">How it answers</a>
       <a href="#on-your-machine">On your machine</a>
@@ -105,6 +109,15 @@
          shows you" is 12ch; adding "what" exceeds it), so the authored lines and
          the wrapped rendering agree everywhere. Typed as spans so an h1 keeps
          only phrasing content inside it. -->
+    <!-- The kicker, and the page's one category sentence. The wordmark is
+         Greek on purpose (it is the product's own name, and act 8 exists to
+         say why), but that left a visitor who cannot read the word with no
+         way to learn what the thing is CALLED or what class of thing it is
+         until deep into the second act: the Latin name's first appearance was
+         6,000px down. One line answers both, and it answers them before the
+         headline makes its claim, which is the order a label belongs in. The
+         separator is a middot, not a dash. -->
+    <p class="kicker"><span class="kicker-name">Istor</span> · a private research notebook that runs entirely on your machine</p>
     <h1><span class="h1-reveal"><span class="h1-line">It shows you</span>
       <span class="h1-line"><span class="h1-see">what it saw</span>.</span></span></h1>
     <!-- The lede is one line on purpose. The genre's heroes run a 3-7 word
@@ -128,6 +141,7 @@
       <a href="#how-it-answers" title="How it answers" aria-label="How it answers"></a>
       <a href="#the-passage" title="The passage" aria-label="The passage"></a>
       <a href="#on-your-machine" title="On your machine" aria-label="On your machine"></a>
+      <a href="#the-library" title="The library" aria-label="The library"></a>
       <a href="#where-it-stops" title="Where it stops" aria-label="Where it stops"></a>
       <a href="#the-evidence" title="The evidence" aria-label="The evidence"></a>
       <a href="#questions" title="Questions" aria-label="Questions"></a>
@@ -149,6 +163,7 @@
             <li><a href="#how-it-answers">How it answers</a></li>
             <li><a href="#the-passage">The passage</a></li>
             <li><a href="#on-your-machine">On your machine</a></li>
+            <li><a href="#the-library">The library</a></li>
             <li><a href="#where-it-stops">Where it stops</a></li>
             <li><a href="#the-evidence">The evidence</a></li>
             <li><a href="#questions">Questions</a></li>
@@ -221,16 +236,16 @@
               class="vh">, source 4, Decoding Antikythera mechanism</span></sup></button><span
               class="witness" role="note"><span class="witness-src"><svg class="i i-14"
               aria-hidden="true"><use href="#i-save-note"/></svg>Decoding Antikythera
-              mechanism</span><span class="witness-quote">"Hipparchus's lunar theory, replicating
-              the Moon"</span></span></span>. Inscriptions
+              mechanism</span><span class="witness-quote">“Hipparchus’s lunar theory, replicating
+              the Moon”</span></span></span>. Inscriptions
               on the Saros dial specify lunar and solar eclipse predictions down to the hour, along
               with eclipse characteristics and direction<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
 
             <p><strong>The Exeligmos cycle</strong> is a 54-year sub-dial on the lower rear dial of
               the Antikythera mechanism<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
 
-            <p>The mechanism's gearing incorporated a pin-and-slot mechanism that matches
-              Hipparchus's lunar theory, replicating the Moon's variable
+            <p>The mechanism’s gearing incorporated a pin-and-slot mechanism that matches
+              Hipparchus’s lunar theory, replicating the Moon’s variable
               velocity<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
 
             <!-- The pin-and-slot, drawn for the first time on this page, in the
@@ -257,13 +272,13 @@
                 <!--#include pin-slot-wide-->
                 <!--#include pin-slot-tall-->
               </div>
-              <figcaption>The mechanism that makes the Moon's pointer speed up
+              <figcaption>The mechanism that makes the Moon’s pointer speed up
                 and slow down<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.
                 k1 turns at a constant rate and carries the pin; k2, an
                 identical gear on a different centre, carries the slot, so the
-                pin slides back and forth and k2's rate varies with it. The
-                ring plots k2's phase against k1's around the whole turn:
-                ahead by up to 6.29 degrees, then behind, the Moon's equation
+                pin slides back and forth and k2’s rate varies with it. The
+                ring plots k2’s phase against k1’s around the whole turn:
+                ahead by up to 6.29 degrees, then behind, the Moon’s equation
                 of centre made of gears.</figcaption>
             </figure>
           </div>
@@ -287,7 +302,7 @@
           <div class="answer" id="ans-inscriptions">
             <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
 
-            <p>The inscriptions are the mechanism's own manual, cut into the plates rather than
+            <p>The inscriptions are the mechanism’s own manual, cut into the plates rather than
               printed beside them. The back cover says what each dial does, and the dials label
               themselves: month names from several Greek calendars ring the Metonic spiral, and the
               Saros dial is lettered with the eclipses it predicts, down to the hour and the
@@ -296,8 +311,8 @@
               Antikythera mechanism</span></sup></button><span class="witness" role="note"><span
               class="witness-src"><svg class="i i-14" aria-hidden="true"><use
               href="#i-save-note"/></svg>Decoding Antikythera mechanism</span><span
-              class="witness-quote">"eclipse predictions given to the hour, with the direction of
-              the shadow"</span></span></span>.</p>
+              class="witness-quote">“eclipse predictions given to the hour, with the direction of
+              the shadow”</span></span></span>.</p>
 
             <p>Most of that text came off the fragments rather than their surface. The surviving
               lettering is small and partly corroded, and the imaging work is what recovered it.
@@ -320,7 +335,7 @@
             <li>The National Archaeological Museum in Athens</li>
             <li>The Saros cycle</li>
             <li>The Metonic cycle</li>
-            <li>X-ray data from the Antikythera mechanism's broken calendar ring</li>
+            <li>X-ray data from the Antikythera mechanism’s broken calendar ring</li>
             <li>Fragment C of the Antikythera mechanism</li>
             <li>Reconstruction of the missing front dial gearing of the Antikythera mechanism.</li>
             <li>Antikythera mechanism</li>
@@ -347,7 +362,7 @@
         question, Istor answers from them and never goes online: the tool works unplugged, and
         stays quiet when you ask it to.</p>
 
-      <p>The decision is the small model's. Istor runs two, and the cheap question goes first
+      <p>The decision is the small model’s. Istor runs two, and the cheap question goes first
         (<i>is this already answered here?</i>), so the better model can be slow, and can be
         right.</p>
     </div>
@@ -375,7 +390,7 @@
                width="600" height="442" loading="lazy" decoding="async"
                alt="An Istor answer in the dark theme. The question “How did the Antikythera mechanism predict eclipses?” sits in a bubble at the top right. Under it the Thoughts disclosure is open, showing the app drafting its reply and the reasoning it drew on. Then the answer itself, opening on the 223-month Saros cycle, with small numbered citation chips set into the running text.">
         </picture>
-        <figcaption>Ten sources on this machine, and the app's own working above the answer. The
+        <figcaption>Ten sources on this machine, and the app’s own working above the answer. The
           disclosure is where you can read what it drew on before it wrote anything.</figcaption>
       </figure>
     </div>
@@ -394,7 +409,7 @@
        the one moving part. Generated: make-gate.py, with the self-test that
        demands the labels verbatim and the nodes sized from measured strings. -->
   <div class="wrap reveal">
-    <figure class="gate-fig">
+    <figure class="gate-fig plate-row">
       <div class="field is-inset">
         <!--#include gate-wide-->
         <!--#include gate-tall-->
@@ -451,6 +466,34 @@
       </figure>
     </div>
   </div>
+
+  <!-- The mark, drawn: the act's second half. Its prose names the one object
+       no capture on this page shows - "Istor sends the small model to fit a
+       citation quickly, and marks what it fitted: Unverified, check the
+       source." - and its caption names what the mark is for: the passage
+       behind the claim. The plate draws the flow in the gate plate's grammar:
+       the small model fits a citation, the mark sits ON the answer's claim
+       (as it does in the app), and the one dashed line is the fitted
+       citation, running from the claim's foot down to the passage, drawn
+       open because the act says the mark "does not end" the claim. The
+       caption is the act's own sentence, verbatim. The coral is the page's
+       unverified ink; the mark is the plate's only coral, because the mark
+       is the plate's only subject. Generated: make-unverified.py, with the
+       self-test that demands the labels verbatim (comma and full stop
+       included), the one coral node, the one dashed edge, and nodes sized
+       from measured strings. -->
+  <div class="wrap reveal">
+    <figure class="uv-fig plate-row">
+      <div class="field is-inset">
+        <!--#include unverified-wide-->
+        <!--#include unverified-tall-->
+      </div>
+      <figcaption>The mark the answer carries when the citation was fitted
+        after the fact. It names the model that put the word there, and the
+        dotted line does not end until the passage behind the claim closes
+        it.</figcaption>
+    </figure>
+  </div>
 </section>
 
 <!-- =====================================================================
@@ -465,10 +508,10 @@
 
       <p>Open the disclosure above any answer and read what it did: the reasoning, then the
         passages it pulled, each with its source. It is the evidence the answer rests on, in the
-        product's own words.</p>
+        product’s own words.</p>
 
-      <p>When the gate sends it to the web, you watch that too, domain by domain, as each page
-        is fetched and read.</p>
+      <p>When the gate sends it to the web, you watch that too, domain by domain, as it fetches
+        each page and reads it.</p>
     </div>
 
     <div class="field reveal">
@@ -517,7 +560,7 @@
                 <span class="readlog-tick" aria-hidden="true"></span>
                 <p class="readlog-head">Read <b>nature.com</b></p>
                 <p class="readlog-body"><span aria-hidden="true"># </span>Nature.com<br>
-                  A required part of this site couldn't load.</p>
+                  A required part of this site couldn’t load.</p>
               </li>
               <li>
                 <span class="readlog-tick" aria-hidden="true"></span>
@@ -548,12 +591,13 @@
     <div class="body">
       <h2>It marks what nobody knows yet.</h2>
 
-      <p>Ask it something genuinely unsettled and it will not tidy it up. The calendar ring's hole
-        count has been argued over for a century; the app answers with the dispute intact, row by
-        row, rather than picking the likelier figure and moving on.</p>
+      <p>Ask it something genuinely unsettled and it will not tidy it up. Scholars have argued
+        over the calendar ring’s hole count for a century; the app answers with the dispute intact,
+        row by row, rather than picking the likelier figure and moving on.</p>
 
-      <p>Same discipline as the citation mark, pointed elsewhere. One says <i>here is which model
-        put this number here</i>. The other says <i>here is what nobody knows yet</i>.</p>
+      <p>It is the same discipline as the citation mark, pointed at a different gap. One says
+        <i>here is which model put this number here</i>. The other says <i>here is what nobody
+        knows yet</i>.</p>
     </div>
 
     <div class="field reveal">
@@ -695,8 +739,15 @@
     </div>
   </div>
 
+  <!-- THE TWO RAILS LEAVE THE COLUMN. The act's sentence is "Sources on the
+       left, notes on the right, the answer in the middle", so the two captures
+       are the act's left and the act's right drawn; §14g places the first
+       against the viewport's left edge and the second against its right, 16px
+       in, at widths where a 959px capture has the room. The classes are the
+       whole of the markup change: the placement, the gate and the arithmetic
+       are the stylesheet's. -->
   <div class="wrap reveal">
-    <figure class="exhibit">
+    <figure class="exhibit rail-left">
       <picture>
         <source type="image/avif" srcset="/img/exhibit-16-library.avif 1x, /img/exhibit-16-library@2x.avif 2x">
         <source type="image/webp" srcset="/img/exhibit-16-library.webp 1x, /img/exhibit-16-library@2x.webp 2x">
@@ -708,7 +759,7 @@
         document on this machine.</figcaption>
     </figure>
 
-    <figure class="exhibit">
+    <figure class="exhibit rail-right">
       <picture>
         <source type="image/avif" srcset="/img/exhibit-17-notes.avif 1x, /img/exhibit-17-notes@2x.avif 2x">
         <source type="image/webp" srcset="/img/exhibit-17-notes.webp 1x, /img/exhibit-17-notes@2x.webp 2x">
@@ -716,8 +767,8 @@
              width="959" height="507" loading="lazy" decoding="async"
              alt="The Notes rail in full view, in the light theme and at the size the app draws it. Ten notes are listed under a filter field, each named after one of the ten sources, with a New note control at the foot of the rail.">
       </picture>
-      <figcaption>Ten notes, one for each source it read. Notes are the output that outlives the
-        question.</figcaption>
+      <figcaption>Ten notes, one for each source it read. A note stays after the question is
+        done.</figcaption>
     </figure>
 
     <!-- The shelf, the act's claim drawn as the objects it is about. The act
@@ -735,14 +786,14 @@
          structure, in the plate's one azure). Generated: make-shelf.py,
          with the self-test that reassembles the wrapped rows and demands
          the rail's ten verbatim. -->
-    <figure class="shelf-fig reveal">
+    <figure class="shelf-fig plate-row reveal">
       <div class="field is-inset">
         <!--#include shelf-wide-->
         <!--#include shelf-tall-->
       </div>
       <figcaption>The library, as a list of documents rather than a picture
         of one. Each row is a source it read, named as the app names it, and
-        the dot is the app's status mark. Everything the answers on this page
+        the dot is the app’s status mark. Everything the answers on this page
         cite resolves into these ten.</figcaption>
     </figure>
   </div>
@@ -764,14 +815,14 @@
         <h2>Where it stops.</h2>
 
         <p><strong>Where it refuses.</strong> It does not guess. If your sources do not cover your
-          question, it says so. That refusal is the feature.</p>
+          question, it says so. The refusal is deliberate.</p>
 
         <p><strong>Where it genuinely ends.</strong> It is not a frontier model and it will not
           out-reason one. It needs sources, and local means your machine is part of the deal.</p>
       </div>
       <figcaption>354 holes are 1.0169° apart. 355 are 1.0141°. At this size the two rings are the
-        same ring, which is why the app prints both numbers and picks neither. <strong>The
-        difference is one you cannot see from here.</strong></figcaption>
+        same ring, which is why the app prints both numbers and picks neither. The two counts part
+        by less than a hole’s width, a distance no scale on this page can show.</figcaption>
     </figure>
   </div>
 </section>
@@ -783,8 +834,38 @@
      and inventing them would break the page's own rule, so the slot holds
      EVIDENCE instead of endorsement — and every figure below is one the app
      printed, from a capture on this page.
+
+     ON THE FIELD, and the six plates are not cards. The jury pass made two
+     findings about the middle of this page, and this act answers both with one
+     move. §5.1: "eighteen dark rounded rectangles" is one shape repeated, with
+     the six evidence plates the clearest case — six separate objects each on
+     its own ground, where the reference set that solves this (Gemini
+     Notebook's media panel) keeps "a consistent object across four rows, so
+     four different capabilities read as four views of one product". The
+     critique's own words for what this act should be are "one shape, six
+     states", which is also what the plates conceptually are: six readings
+     from one instrument. §5.2: the page "opens dark, closes dark and spends
+     60% pale", so its own identity is a promise the middle does not keep.
+
+     So the act is a field band and the six `.field.is-inset` cards lose their
+     ground, their seam, their shadow and their padding: the drawings sit on
+     the band itself, ruled apart by hairlines like a register, which is one
+     ground with six readings on it rather than six panels on paper. No
+     drawing changes and no SVG byte moves, because the plates were always
+     drawn in the library's own `--field-ink` tokens; they only ever needed a
+     field to be drawn on. Nothing is hidden and nothing is collapsed: all six
+     plates stay in the document, in order, for the reader and for search.
+
+     The padding removal also hands each plate back 96px of width, and these
+     six plates carry the page's smallest type. Measured on the built page at
+     1440: the wide plates go from 586px to 621px, or 0.915x to 0.97x of their
+     own authored 640. The act lands 191px shorter rather than longer (4,671
+     to 4,480), which is a side effect of losing six rows of padding and not a
+     fix for anything: §6.3's finding is that the page runs past the design
+     plan's own 14 viewports, and 191px out of 19,018 does not answer it. That
+     finding stays open.
      ===================================================================== -->
-<section class="act" id="the-evidence">
+<section class="act field plate-gallery" id="the-evidence">
   <div class="wrap">
     <div class="body" style="max-width: var(--measure)">
       <h2>What it did, and how well.</h2>
@@ -806,7 +887,8 @@
       </div>
       <div>
         <dt>0.028 mm</dt>
-        <dd>how far the holes wander from a perfect circle. A hand-cut bronze ring, measured.</dd>
+        <dd>how far the holes wander from a perfect circle, measured on a ring that was cut by
+          hand.</dd>
       </div>
       <div>
         <dt>4</dt>
@@ -825,7 +907,7 @@
          drawing; it never exaggerates it. Generated: make-two-rings.py, with
          the self-test that demands the dash pitches reproduce the dispute's
          arithmetic and that the lens shows a real split. -->
-    <figure class="two-rings-fig reveal">
+    <figure class="two-rings-fig plate-row reveal">
       <div class="field is-inset">
         <!--#include two-rings-wide-->
         <!--#include two-rings-tall-->
@@ -833,7 +915,7 @@
       <figcaption>The disputed count, drawn twice on the same radius and
         anchored at the same hole. The ring of 354 runs its holes at 1.0169
         degrees apart, the ring of 355 at 1.0141; by the far side the two
-        streams are one hole's width apart, which is the whole argument. The
+        streams are one hole’s width apart, which is the whole argument. The
         lens magnifies the drawing twelve times to show the parting; the
         drawing itself is not exaggerated.</figcaption>
     </figure>
@@ -847,15 +929,15 @@
          dial zone as indication, the two lights the front dial carries.
          Generated: make-parapegma.py, with the self-test that demands all
          forty-four rows verbatim at the source's own multiplicity. -->
-    <figure class="parapegma-fig reveal">
+    <figure class="parapegma-fig plate-row reveal">
       <div class="field is-inset">
         <!--#include parapegma-wide-->
         <!--#include parapegma-tall-->
       </div>
-      <figcaption>The parapegma, the machine's star almanac<sup class="cite">1<span class="vh">, source 1</span></sup>.
+      <figcaption>The parapegma, the machine’s star almanac<sup class="cite">1<span class="vh">, source 1</span></sup>.
         Two pinned slabs, one above the dials and one beneath, keyed by
         Greek letters: each key marks a peg hole, each row a star or a
-        season arriving. The bracketed gaps are the stone's damage, kept
+        season arriving. The bracketed gaps are the stone’s damage, kept
         in the drawing because a register that has holes should be drawn
         with its holes.</figcaption>
     </figure>
@@ -869,7 +951,7 @@
          letters, nothing the sources here do not state. Generated, with the
          self-test that demands the turn and slot counts:
          make-rear-dials.py. -->
-    <figure class="rear-dials reveal">
+    <figure class="rear-dials plate-row reveal">
       <div class="field is-inset">
         <!--#include rear-dials-wide-->
         <!--#include rear-dials-tall-->
@@ -897,12 +979,12 @@
          page does not quote what its source doubts). Generated:
          make-exeligmos.py, with the self-test that measures the thirds and
          demands the legend verbatim. -->
-    <figure class="exeligmos-fig reveal">
+    <figure class="exeligmos-fig plate-row reveal">
       <div class="field is-inset">
         <!--#include exeligmos-wide-->
         <!--#include exeligmos-tall-->
       </div>
-      <figcaption>The exeligmos, the small dial in the Saros spiral's
+      <figcaption>The exeligmos, the small dial in the Saros spiral’s
         eye<sup class="cite">1<span class="vh">, source 1</span></sup>.
         A Saros prediction is right to the month but lands eight hours late;
         the next one, sixteen hours; the next, a whole day. The three
@@ -919,7 +1001,7 @@
          instrument that runs anticlockwise. The drawing is generated from
          that table, not from memory - make-games-dial.py, with the self-test
          that demands the sector count, the cycle order and the arrow. -->
-    <figure class="games-dial-fig reveal">
+    <figure class="games-dial-fig plate-row reveal">
       <div class="field is-inset">
         <!--#include games-dial-wide-->
         <!--#include games-dial-tall-->
@@ -946,7 +1028,7 @@
          refuses to be. Generated: make-front-dial.py, with the self-test
          that demands the twelve sectors, the names, the months, the
          dashed-count ring and the two lights. -->
-    <figure class="front-dial-fig reveal">
+    <figure class="front-dial-fig plate-row reveal">
       <div class="field is-inset">
         <!--#include front-dial-wide-->
         <!--#include front-dial-tall-->
@@ -954,10 +1036,10 @@
       <figcaption>The front face, the one that shows where the sun and moon
         are<sup class="cite">1<span class="vh">, source 1</span></sup>. The
         inner ring is the zodiac, twelve signs in thirty-degree sectors. The
-        outer ring is the calendar the page's ring question is about, its
+        outer ring is the calendar the page’s ring question is about, its
         holes left uncounted here on purpose; the three month names the
         imaging recovered (Pachon, Payni, Epiphi) are the ones the source
-        can still read. The sun's mark stands at the ram, an arbitrary day;
+        can still read. The sun’s mark stands at the ram, an arbitrary day;
         the face is drawn, not read.</figcaption>
     </figure>
 
@@ -966,7 +1048,7 @@
         <strong>One answer, two live possibilities.</strong>
         <span>354 to 355 holes</span>
       </div>
-      <div class="ruler-track" role="img" aria-label="The app's fitted estimate of 354.08 sits close to 354, while 355 remains possible.">
+      <div class="ruler-track" role="img" aria-label="The app’s fitted estimate of 354.08 sits close to 354, while 355 remains possible.">
         <span class="ruler-fill"></span>
         <span class="ruler-point" aria-hidden="true"></span>
       </div>
@@ -985,7 +1067,7 @@
           <source type="image/webp" srcset="/img/exhibit-18-numbers.webp 1x, /img/exhibit-18-numbers@2x.webp 2x">
           <img src="/img/exhibit-18-numbers.webp" srcset="/img/exhibit-18-numbers.webp 1x, /img/exhibit-18-numbers@2x.webp 2x"
                width="600" height="478" loading="lazy" decoding="async"
-               alt="Istor answering the question “How many holes did the calendar ring have?” in the dark theme, with a Thoughts disclosure above the answer showing the app drafting its reply. The answer says the ring held either 354 or 355 holes rather than the previously assumed 365, reports a 68 percent credible estimate of 354.08 holes from high-resolution X-ray measurements, and notes a radial variation of only 0.028 millimetres between holes.">
+               alt="Istor answering the question “How many holes did the calendar ring have?” in the dark theme, with a Thoughts disclosure above the answer showing the app drafting its reply. The answer says the ring held either 354 or 355 holes rather than the previously assumed 365. The estimate is 354.08 at 68 percent, from high-resolution X-ray measurements, with a radial variation of only 0.028 millimetres between holes.">
         </picture>
         <figcaption>The capture behind the first three figures. It is answering a question about the
           same ring the arc above is drawn from.</figcaption>
@@ -1027,9 +1109,9 @@
       <details name="questions" open>
         <summary>Does anything leave my computer?</summary>
         <div class="qa-body">
-          <p>No. The model, the search and the reading all run on your machine. Web research is off
-            until you turn it on in Settings, and when you do turn it on there is no account and no
-            key to enter.</p>
+          <p>No. The model and the search run on your machine, and so does the reading. Web
+            research is off until you turn it on in Settings, and when you do turn it on there is no
+            account and no key to enter.</p>
         </div>
       </details>
 
@@ -1065,9 +1147,9 @@
         <summary>Is it open source?</summary>
         <div class="qa-body">
           <p>Not yet. The repository is public and empty. It is where the code lands, and it has
-            not landed. What we can tell you today is what is on this page: the app is local, it
-            makes no outbound requests unless you switch web research on, and every claim it makes
-            is traceable to a document you gave it. When there is code to read, this page will say
+            not landed. What we can tell you today is what is on this page: the app is local and
+            makes no outbound requests unless you switch web research on. Every claim it makes is
+            traceable to a document you gave it. When there is code to read, this page will say
             so.</p>
         </div>
       </details>
@@ -1102,19 +1184,19 @@
         see</i>. The same root reached English, and the plate below shows how far it travelled.</p>
     </div>
 
-    <figure class="etymology reveal">
+    <figure class="etymology plate-row reveal">
       <div class="field is-inset">
         <!--#include etymology-->
         <!--#include etymology-tall-->
       </div>
       <figcaption>One root and three of its descendants. The asterisk is what a
-        reconstructed word is marked with: nobody wrote that one down, and the act's whole
+        reconstructed word is marked with: nobody wrote that one down, and the act’s whole
         argument is that this tool does not pretend to more certainty than its sources.</figcaption>
     </figure>
 
     <div class="body" style="max-width: var(--measure)">
-      <p>A witness is not the person who knows most; it is the person who was there, and can say
-        what they saw.</p>
+      <p>A witness is someone who was there and can say what they saw, rather than the person who
+        knows most.</p>
 
       <p>That is the whole design of this tool. It does not know about the Antikythera mechanism. It
         read ten documents about it, and it can show you which one said what.</p>
@@ -1762,6 +1844,24 @@
       dwell.timer = setTimeout(dwellTick, DWELL_FIRST);
     };
     var heroBottom = 0, railLinks = [], railTops = [], railCurrent = null;
+    // M34 · every FULL-WIDTH dark ground, and the bar's answer to each. The
+    // hero was the only one the header knew, so over "On your machine", over
+    // "The library" and over the close it stayed a pale strip on dark ground,
+    // which is the one state the whole floating device exists to avoid. The
+    // inset plates inside the paper acts are deliberately NOT in this list:
+    // the bar spans the viewport, those plates do not, and a dark bar over a
+    // centred card would be wrong at both edges. `.act.field` is the two
+    // full-bleed bands; `.field.hero` and `.poster` carry the field directly.
+    var fieldBandEls = Array.prototype.slice.call(
+      document.querySelectorAll('.field.hero, .act.field, .poster'));
+    var fieldBands = [];
+    // M38 · the page's own primary actions, in document space: the hero's and
+    // the close's, which are the two the bar's CTA could stand beside. Read off
+    // `main`, so the bar's own CTA is not in the list it judges - a control
+    // that hides itself when it sees itself would never come back.
+    var pageCtas = Array.prototype.slice.call(
+      document.querySelectorAll('main .cta'));
+    var ctaBands = [];
     // M30 · the header's three links are the wayfinding that survives the hero
     // (the rail scrolls away with its window), so they learn the same state the
     // rail already computes. Collected once, beside the rail's own links.
@@ -1770,6 +1870,22 @@
     var actLabel = nav ? nav.querySelector('.act-label') : null;
     var measure = function () {
       if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
+      // M34 · measured once per layout, not per scroll: getBoundingClientRect
+      // in the scroll handler would force layout on every frame, and the bands
+      // only move when the document re-lays out (resize, font swap), which is
+      // exactly when measure() runs again.
+      fieldBands = [];
+      for (var b = 0; b < fieldBandEls.length; b++) {
+        var bbox = fieldBandEls[b].getBoundingClientRect();
+        fieldBands.push([bbox.top + window.scrollY, bbox.bottom + window.scrollY]);
+      }
+      // M38 · measured here for the same reason the bands are: the handler
+      // compares document-space numbers, so it never forces layout.
+      ctaBands = [];
+      for (var cb = 0; cb < pageCtas.length; cb++) {
+        var cbox = pageCtas[cb].getBoundingClientRect();
+        ctaBands.push([cbox.top + window.scrollY, cbox.bottom + window.scrollY]);
+      }
       if (closePoster) {
         var box = closePoster.getBoundingClientRect();
         closeTop = box.top + window.scrollY;
@@ -1789,9 +1905,34 @@
 
     var onScroll = function () {
       nav.classList.toggle('is-stuck', window.scrollY > 8);
-      if (hero) {
-        nav.classList.toggle('over-field', window.scrollY + nav.offsetHeight < heroBottom);
+      // M34 · the bar's own bottom edge is the probe, the same reading the
+      // hero-only rule used, so the handover points on the hero are unchanged
+      // to the pixel. Whichever side of the probe a dark band falls on is what
+      // the bar is over; document-space ranges mean one comparison per band and
+      // no geometry read here at all.
+      var probe = window.scrollY + nav.offsetHeight, overField = false;
+      for (var fb = 0; fb < fieldBands.length; fb++) {
+        if (probe >= fieldBands[fb][0] && probe <= fieldBands[fb][1]) { overField = true; break; }
       }
+      nav.classList.toggle('over-field', overField);
+      // M38 · whether a primary action is on screen, so the bar's CTA can stand
+      // down while one is. The window is the bar's own bottom edge to the
+      // viewport's floor: a CTA already under the bar is not on screen, which is
+      // the same reading the over-field probe above uses, so the two handovers
+      // agree about where the bar is. One comparison per action, no geometry.
+      // The class is set at every width and the stylesheet decides where it
+      // means anything (it is the phone band, where the label needs the room);
+      // the reason the state is not gated here is the §16 rule the worlds
+      // already follow - a width question belongs in a media query.
+      var vTop = window.scrollY + nav.offsetHeight,
+          vBottom = window.scrollY + window.innerHeight, ctaOnScreen = false;
+      for (var cbi = 0; cbi < ctaBands.length; cbi++) {
+        if (ctaBands[cbi][1] > vTop && ctaBands[cbi][0] < vBottom) {
+          ctaOnScreen = true;
+          break;
+        }
+      }
+      nav.classList.toggle('cta-standdown', ctaOnScreen);
       // M11 · the index is revealed once there is something to be oriented in.
       // It needs no ground switch: its tokens hold on both of the page's
       // grounds by design (the note in §14e), so there is nothing to track.
@@ -1818,7 +1959,19 @@
         // the rail row the reader is in (its own text is the act's name), so
         // the label cannot drift from the rail by a rename: one source. Empty
         // above the first act and on the close, where nothing is named.
-        if (actLabel) actLabel.textContent = next ? next.textContent : '';
+        // M31 · the label is a link, so its href and its name are written in
+        // the same breath: a link pointing at the act it does not name, or a
+        // name with nowhere to go, would be worse than either alone. Clearing
+        // removes the href outright, which takes the tab stop back with it.
+        if (actLabel) {
+          if (next) {
+            actLabel.setAttribute('href', next.getAttribute('href'));
+            actLabel.textContent = next.textContent;
+          } else {
+            actLabel.removeAttribute('href');
+            actLabel.textContent = '';
+          }
+        }
         // M11's half of the same arithmetic. `k` is -1 above the first act,
         // which clears every dot: no dot claims a position the reader is not in.
         var k = railLinks.indexOf(next);
