@@ -1621,6 +1621,47 @@ SELF_TEST_LAYOUT = """<!doctype html>
 # The annotation is the half no `textContent` walk can see, which is the whole
 # reason the type probe had to learn about ::after: this is the only world on this
 # site that renders text the screen sweep is blind to.
+# The core sampler's fixture, in two files. This is the instrument under every
+# state pass, and it was the one thing --self-test did not prove: a sampler that
+# stopped firing would look exactly like a clean page, behind six green state
+# lines. The bad fixture carries one HTML word below AA on its own ground and
+# one SVG word whose ground is a SIBLING shape behind it - the plate geometry.
+# The SVG word is the discriminator: against the wrong ground (the body's white,
+# what an ancestor walk finds) it measures 6.4:1 and passes; against the field
+# the ring actually samples it measures ~2.1:1 and fails. A green run on the bad
+# fixture is therefore proof the ring sampled the plate, not the page.
+SELF_TEST_CONTRAST_BAD = """<!doctype html>
+<html><head><meta charset="utf-8"><title>contrast self-test</title>
+<style>
+  body { margin: 0; padding: 40px; color: #222222;
+         font: 16px/1.5 system-ui, sans-serif;
+         /* The wash is what routes SVG text through the pixel ring: the
+            cascade's ground walk reads backgroundColor and backgroundImage,
+            and an SVG sibling's fill is invisible to it. A gradient anywhere
+            in the stack marks the text for the sampler that reads the real
+            pixels - which is the only sampler that can see a plate's ground. */
+         background: linear-gradient(#F4F6F7, #EDF0F2) #F4F6F7; }
+  .html-bad { color: #B0B0B0; }
+  svg { display: block; }
+  .st-field { fill: #12343B; }
+  .st-bad { fill: #3E6470; font: 14px system-ui, sans-serif; }
+  .st-ok { fill: #E8ECEE; font: 14px system-ui, sans-serif; }
+</style></head>
+<body>
+  <p class="html-ok">readable body copy</p>
+  <p class="html-bad">ink below AA on this ground</p>
+  <svg width="300" height="80" viewBox="0 0 300 80" role="img"
+       aria-label="contrast fixture" xmlns="http://www.w3.org/2000/svg">
+    <rect class="st-field" x="0" y="0" width="300" height="80"/>
+    <text class="st-bad" x="20" y="32">svg word below AA</text>
+    <text class="st-ok" x="20" y="64">svg word above AA</text>
+  </svg>
+</body></html>
+"""
+SELF_TEST_CONTRAST_GOOD = (SELF_TEST_CONTRAST_BAD
+    .replace(".html-bad { color: #B0B0B0; }", ".html-bad { color: #222222; }")
+    .replace(".st-bad { fill: #3E6470;", ".st-bad { fill: #E8ECEE;"))
+
 SELF_TEST_PRINT = """<!doctype html>
 <html><head><meta charset="utf-8"><title>print self-test</title>
 <style>
@@ -1781,6 +1822,8 @@ def self_test(chrome, keep=False):
     write(os.path.join(site, "stable.html"), SELF_TEST_LAYOUT_STABLE)
     write(os.path.join(site, "print-bad.html"), SELF_TEST_PRINT_BAD)
     write(os.path.join(site, "print-good.html"), SELF_TEST_PRINT_GOOD)
+    write(os.path.join(site, "contrast-bad.html"), SELF_TEST_CONTRAST_BAD)
+    write(os.path.join(site, "contrast-good.html"), SELF_TEST_CONTRAST_GOOD)
     # The face the growth waits on has to be a real file, served by the run's own
     # handler, so the delay the pass applies is the delay the fixture waits out. It
     # is one of the site's own fonts rather than a test blob, because a fixture that
@@ -1863,6 +1906,45 @@ def self_test(chrome, keep=False):
             print("self-test FAILED - the 17px annotation in the printable fixture "
                   "was failed: %r" % (clean_type["fails"][:1],))
             return 1
+        # The CORE sampler, the instrument under every state pass. The bad
+        # fixture must name both of its wrong inks - the HTML word by its own
+        # ground, the SVG word ONLY if the ring sampled the sibling field
+        # behind it (against the body's white it would read 6.4:1 and pass) -
+        # and the good fixture must come back clean. pixels=True is the point:
+        # with the screenshot pass off, the sampler falls back to the ancestor
+        # walk, which reads the body's white behind both SVG words and fails
+        # the LIGHT one - the fixture was run both ways while being written,
+        # and the inverted finding below is the ancestor walk's signature.
+        core_bad = run_state(chrome, site, tmp, "/contrast-bad.html", 1024, 700,
+                             400, None, True)
+        if core_bad.get("error"):
+            print("self-test FAILED - the core sampler did not run: %s"
+                  % core_bad["error"])
+            return 1
+        core_named = ({f.get("sel") for f in core_bad.get("fails") or []}
+                      | {g.get("sel") for g in core_bad.get("onPixels") or []
+                         if g.get("sampled") and g.get("ratio", 9) < g.get("need", 0)})
+        if "p.html-bad" not in core_named:
+            print("self-test FAILED - the core sampler reported no HTML failure "
+                  "on the fixture that carries one (named %r)" % (core_named,))
+            return 1
+        if "text.st-bad" not in core_named:
+            print("self-test FAILED - the SVG word measures ~2.1:1 against the "
+                  "sibling field the ring should sample, and ~6.4:1 against the "
+                  "body's white an ancestor walk would find. The sampler named "
+                  "%r, so it is not sampling the plate's own ground anymore"
+                  % (core_named,))
+            return 1
+        core_good = run_state(chrome, site, tmp, "/contrast-good.html", 1024, 700,
+                              400, None, True)
+        good_below = ([f.get("sel") for f in core_good.get("fails") or []]
+                      + [g.get("sel") for g in core_good.get("onPixels") or []
+                         if g.get("sampled") and g.get("ratio", 9) < g.get("need", 0)])
+        if core_good.get("error") or good_below:
+            print("self-test FAILED - the printable contrast fixture was "
+                  "reported as failing (%s)"
+                  % (core_good.get("error") or good_below[:1]))
+            return 1
         screen_type = run_type_pass(chrome, site, tmp, "/print-good.html", 700, 400,
                                     widths=(1024,))
         if screen_type.get("fails") or screen_type.get("pseudo"):
@@ -1872,7 +1954,10 @@ def self_test(chrome, keep=False):
             return 1
         print("self-test ok - the motion pass named the entrance outside the guard "
               "and nothing else, the layout pass failed the fixture that grows "
-              "(CLS %.4f) and passed the one that does not, the print state failed "
+              "(CLS %.4f) and passed the one that does not, the core sampler named "
+              "the HTML ink below AA and the SVG word whose ground is the sibling "
+              "field behind it (the ring, not an ancestor walk) and passed the "
+              "printable fixture, the print state failed "
               "the sheet that is unreadable and passed the one that is not, and the "
               "type sweep named the printed annotation at 10px while the same page "
               "showed no generated text on screen" % shifting["total"])
@@ -2485,8 +2570,9 @@ def main(argv):
                     help="skip the pass that serves each page with its scripts "
                          "removed, for the reader whose script never ran")
     ap.add_argument("--self-test", action="store_true",
-                    help="check that the reduced-motion, layout and print passes can "
-                         "still fail, against a tiny site built for each, and exit")
+                    help="check that the core sampler, the reduced-motion, layout "
+                         "and print passes can still fail, against a tiny site "
+                         "built for each, and exit")
     ap.add_argument("--json", default=None, help="write the findings here")
     a = ap.parse_args(argv[1:])
 
