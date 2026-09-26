@@ -89,7 +89,30 @@ jobs:
             || fail "the Greek language tags are not live"
           echo "$PAGE" | grep -q 'mechanism’s own manual' \
             || fail "the curly-apostrophe typography is not live"
+          # One marker per act of the landing's act-index nav, in the nav's own
+          # order: a build that loses any act - or any act's current words -
+          # fails the run, not just a build that loses the newest plate. Each
+          # string is the act's own prose, stable until the act is rewritten,
+          # and re-verified against the built page before landing.
+          echo "$PAGE" | grep -q 'what it saw' \
+            || fail "the hero is not live"
+          echo "$PAGE" | grep -q 'It checks what you already gave it.' \
+            || fail "the gate act is not live"
+          echo "$PAGE" | grep -q 'Every claim points at a passage.' \
+            || fail "the passage act is not live"
+          echo "$PAGE" | grep -q 'On your machine.' \
+            || fail "the machine act is not live"
+          echo "$PAGE" | grep -q 'The library is the interface.' \
+            || fail "the library act is not live"
+          echo "$PAGE" | grep -q 'Where it refuses.' \
+            || fail "the stop act is not live"
+          echo "$PAGE" | grep -q '354.08' \
+            || fail "the evidence act is not live"
+          echo "$PAGE" | grep -q 'Four of the seven answers below' \
+            || fail "the questions act is not live"
+          echo "$PAGE" | grep -q 'the old Greek word for a witness' \
+            || fail "the name act is not live"
           LIBPAGE=$(curl -fsSL --max-time 30 https://istor.fyi/what-is-quantization/)
           echo "$LIBPAGE" | grep -q 'bar lengths are the files’ true proportions' \
             || fail "the gap session's figure apostrophes are not live"
-          echo "smoke ok - the shipped page carries the handoff markers"
+          echo "smoke ok - the shipped page carries the handoff markers and one marker per act"
