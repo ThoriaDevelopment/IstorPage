@@ -2476,6 +2476,49 @@ h3 {
 }
 
 /* ---------------------------------------------------------------------------
+   14d7c · The Metonic coincidence, in the evidence act, before the rear
+   dials - the relation first, the dial that embodies it second.
+
+   The founding arithmetic, in the calendar ring's own bead language: 235
+   month beads on the outer ring, 19 year divisions of the inner dial, one
+   anchor at 12 o'clock, and the gap in the hub as the captured answer
+   prints it - a time, "about two hours", the azure, the drawing's one
+   claim. Inks follow the callippic plate's division; the month beads use
+   the calendar-ring family's stroke weight.
+   ------------------------------------------------------------------------- */
+.metonic-fig { margin: 56px 0 0; }
+.mtc-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
+.mtc-wide { max-width: 640px; }
+.mtc-tall { display: none; max-width: 340px; }
+
+.mtc-months-ring { fill: none; stroke: var(--ink-2); stroke-width: 2.4;
+                   stroke-linecap: round; }
+.mtc-year { stroke: var(--ink-3); stroke-width: 1.2; }
+.mtc-hub { fill: none; stroke: var(--ink-3); stroke-width: 1; }
+.mtc-anchor-line { stroke: var(--ink-3); stroke-width: 1; }
+.mtc-anchor-dot { fill: var(--azure); }
+.mtc-hub-lead { font-family: Inter, sans-serif; font-weight: 600;
+                fill: var(--ink); }
+.mtc-claim { font-family: Inter, sans-serif; font-weight: 600;
+             fill: var(--azure); }
+.mtc-years-label, .mtc-months-label {
+  font-family: Inter, sans-serif; font-weight: 600; fill: var(--ink); }
+
+/* In the dark field: the exeligmos plate's own division. */
+.field .mtc-months-ring { stroke: var(--field-ink); }
+.field .mtc-year, .field .mtc-hub, .field .mtc-anchor-line
+  { stroke: var(--field-ink-2); }
+.field .mtc-hub-lead { fill: var(--field-ink); }
+.field .mtc-claim { fill: var(--azure-lift); }
+.field .mtc-years-label, .field .mtc-months-label { fill: var(--field-ink); }
+
+@media (max-width: 700px) {
+  .mtc-wide { display: none; }
+  .mtc-tall { display: block; }
+  .metonic-fig .field.is-inset { padding: 18px 16px; }
+}
+
+/* ---------------------------------------------------------------------------
    14d8 · The shelf, in the library act, after the two rail captures.
 
    The act's claim ("everything Istor knows is a document you put there")

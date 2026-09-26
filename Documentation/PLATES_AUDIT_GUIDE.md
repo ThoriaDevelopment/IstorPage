@@ -89,6 +89,10 @@ dispute; see the evidence act.
 **Act 9, the evidence** (#the-evidence) - `two-rings` (354 and 355 on one
 radius, an x12 lens, the dash pitches reproducing 360/354 and 360/355),
 `parapegma` (forty-four keyed rows transcribed whole, damage brackets kept),
+`metonic-coincidence` (the founding arithmetic the rear face stands on:
+235 month beads outside, 19 year divisions inside, one anchor, the gap
+the page prints - *about two hours* - standing in the hub as the plate's
+one claim; no month names, no drift arrow),
 `rear-dials` (Metonic 5 turns / 235 slots, Saros 4 / 223), `exeligmos`
 (three exact thirds, H = +8h, Iϛ = +16h, 8 + 8 + 8 = 24),
 `callippic` (the fifth named cycle, in the exeligmos's grammar: four exact

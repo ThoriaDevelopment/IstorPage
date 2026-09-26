@@ -73,6 +73,7 @@ GENERATORS: list[tuple[str, tuple[str, ...], bool]] = [
     ("make-pin-slot.py", ("figures/pin-slot-wide.svg", "figures/pin-slot-tall.svg"), True),
     ("make-exeligmos.py", ("figures/exeligmos-wide.svg", "figures/exeligmos-tall.svg"), True),
     ("make-callippic.py", ("figures/callippic-wide.svg", "figures/callippic-tall.svg"), True),
+    ("make-metonic-coincidence.py", ("figures/metonic-coincidence-wide.svg", "figures/metonic-coincidence-tall.svg"), True),
     ("make-shelf.py", ("figures/shelf-wide.svg", "figures/shelf-tall.svg"), True),
     ("make-gate.py", ("figures/gate-wide.svg", "figures/gate-tall.svg"), True),
     ("make-unverified.py", ("figures/unverified-wide.svg", "figures/unverified-tall.svg"), True),
@@ -249,6 +250,8 @@ def main() -> int:
          ("rear-dials-wide.svg", "rear-dials-tall.svg")),
         ("parapegma", "make-parapegma.py",
          ("parapegma-wide.svg", "parapegma-tall.svg")),
+        ("metonic-coincidence", "make-metonic-coincidence.py",
+         ("metonic-coincidence-wide.svg", "metonic-coincidence-tall.svg")),
     )
     for fam, gen, names in census:
         gen_src = (HERE / gen).read_text(encoding="utf-8")

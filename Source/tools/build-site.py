@@ -188,6 +188,8 @@ INCLUDES = {
     "exeligmos-tall":  (SOURCE / "figures" / "exeligmos-tall.svg",  "svg"),
     "callippic-wide":  (SOURCE / "figures" / "callippic-wide.svg",  "svg"),
     "callippic-tall":  (SOURCE / "figures" / "callippic-tall.svg",  "svg"),
+    "metonic-coincidence-wide": (SOURCE / "figures" / "metonic-coincidence-wide.svg", "svg"),
+    "metonic-coincidence-tall": (SOURCE / "figures" / "metonic-coincidence-tall.svg", "svg"),
     "shelf-wide":      (SOURCE / "figures" / "shelf-wide.svg",      "svg"),
     "shelf-tall":      (SOURCE / "figures" / "shelf-tall.svg",      "svg"),
     "gate-wide":       (SOURCE / "figures" / "gate-wide.svg",       "svg"),

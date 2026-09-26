@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320"
+     class="mtc-plate mtc-wide" role="img" focusable="false"
+     aria-labelledby="mtc-wide-title">
+  <title id="mtc-wide-title">The Metonic coincidence: 235 synodic lunar months fit almost exactly into 19 tropical years. The two counts on one dial, anchored together at 12 o'clock; after nineteen years the lunar count is about two hours ahead.</title>
+  <g class="mtc-moons">
+    <circle class="mtc-months-ring" cx="320.0" cy="150.0" r="118.0" stroke-dasharray="0.02 3.134961" transform="rotate(-90 320.0 150.0)"/>
+  </g>
+  <g class="mtc-years">
+    <line class="mtc-year" x1="320.00" y1="96.50" x2="320.00" y2="80.50"/>
+    <line class="mtc-year" x1="337.37" y1="99.40" x2="342.57" y2="84.27"/>
+    <line class="mtc-year" x1="352.86" y1="107.78" x2="362.69" y2="95.15"/>
+    <line class="mtc-year" x1="364.79" y1="120.74" x2="378.18" y2="111.99"/>
+    <line class="mtc-year" x1="371.86" y1="136.87" x2="387.37" y2="132.94"/>
+    <line class="mtc-year" x1="373.32" y1="154.42" x2="389.26" y2="155.74"/>
+    <line class="mtc-year" x1="368.99" y1="171.49" x2="383.65" y2="177.92"/>
+    <line class="mtc-year" x1="359.36" y1="186.23" x2="371.13" y2="197.07"/>
+    <line class="mtc-year" x1="345.46" y1="197.05" x2="353.08" y2="211.12"/>
+    <line class="mtc-year" x1="328.81" y1="202.77" x2="331.44" y2="218.55"/>
+    <line class="mtc-year" x1="311.19" y1="202.77" x2="308.56" y2="218.55"/>
+    <line class="mtc-year" x1="294.54" y1="197.05" x2="286.92" y2="211.12"/>
+    <line class="mtc-year" x1="280.64" y1="186.23" x2="268.87" y2="197.07"/>
+    <line class="mtc-year" x1="271.01" y1="171.49" x2="256.35" y2="177.92"/>
+    <line class="mtc-year" x1="266.68" y1="154.42" x2="250.74" y2="155.74"/>
+    <line class="mtc-year" x1="268.14" y1="136.87" x2="252.63" y2="132.94"/>
+    <line class="mtc-year" x1="275.21" y1="120.74" x2="261.82" y2="111.99"/>
+    <line class="mtc-year" x1="287.14" y1="107.78" x2="277.31" y2="95.15"/>
+    <line class="mtc-year" x1="302.63" y1="99.40" x2="297.43" y2="84.27"/>
+  </g>
+  <g class="mtc-anchor">
+    <line class="mtc-anchor-line" x1="320.00" y1="98.50" x2="320.00" y2="26.00"/>
+    <circle class="mtc-anchor-dot" cx="320.00" cy="32.00" r="1.6"/>
+  </g>
+  <g class="mtc-hubtext">
+    <circle class="mtc-hub" cx="320.0" cy="150.0" r="49.5"/>
+    <text class="mtc-hub-lead" x="320.0" y="139.2" font-size="11.9" font-family="Inter, sans-serif" font-weight="600" text-anchor="middle">differ by only</text>
+    <text class="mtc-claim" x="320.0" y="157.2" font-size="11.9" font-family="Inter, sans-serif" font-weight="600" text-anchor="middle">about two hours</text>
+  </g>
+  <g class="mtc-labels">
+    <text class="mtc-years-label" x="312.0" y="292.0" font-size="14" font-family="Inter, sans-serif" font-weight="600" text-anchor="end">19 tropical years</text>
+    <text class="mtc-months-label" x="328.0" y="292.0" font-size="14" font-family="Inter, sans-serif" font-weight="600" text-anchor="start">235 synodic lunar months</text>
+  </g>
+</svg>
