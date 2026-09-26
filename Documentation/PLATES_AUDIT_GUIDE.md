@@ -31,6 +31,7 @@ the line the reader is standing on is the line that was proven.
 | Every byte as the design plan has it     | `python Source/tools/verify-budget.py`         |
 | No release claims in any published text  | `python Source/tools/verify-copy.py`           |
 | Every link and artifact resolves         | `python Source/tools/verify-links.py`          |
+| The printed sheet carries the page       | `python Source/tools/verify-print.py`          |
 | Contrast, type floor, print, separators  | `python Source/tools/audit-contrast.py --pages /` |
 | The two worlds of motion, driven not read| `python Source/tools/audit-motion.py --jobs 4` |
 
@@ -41,8 +42,9 @@ each. The motion audit drives the page in both motion worlds; its own
 
 ## CI: the same gates, and a guard on what ships
 
-Every push to `main` runs the figures, build, budget, links and copy gates on
-the runner (`.github/workflows/deploy.yml`), then deploy-pages, then a
+Every push to `main` runs the figures, build, budget, links, copy and print
+gates on the runner (`.github/workflows/deploy.yml`), then deploy-pages,
+then a
 **post-deploy smoke test** that fetches the live site and asserts the
 handoff markers in the served bytes (the chip relabel, the skip-link target,
 `xml:lang="el"`, the curly-apostrophe typography, the figure apostrophes on a

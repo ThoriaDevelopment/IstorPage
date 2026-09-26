@@ -33,7 +33,7 @@ jobs:
       # make-og-card, neither of which the CI gates run; odds is a committed
       # sibling module. fontTools+brotli is the whole external set.)
       - name: Install the third-party dependencies the gates need
-        run: pip install fonttools brotli
+        run: pip install fonttools brotli pypdf
 
       - name: Assert that every figure is what its generator writes
         run: python Source/tools/verify-figures.py
@@ -46,6 +46,17 @@ jobs:
 
       - name: Assert that every link resolves
         run: python Source/tools/verify-links.py _site
+
+      # The sheet, read back. M60 found a page whose printed sheet went blank
+      # while every other gate stayed green - the cold states hid on paper and
+      # no gate read the sheet. This one prints the built landing headlessly
+      # and asserts, in the extracted text, that what the cold states hide is
+      # actually there (the reading log's rows, the plates' drawn strings, the
+      # accordion's answers printed open). A rule that re-arms a cold state on
+      # paper, or re-closes a disclosure, now fails before it ships. Needs
+      # headless Chrome, which ubuntu-latest carries.
+      - name: Assert that the printed sheet carries the page
+        run: python Source/tools/verify-print.py --site _site
 
       - name: Assert that no visible copy carries an AI tell
         run: python Source/tools/verify-copy.py _site

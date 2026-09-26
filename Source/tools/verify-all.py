@@ -23,15 +23,18 @@ THE GATES, in the order they run:
   budget     verify-budget.py
   copy       verify-copy.py
   links      verify-links.py
+  print      verify-print.py           (headless Chrome prints the sheet,
+             pypdf reads it back - cold states released, the accordion open)
   contrast   audit-contrast.py --pages /   (headless Chrome, the slow half)
   motion     audit-motion.py --jobs 4      (headless Chrome, the other half)
 
-The two audits run sequentially - the parallel draft starved motion's
-scroll-pacing claims and failed them false; see the finding at the loop.
-The four verifies run first because they need no browser and fail fast.
---quick skips the audits: the whole fast battery in about a minute, for
-the middle of an edit. The full run takes five to ten minutes and is
-meant for the moment before handing the page to someone else.
+The three browser gates run sequentially - the parallel draft starved
+motion's scroll-pacing claims and failed them false; see the finding at
+the loop. The four verifies run first because they need no browser and
+fail fast. --quick skips the browser gates: the whole fast battery in
+about a minute, for the middle of an edit. The full run takes five to
+ten minutes and is meant for the moment before handing the page to
+someone else.
 
 A gate that cannot run (no Chrome, say) is a FAIL with the tool's own
 error, not a pass with an asterisk: a battery that can silently skip a gate
@@ -85,7 +88,7 @@ def short(sha: str) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true",
-                    help="skip the two headless audits")
+                    help="skip the three browser gates (print, contrast, motion)")
     ap.add_argument("--report", action="store_true",
                     help="write a signed, timestamped report beside the "
                          "audit JSONs (in .improvement/audits/, which is "
@@ -154,6 +157,10 @@ def main() -> int:
         # measuring the page. Each writes its json inside the worktree so
         # nothing lands outside the tree being torn down.
         for name, cmd in (
+            ("print",
+             [sys.executable, "Source/tools/verify-print.py"] +
+             (["--json", str(report_dir / f"print-{stamp}.json")]
+              if args.report else [])),
             ("contrast",
              [sys.executable, "Source/tools/audit-contrast.py",
               "--pages", "/",
@@ -174,8 +181,8 @@ def main() -> int:
                 env={**os.environ, "MSYS_NO_PATHCONV": "1",
                      "PYTHONIOENCODING": "utf-8"})
             out, _ = p.communicate()
-            # The audits' verdict lines are "contrast ok - ..." and
-            # "motion ok - ..."; failures print FAILED blocks.
+            # The gates' verdict lines are "print ok - ...", "contrast ok -
+            # ..." and "motion ok - ..."; failures print FAILED blocks.
             ok_line = next((l for l in reversed(out.splitlines())
                             if " ok - " in l or l.startswith("FAILED")), "")
             record(name, p.returncode == 0,
