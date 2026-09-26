@@ -24,6 +24,17 @@ jobs:
         with:
           python-version: '3.12'
 
+      # make-didot-greek.py (M37a) rebuilds the display face from the committed
+      # master at gate time, and its WOFF2 encoder is fontTools - a third-party
+      # package, not stdlib. Without this line every push since M37a failed the
+      # figures gate here with "No module named fontTools", while every local
+      # run passed because the dev machine has the package installed.
+      # (An import sweep of Source/tools found PIL/numpy only in make-ground and
+      # make-og-card, neither of which the CI gates run; fontTools is the one
+      # package the gated path imports.)
+      - name: Install the one third-party dependency the gates need
+        run: pip install fonttools
+
       - name: Assert that every figure is what its generator writes
         run: python Source/tools/verify-figures.py
 
