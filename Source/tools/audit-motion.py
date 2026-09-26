@@ -339,16 +339,60 @@ SCENARIO = r"""
   // .exhibit img, and these figures are neither), so both sat fully drawn
   // through their own waiting state. The read is the family's own shape:
   // arm-check at cold (opacity 0), release, wait out the 700ms window, and
-  // the settled state must be the authored one. The boundary is read first
-  // (questions act), then the rear dials (evidence act), each from a fresh
-  // cold state - a block unobserves after it fires, so the order below is
-  // the only honest one: boundary cold, boundary released, dials cold,
-  // dials released.
+  // the settled state must be the authored one.
+  //
+  // THREE THINGS THE PROBE HAD TO LEARN, and each cost a false failure.
+  //
+  // THE SCROLL LANDS HIGH, NOT CENTRED. Centring a plate puts its whole
+  // neighbourhood in view, and the four plates are neighbours: the gallery
+  // stacks the parapegma, the rear dials and the games dial within 1,600px of
+  // each other. Centring the rear dials (12664..13016 on the built page at
+  // 1440x900) puts the viewport at 12390..13290, and the parapegma's own box
+  // (11930..12612) crosses it - so centring the dials fired the parapegma,
+  // which then read armed false on its own turn, through no fault of the page.
+  // The read now puts its plate's top 24px under the viewport's top edge. That
+  // is the one placement that is inside the observer's band whether or not the
+  // containing frame clips it, and it can only ever fire plates BELOW the one
+  // being read, which the order below makes harmless.
+  //
+  // THE CONTAINING FRAME IS SHORTER THAN THE PAGE'S OWN BAND. The harness sizes
+  // the iframe to the viewport being claimed (1440x900) but opens Chrome at its
+  // default window, so the iframe is clipped to the window's 600px, and an
+  // IntersectionObserver reaches no further than its frame's visible part. The
+  // observer's own `rootMargin` (`0px 0px -12% 0px`, so a line at 792 of 900)
+  // is therefore NOT the line the page is judged against here: the real line is
+  // 600. A plate scrolled to the middle of the iframe (top at 630 of 900) sits
+  // below that line and its arrival never happens at all. Measured in that
+  // frame, on the parapegma: with its top placed 109px down the iframe it
+  // releases to opacity 1, at 24px it releases to opacity 1, and at 630px it
+  // stays at opacity 0 through the whole 1,500ms window. 24px is the placement
+  // that holds whichever of the two lines applies.
+  //
+  // THE ORDER. The plates are read top to bottom, in document order, because
+  // that is the only order in which each one is still armed when its own read
+  // arrives - a block unobserves after it fires, so a read that scrolls past a
+  // plate spends it for every read after it. Reading downward means anything a
+  // read fires out of turn is a plate below it, whose own read has not happened
+  // yet. Reading the parapegma last could never be honest, whatever scroll it
+  // used: it sits above the dials and the games dial, and the scroll that
+  // reaches either of them passes it.
+  //
+  // The page fact was checked by hand while this was fixed, before the probe
+  // was touched: on a fresh load at 1440x900 the parapegma reads cold true at
+  // opacity 0 and matrix(0.97, 0, 0, 0.97, 0, 24), and 1,500ms after it is
+  // scrolled into its band it reads cold false at opacity 1 and transform
+  // none - the authored pair. What failed was the instrument's geometry, not
+  // the arrival.
   const plateRead = async (sel) => {
     const fig = d.querySelector(sel);
     if (!fig) return { error: 'no ' + sel };
     const svg = fig.querySelector('svg');
-    fig.scrollIntoView({ behavior: 'instant', block: 'center' });
+    const top = fig.getBoundingClientRect().top + w.scrollY;
+    // 'instant', not the stylesheet's global smooth: a smooth scroll from the
+    // act above passes every plate between here and there through the band on
+    // the way, which spends them for their own reads. A jump is one position
+    // and the observer judges that position.
+    w.scrollTo({ top: Math.max(0, top - 24), behavior: 'instant' });
     w.dispatchEvent(new Event('scroll'));
     const cold = fig.classList.contains('is-cold');
     const coldOp = cold ? getComputedStyle(svg).opacity : null;
@@ -357,14 +401,14 @@ SCENARIO = r"""
     return { cold: cold, coldOp: coldOp, restOp: parseFloat(cs.opacity),
              restTransform: cs.transform, armed: cold };
   };
-  // Both plates sit below the fold, so a fresh load has them cold; if the
+  // Every plate sits below the fold, so a fresh load has them cold; if the
   // run arrived here already-released (a scenario reorder, or a short
   // viewport that fired them on the way down), the claim records that
   // honestly rather than passing on a state nobody drove.
-  out.boundaryPlate = await plateRead('.boundary');
+  out.parapegmaPlate = await plateRead('.parapegma-fig');
   out.dialsPlate = await plateRead('.rear-dials');
   out.gamesPlate = await plateRead('.games-dial-fig');
-  out.parapegmaPlate = await plateRead('.parapegma-fig');
+  out.boundaryPlate = await plateRead('.boundary');
   await home();
   return out;
 })(d, w)
