@@ -27,3 +27,7 @@ References/*.mkv
 # Dumps of the session UI itself (skills, plugins, MCP connections). A snapshot
 # of the tooling, not of the site; nothing in the build reads it.
 AvailableTools.txt
+
+# The human-reviewed change batches as they arrive (Outputs/*.txt, Screenshots/*.png).
+# Direction for the work, not an input to the assembler; read once, then the folder goes.
+Istor Output/

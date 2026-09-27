@@ -34,11 +34,8 @@
      offer the same courtesy with one voice. -->
 <a class="skip" href="#the-answer">Skip to the answer</a>
 
-<!-- The five Lucide glyphs, inlined once. Every use on the page is one <use>.
-     The brand gear rides beside them (M34): lifted from the favicon's own
-     master by make-win-mark.py, so the header and the four window bars carry
-     the same crown the tab does, in the row's current colour. -->
-<svg class="sprite" aria-hidden="true" focusable="false"><!--#include icons--><!--#include win-mark--></svg>
+<!-- The five Lucide glyphs, inlined once. Every use on the page is one <use>. -->
+<svg class="sprite" aria-hidden="true" focusable="false"><!--#include icons--></svg>
 
 <!-- =====================================================================
      C0 · The nav.  Sticky, with a hairline that arrives on scroll (M1).
@@ -48,7 +45,7 @@
      ===================================================================== -->
 <nav class="nav" id="nav" aria-label="Main">
   <div class="wrap">
-    <a class="nav-mark" href="#what-it-is"><svg class="i-mark" aria-hidden="true" focusable="false"><use href="#i-mark"/></svg>ἵστωρ<span class="mark-dot">.</span></a>
+    <a class="nav-mark" href="#what-it-is">ἵστωρ<span class="mark-dot">.</span></a>
     <!-- M31 · the act label. Below 900px the header's three links are hidden
          (the row will not fit), and so are the rail, the dots and the ring:
          a phone reader has the progress line, which says how far but never
@@ -153,7 +150,7 @@
 
     <div class="win">
       <div class="win-bar">
-        <span class="win-mark"><svg class="i-mark" aria-hidden="true" focusable="false"><use href="#i-mark"/></svg>ἵστωρ<span class="mark-dot">.</span></span>
+        <span class="win-mark">ἵστωρ<span class="mark-dot">.</span></span>
       </div>
 
       <div class="win-body">
@@ -212,40 +209,25 @@
             <button type="button" class="ask-chip" aria-pressed="false" data-answer="ans-inscriptions">What do the inscriptions say?</button>
           </div>
 
+          <!-- 2026-09-28 · the answer is an elision, by direction (Istor Output,
+               item 3). The hero window's job is to show Istor giving a response,
+               not to teach the cycles, and the full answer ran the window to two
+               and a half screens of scroll. Cut, whole and never rewritten: the
+               Callippic, Saros and Exeligmos paragraphs, the tail of the Metonic
+               paragraph beyond its first sentence, and the plate's caption. The
+               surviving text is verbatim from the app's own answer; the [1]
+               citation moved up to the sentence it now closes, and [4] stays on
+               the pin-and-slot sentence the plate draws. The Saros witness
+               popover went with its paragraph; the witness demo lives on in the
+               inscriptions answer below. The styles.css §8 rider records the
+               same exception against the window's fidelity rule. -->
           <div class="answer" id="ans-cycles">
             <p class="thoughts"><span class="dot" aria-hidden="true"></span>Thoughts</p>
 
             <p>The Antikythera mechanism incorporated several key astronomical cycles:</p>
 
             <p><strong>The Metonic cycle</strong> is an astronomical period of 19 tropical years,
-              almost exactly equal to 235 synodic lunar months or 6,940 days. Named after Athenian
-              astronomer Meton, who introduced it in 432 BC, the cycle relies on the coincidence that
-              19 solar years and 235 lunar months differ by only about two hours. Ancient
-              civilisations used this relationship to align lunar calendars with the solar year by
-              adding seven intercalary leap months over every 19-year period. It forms the structural
-              foundation for the Hebrew calendar, traditional Babylonian timekeeping, and the
-              Christian calculation of Easter dates. On the Antikythera mechanism, the Metonic cycle
-              appears as a five-turn spiral dial on the upper rear plate, complete with individual
-              month names from local Greek calendars and a sub-dial tracking Panhellenic athletic
-              games like the Olympics<sup class="cite">1<span class="vh">, source 1</span></sup>.</p>
-
-            <p><strong>The Callippic cycle</strong> is a 76-year sub-dial on the upper rear dial of
-              the Antikythera mechanism<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
-
-            <p><strong>The Saros cycle</strong> is a 223-month cycle used for eclipse prediction. The
-              lower rear dial of the Antikythera mechanism tracks this 223-month Saros eclipse
-              prediction cycle with a 54-year Exeligmos sub-dial<span class="cite-wrap"><button
-              type="button" class="cite-btn" aria-expanded="false"><sup class="cite">4<span
-              class="vh">, source 4, Decoding Antikythera mechanism</span></sup></button><span
-              class="witness" role="note"><span class="witness-src"><svg class="i i-14"
-              aria-hidden="true"><use href="#i-save-note"/></svg>Decoding Antikythera
-              mechanism</span><span class="witness-quote">“Hipparchus’s lunar theory, replicating
-              the Moon”</span></span></span>. Inscriptions
-              on the Saros dial specify lunar and solar eclipse predictions down to the hour, along
-              with eclipse characteristics and direction<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
-
-            <p><strong>The Exeligmos cycle</strong> is a 54-year sub-dial on the lower rear dial of
-              the Antikythera mechanism<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.</p>
+              almost exactly equal to 235 synodic lunar months or 6,940 days<sup class="cite">1<span class="vh">, source 1</span></sup>.</p>
 
             <p>The mechanism’s gearing incorporated a pin-and-slot mechanism that matches
               Hipparchus’s lunar theory, replicating the Moon’s variable
@@ -275,14 +257,6 @@
                 <!--#include pin-slot-wide-->
                 <!--#include pin-slot-tall-->
               </div>
-              <figcaption>The mechanism that makes the Moon’s pointer speed up
-                and slow down<sup class="cite">4<span class="vh">, source 4, Decoding Antikythera mechanism</span></sup>.
-                k1 turns at a constant rate and carries the pin; k2, an
-                identical gear on a different centre, carries the slot, so the
-                pin slides back and forth and k2’s rate varies with it. The
-                ring plots k2’s phase against k1’s around the whole turn:
-                ahead by up to 6.29 degrees, then behind, the Moon’s equation
-                of centre made of gears.</figcaption>
             </figure>
           </div>
 
@@ -532,7 +506,7 @@
              rather than becoming a sixth glyph in the icon set. -->
         <div class="win win-readlog">
           <div class="win-bar">
-            <span class="win-mark"><svg class="i-mark" aria-hidden="true" focusable="false"><use href="#i-mark"/></svg>ἵστωρ<span class="mark-dot">.</span></span>
+            <span class="win-mark">ἵστωρ<span class="mark-dot">.</span></span>
             <!-- The authored count is the FINISHED one, like every other
                  authored state here: no script and reduced motion both leave
                  the log complete, so "0 sources" would be the one lie on the
@@ -619,7 +593,7 @@
              as the capture shows it. -->
         <div class="win win-dispute">
           <div class="win-bar">
-            <span class="win-mark"><svg class="i-mark" aria-hidden="true" focusable="false"><use href="#i-mark"/></svg>ἵστωρ<span class="mark-dot">.</span></span>
+            <span class="win-mark">ἵστωρ<span class="mark-dot">.</span></span>
             <span class="win-count">10 sources</span>
           </div>
 
@@ -1288,7 +1262,7 @@
 
     <div class="win" style="pointer-events: none">
       <div class="win-bar">
-        <span class="win-mark"><svg class="i-mark" aria-hidden="true" focusable="false"><use href="#i-mark"/></svg>ἵστωρ<span class="mark-dot">.</span></span>
+        <span class="win-mark">ἵστωρ<span class="mark-dot">.</span></span>
         <span class="win-count">10 sources · 10 notes</span>
       </div>
       <div class="win-body">

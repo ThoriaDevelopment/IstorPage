@@ -168,7 +168,6 @@ LIBRARY_ROOT_FILES = ["robots.txt", "08eaa6e8b97d4b94943057b2c49bd712.txt"]
 INCLUDES = {
     "styles":        (SOURCE / "styles.css",                  "css"),
     "icons":         (SOURCE / "icons.svg.partial",           "svg"),
-    "win-mark":      (SOURCE / "win-mark.partial",             "svg"),
     "calendar-ring": (SOURCE / "figures" / "calendar-ring.svg", "svg"),
     "poster-horizon": (SOURCE / "figures" / "poster-horizon.svg", "svg"),
     "poster-veil":    (SOURCE / "figures" / "poster-veil.svg",    "svg"),

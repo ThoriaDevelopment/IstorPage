@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the three favicons from the two brand marks.
+"""Generate the three favicons from the eye master.
 
     python Source/tools/make-favicons.py            # write the three outputs
     python Source/tools/make-favicons.py --check    # verify they are current
@@ -7,9 +7,18 @@
 Outputs, all committed (Stage 0's rule: generators run locally, CI never
 regenerates artwork):
 
-    Source/favicon.ico          16/32/48, from Assets/brand/istor-gear.svg
-    Source/icon.svg             from Assets/brand/istor-gear-lg.svg, + a dark block
-    Source/apple-touch-icon.png 180x180, from istor-gear-lg.svg, opaque on white
+    Source/favicon.ico          16/32/48, from Assets/brand/istor-eye.svg
+    Source/icon.svg             from Assets/brand/istor-eye.svg, + a dark block
+    Source/apple-touch-icon.png 180x180, from istor-eye.svg, opaque on white
+
+The eye is the app's own icon, and 2026-09-28 it is the tab's again by
+direction: the mechanism's crown took all three slots at M34 to match the gear
+the brand rows then carried, and both of those are gone now - the rows dropped
+the gear the same day (the app's own title bar shows the wordmark alone), so
+the tab returns to the mark the app actually ships. istor-page.svg, the
+witnessed-page master, stays in Assets unused by this script: the tab carries
+the eye, not the page, and a third mark in the family would be a mark nobody
+sees twice.
 
 Why icon.svg carries its own media query
 ----------------------------------------
@@ -59,10 +68,7 @@ SOURCE = HERE.parent           # IstorPage/Source
 ROOT = HERE.parents[1]         # IstorPage/
 BRAND = ROOT / "Assets" / "brand"
 
-EYE = BRAND / "istor-eye.svg"          # the app's eye: superseded for the tab, kept for reference
-PAGE = BRAND / "istor-page.svg"
-GEAR = BRAND / "istor-gear.svg"        # the mechanism, small slot: the ico
-GEAR_LG = BRAND / "istor-gear-lg.svg"  # the mechanism, large slot: touch + icon.svg
+EYE = BRAND / "istor-eye.svg"          # the app's eye: every slot, back by direction
 
 OUT_ICO = SOURCE / "favicon.ico"
 OUT_SVG = SOURCE / "icon.svg"
@@ -145,12 +151,12 @@ def dark_block() -> str:
 
 
 def build_icon_svg() -> str:
-    svg = GEAR_LG.read_text(encoding="utf-8")
+    svg = EYE.read_text(encoding="utf-8")
     if "<style" in svg:
-        sys.exit("error: the gear master already has a <style>; this script adds one")
+        sys.exit("error: the eye master already has a <style>; this script adds one")
     if VAR.search(svg) is None:
         sys.exit(
-            "error: the gear master has no var() contract left. Either the mark was\n"
+            "error: the eye master has no var() contract left. Either the mark was\n"
             "       flattened to literals upstream, or the naming changed. The dark\n"
             "       block below is keyed on those property names."
         )
@@ -189,24 +195,24 @@ def rasterize(inkscape: str, svg_text: str, size: int, out: pathlib.Path,
 
 def build(inkscape: str, magick: str, into: pathlib.Path) -> dict[str, pathlib.Path]:
     """Write the three outputs into `into`. Returns {name: path}."""
-    # The mechanism, not the eye: the site argues from the Antikythera
-    # mechanism and the tab showed a document. Same var() contract, so
-    # literalize() and the dark block work verbatim. istor-page.svg keeps the
-    # apple-touch slot's SHAPE only in the sense that the large gear master
-    # replaces it here; the eye/page masters stay in Assets for the app.
-    gear = literalize(GEAR.read_text(encoding="utf-8"))
-    gear_lg = literalize(GEAR_LG.read_text(encoding="utf-8"))
+    # The eye, in every slot: the app's own icon, and the one mark the tab
+    # carried before M34 borrowed it for the brand rows. The eye's sclera is
+    # filled --mark-paper, so the apple-touch flatten onto white is seamless.
+    # Same var() contract the dark block below was written against - the gear
+    # years were the stretch where two of its four declarations named
+    # properties the tab's mark did not use.
+    eye = literalize(EYE.read_text(encoding="utf-8"))
 
     pngs = []
     for size in ICO_SIZES:
         png = into / f"favicon-{size}.png"
-        rasterize(inkscape, gear, size, png, flatten_white=False, magick=magick)
+        rasterize(inkscape, eye, size, png, flatten_white=False, magick=magick)
         pngs.append(png)
     ico = into / "favicon.ico"
     run([magick, *[str(p) for p in pngs], str(ico)])
 
     touch = into / "apple-touch-icon.png"
-    rasterize(inkscape, gear_lg, TOUCH_SIZE, touch, flatten_white=True, magick=magick)
+    rasterize(inkscape, eye, TOUCH_SIZE, touch, flatten_white=True, magick=magick)
 
     icon = into / "icon.svg"
     # Bytes, not text: `write_text` translates "\n" to os.linesep and this file

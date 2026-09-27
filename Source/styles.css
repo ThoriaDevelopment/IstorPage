@@ -626,7 +626,14 @@ h3 {
    No reference in the set can do either with a picture of their product.
 
    Its fidelity is a hard constraint: any divergence from the captures is a bug,
-   not a design choice.
+   not a design choice. One directed exception, 2026-09-28: the answer inside the
+   hero window is an elision — Thoria cut the answer's middle cycles (Callippic,
+   Saros, Exeligmos) and the plate's caption so the whole window fits one screen,
+   the hero being about what Istor looks like when it answers, not about cycles
+   (Istor Output, item 3). The surviving sentences are carried verbatim, whole,
+   and the same cut was made on the real app's own chrome, which has no icon: the
+   wordmark rides the five bars alone, no gear. Both elisions are recorded at
+   their site in index.html.
    --------------------------------------------------------------------------- */
 .win {
   color: var(--ink);
@@ -647,24 +654,6 @@ h3 {
   color: var(--ink-2);
 }
 .win-mark { font-family: var(--serif); font-size: 15px; color: var(--ink); letter-spacing: -0.005em; }
-/* M34 · the mark's gear, ahead of the wordmark on the five brand rows. The
-   geometry is the favicon's own master (make-win-mark.py lifts it, byte for
-   byte); 16px is the slot the favicon's raster work tuned those tooth counts
-   for, and the cap alignment keeps the gear's optical centre on the word's. */
-.i-mark {
-  display: inline-block;   /* the global reset blocks every svg; inline rides the text */
-  width: 16px; height: 16px;
-  margin-inline-end: 7px;
-  translate: 0 2.5px;
-  flex: none;
-}
-.nav-mark .i-mark { width: 18px; height: 18px; margin-inline-end: 8px; translate: 0 3px; }
-.mark-pinion { fill: var(--coral); }
-/* The palette's own division: --coral on the light ground, --coral-lift where
-   the field and poster worlds re-measure the mark's artwork. The wordmark's
-   colour flips in these worlds already; the pinion follows it. */
-.field .mark-pinion,
-.poster .mark-pinion { fill: var(--coral-lift); }
 .mark-dot { color: var(--azure); }
 .win-count {
   margin-inline-start: auto;
@@ -1148,7 +1137,7 @@ h3 {
   letter-spacing: -0.005em;
   color: var(--ink);
   text-decoration: none;
-  white-space: nowrap;   /* the gear joins the word: the brand row never wraps */
+  white-space: nowrap;   /* the brand row is one word and its dot: it never wraps */
   /* the view-transition pair member: the library's header wordmark carries the
      same name, so crossing between the two documents morphs the name instead
      of cutting it (see the @view-transition note in section 3) */
