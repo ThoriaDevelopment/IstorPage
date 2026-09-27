@@ -18,3 +18,12 @@ __pycache__/
 # assembler, and nothing in the build reads them. Kept on disk, out of history:
 # Tempo.mkv alone is 79.9 MB, past GitHub's 50 MB per-file warning threshold.
 References/*.mkv
+
+# Freebuff session state: screenshots of the assistant mid-run and the tool's
+# project id. Runtime scratch beside Source/tools/freebuff-continue.py, which IS
+# committed; the state it produces is not.
+.freebuff/
+
+# Dumps of the session UI itself (skills, plugins, MCP connections). A snapshot
+# of the tooling, not of the site; nothing in the build reads it.
+AvailableTools.txt

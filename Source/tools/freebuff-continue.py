@@ -5,7 +5,7 @@ This helper uses only Windows APIs exposed through ctypes. It does not inspect
 Freebuff's private UI or require an automation package. The safest setup is to
 measure the chat box once and pass its position relative to the Freebuff window:
 
-    python Source/tools/freebuff-continue.py --chat-x 0.50 --chat-y 0.90 --interval 300
+    python Source/tools/freebuff-continue.py --chat-x 0.40 --chat-y 0.91 --interval 300
 
 The interval is the reliable fallback. A sound detector is intentionally an
 adapter rather than a guessed implementation: Windows does not expose a
@@ -29,7 +29,7 @@ entirely, so neither is obvious from the error:
 
 Measure the click point before trusting it:
 
-    python Source/tools/freebuff-continue.py --chat-x 0.50 --chat-y 0.90 --debug --dry-run
+    python Source/tools/freebuff-continue.py --chat-x 0.40 --chat-y 0.91 --debug --dry-run
 
 --dry-run moves the cursor to the computed point and types nothing, so a wrong
 ratio costs nothing. --chat-x and --chat-y are ratios of the window's CLIENT
