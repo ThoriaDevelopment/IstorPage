@@ -895,7 +895,10 @@ h3 {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 14px 24px 0;
+  /* 2026-09-28 · the row moved to the pane's foot by direction (see the markup
+     note), so its top step is the pane's own 20px - the step the answer-tools
+     keep - rather than the 14 it kept under the bubble. */
+  margin: 20px 24px 0;
 }
 .ask-chip {
   font: inherit;

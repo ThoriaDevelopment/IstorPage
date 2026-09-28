@@ -181,34 +181,6 @@
                is clicked (M2 is CSS). -->
           <p class="bubble" id="hero-q" role="status">Tell me about the cycles.</p>
 
-          <!-- M9 · the same library, three questions. Authored `hidden` and
-               revealed by the script, so the window without script is the
-               single exchange it has always been. The second one is the
-               refusal on purpose: "it says so when it cannot" is the claim the
-               rest of this page has to take on trust, and this is the one
-               place a visitor can watch it happen.
-
-               THE OTHER TWO ANSWERS ARE DISCLOSURES, and that is what the
-               audit's scriptless pass found: the refusal is the page's claim
-               demonstrated, and it sat behind a click that only script could
-               answer, so a reader whose script never ran was told the claim and
-               could not watch it happen. Each reserved answer is authored
-               inside its own <details> with the question as the summary, which
-               is reachable with no script at all and needs no second copy of
-               the prose. M10 does the takeover: each answer is moved out of its
-               shell into the pane and the shell is hidden, so the chips behave
-               exactly as they did and no node exists twice. It sets `hidden` as
-               it moves, because a disclosure a reader had already opened would
-               otherwise arrive in the pane open, and the pane shows one exchange
-               at a time. Without script the answers are reachable rather than
-               hidden: the authoring leaves them visible, the closed shell keeps
-               them out of the way, and that line is what takes over from it. -->
-          <div class="ask" role="group" aria-label="Ask the same library another question" hidden>
-            <button type="button" class="ask-chip" aria-pressed="true" data-answer="ans-cycles">What are the cycles?</button>
-            <button type="button" class="ask-chip" aria-pressed="false" data-answer="ans-who">Who made it?</button>
-            <button type="button" class="ask-chip" aria-pressed="false" data-answer="ans-inscriptions">What do the inscriptions say?</button>
-          </div>
-
           <!-- 2026-09-28 · the answer is an elision, by direction (Istor Output,
                item 3). The hero window's job is to show Istor giving a response,
                not to teach the cycles, and the full answer ran the window to two
@@ -302,6 +274,41 @@
             <svg class="i i-16" aria-hidden="true"><use href="#i-copy"/></svg>
             <svg class="i i-16" aria-hidden="true"><use href="#i-save-note"/></svg>
           </p>
+
+          <!-- M9 · the same library, three questions. Authored `hidden` and
+               revealed by the script, so the window without script is the
+               single exchange it has always been. The second one is the
+               refusal on purpose: "it says so when it cannot" is the claim the
+               rest of this page has to take on trust, and this is the one
+               place a visitor can watch it happen.
+
+               THE OTHER TWO ANSWERS ARE DISCLOSURES, and that is what the
+               audit's scriptless pass found: the refusal is the page's claim
+               demonstrated, and it sat behind a click that only script could
+               answer, so a reader whose script never ran was told the claim and
+               could not watch it happen. Each reserved answer is authored
+               inside its own <details> with the question as the summary, which
+               is reachable with no script at all and needs no second copy of
+               the prose. M10 does the takeover: each answer is moved out of its
+               shell into the pane and the shell is hidden, so the chips behave
+               exactly as they did and no node exists twice. It sets `hidden` as
+               it moves, because a disclosure a reader had already opened would
+               otherwise arrive in the pane open, and the pane shows one exchange
+               at a time. Without script the answers are reachable rather than
+               hidden: the authoring leaves them visible, the closed shell keeps
+               them out of the way, and that line is what takes over from it.
+
+               2026-09-28 · the row stands at the pane's foot, by direction
+               ("thoughts first, then the three selections to answers"): the
+               exchange reads top to bottom as question, thinking, response,
+               and the chips wait underneath as what to ask next. The script
+               only toggles `hidden` and re-homes each answer beside its own
+               shell, so the row's position is script-safe. -->
+          <div class="ask" role="group" aria-label="Ask the same library another question" hidden>
+            <button type="button" class="ask-chip" aria-pressed="true" data-answer="ans-cycles">What are the cycles?</button>
+            <button type="button" class="ask-chip" aria-pressed="false" data-answer="ans-who">Who made it?</button>
+            <button type="button" class="ask-chip" aria-pressed="false" data-answer="ans-inscriptions">What do the inscriptions say?</button>
+          </div>
         </div>
 
         <aside class="rail rail-r" aria-label="Notes">
