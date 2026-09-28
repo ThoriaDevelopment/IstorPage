@@ -1729,16 +1729,23 @@
   // M47 · the mesh starts here, after the cast's arm but in the same
   // synchronous run. play() on a muted video needs no gesture, but it is
   // still gated twice on the reader: not under reduced motion (the
-  // stylesheet has already taken the element off the page), and not below
-  // 840px, where the mask ellipse covers the whole hero and the video would
-  // be 5.1 MB fetched to render nothing. preload="none" holds the fetch
+  // stylesheet has already taken the element off the page), and not where
+  // the stylesheet has taken the element off the page for width -- below
+  // 840px the mask ellipse covers the whole hero and the video would be
+  // 5.1 MB fetched to render nothing. The script does not re-state that
+  // width query in matchMedia (the links gate rightly reads a width there
+  // as device sniffing, and §16 keeps the build split in CSS and nowhere
+  // else): it reads the element's own computed display, which is the
+  // stylesheet's answer -- the same kind of question the reveal's rect
+  // measurement asks and the gate already allows, a question about a
+  // state CSS owns, not about a device. preload="none" holds the fetch
   // until this call, so a phone that skips it never downloads the file at
   // all and a reader without script does not either. The fade is not on a
   // timer: is-mesh-live lands on the video's own playing event, so the
   // 900ms rise runs whenever the first frames actually arrive - a slow
   // fetch fades late instead of popping mid-field.
   var mesh = document.querySelector('.hero-mesh');
-  if (mesh && !reduced && !window.matchMedia('(max-width: 840px)').matches) {
+  if (mesh && !reduced && getComputedStyle(mesh).display !== 'none') {
     mesh.addEventListener('playing', function () {
       heroField.classList.add('is-mesh-live');
     });

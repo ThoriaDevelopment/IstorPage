@@ -119,8 +119,10 @@ LIBRARY_PAGES = 75
                                       # shared reveal rule arms a figure below
                                       # the fold, and an article's plate printed
                                       # blank from the top of the page
-ARTIFACT_FILES = 147                  # 138 + the four phone crops' 16 files + the library
+ARTIFACT_FILES = 148                  # 138 + the four phone crops' 16 files + the library
                                       # index, less exhibit-12's eight retired exports
+                                      # + 1 on 2026-09-29 (M47): /video/hero-mesh.webm,
+                                      # the hero's smoke loop, fetched on desktop only
 LIBRARY_STYLES_BYTES = 71178
                                       # (9 exhibits x 4 files = 36, was 3 x 6 = 18) + /theme.js
                                       # - 4 on 2026-09-21: exhibit-13 retired, act 5's table
