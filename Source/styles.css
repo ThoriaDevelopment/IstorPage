@@ -632,8 +632,12 @@ h3 {
    the hero being about what Istor looks like when it answers, not about cycles
    (Istor Output, item 3). The surviving sentences are carried verbatim, whole,
    and the same cut was made on the real app's own chrome, which has no icon: the
-   wordmark rides the five bars alone, no gear. Both elisions are recorded at
-   their site in index.html.
+   wordmark rides the five bars alone, no gear. A second exception the same
+   day, also by direction: the hero window stands wider than the captured 959 —
+   half the remaining margin returned to each side — with the pane absorbing
+   the gain the way the app itself reflows when maximized, while the rails keep
+   their measured columns. Both elisions are recorded at their site in
+   index.html and at the .hero .win rule.
    --------------------------------------------------------------------------- */
 .win {
   color: var(--ink);
@@ -1381,11 +1385,26 @@ h3 {
     opacity: 1;
   }
 }
+/* 2026-09-28 · the hero window stands half the remaining margin out on each
+   side, by direction ("push it more to the sides, like 50% closer"). The
+   captures hold the app at 959, so (100vw - 959) / 2 sat dead on each side of
+   it; returning half of each margin puts the window at (100vw + 959) / 2 -
+   240px of air at 1920 where 480 stood, and the gutter cap below keeps the
+   formula honest all the way down (it binds first under ~1119px, where it
+   simply hands back the full wrap the window already had). The interior stays
+   the app's own reflow: the rails hold their measured 180 and 185 and the
+   pane - the chat surface - takes what the window gains, which is what the
+   app itself does when its window is maximized. The plate's own 640 cap and
+   the fixed 24px insets keep the answer's geometry app-shaped at any width. */
 .hero .win {
-  width: min(var(--win-lg), 100%);
+  width: min(calc((100vw + var(--win-lg)) / 2), calc(100vw - var(--gutter) * 2));
   margin-block-start: 64px;
   text-align: left;   /* the window is the app; the hero's centring stops at it */
 }
+/* The pane flexes only here. The band's full-window captures keep the measured
+   959 geometry - they are pictures of the app at the size it was captured, and
+   .band .exhibit still sizes them by --win-lg. */
+.hero .win-body { grid-template-columns: 180px minmax(0, 1fr) 185px; }
 
 /* ---------------------------------------------------------------------------
    11 · The evidence band.
