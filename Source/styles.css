@@ -954,6 +954,25 @@ h3 {
 .hero-more > summary::marker { color: var(--ink-3); }
 .hero-more .answer { margin-block-start: 14px; }
 
+/* M9 · the refusal's offer, by direction (Istor Output, Screenshots 4 and 4a).
+   The app's grounding failure does not end at the admission: it asks whether
+   to search the web, and in which way. The caption keeps the thoughts' own
+   quiet grammar (the same --t-sm/--ink-2 pair .thoughts wears, so the contrast
+   pair is the one §4 already asserts); the choices are the app's centred text,
+   not chips, because on this page they are a still of an offer rather than
+   controls, and a chip implies a click that leads somewhere. Measured off 4a:
+   the choices run full ink, centred in the answer's measure, roughly a line
+   and a half apart. */
+.web-ask-cap { font-size: var(--t-sm); color: var(--ink-2); }
+.web-ask {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  text-align: center;
+}
+.web-ask li { color: var(--ink); }
+.web-ask li + li { margin-block-start: 26px; }
+
 /* The citation mark. A LIGHT surface in both themes — that is what the captures
    show, and it has to be, because the numeral sits on the wash: --azure-lift on
    --cite-wash is 2.2:1 and white on --azure-lift is 2.6:1, both of which fail. */
