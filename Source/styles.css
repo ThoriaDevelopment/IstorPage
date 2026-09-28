@@ -1299,10 +1299,16 @@ h3 {
   margin-block-start: calc(-1 * var(--nav-h));
   padding-block: calc(var(--nav-h) + 72px) calc(var(--world-h) - var(--world-overlap));
 }
-/* M47 · the mesh, the video ground. Screen blend at 25 percent -- the
-   treatment mock's approved strength -- with the element's own opacity as
-   the one strength knob (screen is linear in the mesh fraction, so a
-   brightness filter would be a second knob that computes the same result).
+/* M47 · the mesh, the video ground. Screen blend at 50 percent -- Thoria's
+   2026-09-29 direction to push the visibility ("from fade to 25% to fade to
+   50%"), taken with the mask AS IT SHIPPED rather than with a deeper text
+   hole, so the loop's worst frames do graze the text: the ramp lets the
+   ground under the kicker lift by up to ~0.14 luminance on frame 159 and
+   the azure line dips under 3:1 there. Measured on the live page, on the
+   record, and accepted: the look was chosen over the clean-text variant.
+   The element's opacity is the one strength knob (screen is linear in the
+   mesh fraction, so a brightness filter would be a second knob that
+   computes the same result).
 
    The mask is the contrast argument, not decoration, and it is two layers
    intersected because the two regions the smoke must stay out of are not
@@ -1312,14 +1318,13 @@ h3 {
    (~262px) at every viewport, while a %-radius ellipse shrinks under it.
    Measured against the worst loop frame's per-rect maxima (kicker 0.651,
    h1 0.671, lede 0.588, cue 0.420), every text rect's farthest corner sits
-   at d <= 0.89 from 841px up, inside the gradient's zero ring, so the text
-   ground is the plain field gradient in every frame BY CONSTRUCTION and
-   no ink moves. Below 840px the ellipse covers the whole hero, so the
-   element is display:none there and the script never starts it -- the
-   fetch (preload="none") never happens either, and a phone's first screen
-   keeps its 135 KB.
+   at d <= 0.89 from 841px up, so the ramp's reach over the text is bounded
+   and small at the strength the design shipped at. Below 840px the ellipse
+   covers the whole hero, so the element is display:none there and the
+   script never starts it -- the fetch (preload="none") never happens
+   either, and a phone's first screen keeps its 135 KB.
 
-   Base opacity is 0 and the 25 percent lives in the motion guard on
+   Base opacity is 0 and the 50 percent lives in the motion guard on
    .is-mesh-live: the class lands on the video's own playing event, so the
    mesh fades in when its first frames actually arrive, and a reader whose
    script never ran -- whose video never plays -- sees nothing where a
@@ -3355,7 +3360,7 @@ h3 {
                                    calc(var(--arrive) * 800ms), 0ms; }
   .hero-world { transition: opacity 900ms var(--ease); }
   /* M47 · the mesh fades on the world's own 900ms clock: the smoke arrives
-     with the mechanism, one entrance instead of two. The 25 percent lives
+     with the mechanism, one entrance instead of two. The 50 percent lives
      here rather than on the base rule so the rise is a state change
      (is-mesh-live, from the video's playing event) a transition can run,
      and so a reader without script -- who never gets the class -- sees the
@@ -3363,7 +3368,7 @@ h3 {
      releases, and is spelled after is-mesh-live so the tie at equal
      specificity falls to the cold state while it lasts. */
   .hero-mesh { transition: opacity 900ms var(--ease); }
-  .hero.is-mesh-live .hero-mesh { opacity: 0.25; }
+  .hero.is-mesh-live .hero-mesh { opacity: 0.5; }
   .hero.is-cold .h1-reveal .h1-line { transform: translateY(118%); }
   .hero.is-cold .kicker,
   .hero.is-cold .lede,
@@ -4267,7 +4272,7 @@ h3 {
   .hero.is-cold .scroll-cue { opacity: 1; transform: none; }
   .hero.is-cold .hero-world { opacity: 1; }
   /* M47 · and the mesh is motion, so the paper does not carry it: a video
-     frame printed at 25 percent would sit as a grey wash on the sheet the
+     frame printed at 50 percent would sit as a grey wash on the sheet the
      same way the film grain would. Off, like every other moving thing. */
   .hero-mesh { display: none; }
 

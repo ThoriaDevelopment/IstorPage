@@ -1638,7 +1638,10 @@ from print. The blend is under a two-layer mask — a nav-band gradient and an a
 whose whole job is the contrast argument: with the smoke at the approved strength unmasked, the
 loop's worst frame lifts the kicker's ground to a luminance where even the lightest grey in the
 palette reaches only 3.2:1, so the mask keeps every text rect on the plain field in every frame
-and the shipped inks stay exactly as designed (§12.1 carries the byte consequence).
+and the shipped inks stay exactly as designed (§12.1 carries the byte consequence). **AMENDED the
+same day, 2026-09-29: the strength went 25 % → 50 %** by Thoria's direction, with the mask as it
+shipped — at 50 % the worst frame grazes the text block through the ramp (kicker and azure line
+dip on frame 159), accepted on the record as the look; the lede, CTA and cue stay fully clear.
 
 ---
 
@@ -1859,7 +1862,13 @@ the blend clear of the nav band and the whole text block, so every text rect's g
 plain field gradient in every frame **by construction** and no ink moves (the contrast derivation
 and the mask geometry are dated on the `.hero-mesh` rule in `styles.css`; the design question it
 settles — Thoria's call between a uniform blend that the loop's worst frame makes illegal at the
-approved strength, and this masked shape — was put and answered on 2026-09-29). The video fetches
+approved strength, and this masked shape — was put and answered on 2026-09-29). **RAISED TO 50 %
+the same day, by Thoria's direction** ("from fade to 25% to fade to 50%"), taken with the mask as
+it shipped rather than the deeper text hole that was offered beside it: at 50 % the loop's worst
+frame grazes the text (the ground under the kicker lifts ~0.14 luminance on frame 159 and the
+azure line dips under 3:1 there, measured on the live page), and that trade was accepted as the
+look — the mask still bounds the ramp's reach, holds the nav band clear entirely, and keeps the
+frame-dependent damage off the lede, the CTA and the cue. The video fetches
 on desktop only: `preload="none"`, and the script starts it only ≥ 841 px and only outside reduced
 motion, so a phone never downloads the file at all and the phone's first screen stays 135 KB. The
 desktop first screen moves **135 KB → ≈ 5.2 MB** by Thoria's own decision, on the record, past what
