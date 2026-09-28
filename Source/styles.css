@@ -798,7 +798,11 @@ h3 {
   background: var(--fill);
   color: var(--ink-2);
 }
-.rail-r .rail-filter { justify-content: flex-end; }
+/* 2026-09-28 · the right rail's filter reads from the left, by direction. The
+   flex-end override that sat here pushed the glass and its text to the pill's
+   right edge to mirror the rail's own side; the field itself is a control, not
+   a heading, so it takes the row's natural left start like any field does. The
+   "Notes" head above it keeps its right alignment. */
 
 .rail-list { list-style: none; margin: 12px 0 0; padding: 0; color: var(--ink-2); }
 .rail-list li {
