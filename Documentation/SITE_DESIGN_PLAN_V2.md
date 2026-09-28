@@ -1627,6 +1627,19 @@ icon set that holds five on purpose.
 `reduce`, each element renders in its final state immediately, and M2 does not run — the hero shows
 the settled answer. This is not optional and it is not a fallback style; it is the same page.
 
+**ADDED 2026-09-29, M47 — the hero's smoke mesh.** The video Thoria supplied as the hero's
+background ships as `/video/hero-mesh.webm` and screens over the field at 25 % opacity, inside the
+hero's own stacking context. It is not another timed sequence; it starts the way §7 already runs
+the page, on the reader's clock: the script calls `play()` (never an autoplay attribute) only ≥
+841 px and only under `no-preference`, and the fade to 25 % lands on the video's own `playing`
+event, so a slow fetch fades in late rather than popping. Two exclusions beyond §7.7's: below 840
+px the element is `display: none` and the fetch never starts (`preload="none"`), and it is removed
+from print. The blend is under a two-layer mask — a nav-band gradient and an absolute-px ellipse —
+whose whole job is the contrast argument: with the smoke at the approved strength unmasked, the
+loop's worst frame lifts the kicker's ground to a luminance where even the lightest grey in the
+palette reaches only 3.2:1, so the mask keeps every text rect on the plain field in every frame
+and the shipped inks stay exactly as designed (§12.1 carries the byte consequence).
+
 ---
 
 ## §8 · Interaction
@@ -1838,6 +1851,22 @@ to show a hero is itself a differentiator.
 **If the design wants more weight it may have it** — the envelope is not a target to hit. But v2 as
 specified does not need it, and inflating a page to match a number would be the same mistake as v1's
 85 KB, pointing the other way.
+
+**AMENDED 2026-09-29, the hero's mesh.** The hero gains a fifth media kind and a new component:
+`/video/hero-mesh.webm`, 5,091,076 B, the 50-second VP9 smoke loop (`Assets/video/hero-mesh.webm`,
+EXACT tier — a re-encode is a replacement) screened over the hero at 25 % under a mask that holds
+the blend clear of the nav band and the whole text block, so every text rect's ground stays the
+plain field gradient in every frame **by construction** and no ink moves (the contrast derivation
+and the mask geometry are dated on the `.hero-mesh` rule in `styles.css`; the design question it
+settles — Thoria's call between a uniform blend that the loop's worst frame makes illegal at the
+approved strength, and this masked shape — was put and answered on 2026-09-29). The video fetches
+on desktop only: `preload="none"`, and the script starts it only ≥ 841 px and only outside reduced
+motion, so a phone never downloads the file at all and the phone's first screen stays 135 KB. The
+desktop first screen moves **135 KB → ≈ 5.2 MB** by Thoria's own decision, on the record, past what
+the 2–5 MB envelope would have bought — the ask carried its own number. `budget.json` gains the
+`hero_video` component (deliberately outside `phone_1x`/`retina_2x`, which stay the exhibits'
+payload) and the artifact row rises **4.17 MiB → ≈ 9.3 MB, 156 → 157 files**; §7 gains the motion
+record as M47 in the same commit.
 
 ### 12.2 Gate changes
 

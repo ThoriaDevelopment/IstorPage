@@ -68,13 +68,18 @@ DUPLICATED = [
 # /theme.js: the library's theme control is one shared file rather than a script
 # copied into each of the 75 pages, which is the only shape that keeps a fix to
 # it a one-file edit.
-ARTIFACT_FILES = 147                  # + the generated library index; 8 fewer since
+ARTIFACT_FILES = 148                  # + the generated library index; 8 fewer since
                                       # exhibit-12 retired its exports (2026-09-20);
                                       # 4 fewer since exhibit-13 did the same (2026-09-21),
                                       # act 5's table now a DOM replica; +2 on
                                       # 2026-09-21 for the search palette: /search.js,
                                       # the one script all 76 library pages name, and
-                                      # /search-index.json, the file it fetches
+                                      # /search-index.json, the file it fetches;
+                                      # +1 on 2026-09-29 for the hero's mesh:
+                                      # /video/hero-mesh.webm, the 50 s VP9 loop
+                                      # screened over the hero, fetched on
+                                      # desktop only (the plan's §12.1 records
+                                      # the decision)
 
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 # The library index lives at /library/ and is a page, but it is not one of the 75
@@ -185,6 +190,12 @@ def main(argv: list[str]) -> int:
         "fonts_3": sum(sizes.get(p, 0) for p in
                        ("/fonts/inter-var.woff2", "/fonts/gfs-didot.woff2",
                         "/fonts/istor-wordmark.woff2")),
+        # Not in phone_1x/retina_2x: the mesh never reaches a phone (display:none
+        # below 840px and preload="none" holds the fetch until the script's width
+        # gate passes) and a desktop reads it once per visit, so it is not part of
+        # a device's exhibit payload either. It stands alone; §12.1's amendment
+        # carries the first-screen consequence.
+        "hero_video": sizes.get("/video/hero-mesh.webm", 0),
     }
     for key, got in derived.items():
         want = comp[key]

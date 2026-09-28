@@ -100,6 +100,39 @@
 
        Decorative, and marked as such: no title, no caption, `aria-hidden`. It
        states nothing a reader has to take on trust from a picture. -->
+  <!-- M47 · the hero's mesh: the smoke plate, shipped as video. A 50-second
+       VP9 loop (Assets/video/hero-mesh.webm, 1920x1080, no audio) screened
+       over the field at 25 percent, the strength the treatment mock approved.
+       It is the hero's own ground moving, not a new layer: screen blend can
+       only lighten, so the field stays the ground and the smoke's bright
+       plumes read as light drifting over it.
+
+       THE MASK IS THE CONTRAST ARGUMENT. On the loop's worst frame the smoke
+       lifts the ground under the headline to L 0.17, where no ink in the
+       palette keeps AA -- the uniform blend is illegal at the approved
+       strength and invisible at the strength that would be. So the mesh
+       carries its own mask, two layers intersected: the nav band (full
+       width, the bar's 68px plus fade) and one ellipse in ABSOLUTE px
+       (420x340 at 50% 20%) over the text block. Absolute px, because the
+       text block's half-width is bounded by the 16ch headline (~262px) at
+       every width, while a %-radius ellipse would shrink under it. Measured
+       against the worst frame's per-rect maxima (kicker 0.651, h1 0.671,
+       lede 0.588, cue 0.420, nav links 0.706), every text rect's farthest
+       corner sits at d <= 0.89 across 841-1800: inside the zero ring, so
+       the text's ground is the plain field gradient in every frame by
+       construction, and no ink moves. Below 840px the ellipse covers the
+       whole hero anyway, so the mesh is display:none there and the script
+       below never starts it -- a phone's first screen keeps its 135 KB.
+
+       No autoplay: a muted video could, but motion starts on the reader's
+       own clock like every other motion on this page -- the script below
+       calls play() when the world is not reduced, and the is-mesh-live class
+       (added on the video's own playing event, not on a timer) is what fades
+       it in whenever the first frames actually arrive, so a slow fetch fades
+       instead of popping. Without script the element fetches nothing and
+       renders nothing: the plain teal field, which is today's hero. -->
+  <video class="hero-mesh" src="/video/hero-mesh.webm" muted playsinline loop preload="none" aria-hidden="true"></video>
+
   <div class="hero-world"><!--#include hero-gears--></div>
 
   <div class="wrap">
@@ -1691,6 +1724,26 @@
         if (!drift.raf && driftStep) drift.raf = requestAnimationFrame(driftStep);
       });
     });
+  }
+
+  // M47 · the mesh starts here, after the cast's arm but in the same
+  // synchronous run. play() on a muted video needs no gesture, but it is
+  // still gated twice on the reader: not under reduced motion (the
+  // stylesheet has already taken the element off the page), and not below
+  // 840px, where the mask ellipse covers the whole hero and the video would
+  // be 5.1 MB fetched to render nothing. preload="none" holds the fetch
+  // until this call, so a phone that skips it never downloads the file at
+  // all and a reader without script does not either. The fade is not on a
+  // timer: is-mesh-live lands on the video's own playing event, so the
+  // 900ms rise runs whenever the first frames actually arrive - a slow
+  // fetch fades late instead of popping mid-field.
+  var mesh = document.querySelector('.hero-mesh');
+  if (mesh && !reduced && !window.matchMedia('(max-width: 840px)').matches) {
+    mesh.addEventListener('playing', function () {
+      heroField.classList.add('is-mesh-live');
+    });
+    var meshPlay = mesh.play();
+    if (meshPlay) meshPlay.catch(function () {});
   }
 
   // M27 · the field's sun, DECLARED AND ARMED HERE, at the top, because

@@ -103,6 +103,7 @@ ASSETS_PUBLISHED = {
     "/fonts/gfs-didot.woff2":      "fonts/gfs-didot.woff2",
     "/fonts/istor-wordmark.woff2": "brand/istor-wordmark.woff2",
     "/img/ground-grain.png":       "textures/ground-grain.png",
+    "/video/hero-mesh.webm":       "video/hero-mesh.webm",
     "/og-card.png":                "brand/og-card.png",
 }
 
