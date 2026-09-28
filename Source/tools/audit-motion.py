@@ -846,25 +846,31 @@ HERO_SCENARIO = r"""
     firsts: firsts,
     maskRoom: { line1: room(lines[0]), line2: room(lines[1]) },
   };
-  // M43 · the answer's seventh child. The cycles answer gained a drawn plate
+  // M43 · the answer's drawn plate. The cycles answer gained a drawn plate
   // (the pin-and-slot, the sentence that names it made visible), and M2's
-  // sequence gained a seventh slot for it. The claim reads the COMPUTED
-  // animation-delay, not a wall-clock race: by the time this scenario polls,
-  // the sequence may already have finished, and two settled elements cannot
-  // be ordered by their timestamps. The delay is the authored slot (the
-  // sixth child's 1260ms plus the family's 100ms step, read as a computed
-  // value the doctor's removal zeroes), and the plate must be at rest.
+  // sequence gave it the last slot of the family's clock. The claim reads the
+  // COMPUTED animation-delay, not a wall-clock race: by the time this scenario
+  // polls, the sequence may already have finished, and two settled elements
+  // cannot be ordered by their timestamps. The delay is the authored slot,
+  // read as a computed value the doctor's removal zeroes, and the plate must
+  // be at rest.
+  // 2026-09-28 · the plate is found by its own class, not by a child index.
+  // The reader named kids[6] because the plate WAS the seventh child; the
+  // elision that cut the answer to one screen left it four, and the stale
+  // index false-failed the committed page ("the scenario found no seventh
+  // child to read"). The claim's substance never moved: the plate is still
+  // the answer's last child, still later on the clock than the prose before
+  // it, and still fully painted at rest.
   const answer = d.querySelector('.hero .answer#ans-cycles') ||
                  d.querySelector('.hero .answer');
-  const kids = answer ? answer.children : [];
-  if (kids.length >= 7) {
-    const fig = kids[6];
-    const prev = kids[5];
+  const fig = answer ? answer.querySelector('.pin-slot-fig') : null;
+  const prev = fig ? fig.previousElementSibling : null;
+  if (fig && prev) {
     const delayOf = (el) => getComputedStyle(el).animationDelay;
     const fs = (() => { const cs = getComputedStyle(fig);
       return { op: parseFloat(cs.opacity), tf: cs.transform }; })();
     result.answerPlate = {
-      seventhChild: fig.tagName.toLowerCase() + '.' + (fig.className || ''),
+      plateNode: fig.tagName.toLowerCase() + '.' + (fig.className || ''),
       atRest: fs.op >= 0.95 && (fs.tf === 'none' ||
                Math.abs(parseFloat(/matrix\(([^)]+)\)/.exec(fs.tf)[1].split(',')[5] || 0)) < 2),
       figDelay: delayOf(fig),
@@ -1186,8 +1192,8 @@ def check_hero(doc: dict, failures: list) -> None:
     if ap:
         ok("the cycles answer's plate arrives last, at rest",
            ap.get("atRest") is True and ap.get("ordered") is True,
-           "child %s delay %s (prev %s), at rest %s"
-           % (ap.get("seventhChild", "?"), ap.get("figDelay"),
+           "plate %s delay %s (prev %s), at rest %s"
+           % (ap.get("plateNode", "?"), ap.get("figDelay"),
               ap.get("prevDelay"), ap.get("atRest")))
     else:
         ok("the cycles answer's plate arrives last, at rest", False,
