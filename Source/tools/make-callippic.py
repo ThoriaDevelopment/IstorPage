@@ -120,9 +120,20 @@ def plate(wide):
         cx, cy, r_out = 170.0, 142.0, 100.0
     # The hub holds the three arithmetic rows; the exeligmos plate's measured
     # ratios apply (its hub text carries the same three-row shape), scaled to
-    # this plate: 0.41 wide / 0.53 tall put the ring clear of the contrast
-    # audit's probe band and give the claim air.
-    r_in = r_out * (0.53 if not wide else 0.41)
+    # this plate. 2026-09-28 · retuned twice in one day, and the record should
+    # say why. The sampler's side offset moved from 5px fixed to max(5, h*0.6)
+    # with the parapegma fix, and the hub rows' probes then landed on the ring.
+    # A first retune to 0.451 was measured off THIS machine's file:// render,
+    # where the site's Inter never loads (woff2 over file:// is refused) and
+    # the boxes are fallback metrics, 68x16. The audit serves over http, loads
+    # Inter, and measures 73x17 - the honest numbers. With Inter the six side
+    # probes reach 50.6 units from the hub's centre (the top row's outer
+    # corner); with the fallback they reach 48.3. The ring has to enclose both
+    # envelopes with room for its own antialiasing: 0.482 (r = 54) leaves 2.4
+    # units of clear field between the nearest probe and the nearest paint.
+    # 0.53 tall still stands; the tall plate renders under 700px only, where
+    # the contrast gate does not sample.
+    r_in = r_out * (0.53 if not wide else 0.482)
     r_label = (r_in + r_out) / 2.0
 
     g = []
