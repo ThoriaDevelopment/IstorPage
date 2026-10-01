@@ -1642,6 +1642,10 @@ and the shipped inks stay exactly as designed (§12.1 carries the byte consequen
 same day, 2026-09-29: the strength went 25 % → 50 %** by Thoria's direction, with the mask as it
 shipped — at 50 % the worst frame grazes the text block through the ramp (kicker and azure line
 dip on frame 159), accepted on the record as the look; the lede, CTA and cue stay fully clear.
+**AMENDED 2026-10-02: the bytes behind it went VP9 → AV1** (crf 28, two-pass libaom,
+2,831,843 B, −44 %) at Thoria's direction, on-page indistinguishable at measure — the
+full quality ladder, the lossless ceiling and the decode-cost story (software decode where
+no AV1 block exists, static hero where the codec is absent) are dated in §12.1.
 
 ---
 
@@ -1876,6 +1880,35 @@ the 2–5 MB envelope would have bought — the ask carried its own number. `bud
 `hero_video` component (deliberately outside `phone_1x`/`retina_2x`, which stay the exhibits'
 payload) and the artifact row rises **4.17 MiB → ≈ 9.3 MB, 156 → 157 files**; §7 gains the motion
 record as M47 in the same commit.
+
+**AMENDED 2026-10-02, the mesh's encoding.** The video's weight came back as its own request
+("the background animation seems to cost too much — compress without losing quality"), so the
+encode went back to first principles with the source plate (`Background-noaudio.mov`) as the
+reference and VMAF (`libvmaf` in the toolchain's ffmpeg) as the measured quality. First, the
+brackets of the question: **truly lossless is not a web payload** (VP9 lossless at 1080p is
+95.4 KB a second — ~477 MB for the 50 s), and **VP9 was already in its corner** (a tuned
+two-pass `libvpx` encode at the same crf came out *larger*, 5.66 MB at 84 VMAF-vs-source
+against the shipped one-pass's 84.01 at 5.09 MB — no VP9 lever was left). The winning codec is
+AV1: a tuned two-pass libaom ladder bracketed by VMAF (720p variants scored 79.9–81.0 and were
+declined; at 1080p crf 30 scored 82.44 at 2.50 MB, crf 26 83.39 at 3.32 MB with a pairwise
+**93.96 against the shipped file**), and ships **crf 28: 2,831,843 B, −44 %**. The quality
+record: VMAF-vs-source 82.91 against the shipped encode's own 84.01, where the ceiling itself
+is the source plate's grain (every codec plateaus there — the shipped file also "lost" 16
+points to that measure); pairwise against the shipped file **98.04** (min 97.43); and the
+decisive check, the page's own rendering path — the same-pipeline composited diff
+(screen blend, 50 %, shipped mask, worst frame found by scan at n=775, t ≈ 25.8 s) put the
+mean delta against the shipped render at **0.0009 linear luminance** with a worst text-band
+pixel of 0.070, invisible at measure. One measurement lesson is dated beside the numbers:
+the pairwise scorer, run without a pinned `n_threads`, mis-paired the streams and returned
+18.78 for the same pair that measures 98.04 pinned — caught by the composite-diff number
+disagreeing with it, and worth remembering before any future VMAF run in this toolchain.
+Two cost stories ride beside the bytes and are accepted
+with them: where no AV1 hardware block exists (the GTX 1650 floor predates them — the RTX 30
+series introduced them) the muted loop decodes in software, a modest share of a CPU core for a
+decorative blend; and a browser that cannot decode AV1 at all renders the static hero, which
+the mask holds clean. `budget.json`'s manifest, `hero_video` and the artifact total move in
+this same commit (~9.3 MB → ≈ 7.1 MB); `verify-links.py`'s count is untouched (a replacement,
+not a new file); §7.7's record carries the codec with the M47 entry.
 
 ### 12.2 Gate changes
 

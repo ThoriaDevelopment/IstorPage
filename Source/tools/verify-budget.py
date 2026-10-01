@@ -76,10 +76,12 @@ ARTIFACT_FILES = 148                  # + the generated library index; 8 fewer s
                                       # the one script all 76 library pages name, and
                                       # /search-index.json, the file it fetches;
                                       # +1 on 2026-09-29 for the hero's mesh:
-                                      # /video/hero-mesh.webm, the 50 s VP9 loop
+                                      # /video/hero-mesh.webm, the 50 s loop
                                       # screened over the hero, fetched on
                                       # desktop only (the plan's §12.1 records
-                                      # the decision)
+                                      # the decision). The loop is AV1 since
+                                      # 2026-10-02 -- a replacement of the same
+                                      # file, not a new one; the count holds.
 
 NOT_A_PAGE = {"fonts", "img", "assets", "brand"}
 # The library index lives at /library/ and is a page, but it is not one of the 75

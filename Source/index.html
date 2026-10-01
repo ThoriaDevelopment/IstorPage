@@ -101,7 +101,7 @@
        Decorative, and marked as such: no title, no caption, `aria-hidden`. It
        states nothing a reader has to take on trust from a picture. -->
   <!-- M47 · the hero's mesh: the smoke plate, shipped as video. A 50-second
-       VP9 loop (Assets/video/hero-mesh.webm, 1920x1080, no audio) screened
+       AV1 loop (Assets/video/hero-mesh.webm, 1920x1080, no audio) screened
        over the field at 50 percent -- Thoria's 2026-09-29 direction to push
        the visibility from the 25 the treatment mock approved, taken with the
        mask as it shipped rather than with a deeper text hole, so the loop's
@@ -109,7 +109,16 @@
        the kicker lift by up to ~0.14 luminance on frame 159 and the azure
        line dips under 3:1 there, measured on the live page and accepted as
        the look. Screen blend can only lighten, so the field stays the ground
-       and the smoke's bright plumes read as light drifting over it.
+       and the smoke's bright plumes read as light drifting over it. The
+       encode was re-cut on 2026-10-02 at Thoria's direction to lose most of
+       the video's weight: AV1 crf 28, two-pass libaom, 2,831,843 B -- 44
+       percent off the VP9 first cut, VMAF-measured against the source plate
+       (82.91 on the same measure VP9's shipped encode sits at 84.01, which is
+       itself the grain ceiling), and diffed through the page's own rendering
+       path at a mean of 0.0009 linear luminance against the old render:
+       invisible at measure. Where no AV1 hardware block exists it decodes in
+       software; a browser without the codec renders the static hero, which
+       the mask holds clean.
 
        THE MASK IS THE PARTIAL ARGUMENT. On the loop's worst frame the smoke
        lifts the ground under the headline to L 0.17 at full strength, where
