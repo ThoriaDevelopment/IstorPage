@@ -889,23 +889,30 @@ h3 {
 }
 
 /* The hero's rail is the one place where the replica doubles as the page's own
-   table of contents, and it was being drawn in a colour no rail in the app has.
-   `.field a` was painting all seven rows an accent blue; measured against
-   exhibit-16, the app's rows are grey and the row you are on carries a filled
-   pill. So the rows take the app's grey and "which section am I in" is answered
-   in the app's own selection grammar rather than in a colour of the page's own.
-   The pill's radius is --r-cite, the same token the rail's own filter uses. */
+   table of contents. 2026-10-03 · the rows wear the window's white by direction:
+   Thoria caught them red ("manareusure.png") and asked white. The red was an
+   accident of the colour transplant, and it is recorded here so it stays caught:
+   the pool's rule gained :not(.cta) to keep the CTA's own white ink, and the
+   added class let .field a:not(.cta) win the specificity race it had lost since
+   f3e5b8d, repainting the rows --scarlet-deep at 3.37:1 on the window's black
+   chrome. The rows now carry the field scope themselves and take --ink, the
+   same white the window's answers print in (16:1 on --chrome); the app's own
+   grey they wore between f3e5b8d and the transplant was Thoria's to retire.
+   Hover keeps an app-grammar cue without reading as a selection: the window's
+   own zebra wash, half the pill's fill. The pill'd row stays the brightest state
+   ("which section am I in" in the app's own grammar), and its radius is --r-cite,
+   the same token the rail's own filter uses. */
 .rail-nav { margin-inline: -8px; }
 .rail-nav li { padding: 0; }
-.rail-nav a {
+.field .rail-nav a {
   display: block;
   padding: 5px 8px;
   border-radius: var(--r-cite);
-  color: var(--ink-2);
+  color: var(--ink);
   text-decoration: none;
 }
-.rail-nav a:hover { color: var(--ink); }
-.rail-nav a[aria-current] { background: var(--fill); color: var(--ink); }
+.field .rail-nav a:hover { background: var(--fill-row); }
+.field .rail-nav a[aria-current] { background: var(--fill); color: var(--ink); }
 
 .rail-foot {
   display: flex;
