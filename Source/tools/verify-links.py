@@ -156,25 +156,35 @@ FALLS_THROUGH: dict[int, str] = {}
 
 # Check 6. v2's §4, and every figure below was MEASURED from this stylesheet's
 # own tokens rather than transcribed from the plan — a plan's rounded figure is a
-# description of a ratio, and this is the ratio.
+# description of a ratio, and this is the ratio. Re-measured at the colour
+# transplant of 2026-10-02: the sheet is v1's warm light world now, and the
+# numbers below are its own.
 #
 # Two pairs are worth reading:
-#   * --on-azure on --azure is the CTA, so it is the one ratio a visitor reads
-#     text through on every screen of the page.
-#   * text in the field is measured against --field-hi, the gradient's LIGHTEST
-#     stop. Light text on a lighter ground is the worst case; measuring it
-#     against --field-base would assert the easiest one and call it the hardest.
+#   * --on-scarlet on the SHADED gradient ends is the CTA, so it is the one ratio
+#     a visitor reads text through on every screen of the page. The fill has no
+#     token of its own — it is the straight gradient under the one dark shade
+#     layer, --btn-shade over D93A3A and CE7F14 — so the pair is stated as the
+#     shaded hexes it composites to (#972B2B, #8F5A11), and the amber end is the
+#     binding figure: white clears it with less than a point to spare.
+#   * the field's law INVERTED with the transplant. The cool sheet measured light
+#     text against --field-hi, its lightest stop, because light on light is the
+#     worst case; on the warm pool the ink is DARK, and its worst case is the
+#     pool's DARKEST stop, --field-edge. Measuring dark ink against --field-hi
+#     would assert the easiest case and call it the hardest — the same trap, a
+#     half-turn later.
 CONTRAST = [
-    ("--ink", "--paper", 17.04, "§4: all text on paper"),
-    ("--ink-2", "--paper", 5.71, "§4: secondary text on paper"),
-    ("--azure", "--paper", 5.33, "§4: the accent on paper"),
-    ("--on-azure", "--azure", 5.57, "§4: the CTA's ink on the CTA's fill"),
-    ("--coral", "--paper", 5.32, "§4: the mark's artwork before it re-inks"),
-    ("--field-ink", "--field-hi", 11.58, "§4: text in the field, worst case"),
-    ("--field-ink-2", "--field-hi", 6.07, "§4: secondary text in the field"),
-    ("--azure-lift", "--field-hi", 5.19, "§4: the accent in the field, worst case"),
-    ("--cite-ink", "--cite-wash", 4.74, "§4: the citation numeral on its wash"),
-    ("--on-azure-lift", "--azure-lift-hi", 7.72, "§4: the CTA's ink, hovered"),
+    ("--ink", "--paper", 17.93, "§4: all text on paper"),
+    ("--ink-2", "--paper", 7.05, "§4: secondary text on paper"),
+    ("--scarlet", "--paper", 4.55, "§4: the accent on paper"),
+    ("--scarlet-deep", "--paper", 5.88, "§4: the deep step: body links on paper, the hover"),
+    ("--coral", "--paper", 5.56, "§4: unverified's ink and the mark's artwork"),
+    ("--on-scarlet", "#972B2B", 7.79, "§4: the CTA's ink on the shaded red end"),
+    ("--on-scarlet", "#8F5A11", 5.77, "§4: the CTA's ink on the shaded amber end, the binding figure"),
+    ("--field-ink", "--field-edge", 15.08, "§4: text in the field, worst case"),
+    ("--field-ink-2", "--field-edge", 5.93, "§4: secondary text in the field"),
+    ("--scarlet-deep", "--field-edge", 4.95, "§4: the accent in the field, worst case"),
+    ("--cite-ink", "--cite-wash", 4.53, "§4: the citation numeral on its wash"),
     # M9's chips are the one control drawn in the WINDOW's scope rather than the
     # page's, so these two are hex literals for the reason above: the pane is
     # dark in both themes, and `--ink-2` resolves differently inside `.win`.
@@ -187,9 +197,15 @@ CONTRAST = [
 # Asserted to FAIL, so the reasons recorded beside the tokens cannot rot into
 # descriptions of pairs that would actually have been fine.
 CONTRAST_BELOW_AA = [
-    ("--azure-lift", "--cite-wash", 2.23, "why the citation wash keeps the light blue"),
-    ("--on-azure", "--azure-lift", 2.63, "why the chip fills with --azure, not --azure-lift"),
-    ("--state-ready", "--paper", 2.45, "why --state-ready is a DOT and never text"),
+    ("--scarlet", "--field-edge", 3.83,
+     "why the pool's body links take --scarlet-deep, not the accent itself"),
+    ("--scarlet", "--cite-wash", 3.84,
+     "why the citation mark takes --ink — on the cool sheet the accent under the "
+     "wash was 2.23:1, one hair under the bar; on the transplanted wash it is "
+     "under the bar outright, and for the same arithmetic both sheets now share"),
+    ("--g2", "--paper", 3.15,
+     "why the gradient text's warm end is --g-tint, not the straight amber"),
+    ("--state-ready", "--paper", 2.55, "why --state-ready is a DOT and never text"),
 ]
 
 AA_NORMAL = 4.5
@@ -2285,8 +2301,8 @@ def check_10(rep: Report, page_css: str, library_css: str,
         printed += (m.group(1) if m else "")
     inks = re.findall(r"(--[a-z0-9-]+)\s*:\s*(#[0-9A-Fa-f]{6})\s*;", printed)
     text_tokens = {t for t, _v in inks if t in
-                   ("--ink", "--ink-2", "--mist", "--cite-ink", "--azure",
-                    "--field-ink", "--field-ink-2")}
+                   ("--ink", "--ink-2", "--mist", "--cite-ink", "--scarlet",
+                    "--scarlet-deep", "--field-ink", "--field-ink-2")}
     rule_tokens = {t for t, _v in inks if t in ("--hairline", "--rule", "--field-rule")}
     worst_text, worst_rule = 21.0, 21.0
     for token, value in inks:

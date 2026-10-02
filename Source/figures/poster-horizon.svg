@@ -7,9 +7,9 @@
     <radialGradient id="poster-glow" gradientUnits="userSpaceOnUse"
                     cx="0" cy="0" r="680"
                     gradientTransform="translate(720 260) scale(1 0.35)">
-      <stop offset="0" stop-color="var(--field-ink)" stop-opacity="0.09"/>
-      <stop offset="0.45" stop-color="var(--field-ink)" stop-opacity="0.034"/>
-      <stop offset="1" stop-color="var(--field-ink)" stop-opacity="0"/>
+      <stop offset="0" stop-color="var(--field-hi)" stop-opacity="0.09"/>
+      <stop offset="0.45" stop-color="var(--field-hi)" stop-opacity="0.034"/>
+      <stop offset="1" stop-color="var(--field-hi)" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
@@ -51,7 +51,7 @@
           stroke-opacity="0.5" stroke-dasharray="0.02 17.67911"
           transform="rotate(-449.49296 720 1000.0)"/>
 
-  <!-- The disputed hole, at the apex, in the plate's own azure. The figure's
+  <!-- The disputed hole, at the apex, in the plate's own scarlet. The figure's
        single piece of information, as it is on the plate. -->
-  <circle cx="720" cy="0" r="5.04" fill="var(--azure)"/>
+  <circle cx="720" cy="0" r="5.04" fill="var(--scarlet)"/>
 </svg>

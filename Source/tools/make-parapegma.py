@@ -25,7 +25,7 @@ shape that diff verified:
     uses for inferred text and the braces it uses for uncertain letters, and
     including the rows the sea took whole, which the source prints as [...]
     and this plate prints the same way;
-  - the key letters, drawn in azure: the keys are what make a parapegma a
+  - the key letters, drawn in scarlet: the keys are what make a parapegma a
     keyed register rather than a list, and they are the plate's one accent;
   - the two slabs headed with the source's own words for them, above the
     dials and beneath the dials, and between them, on the wide plate, the
@@ -280,7 +280,7 @@ def pt(cx, cy, r, deg):
 def band(cx, cy, r_out):
     """The dial zone between the slabs, drawn as an indication and no more:
     the zodiac band's frame and its twelve sector ticks, the sun and moon
-    marks in the hub. Neutral inks; the plate's azure is spent on the keys.
+    marks in the hub. Neutral inks; the plate's scarlet is spent on the keys.
     No longitudes: the source does not say which row belongs at which mark."""
     r_in = r_out - 8
     g = ['  <g class="pp-band">',
@@ -489,7 +489,7 @@ def self_test():
               ("missing %s" % missing[:2]) if missing else "")
         bad_keys = [k for k, n in key_mult.items()
                     if svg.count(">%s<" % k) != n]
-        check(name + ": keys azure, at the source's multiplicity",
+        check(name + ": keys scarlet, at the source's multiplicity",
               not bad_keys, ("wrong %s" % bad_keys[:3]) if bad_keys else "")
         check(name + ": token inks only",
               all(t not in svg for t in ('fill="#', 'stroke="#')))

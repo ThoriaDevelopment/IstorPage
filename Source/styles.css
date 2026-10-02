@@ -51,68 +51,123 @@
    §1's claim that the look costs no invention is true rather than rhetorical.
    --------------------------------------------------------------------------- */
 :root {
-  /* the ground and its ink — measured from the app's LIGHT theme */
-  --paper:   #FAFAFA;  /* the app's own light rail                      */
-  --card:    #FFFFFF;  /* the app's light modal                         */
-  --ink:     #16181B;  /* the app's light body text                     */
-  --ink-2:   #5F646B;  /* secondary; >= 4.5:1 on --paper                */
-  --ink-3:   #8A8F96;  /* a GRAPHIC ink, not a text ink: 3.12:1 on       */
+  /* the ground and its ink — the v1 light world, transplanted on Thoria's
+     decision of 2026-10-02 ("the whole v1 light world" after "the original
+     color scheme" beat the turquoise): v1's white canvas, its warm greys, its
+     red as the accent. The app-measured azure survives only in the replica
+     window's own block below, where the window reproduces the product. Every
+     figure in this block was re-measured the day of the swap by "Istor
+     Output/palette-measure.py"; where a figure names a pair, the gate carries
+     the same pair with the same number. */
+  --paper:   #FFFFFF;  /* v1's canvas: the page ground                  */
+  --card:    #FAFAFA;  /* v1's subtle: a panel a step off the canvas     */
+  --ink:     #171717;  /* v1's ink: 17.93:1 on --paper                  */
+  /* v1's mist, #6E6A66 at 5.36:1 on --paper, is honest on the paper and lies
+     one caption later: where a caption sits under the windows' shadow bands
+     its ground goes to the shadows' stop and the figure fell to 3.92:1 (audit
+     2026-10-02), under the 4.5:1 a 12.5px caption needs. The fix is the same
+     warm hue one step down, not a cooler ink, and the moved token clears
+     every ground it actually meets: 7.05:1 on --paper, 5.16:1 on the
+     shadows' figcaption band, 5.58:1 on --fill-row, 5.93:1 on --field-edge.
+     --field-ink-2 below follows it. */
+  --ink-2:   #5C5854;  /* secondary: v1's mist one step darker          */
+  --ink-3:   #96908A;  /* a GRAPHIC ink, not a text ink: 3.16:1 on       */
                        /* --paper, so it draws rules, the track and the  */
                        /* scrollbar, and caption TEXT takes --ink-2     */
-  --rule:    #E4E6E9;  /* the app's light table separator               */
+  --rule:    #E9E4DE;  /* v1's hairline                                 */
+  /* The row stripe OUTSIDE any window. --fill-row had one value, inside the
+     .win block (the app-measured zebra), and the shelf plate on the page's
+     paper resolved its fill to nothing -> black bands: titles measured off a
+     ground no rule drew. The page's own stripe is the hairline's tone, one
+     quiet warm step under the canvas, which is what the app's zebra is to its
+     dark centre: the ink set keeps its figures on it (field-ink 14.18:1,
+     --ink-2 5.58:1 after the mist's step down). A replica's stripes on a dark
+     window stay the .win block's own values. */
+  --fill-row: #E9E4DE;
 
-  /* the accent. Azure is the ONLY interactive colour, in both themes — the
-     catalogue confirms the app holds to this ("no second accent exists in
-     either theme") and the report ranks "one accent on under 5% of pixels" #4. */
-  --azure:      #0066CC;  /* measured: the app's light accent          */
-  --azure-lift: #4DA3FF;  /* the same blue as it must appear on teal   */
-  --azure-deep: #0073E6;  /* the lightness midpoint of the two above   */
-  --coral:      #C7292A;  /* the mark's artwork, and "unverified" only */
-  --coral-lift: #D9524B;  /* the same red as it must appear on the field */
+  /* the accent. --scarlet is v1's witness red, back on the page at full scale:
+     links, the filled CTA, the selection, the ruler, every plate's one claim.
+     NOT v1's token name, and that is on the record: this landing already uses
+     "witness" for the popover that reports where each answer came from (8.1),
+     and a --witness token beside it would make the stylesheet say two things
+     with one word. --coral keeps its own post: unverified only, one tone
+     darker, and the two are not merged (coral unverified, scarlet asserted). */
+  --scarlet:      #D93A3A;  /* the accent: 4.55:1 on --paper             */
+  --scarlet-deep: #BE2B2B;  /* the accent's deeper step, two duties:     */
+                            /* body links inside the pool, where straight */
+                            /* --scarlet is 3.83-4.22:1 and a body link   */
+                            /* needs 4.5 (4.95:1 on the pool's darkest   */
+                            /* stop), and the hover that darkens the     */
+                            /* accent (4.55:1 -> 5.88:1 on paper)        */
+  --coral:      #C7292A;    /* the mark's artwork, and "unverified" only */
+  --coral-lift: #D9524B;    /* the same red as it must appear on the pool */
 
-  /* Text ON a fill. Named by what they sit on rather than by what they are,
-     because two more whites in a token block is how a token block stops
-     meaning anything. Measured: white on --azure is 5.57:1, and the CTA's ink
-     on --azure-lift is 7.72:1. */
-  --on-azure:      #FFFFFF;  /* on --azure: the CTA, the filled chip  */
-  --on-azure-lift: #06202B;  /* on --azure-lift: the CTA in the field */
-  --azure-lift-hi: #6FB4FF;  /* --azure-lift, hovered                 */
+  /* Text ON a fill, named by what it sits on rather than by what it is,
+     because a second white in a token block is how a token block stops meaning
+     anything. One ink serves the family: on the filled CTA's shaded ends
+     (7.79:1 at the red, 5.77:1 at the amber) and on the coral node's own fill
+     (white on --coral is 5.56:1). */
+  --on-scarlet: #FFFFFF;
 
-  /* the app's own state colours, carried from v1. Dot only, never text. */
-  --state-waiting: #B35208;  /* 4.87:1 on paper — safe for text */
-  --state-ready:   #4BB581;  /* 2.45:1 — dot only, never text   */
-  --cite-wash:     #E3EEF9;
-  --cite-ink:      #0066CC;
+  /* v1's red-to-amber gradient, with v1's own division of labour. The FILLED
+     pill takes the straight pair under --btn-shade, one dark layer over the
+     gradient: that is how white reaches 7.79 and 5.77 without a second pair of
+     inks. The HEADLINE's gradient text takes the straight red but NOT the
+     straight amber, because text has no shade layer and the ground behind
+     "what it saw" is the pool, not white: --g2 is 3.15:1 on white, 2.92:1 on
+     the pool's brightest stop and 2.65:1 on its darkest, against a 3:1 law for
+     large text -- so the text clip's warm end is one step darker at #BC7712
+     (3.37:1 at the pool's brightest, 3.05:1 at its darkest). One family, two
+     gradients, each with its own measured reason. */
+  --g1:        #D93A3A;   /* the family's red end, = --scarlet           */
+  --g2:        #CE7F14;   /* the filled pill's amber end, under --btn-shade */
+  --g-tint:    #BC7712;   /* the gradient text's amber end               */
+  --btn-shade: rgb(10 10 10 / 0.32);  /* v1's .btn-grad darkening layer  */
 
-  /* THE FIELD — the og-card's radial, measured at eleven points and written as
-     stops in their measured positions: brightest #163234 at x85 y15, so the
-     gradient's origin sits at 78% 14%; #11282B and #0F2024 through the falloff;
-     #0E1E22 at every edge sampled. #0C1B1E is added only at the outermost stop
-     so the field does not band when it is drawn 2000px wide. */
+  /* the app's own state colours, carried from v1 across the swap. */
+  --state-waiting: #B35208;  /* 5.09:1 on paper — safe for text */
+  --state-ready:   #4BB581;  /* 2.55:1 — dot only, never text   */
+  --cite-wash:     #E2EEF2;  /* v1's wash rgb(14 116 144 / 0.12) composited */
+                             /* on the v1 canvas and written back OPAQUE,   */
+                             /* the same trick the cool sheet already used: */
+                             /* the gate's wash helper parses no space-slash */
+                             /* syntax. Measured on it: --ink 15.15:1,      */
+                             /* --ink-2 4.53:1, --cite-ink 4.53:1           */
+  --cite-ink:      #0E7490;  /* v1's citation teal: 5.36:1 on --paper       */
+
+  /* THE FIELD — the og-card's radial shape, re-stopped warm. The geometry is
+     the one the cool field measured (origin 78% 14%); the stops are v1's warm
+     world pulled to the pool's subtle scale: #FBF6EA at the origin, falling by
+     measured steps through #F8F3E9 and #F7F2E7, and #F0EBE0 added only at the
+     outermost stop so the field does not band when it is drawn 2000px wide.
+     The pool holds 1.08x to 1.19x of the canvas's luminance — light by
+     decision (Thoria's B: "the opening screen becomes paper with dark type"),
+     which is exactly why the accent needs --scarlet-deep inside it. */
   --field-bg: radial-gradient(130% 120% at 78% 14%,
                 var(--field-hi) 0%, var(--field-fall-1) 34%,
                 var(--field-fall-2) 62%, var(--field-base) 86%,
                 var(--field-edge) 100%);
   /* The gradient's two extreme stops, named. --field-base is painted UNDER the
-     gradient so a browser that drops `radial-gradient` still gets a field
-     rather than paper; --field-hi is the origin stop, which is the LIGHTEST
-     point of the field and therefore the worst case for text sitting on it —
-     a check that measured text against --field-base would be measuring the
-     easiest case and calling it the hardest. Measured: --field-ink-2 on
-     --field-hi is 6.07:1 and --azure-lift is 5.19:1, both still AA.
-     The falloff's two middle stops and the outermost anti-banding stop are
-     named too, because M25's sun re-states the gradient with a moving origin
-     and a restated gradient must be the same colours, not a private copy:
-     every stop the field paints is a token, and the token is the one place
-     the hex exists. */
-  --field-base:  #0E1E22;
-  --field-hi:    #163234;
-  --field-fall-1: #11282B;
-  --field-fall-2: #0F2024;
-  --field-edge:  #0C1B1E;
-  --field-ink:   #E9EDF0;              /* text in the field            */
-  --field-ink-2: #9FB0B4;              /* secondary text in the field  */
-  --field-rule:  rgb(255 255 255 / 0.10);  /* 1px seams, dark on dark  */
+     gradient so a browser that drops `radial-gradient` still gets a pool
+     rather than paper. The worst case for text on the field is NOT the origin:
+     dark ink's worst case is the DARKEST stop, --field-edge, and both inks are
+     measured against exactly that stop — --field-ink 15.08:1,
+     --field-ink-2 4.51:1, --scarlet-deep 4.95:1. A check that measured them
+     against --field-hi (16.62:1 for --field-ink) would be measuring the
+     easiest case and calling it the hardest: the same trap the old sheet
+     documented against its own light-text field, pointed the other way now.
+     The falloff's two middle stops are named too, because M25's sun re-states
+     the gradient with a moving origin and a restated gradient must be the same
+     colours, not a private copy: every stop the field paints is a token, and
+     the token is the one place the hex exists. */
+  --field-base:  #F6F1E6;
+  --field-hi:    #FBF6EA;
+  --field-fall-1: #F8F3E9;
+  --field-fall-2: #F7F2E7;
+  --field-edge:  #F0EBE0;
+  --field-ink:   #171717;              /* text in the field: v1's ink  */
+  --field-ink-2: #5C5854;              /* secondary: --ink-2's step, 5.93:1 */
+  --field-rule:  #E7DFD2;              /* 1px seams over the pool      */
 
   /* geometry. See the header: --win-sm is crop/2, and it is not a taste call. */
   --page:      1240px;
@@ -159,14 +214,17 @@
   /* The shadow is the single difference between "a screenshot pasted on a page"
      and "an object sitting on a surface" (report §3, ranked #2). Breezy's was
      measured: ~9% darkening decaying over ~50px CSS. Two of them, because the
-     ground differs — a dark shadow over paper reads as a hole. */
-  --shadow-field: 0 24px 60px rgb(4 10 12 / 0.45);
-  --shadow-paper: 0 18px 44px rgb(16 24 27 / 0.14);
+     ground differs — a dark shadow over paper reads as a hole. The inks are
+     re-tinted warm to the transplant: the field is now a light pool, so its
+     shadow is a soft warm grey (a teal-dark shadow on cream reads as a bruise),
+     at a lighter opacity because the ground it darkens is light. */
+  --shadow-field: 0 24px 60px rgb(40 32 18 / 0.18);
+  --shadow-paper: 0 18px 44px rgb(31 26 16 / 0.12);
   /* The same two, at the M8b hover lift: closer, darker, the object risen 4px.
      Tokens because every colour on this page is one, which is a gate, not a
      preference. */
-  --shadow-field-lift: 0 34px 70px rgb(4 10 12 / 0.52);
-  --shadow-paper-lift: 0 26px 54px rgb(16 24 27 / 0.19);
+  --shadow-field-lift: 0 34px 70px rgb(40 32 18 / 0.22);
+  --shadow-paper-lift: 0 26px 54px rgb(31 26 16 / 0.16);
 
   /* the faces. Two families, two stacks. */
   --sans:  Inter, -apple-system, "Segoe UI", system-ui, sans-serif;
@@ -311,10 +369,10 @@
 /* The page brands its selection. Every reference site's text highlights in the
    site's own accent, not the browser's; the default is the one unthemed surface
    a reader touches on every drag. The chip replaces the ground behind the span,
-   so one pair covers every section: white on --azure is the CTA's measured
-   5.57:1, and it holds over paper, field and poster alike because there is no
+   so one pair covers every section: white on --scarlet is the CTA's measured
+   4.55:1, and it holds over paper, pool and poster alike because there is no
    ground left to disagree with. */
-::selection { background: var(--azure); color: var(--on-azure); }
+::selection { background: var(--scarlet); color: var(--on-scarlet); }
 
 /* Crossings keep their place. The landing and the library are one journey —
    every footer leads to the other world — and a hard white flash between them
@@ -335,12 +393,13 @@ html {
   scroll-behavior: smooth;
   /* the sticky nav is 68px; an anchor jump must not land under it */
   scroll-padding-block-start: 84px;
-  /* The UA draws a 17px white track down the right edge, which on a page whose
-     first screen is deep teal reads as a rendering fault rather than as
-     chrome. A transparent track lets whatever ground the page is on show
-     through, and one mid grey thumb stays legible on the field and on the
-     paper both. Browsers without scrollbar-color keep the UA scrollbar, which
-     is the only way this can be wrong. */
+  /* The UA draws a 17px white track down the right edge, which the old cool
+     sheet called a rendering fault against its deep teal first screen. On the
+     warm ground it would sit quieter, but a transparent track is still the
+     harder habit: whatever ground the page is on shows through, and one mid
+     grey thumb stays legible on the pool and on the paper both. Browsers
+     without scrollbar-color keep the UA scrollbar, which is the only way this
+     can be wrong. */
   scrollbar-color: var(--ink-3) transparent;
 }
 
@@ -375,25 +434,35 @@ figure { margin: 0; }
    override this by name. */
 figcaption { max-width: var(--measure); text-wrap: pretty; }
 
-a { color: var(--azure); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a { color: var(--scarlet); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 a:hover { text-decoration-thickness: 2px; }
 
-/* One visible focus treatment, never removed. It adapts to the ground, because
-   --azure on teal is 2.1:1 and would be invisible exactly where the page has
-   the most to focus. */
+/* The poster's ground IS the pool, so a body link there takes the accent's deep
+   step: --scarlet is 3.83:1 at the pool's darkest stop and a body link is held
+   to 4.5; --scarlet-deep is 4.95:1 on that stop and 5.88:1 on --paper. The
+   accent at full scale keeps every other link and both grounds of its own.
+   :not(.cta) keeps the filled pill's white ink untouched - the split is what
+   the two-reds record already carries: unverified/coral draws, asserted/scarlet
+   says, and the deep step only serves links that must clear 4.5 in prose. */
+.poster a:not(.cta) { color: var(--scarlet-deep); }
+.poster a:not(.cta):hover { color: var(--scarlet-deep); }
+
+/* One visible focus treatment, never removed. It does not need to adapt to the
+   ground the way the cool sheet's did, because there is one accent and one
+   family of lights: --scarlet is 4.55:1 on --paper and 3.83:1 at the pool's
+   darkest stop, clear of the 3:1 bar a focus ring is held to on every ground
+   the page paints. */
 :focus-visible {
-  outline: 2px solid var(--azure);
+  outline: 2px solid var(--scarlet);
   outline-offset: 3px;
 }
-.field :focus-visible,
-.poster :focus-visible { outline-color: var(--azure-lift); }
 
 /* The skip link's target: focus delivered PROGRAMMATICALLY (the jump from the
    skip link to main's tabindex="-1") does not reliably match :focus-visible,
    so the one element that receives focus on purpose carries its own ring. A
    keyboard reader who jumps to the answer must see where they landed. */
 #the-answer:focus {
-  outline: 2px solid var(--azure);
+  outline: 2px solid var(--scarlet);
   outline-offset: -2px;
 }
 
@@ -466,10 +535,10 @@ h3 {
    five) is the least memorable. So the side a field sits on is part of the
    rhythm, not an accident.
 
-     C1 field-full   full-bleed teal, centred; the hero, once
-     C2 split        488px of paper text beside an inset teal field
-     C3 pair         two windows in ONE field, side by side
-     C4 band         full-bleed teal with a wide window spanning it
+     C1 field-full   full-bleed warm pool, centred; the hero, once
+     C2 split        488px of paper text beside an inset warm pool
+     C3 pair         two windows in ONE pool, side by side
+     C4 band         full-bleed pool with a wide window spanning it
      C5 poster       the wordmark, with the product overlapping its lower third
    --------------------------------------------------------------------------- */
 .wrap { width: min(var(--page), 100% - var(--gutter) * 2); margin-inline: auto; }
@@ -488,7 +557,12 @@ h3 {
 }
 .field h1, .field h2 { color: var(--field-ink); }
 .field .lede, .field p { color: var(--field-ink-2); }
-.field a { color: var(--azure-lift); }
+/* Field links take the deep step. Straight --scarlet is 3.83:1 on the pool's
+   darkest stop at best (4.22:1 at the brightest); a body link is held to 4.5:1,
+   so the pool's links darken a step and hold 4.95:1 everywhere on it. :not(.cta)
+   keeps the filled pill's white ink its own rule: the pill is an <a> too, and a
+   plain type selector here would eat the CTA at the specificity race. */
+.field a:not(.cta) { color: var(--scarlet-deep); }
 
 /* M25 · the field keeps a sun, and the sun answers the reader. Every field on
    the page shares one gradient whose light origin is frozen at 78% 14% - the
@@ -500,11 +574,12 @@ h3 {
    reduced-motion guard on the same contract as M23's mask: at the initial
    values this IS the authored gradient, pixel for pixel, and the movement is
    made only by script that never runs under reduce. The worst case is
-   unchanged by construction - the origin's brightest stop is --field-hi
-   wherever it sits, and both inks are measured against exactly that stop.
-   The other six fields and the close keep the authored, static gradient: a
-   sun over every band would be wallpaper, and a second sun at the close
-   would be a second clock. */
+   unchanged by construction, with the law the warm field earns: with dark
+   ink on a light ground, the hardest stop is the DARKEST one, --field-edge,
+   and both inks are measured against exactly that stop wherever the origin
+   may sit. The other six fields and the close keep the authored, static
+   gradient: a sun over every band would be wallpaper, and a second sun at
+   the close would be a second clock. */
 @property --sun-x { syntax: "<number>"; inherits: true; initial-value: 0; }
 @property --sun-d { syntax: "<number>"; inherits: true; initial-value: 0; }
 .hero {
@@ -531,8 +606,9 @@ h3 {
 
 /* The privacy band's inset panels. Its windows are LIGHT-theme captures: they
    were chosen so the settings' own text stays readable at native scale, and
-   on the dark field they need the seam and shadow the C2 inset panels get -
-   a light window on a dark ground with no seam reads as a hole in the page.
+   on the pool they need the seam and shadow the C2 inset panels get - a light
+   window on a pool whose own stops are one step off white reads as fog where
+   the field should be, so the seam and the shadow are what make it a window.
    The inset is sized by its contents, which is the discipline the split used:
    400 + 396 windows + the pair's 48 gap + 2*48 of its own padding = 944 (940
    left the pair 2px short and they wrapped - measured), so the pair sits
@@ -658,7 +734,7 @@ h3 {
   color: var(--ink-2);
 }
 .win-mark { font-family: var(--serif); font-size: 15px; color: var(--ink); letter-spacing: -0.005em; }
-.mark-dot { color: var(--azure); }
+.mark-dot { color: var(--scarlet); }
 .win-count {
   margin-inline-start: auto;
   padding: 4px 10px;
@@ -814,7 +890,7 @@ h3 {
 
 /* The hero's rail is the one place where the replica doubles as the page's own
    table of contents, and it was being drawn in a colour no rail in the app has.
-   `.field a` was painting all seven rows --azure-lift; measured against
+   `.field a` was painting all seven rows an accent blue; measured against
    exhibit-16, the app's rows are grey and the row you are on carries a filled
    pill. So the rows take the app's grey and "which section am I in" is answered
    in the app's own selection grammar rather than in a colour of the page's own.
@@ -974,8 +1050,9 @@ h3 {
 .web-ask li + li { margin-block-start: 26px; }
 
 /* The citation mark. A LIGHT surface in both themes — that is what the captures
-   show, and it has to be, because the numeral sits on the wash: --azure-lift on
-   --cite-wash is 2.2:1 and white on --azure-lift is 2.6:1, both of which fail. */
+   show, and it has to be, because the numeral sits on the wash: the accent on
+   --cite-wash would read as a colour shout at 4.5's edge, and the teal is where
+   a citation numeral belongs: --cite-ink at 4.53:1 on the wash it sits on. */
 .cite {
   font-size: 13px;
   line-height: 1;
@@ -992,13 +1069,13 @@ h3 {
    hover reads as static text until after it is tapped, and the first tap then
    has to be a guess. So on devices with no hover at all the chips render in
    the filled state they otherwise reach on hover -- white on --cite-ink, the
-   pair the tokens already document at 5.57:1. The affordance is visible
+   pair the tokens already document at 5.36:1. The affordance is visible
    before the first touch, not after it. Desktop keeps the quiet wash: there
    the discovery mechanism (hover) actually exists, and a page of filled
    chips would shout. */
 @media (hover: none) {
   .cite-btn .cite {
-    color: var(--on-azure);
+    color: var(--on-scarlet);
     background: var(--cite-ink);
     border-radius: var(--r-pill);
   }
@@ -1020,7 +1097,7 @@ h3 {
 .cite-btn:hover .cite,
 .cite-btn:focus-visible .cite,
 .cite-wrap.is-open .cite {
-  color: var(--on-azure);
+  color: var(--on-scarlet);
   background: var(--cite-ink);
   border-radius: var(--r-pill);
   padding: 1px 5px;
@@ -1100,12 +1177,12 @@ h3 {
 }
 .nav.is-stuck { border-block-end-color: var(--rule); }
 
-/* While the nav is inside the hero's field it owns no surface: the deep teal
-   runs to the first pixel and the bar floats in it, which is what C1 means by
-   full-bleed. The paper surface, the blur and the hairline all arrive together
-   once the field has scrolled past, and none of them is missed before that
-   because the field is already a ground. A visitor without script gets the
-   paper surface throughout, which is the safe way to be wrong. */
+/* While the nav is inside the hero's field it owns no surface: the pool and
+   the paper run to the first pixel and the bar floats on them, which is what
+   C1 means by full-bleed. The paper surface, the blur and the hairline all
+   arrive together once the field has scrolled past, and none of them is missed
+   before that because the field is already a ground. A visitor without script
+   gets the paper surface throughout, which is the safe way to be wrong. */
 .nav.over-field {
   background: transparent;
   backdrop-filter: none;
@@ -1114,7 +1191,7 @@ h3 {
 .nav.over-field .nav-mark { color: var(--field-ink); }
 .nav.over-field .nav-links a { color: var(--field-ink-2); }
 .nav.over-field .nav-links a:hover { color: var(--field-ink); }
-.nav.over-field .reading-progress > span { background: var(--azure-lift); }
+.nav.over-field .reading-progress > span { background: var(--scarlet); }
 
 /* Transparent is right only while the bar has nothing behind it but the hero's
    own field - which is the case at rest, and only at rest. The bar is sticky,
@@ -1133,32 +1210,42 @@ h3 {
   backdrop-filter: blur(12px);
 }
 
-/* The accent has two values and each has a ground. --azure is the light-ground
-   blue; --azure-lift is documented as "the same blue as it must appear on teal"
-   and this state already switches the CTA to it. The dot after the wordmark and
-   the links inside the close were still wearing the light-ground blue on the
-   dark field, at 2.95:1 where a link needs 4.5 and 2.5:1 for the dot. Both were
-   found by the contrast audit, not by eye: at a glance a blue is a blue. */
+/* The accent has two values and each has a ground. --scarlet is the
+   light-ground ink, measured 4.55:1 on --paper; --scarlet-deep is the same
+   family one step darker for the pool's links. Under this transplant there is
+   no more "the same colour as it must appear on the dark field" doubling: a red
+   is a red on both of the page's grounds, and the figure it needs lives in the
+   deep step alone. The dot after the wordmark is the accent as a mark -- but
+   the audit reads it as a 21px glyph, and a 21px glyph carries the 4.5:1 text
+   law, so where it is that size it wears --scarlet-deep like the links it
+   sits beside; the poster's 220px instance keeps --scarlet, which passes the
+   3:1 large-text law there with room. */
 .nav.over-field .mark-dot,
-.field .mark-dot,
-.poster .mark-dot,
-.poster a { color: var(--azure-lift); }
+.nav .mark-dot,
+.field .mark-dot { color: var(--scarlet-deep); }
+.poster .mark-dot { color: var(--scarlet); }
 /* M37 · the bar's CTA is the hero's CTA one register down. The first screen
-   carried two identical filled azure pills saying the same words four lines
+   carried two identical filled scarlet pills saying the same words four lines
    apart, which spends the accent twice on one decision and leaves the reader
    no way to tell which is the page's actual ask. It is the hero's: the pill
    stays down there. Up here the same link is drawn as an outline of it --
-   same azure, same ground, so it is legible as the same control at a glance,
-   one weight quieter. --azure on --paper is 5.33:1 and --azure-lift is the
-   token the field already measured at 5.19:1, so both states keep the 4.5:1
-   the text needs, and the border is the link's own colour at the same ratio. */
+   same accent, one weight quieter. But the bar is translucent, and its blend
+   does not own every ground under it: over a field whose replica's dark rail
+   scrolls beneath, the blend behind the outline measured 4.05:1 for
+   --scarlet-deep (audit 2026-10-02), under the 4.5:1 the text law holds. So
+   the pill stops borrowing its ground from the bar and carries its own: a
+   --field-base fill puts the ring and its ink on a ground that is known
+   whatever the field is doing under the bar -- --scarlet-deep measures
+   5.22:1 on that fill, ring included, since the ring is the ink's own
+   colour. The bar's band stays where it is; only the control owns a
+   surface now. */
 .nav.over-field .cta {
-  background: none;
-  color: var(--azure-lift);
+  background: var(--field-base);
+  color: var(--scarlet-deep);
   box-shadow: inset 0 0 0 1px currentColor;
 }
 .nav.over-field .cta:hover {
-  background: color-mix(in srgb, var(--azure-lift) 16%, transparent);
+  background: color-mix(in srgb, var(--scarlet) 16%, var(--field-base));
 }
 .nav .wrap { display: flex; align-items: center; gap: 32px; width: min(var(--page), 100% - var(--gutter) * 2); }
 .nav-mark {
@@ -1192,7 +1279,7 @@ h3 {
    act for the rail, so the state costs one attribute, carried on the same
    promote moment the dots and the ring ride (one clock for the page's answer
    to where). The ink is the hover's --ink: the link you are in is the one the
-   pointer would pick. The underline is --azure, the bearing's current-act
+   pointer would pick. The underline is --scarlet, the bearing's current-act
    colour, at this page's own 2px underline weight and offset - state, drawn
    with the marks the page already uses, not a new device. aria-current is the
    machine-readable half and it CLEARs when no header link names the act, so
@@ -1200,13 +1287,13 @@ h3 {
 .nav-links a[aria-current] { color: var(--ink); }
 .nav-links a[aria-current] {
   text-decoration: underline;
-  text-decoration-color: var(--azure);
+  text-decoration-color: var(--scarlet);
   text-decoration-thickness: 2px;
   text-underline-offset: 6px;
 }
 .nav.over-field .nav-links a[aria-current] {
   color: var(--field-ink);
-  text-decoration-color: var(--azure-lift);
+  text-decoration-color: var(--scarlet);
 }
 
 /* M29 · the skip link. The library's stylesheet has styled a `.skip` since it
@@ -1234,23 +1321,29 @@ h3 {
 .skip:focus-visible { top: 10px; }
 
 /* The CTA. One component, two attributes: when a release exists, only the label
-   and href change. The brief asks for a swappable slot, not a hardcoded button. */
+   and href change. The brief asks for a swappable slot, not a hardcoded button.
+   The fill is v1's .btn-grad, transplanted whole: the red-to-amber gradient
+   under one dark shade layer, whose arithmetic is recorded at the tokens
+   (white 7.79:1 on the shaded red, 5.77:1 on the shaded amber). Faithful to
+   v1 in its whole behaviour: the pill has no hover fill, only the underline
+   suppression, because v1's .btn-grad shipped without one and the gradient is
+   already the page's loudest surface. */
 .cta {
   display: inline-flex;
   align-items: center;
   padding: 9px 18px;
   border-radius: var(--r-pill);
-  background: var(--azure);
-  color: var(--on-azure);
+  background:
+    linear-gradient(var(--btn-shade), var(--btn-shade)),
+    linear-gradient(120deg, var(--g1), var(--g2));
+  color: var(--on-scarlet);
   font-size: var(--t-sm);
   font-weight: 500;
   text-decoration: none;
 }
-.cta:hover { background: var(--azure-deep); text-decoration: none; }
-.field .cta, .poster .cta { background: var(--azure-lift); color: var(--on-azure-lift); }
-.field .cta:hover, .poster .cta:hover { background: var(--azure-lift-hi); }
+.cta:hover { text-decoration: none; }
 /* M37 · the bar's CTA on the paper ground is the same outline as its over-field
-   state above, in the paper's azure. This is the half that actually shows on
+   state above, in the page's scarlet. This is the half that actually shows on
    most of the page: the header is a pale bar over pale ground for twenty
    screenfuls, and a filled pill there competes with the content for a role the
    hero owns. The hover fill is the accent at a tenth, which is the wash the
@@ -1258,10 +1351,10 @@ h3 {
 .nav .cta {
   margin-inline-start: 8px;
   background: none;
-  color: var(--azure);
+  color: var(--scarlet);
   box-shadow: inset 0 0 0 1px currentColor;
 }
-.nav .cta:hover { background: color-mix(in srgb, var(--azure) 10%, transparent); }
+.nav .cta:hover { background: color-mix(in srgb, var(--scarlet) 10%, transparent); }
 
 /* The progress line is a quiet orientation cue, not a second navigation system.
    It lives under the sticky nav so the page's long, evidence-led shape stays
@@ -1277,7 +1370,7 @@ h3 {
   display: block;
   width: 100%;
   height: 100%;
-  background: var(--azure);
+  background: var(--scarlet);
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -1286,29 +1379,49 @@ h3 {
    10 · The hero.  C1, and the only place the display size is spent.
    --------------------------------------------------------------------------- */
 .hero {
-  /* C1 is full-bleed, and full-bleed starts at the first pixel: the field runs
+  /* C1 is full-bleed, and full-bleed starts at the first pixel: the pool runs
      under the sticky nav instead of beginning below it, so the page opens on
-     the ground itself rather than on a strip of paper. The nav's height is
+     the ground itself rather than on a strip of page. The nav's height is
      added back as padding so the heading still clears the bar. */
   position: relative;
   overflow: hidden;
-  /* M47 · the mesh's blend needs a bounded backdrop: isolation stops screen
+  /* M47 · the mesh's blend needs a bounded backdrop: isolation stops multiply
      from compositing against whatever the hero is painted over (the page
-     ground), so the smoke is screened onto the field and onto nothing else. */
+     ground), so the smoke multiplies onto the field and onto nothing else. */
   isolation: isolate;
   margin-block-start: calc(-1 * var(--nav-h));
   padding-block: calc(var(--nav-h) + 72px) calc(var(--world-h) - var(--world-overlap));
 }
-/* M47 · the mesh, the video ground. Screen blend at 50 percent -- Thoria's
-   2026-09-29 direction to push the visibility ("from fade to 25% to fade to
-   50%"), taken with the mask AS IT SHIPPED rather than with a deeper text
-   hole, so the loop's worst frames do graze the text: the ramp lets the
-   ground under the kicker lift by up to ~0.14 luminance on frame 159 and
-   the azure line dips under 3:1 there. Measured on the live page, on the
-   record, and accepted: the look was chosen over the clean-text variant.
-   The element's opacity is the one strength knob (screen is linear in the
-   mesh fraction, so a brightness filter would be a second knob that
-   computes the same result).
+/* M47 · the mesh, the video ground. Multiply blend at 50 percent -- the same
+   strength Thoria raised the screen blend to ("from fade to 25% to fade to
+   50%"), carried across the transplant with the grade inverted. The video is
+   the source plate NEGATED with its white point pinned to the pool's brightest
+   stop: where the old composite lightened a dark field with pale smoke and
+   the paper had to stay out of the way, this composite darkens a light field
+   with dark smoke, which is the same art on a light ground and the same
+   machinery, pointed the other way.
+
+   The contrast law inverts with the blend. Screen lifts the ground, and its
+   risk was a light ink losing its ratio as the ground brightened (the accent
+   line dipped under 3:1 on the accepted worst frames of the screen blend).
+   Multiply darkens the
+   ground, and dark ink only gains from a darker ground: the field's inks
+   carry 15.08:1 at their worst, multiply can only raise that, and where the
+   mesh is lightest the multiply is a no-op against the pool. The accent line
+   that the old blend pushed under 3:1 now sits on a ground that can only
+   darken its backdrop, and --scarlet's ratio rises with it. The mask is kept
+   AS IT SHIPPED, not loosened on the strength of that arithmetic: the nav
+   band and the absolute-px ellipse over the text still bound where the smoke
+   may reach, because a blend's risk is best retired by construction, not by
+   trusting the composite. The element's opacity is the one strength knob
+   (multiply is linear in the mesh fraction the same way screen is). The
+   record now carries the grade's own measures, not just the arithmetic: a
+   sweep of all 1,500 shipped frames puts the visible band's mean composite
+   factor at 0.92, the loop's worst single frame at the opacity's own floor
+   of 0.50 (t ~ 0.17 s, the plate's blackest pixel over the pool), the ramp's
+   worst touch at 0.68; and the live-page pairs re-prove the mask's
+   zero-delta job over the pool in every text rect, the densest-moment pair
+   matching the plate's own per-pixel prediction at 0.98 correlation.
 
    The mask is the contrast argument, not decoration, and it is two layers
    intersected because the two regions the smoke must stay out of are not
@@ -1316,19 +1429,17 @@ h3 {
    and one ellipse over the text block. The ellipse is in ABSOLUTE px on
    purpose: the text block's half-width is bounded by the 16ch headline
    (~262px) at every viewport, while a %-radius ellipse shrinks under it.
-   Measured against the worst loop frame's per-rect maxima (kicker 0.651,
-   h1 0.671, lede 0.588, cue 0.420), every text rect's farthest corner sits
-   at d <= 0.89 from 841px up, so the ramp's reach over the text is bounded
-   and small at the strength the design shipped at. Below 840px the ellipse
-   covers the whole hero, so the element is display:none there and the
-   script never starts it -- the fetch (preload="none") never happens
-   either, and a phone's first screen keeps its 135 KB.
+   Measured against the old loop the per-rect geometry is unchanged here.
+   Below 840px the ellipse covers the whole hero, so the element is
+   display:none there and the script never starts it -- the fetch
+   (preload="none") never happens either, and a phone's first screen keeps
+   its 135 KB.
 
    Base opacity is 0 and the 50 percent lives in the motion guard on
    .is-mesh-live: the class lands on the video's own playing event, so the
    mesh fades in when its first frames actually arrive, and a reader whose
    script never ran -- whose video never plays -- sees nothing where a
-   frame would be, which is the plain field they would have had without
+   frame would be, which is the plain pool they would have had without
    the feature. */
 .hero-mesh {
   position: absolute;
@@ -1337,7 +1448,7 @@ h3 {
   height: 100%;
   object-fit: cover;
   pointer-events: none;
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
   opacity: 0;
   mask-image: linear-gradient(to bottom, transparent 78px, black 140px),
               radial-gradient(420px 340px at 50% 20%, transparent 63%, black 100%);
@@ -1425,13 +1536,20 @@ h3 {
 .hero .h1-reveal { display: block; overflow: hidden;
                    padding-block: 0.14em; margin-block: -0.14em; }
 .hero .h1-reveal .h1-line { display: block; }
-/* The hero's one accent: "what it saw" in azure-lift on the field. It is the
-   h1's phrase and the page's promise, lifted the way the genre lifts its key
-   phrase (Freebuff: "100% free" in green; two other references do the same).
-   --azure-lift is 5.19:1 on the field's brightest stop, AA at this size with
-   room; the light-ground --azure would be 2.9:1 here, which is why the span
-   names the lift token and the print world maps it back. */
-.h1-see { color: var(--azure-lift); }
+/* The hero's one accent: "what it saw" in the gradient's red-to-amber text
+   clip. It is the h1's phrase and the page's promise, lifted the way the genre
+   lifts its key phrase (Freebuff: "100% free" in green; two other references
+   do the same). The clip takes --g1 at the red end and --g-tint at the warm
+   end, the one gradient the tokens give the pool's text, measured 3.05:1 at
+   the pool's darkest stop and 3.37:1 at its brightest -- clear of the 3:1 a
+   display-size phrase is held to on every step it lands over. The print world
+   fills the phrase back with --scarlet itself (below). */
+.h1-see {
+  background: linear-gradient(110deg, var(--g1), var(--g-tint));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 /* BALANCED, because the default wrap orphans two words at the narrowest width
    the site is built for. Measured in the browser at a true 390 CSS px, on the
    built page, reading the lede's own text node one character at a time and
@@ -1531,11 +1649,11 @@ h3 {
 }
 .ruler-head strong { font-weight: 600; }
 /* The scale's label is text, so it takes the ratio-checked ink. It was on
-   --ink-3, the app's own label grey, which is a graphic value at 3.12:1 on
+   --ink-3, the app's own label grey, which is a graphic value at 3.16:1 on
    --paper: fine for the track it draws, not for a 15px caption a reader is
    meant to read. --ink-2 is documented as secondary at >= 4.5:1 on the same
-   ground (5.71:1 measured), and the label still sits quieter than the strong
-   lead-in beside it. */
+   ground (7.05:1 measured after the mist's step down), and the label still
+   sits quieter than the strong lead-in beside it. */
 .ruler-head span { color: var(--ink-2); white-space: nowrap; }
 .ruler-track {
   position: relative;
@@ -1549,7 +1667,7 @@ h3 {
   width: 15%;
   height: 100%;
   border-radius: inherit;
-  background: var(--azure);
+  background: var(--scarlet);
 }
 .ruler-point {
   position: absolute;
@@ -1559,8 +1677,8 @@ h3 {
   height: 22px;
   border: 3px solid var(--paper);
   border-radius: 50%;
-  background: var(--azure);
-  box-shadow: 0 0 0 1px var(--azure);
+  background: var(--scarlet);
+  box-shadow: 0 0 0 1px var(--scarlet);
   transform: translate(-50%, -50%);
 }
 .ruler-labels {
@@ -1653,8 +1771,8 @@ h3 {
    13 · The close.  C5, the poster.
 
    Two moves, and the second is the one the report says everyone skips (#13):
-   the wordmark re-inks coral -> azure, and the product overlaps its lower third
-   so the mark passes BEHIND it. Freebuff's hills pass in front of their
+   the wordmark re-inks coral -> scarlet, and the product overlaps its lower
+   third so the mark passes BEHIND it. Freebuff's hills pass in front of their
    wordmark; Tempo's planet limb passes in front of theirs. Ours inverts it —
    the product occludes the brand, which is what "it shows you what it saw"
    means.
@@ -1795,7 +1913,7 @@ h3 {
   line-height: var(--mark-line);
   letter-spacing: -0.02em;
   text-align: center;
-  color: var(--azure-lift);
+  color: var(--scarlet);
 }
 /* The rim: the letters carry their own ground with them. The crown's tick ring
    passes at the letters' mid-height in full primary ink - the wheel is the
@@ -1825,11 +1943,13 @@ h3 {
 /* Authored in its finished state. This only dims it for a visitor who has not
    scrolled here yet; if the script never runs, the mark is simply already inked.
 
-   The cold ink is the artwork red AS IT MUST APPEAR ON THE FIELD rather than the
-   red itself. Measured: --coral on the field's lightest stop is 2.45:1 and this
-   mark is the largest text on the page, so the one state a visitor is most
-   likely to notice was the one below the bar. --coral-lift is 3.41:1 there and
-   4.41:1 on the field's darkest stop, and it is still unmistakably the red. */
+   The cold ink is the artwork red one lift lighter, AS THE POOL NEEDS IT. On
+   the warm pool the straight --coral is the dimmer red and --coral-lift the
+   clearer one: the lift measures 3.36:1 at the pool's darkest stop and 3.70:1
+   at its brightest, above the 3:1 a mark of this size is held to, and it is
+   still unmistakably the red. (The cool sheet chose the lift because its field
+   was dark and --coral vanished; here the choice is about which red says
+   "arriving" against cream.) */
 .poster-mark.is-cold { color: var(--coral-lift); }
 .poster .win {
   position: relative;
@@ -1858,14 +1978,18 @@ h3 {
 .poster.is-cold .body > p,
 .poster.is-cold .body .cta,
 .poster.is-cold .body h2 { transform: translateY(14px); }
-/* Primary ink, not secondary, and the reason is a measurement rather than a
-   preference. The horizon is a child of the wordmark, and its halo rises from the
-   arc's apex, which at phone widths reaches into the first line of this
-   paragraph: the pixel audit sampled the ground under it at luminance 0.058,
-   lighter than the field's own brightest stop (0.033), and measured --field-ink-2
-   at 4.31:1 where 4.5 is the bar. Against that same glow --field-ink is 8.2:1, and
-   10.4:1 against the field alone. A flat-ground audit could not see this: the
-   declared pairs both pass, and what the visitor meets is the illustration. */
+/* Primary ink, not secondary, re-measured under the warm pool. On the cool
+   sheet the hazard here was the horizon's own halo, which at phone widths
+   reached into this paragraph's first line and dragged the ground to luminance
+   0.058. The transplant re-aimed that halo to var(--field-hi), the pool's own
+   brightest stop, and the present layout clears the paragraph outright: the
+   horizon's frame lands 452px above it at a 320px phone and 297px above at 390.
+   The pixel audit re-sampled the ground under the first line at that phone
+   width and found the pool alone, lightest composited pixel rgb(250, 245, 234)
+   at luminance 0.916: --field-ink measures 16.49:1 against it, --field-ink-2
+   4.93:1. Both sit clear of the bar, so primary ink is margin here rather than
+   lifeline; and if the halo ever reaches this line again, its brightest-stop
+   ink over paper can only lighten the ground and widen those ratios. */
 .poster .body p { color: var(--field-ink); }
 .poster .cta { margin-block-start: 28px; }
 
@@ -1877,8 +2001,8 @@ h3 {
    which is the one piece of the shared grammar this page did not have.
 
    The links are --field-ink-2, the same quiet tone as every other secondary
-   string in the field, rather than the --azure-lift the page uses for the links
-   it wants you to follow. That is deliberate: sixteen azure links in a footer
+   string in the field, rather than the --scarlet-deep the pool's links use.
+   That is deliberate: sixteen scarlet links in a footer
    would be the loudest thing on the page after the wordmark, and they are a
    way out, not a call to action. They gain the field's brighter ink on hover.
 
@@ -1953,8 +2077,8 @@ h3 {
    answer (Source/tools/make-calendar-ring.py), so the two numbers in the
    caption and the 355 slots in the drawing cannot drift apart.
 
-   The arc draws in --rule and --azure, so it takes the page's tokens and needs
-   no colour of its own.
+   The arc draws in --rule and --scarlet, so it takes the page's tokens and
+   needs no colour of its own.
    --------------------------------------------------------------------------- */
 
 /* The act that owns a bleed has to clip it.
@@ -2097,7 +2221,7 @@ h3 {
    --ink-2 at the page's own 13px label size (the token list documents that pair as
    >= 4.5:1 on --paper; --ink-3 is the graphic ink at 3.12:1 and would be a caption
    nobody can read), the rail and nodes are --rule and --ink-3 because they are
-   structure, and the plate's single --azure is the short rule under the word the
+   structure, and the plate's single --scarlet is the short rule under the word the
    tool is named after. One accent, one claim. The generator carries the full
    argument: Source/tools/make-etymology.py. */
 .etymology { margin: 42px 0 0; }
@@ -2114,7 +2238,7 @@ h3 {
 }
 .etym-rail, .etym-branch, .etym-root-rule { stroke: var(--ink-3); }
 .etym-node { fill: var(--ink-3); }
-.etym-claim { stroke: var(--azure); stroke-width: 1.5; fill: none; }
+.etym-claim { stroke: var(--scarlet); stroke-width: 1.5; fill: none; }
 
 /* The ledger's gloss column steps up where the plate is scaled down, which is the
    same measurement the ring's label and the tall boundary plate take. This plate
@@ -2145,7 +2269,7 @@ h3 {
    plate rather than like the exhibits: this diagram is a statement about the
    product's shape, so it is drawn in the page's structural inks, not photographed.
    The node boxes take --card so they read as objects on --paper; the wires and the
-   frame are --rule and --ink-3, and only the cross is --azure.
+   frame are --rule and --ink-3, and only the cross is --scarlet.
 
    THREE VARIANTS, and the reason is measured type rather than taste. The plate's
    labels are in user units, so they scale with the figure, and the sweep that
@@ -2167,7 +2291,7 @@ h3 {
 .bnd-line, .bnd-box { fill: none; stroke: var(--rule); }
 .bnd-box { fill: var(--card); }
 .bnd-wire { fill: none; stroke: var(--ink-3); }
-.bnd-cross { fill: none; stroke: var(--azure); stroke-width: 1.6; }
+.bnd-cross { fill: none; stroke: var(--scarlet); stroke-width: 1.6; }
 .bnd-name, .bnd-sub, .bnd-outside, .bnd-claim, .bnd-label {
   font-family: Inter, sans-serif;
 }
@@ -2202,18 +2326,19 @@ h3 {
 }
 
 /* On a field the plate takes the field's own inks, and the page documents those as
-   AA pairs measured against --field-hi, the field's LIGHTEST stop and therefore the
-   worst case: --field-ink-2 6.07:1, --azure-lift 5.19:1. Which means the plate is
+   pairs measured against --field-edge, the pool's DARKEST stop and therefore the
+   worst case for dark ink on a light ground: --field-ink-2 4.51:1, --scarlet-deep
+   4.95:1. Which means the plate is
    correct on either ground rather than needing to be moved when someone re-hangs
    it. The structural ink is --field-ink-2 and NOT --field-rule, and that is a
-   measurement rather than a taste call: --field-rule is 10% white, which over the
-   field is about 1.3:1, and a rail nobody can see is not a quiet rail, it is a
+   measurement rather than a taste call: --field-rule is a pool seam at
+   1.11:1 to 1.17:1, and a rail nobody can see is not a quiet rail, it is a
    missing one. */
 .field .etym-word, .field .etym-name, .field .etym-root { fill: var(--field-ink); }
 .field .etym-gloss { fill: var(--field-ink-2); }
 .field .etym-rail, .field .etym-branch, .field .etym-root-rule { stroke: var(--field-ink-2); }
 .field .etym-node { fill: var(--field-ink-2); }
-.field .etym-claim { stroke: var(--azure-lift); }
+.field .etym-claim { stroke: var(--scarlet); }
 .etym-tall { display: none; }
 /* The swap is measured, not guessed. The wide plate is 540 units of viewBox, so it
    renders at 13px glosses while its field gives it about that; the field is the
@@ -2240,9 +2365,9 @@ h3 {
 
    Ink: structure is --ink-3 (the spirals and their slots are the drawing, not
    text), the counts are --ink with --ink-2 glosses, and each dial carries one
-   azure statement, the dot and its name marking the first month of each count.
+   scarlet statement, the dot and its name marking the first month of each count.
    Classes rather than token fills, so the field remaps them the way it remaps
-   the etymology plate: --field-ink-2 for structure, --azure-lift for the claim.
+   the etymology plate: --field-ink-2 for structure, --scarlet for the claim.
    --------------------------------------------------------------------------- */
 .rear-dials { margin: 56px 0 0; }
 .dials-plate { display: block; width: 100%; height: auto; margin-inline: auto; }
@@ -2252,25 +2377,26 @@ h3 {
 .dials-line { stroke: var(--ink-3); stroke-width: 1.2; fill: none; }
 .dials-slots { stroke: var(--ink-3); stroke-width: 1.1;
                stroke-linecap: round; fill: none; }
-.dials-start { fill: var(--azure); }
+.dials-start { fill: var(--scarlet); }
 /* The generator sets sizes inline where they are geometry (the tall plate's
    16.5 clears the 11px type floor at its 0.68 render scale); the stylesheet
    sets only the wide plate's 14-unit start label and its inks. */
 .dials-startlabel { font-family: Inter, sans-serif;
-                    font-weight: 500; fill: var(--azure); }
+                    font-weight: 500; fill: var(--scarlet); }
 .dials-count { font-family: Inter, sans-serif;
                font-weight: 600; fill: var(--ink);
                font-variant-numeric: tabular-nums; }
 .dials-sub { font-family: Inter, sans-serif;
              fill: var(--ink-2); }
 
-/* In the dark field the plate's tokens remap, exactly the etymology plate's
-   division: structure takes --field-ink-2 (6.07:1 there; --field-rule is 10%
-   white, about 1.3:1, a drawing nobody is shown), text takes the field's inks,
-   and the claim takes the blue that passes on teal. */
+/* In the pool the plate's tokens remap, exactly the etymology plate's
+   division: structure takes --field-ink-2 (4.51:1 at the pool's darkest stop;
+   --field-rule is a seam at 1.11:1 to 1.17:1, a drawing nobody is shown),
+   text takes the field's inks,
+   and the claim takes the red that passes on the pool. */
 .field .dials-line, .field .dials-slots { stroke: var(--field-ink-2); }
-.field .dials-start { fill: var(--azure-lift); }
-.field .dials-startlabel { fill: var(--azure-lift); }
+.field .dials-start { fill: var(--scarlet); }
+.field .dials-startlabel { fill: var(--scarlet-deep); }
 .field .dials-count { fill: var(--field-ink); }
 .field .dials-sub { fill: var(--field-ink-2); }
 
@@ -2282,7 +2408,7 @@ h3 {
    a 340px cap, rendering between 0.68 (a 320px phone: svg 231.6 after the
    wrap's and field's padding) and 1.0, so its 16.5-unit labels land 11.2px or
    larger at every width - the same arithmetic the etymology ledger runs. The
-   tall plate's azure dot speaks alone there; the caption, real HTML, carries
+   tall plate's scarlet dot speaks alone there; the caption, real HTML, carries
    what the dot means. */
 @media (max-width: 700px) {
   .dials-wide { display: none; }
@@ -2301,7 +2427,7 @@ h3 {
    self-test demands all of them plus the arrow.
 
    Ink: structure is --ink-3, ordinals and names are the ink they earn as
-   display text, and the plate's one azure statement is the pointer - the
+   display text, and the plate's one scarlet statement is the pointer - the
    direction is the claim. The Greek labels pin the display face inline in the
    generator (measured in it; the font rebuild made that real, see 2 above).
    Classes, so the field remaps them the way it remaps the rear-dials plate.
@@ -2315,22 +2441,22 @@ h3 {
 .gd-arc, .gd-spoke { stroke: var(--ink-3); stroke-width: 1.1; fill: none; }
 .gd-name { fill: var(--ink); font-weight: 500; letter-spacing: 0.02em; }
 .gd-ordinal { fill: var(--ink); }
-.gd-shaft { stroke: var(--azure); stroke-width: 1.8; stroke-linecap: round; }
-.gd-arrow { stroke: var(--azure); stroke-width: 1.8; fill: none;
+.gd-shaft { stroke: var(--scarlet); stroke-width: 1.8; stroke-linecap: round; }
+.gd-arrow { stroke: var(--scarlet); stroke-width: 1.8; fill: none;
             stroke-linecap: round; stroke-linejoin: round; }
 
 .games-count { font-family: Inter, sans-serif; font-weight: 600;
                fill: var(--ink); font-variant-numeric: tabular-nums; }
 .games-sub { font-family: Inter, sans-serif; fill: var(--ink-2); }
 
-/* In the dark field: the rear-dials division exactly. Structure takes
-   --field-ink-2 (6.07:1 there, measured); text takes the field's inks; the
-   claim takes --azure-lift, the blue that passes on teal. */
+/* In the pool: the rear-dials division exactly. Structure takes
+   --field-ink-2 (4.51:1 at the pool's darkest stop, measured); text takes the
+   field's inks; the claim takes --scarlet, the red that passes on the pool. */
 .field .gd-sector { fill: transparent; }
 .field .gd-arc, .field .gd-spoke { stroke: var(--field-ink-2); }
 .field .gd-name { fill: var(--field-ink); }
 .field .gd-ordinal { fill: var(--field-ink); }
-.field .gd-shaft, .field .gd-arrow { stroke: var(--azure-lift); }
+.field .gd-shaft, .field .gd-arrow { stroke: var(--scarlet); }
 .field .games-count { fill: var(--field-ink); }
 .field .games-sub { fill: var(--field-ink-2); }
 
@@ -2353,7 +2479,7 @@ h3 {
    outer day-hole ring drawn in the calendar-ring figure's own dashed-circle
    language because its count is that dispute and the drawing does not take a
    side, the three attested month names, and the sun and moon marks - the
-   plate's one azure statement, the two things the face exists to show.
+   plate's one scarlet statement, the two things the face exists to show.
    Greek labels pin the display face inline (M37a's rebuild); the count line
    is Inter, the dials-count convention. Classes, so the field remaps them
    the way it remaps the other two plates.
@@ -2368,21 +2494,21 @@ h3 {
 .fd-arc, .fd-spoke { stroke: var(--ink-3); stroke-width: 1; fill: none; }
 .fd-sign { fill: var(--ink); font-weight: 500; letter-spacing: 0.02em; }
 .fd-month { fill: var(--ink-2); letter-spacing: 0.02em; }
-.fd-sun { fill: var(--azure); }
-.fd-ray { stroke: var(--azure); stroke-width: 1.1; stroke-linecap: round; }
-.fd-moon { fill: var(--paper); stroke: var(--azure); stroke-width: 1.4; }
+.fd-sun { fill: var(--scarlet); }
+.fd-ray { stroke: var(--scarlet); stroke-width: 1.1; stroke-linecap: round; }
+.fd-moon { fill: var(--paper); stroke: var(--scarlet); stroke-width: 1.4; }
 .front-count { font-family: Inter, sans-serif; font-weight: 600;
                fill: var(--ink); }
 
-/* In the dark field: the house division. The moon's disc takes the field's
-   ground so it reads as a body against the teal, its rim the azure. */
+/* In the pool: the house division. The moon's disc takes the field's
+   ground so it reads as a body against the cream, its rim the scarlet. */
 .field .fd-frame, .field .fd-holes { stroke: var(--field-ink-2); }
 .field .fd-arc, .field .fd-spoke { stroke: var(--field-ink-2); }
 .field .fd-sign { fill: var(--field-ink); }
 .field .fd-month { fill: var(--field-ink-2); }
-.field .fd-sun { fill: var(--azure-lift); }
-.field .fd-ray { stroke: var(--azure-lift); }
-.field .fd-moon { fill: var(--field-base); stroke: var(--azure-lift); }
+.field .fd-sun { fill: var(--scarlet); }
+.field .fd-ray { stroke: var(--scarlet); }
+.field .fd-moon { fill: var(--field-base); stroke: var(--scarlet); }
 .field .front-count { fill: var(--field-ink); }
 
 @media (max-width: 700px) {
@@ -2398,7 +2524,7 @@ h3 {
    anchored at 12, with an x8 lens at the far side. Two neutral inks, one per
    stream - --ink-3 and --ink-2 - because the plate takes no side; the lens
    glass and line are --rule. The lens's magnified dashes keep their streams'
-   inks so the eye can trace which is which. The one --azure on the plate is
+   inks so the eye can trace which is which. The one --scarlet on the plate is
    the anchor bead, the hole both counts agree on: the same claim-as-mark the
    calendar-ring figure makes.
    ------------------------------------------------------------------------- */
@@ -2410,7 +2536,7 @@ h3 {
 .tr-frame { stroke: var(--rule); stroke-width: 1; fill: none; }
 .tr-ring-a { stroke: var(--ink-3); stroke-width: 2.8; stroke-linecap: round; fill: none; }
 .tr-ring-b { stroke: var(--ink-2); stroke-width: 2.8; stroke-linecap: round; fill: none; }
-.tr-anchor-dot { fill: var(--azure); }
+.tr-anchor-dot { fill: var(--scarlet); }
 .tr-lens-glass { stroke: var(--rule); stroke-width: 1; fill: none; }
 .tr-lens-line { stroke: var(--rule); stroke-width: 1; fill: none; }
 .tr-a { stroke: var(--ink-3); stroke-width: 2.2; stroke-linecap: round; fill: none; }
@@ -2425,12 +2551,12 @@ h3 {
 .tr-count-b { fill: var(--ink); }
 .tr-mag { fill: var(--ink-2); }
 
-/* In the dark field: the house division. --rule and the grays remap; the
-   anchor stays azure (lifted, as every field mark is). */
+/* In the pool: the house division. --rule and the grays remap; the
+   anchor stays scarlet, --scarlet on the pool as every field mark is. */
 .field .tr-frame { stroke: var(--field-ink-2); }
 .field .tr-ring-a { stroke: var(--field-ink-2); }
 .field .tr-ring-b { stroke: var(--field-ink); }
-.field .tr-anchor-dot { fill: var(--azure-lift); }
+.field .tr-anchor-dot { fill: var(--scarlet); }
 .field .tr-lens-glass, .field .tr-lens-line { stroke: var(--field-ink-2); }
 .field .tr-a { stroke: var(--field-ink-2); }
 .field .tr-b { stroke: var(--field-ink); }
@@ -2452,9 +2578,9 @@ h3 {
    Source 1's register, transcribed whole: the forty-four rows inscribed above
    and beneath the dials, keyed by Greek letters, damage marks and all. The
    inks are the house's text hierarchy - rows --ink, headers --ink-2 - and the
-   plate's one --azure is the key letters, the thing that makes a parapegma a
+   plate's one --scarlet is the key letters, the thing that makes a parapegma a
    keyed register. The band between the slabs is the dial zone as indication:
-   --ink-3 structure, the sun and moon azure, no longitudes. The Greek rows
+   --ink-3 structure, the sun and moon scarlet, no longitudes. The Greek rows
    pin the display face inline (the M37a rebuild carries uppercase Greek);
    the headers are Inter, tracked like the window chips.
    ------------------------------------------------------------------------- */
@@ -2465,24 +2591,29 @@ h3 {
 
 .pp-title { fill: var(--ink); font-weight: 500; letter-spacing: 0.14em; }
 .pp-head { fill: var(--ink-2); font-weight: 600; letter-spacing: 0.14em; }
-.pp-key { fill: var(--azure); font-weight: 500; }
+/* The keyed letters are the accent, at the plate's 12.5px text size -- and
+   below AA there: --scarlet on the pool's ground is 4.07:1 (audit 2026-10-02),
+   so the text takes the accent's own darker end --scarlet-deep (5.88:1 on
+   paper, 4.95 on --field-edge), the ink the body links already wear. The
+   stroke shapes that follow keep --scarlet: they are drawn forms, not text. */
+.pp-key { fill: var(--scarlet-deep); font-weight: 500; }
 .pp-greek { fill: var(--ink); letter-spacing: 0.02em; }
 .pp-frame { stroke: var(--ink-3); stroke-width: 1; fill: none; }
 .pp-tick { stroke: var(--ink-3); stroke-width: 1; stroke-linecap: round; }
-.pp-sun { fill: var(--azure); }
-.pp-ray { stroke: var(--azure); stroke-width: 1.1; stroke-linecap: round; }
-.pp-moon { fill: var(--paper); stroke: var(--azure); stroke-width: 1.3; }
+.pp-sun { fill: var(--scarlet); }
+.pp-ray { stroke: var(--scarlet); stroke-width: 1.1; stroke-linecap: round; }
+.pp-moon { fill: var(--paper); stroke: var(--scarlet); stroke-width: 1.3; }
 
-/* In the dark field: the house division. The moon's disc takes the field's
-   ground so it reads as a body, its rim the azure. */
+/* In the pool: the house division. The moon's disc takes the field's
+   ground so it reads as a body, its rim the scarlet. */
 .field .pp-title { fill: var(--field-ink); }
 .field .pp-head { fill: var(--field-ink-2); }
-.field .pp-key { fill: var(--azure-lift); }
+.field .pp-key { fill: var(--scarlet-deep); }
 .field .pp-greek { fill: var(--field-ink); }
 .field .pp-frame, .field .pp-tick { stroke: var(--field-ink-2); }
-.field .pp-sun { fill: var(--azure-lift); }
-.field .pp-ray { stroke: var(--azure-lift); }
-.field .pp-moon { fill: var(--field-base); stroke: var(--azure-lift); }
+.field .pp-sun { fill: var(--scarlet); }
+.field .pp-ray { stroke: var(--scarlet); }
+.field .pp-moon { fill: var(--field-base); stroke: var(--scarlet); }
 
 @media (max-width: 700px) {
   .pp-wide { display: none; }
@@ -2495,7 +2626,7 @@ h3 {
 
    The sub-dial the Saros spiral carries in its eye, drawn in this plate's own
    grammar: the structure inks and label classes are the rear-dials plate's
-   (dials-line family), the azure is the hub's sum - the drawing's one claim.
+   (dials-line family), the scarlet is the hub's sum - the drawing's one claim.
    The three sectors are exact thirds of the circle (1.5-degree gaps either
    side of each boundary so the divisions read as drawn, not cut). Source 1's
    legend is complete, so the labels are its verbatim marks: o, H, Iϛ.
@@ -2510,7 +2641,7 @@ h3 {
 .ex-glyph { font-family: Inter, sans-serif; font-weight: 600;
             fill: var(--ink); }
 .ex-sum { font-family: Inter, sans-serif; font-weight: 600;
-          fill: var(--azure); font-variant-numeric: tabular-nums; }
+          fill: var(--scarlet-deep); font-variant-numeric: tabular-nums; }
 .ex-sum-sub, .ex-legnote, .ex-cycle { font-family: Inter, sans-serif;
                                       fill: var(--ink-2); }
 .ex-leghead { font-family: Inter, sans-serif; font-weight: 500;
@@ -2520,7 +2651,7 @@ h3 {
 /* In the dark field: the rear-dials plate's own division. */
 .field .ex-sector, .field .ex-hub { stroke: var(--field-ink-2); }
 .field .ex-glyph { fill: var(--field-ink); }
-.field .ex-sum { fill: var(--azure-lift); }
+.field .ex-sum { fill: var(--scarlet-deep); }
 .field .ex-sum-sub, .field .ex-legnote, .field .ex-cycle
   { fill: var(--field-ink-2); }
 .field .ex-leghead, .field .ex-legglyph { fill: var(--field-ink); }
@@ -2536,7 +2667,7 @@ h3 {
 
    The fifth named cycle, drawn in the exeligmos's own grammar: four exact
    quarters (1.5-degree gaps either side of each boundary), the turn ordinals
-   I-II-III-IV on the ring, the four-turn product in the hub (the azure, the
+   I-II-III-IV on the ring, the four-turn product in the hub (the scarlet, the
    drawing's one claim, like the exeligmos's 8 + 8 + 8 = 24). The arithmetic
    is the page's own: 19 tropical years printed in the Metonic paragraph,
    76-year sub-dial printed in the captured answer, 4 x 19 = 76 the product.
@@ -2553,13 +2684,13 @@ h3 {
 .cl-arith { font-family: Inter, sans-serif; font-weight: 600;
             fill: var(--ink); font-variant-numeric: tabular-nums; }
 .cl-claim { font-family: Inter, sans-serif; font-weight: 600;
-            fill: var(--azure); font-variant-numeric: tabular-nums; }
+            fill: var(--scarlet-deep); font-variant-numeric: tabular-nums; }
 .cl-cycle { font-family: Inter, sans-serif; fill: var(--ink-2); }
 
 /* In the dark field: the exeligmos plate's own division. */
 .field .cl-sector, .field .cl-hub { stroke: var(--field-ink-2); }
 .field .cl-turn, .field .cl-arith { fill: var(--field-ink); }
-.field .cl-claim { fill: var(--azure-lift); }
+.field .cl-claim { fill: var(--scarlet-deep); }
 .field .cl-cycle { fill: var(--field-ink-2); }
 
 @media (max-width: 700px) {
@@ -2575,7 +2706,7 @@ h3 {
    The founding arithmetic, in the calendar ring's own bead language: 235
    month beads on the outer ring, 19 year divisions of the inner dial, one
    anchor at 12 o'clock, and the gap in the hub as the captured answer
-   prints it - a time, "about two hours", the azure, the drawing's one
+   prints it - a time, "about two hours", the scarlet anchor, the drawing's one
    claim. Inks follow the callippic plate's division; the month beads use
    the calendar-ring family's stroke weight.
    ------------------------------------------------------------------------- */
@@ -2589,11 +2720,11 @@ h3 {
 .mtc-year { stroke: var(--ink-3); stroke-width: 1.2; }
 .mtc-hub { fill: none; stroke: var(--ink-3); stroke-width: 1; }
 .mtc-anchor-line { stroke: var(--ink-3); stroke-width: 1; }
-.mtc-anchor-dot { fill: var(--azure); }
+.mtc-anchor-dot { fill: var(--scarlet); }
 .mtc-hub-lead { font-family: Inter, sans-serif; font-weight: 600;
                 fill: var(--ink); }
 .mtc-claim { font-family: Inter, sans-serif; font-weight: 600;
-             fill: var(--azure); }
+             fill: var(--scarlet-deep); }
 .mtc-years-label, .mtc-months-label {
   font-family: Inter, sans-serif; font-weight: 600; fill: var(--ink); }
 
@@ -2602,7 +2733,7 @@ h3 {
 .field .mtc-year, .field .mtc-hub, .field .mtc-anchor-line
   { stroke: var(--field-ink-2); }
 .field .mtc-hub-lead { fill: var(--field-ink); }
-.field .mtc-claim { fill: var(--azure-lift); }
+.field .mtc-claim { fill: var(--scarlet-deep); }
 .field .mtc-years-label, .field .mtc-months-label { fill: var(--field-ink); }
 
 @media (max-width: 700px) {
@@ -2618,7 +2749,7 @@ h3 {
    drawn as its own objects: the ten documents as the rail's rows, at plate
    scale. Inks are the rail's own grammar - titles --ink, the zebra band the
    app's --fill-row equivalent drawn as a low-opacity white wash like the
-   dispute table's, dots --azure. The rows wrap where the rail wraps, so the
+   dispute table's, dots --scarlet. The rows wrap where the rail wraps, so the
    tall plate keeps every name whole at the type floor.
    ------------------------------------------------------------------------- */
 .shelf-fig { margin: 40px 0 0; }
@@ -2635,12 +2766,12 @@ h3 {
    token is used directly, no field remap. */
 .shelf-band { fill: var(--fill-row); }
 .shelf-rule { stroke: var(--rule); stroke-width: 1; }
-.shelf-dot { fill: var(--azure); }
+.shelf-dot { fill: var(--scarlet); }
 
 .field .shelf-title, .field .shelf-head { fill: var(--field-ink); }
 .field .shelf-foot { fill: var(--field-ink-2); }
 .field .shelf-rule { stroke: var(--field-ink-2); }
-.field .shelf-dot { fill: var(--azure-lift); }
+.field .shelf-dot { fill: var(--scarlet); }
 
 @media (max-width: 700px) {
   .shelf-wide { display: none; }
@@ -2653,7 +2784,7 @@ h3 {
 
    The act's decision drawn as a flow: question -> the small model's test ->
    two outcomes. The inks are the rear-dials family (structure --ink-3 on
-   paper, text --ink/--ink-2), and the azure is the test node - the one
+   paper, text --ink/--ink-2), and the scarlet is the test node - the one
    thing that moves, the plate's single assertion. Boxes are sized from
    measured strings in the generator; the stylesheet only sets inks.
    ------------------------------------------------------------------------- */
@@ -2663,10 +2794,10 @@ h3 {
 .gate-tall { display: none; max-width: 340px; }
 
 .gn-box { fill: none; stroke: var(--ink-3); stroke-width: 1.2; }
-.gn-box.gn-azure { stroke: var(--azure); }
+.gn-box.gn-scarlet { stroke: var(--scarlet); }
 .gn-edge { fill: none; stroke: var(--ink-3); stroke-width: 1.1; }
 .gn-t { fill: var(--ink); font-weight: 500; }
-.gn-t.gn-azure { fill: var(--azure); font-weight: 600; }
+.gn-t.gn-scarlet { fill: var(--scarlet-deep); font-weight: 600; }
 .gn-elabel { fill: var(--ink-2); font-style: italic; }
 .gn-cap { fill: var(--ink-2); }
 
@@ -2675,10 +2806,10 @@ h3 {
    own here - the print world remaps the field tokens at :root, and these
    rules follow. */
 .field .gn-box { stroke: var(--field-ink-2); }
-.field .gn-box.gn-azure { stroke: var(--azure-lift); }
+.field .gn-box.gn-scarlet { stroke: var(--scarlet); }
 .field .gn-edge { stroke: var(--field-ink-2); }
 .field .gn-t { fill: var(--field-ink); }
-.field .gn-t.gn-azure { fill: var(--azure-lift); }
+.field .gn-t.gn-scarlet { fill: var(--scarlet-deep); }
 .field .gn-elabel, .field .gn-cap { fill: var(--field-ink-2); }
 
 @media (max-width: 700px) {
@@ -2709,18 +2840,21 @@ h3 {
 
 .uv-box { fill: none; stroke: var(--ink-3); stroke-width: 1.2; }
 /* The mark is the one filled node: --coral carrying white, like the app's own
-   citation chips. The fill is the contrast arithmetic's answer - the sampled
-   dark field leaves every red INK under 4.5:1 (coral-lift 3.64), while white
-   on --coral is 5.56:1 on screen and 9.28:1 in print, on every theme state. */
+   citation chips. The fill is the artwork, not a repair: the reproduced mark
+   is a filled red chip, and the pair to measure is white on --coral - 5.56:1
+   on screen and 9.28:1 in print, on every theme state. (On the warm pool red
+   would now clear 4.5:1 even as an ink, 4.67:1 at the darkest stop, but the
+   node reproduces the mark's shape, and a filled chip does not become a text
+   ink because the ground changed.) */
 .uv-box.uv-coral { fill: var(--coral); stroke: var(--coral); }
 .uv-edge { fill: none; stroke: var(--ink-3); stroke-width: 1.1; }
 .uv-t { fill: var(--ink); font-weight: 500; }
-.uv-t.uv-coral { fill: var(--on-azure); font-weight: 600; }
+.uv-t.uv-coral { fill: var(--on-scarlet); font-weight: 600; }
 .uv-elabel { fill: var(--ink-2); font-style: italic; }
 .uv-cap { fill: var(--ink-2); }
 
-/* In the dark field: the gate plate's own division, with the mark lifted to
-   the field's coral. The screen world samples pixels, so the white-on-coral
+/* In the pool: the gate plate's own division, with the mark held at --coral. The
+   screen world samples pixels, so the white-on-coral
    node is measured against the fill that is really behind it; the sheet's own
    treatment of the mark lives in the print block below. */
 .field .uv-box { stroke: var(--field-ink-2); }
@@ -2730,7 +2864,7 @@ h3 {
 .field .uv-box.uv-coral { fill: var(--coral); stroke: var(--coral); }
 .field .uv-edge { stroke: var(--field-ink-2); }
 .field .uv-t { fill: var(--field-ink); }
-.field .uv-t.uv-coral { fill: var(--on-azure); }
+.field .uv-t.uv-coral { fill: var(--on-scarlet); }
 .field .uv-elabel, .field .uv-cap { fill: var(--field-ink-2); }
 
 @media (max-width: 700px) {
@@ -2903,11 +3037,11 @@ h3 {
 .plate-gallery .evidence dd { color: var(--field-ink-2); }
 .plate-gallery .ruler-head span { color: var(--field-ink-2); }
 .plate-gallery .ruler-track { background: var(--field-rule); }
-.plate-gallery .ruler-fill { background: var(--azure-lift); }
+.plate-gallery .ruler-fill { background: var(--scarlet); }
 .plate-gallery .ruler-point {
   border-color: var(--field-base);
-  background: var(--azure-lift);
-  box-shadow: 0 0 0 1px var(--azure-lift);
+  background: var(--scarlet);
+  box-shadow: 0 0 0 1px var(--scarlet);
 }
 .plate-gallery .ruler-labels { color: var(--field-ink-2); }
 .plate-gallery .confidence-ruler figcaption { color: var(--field-ink-2); }
@@ -2934,14 +3068,18 @@ h3 {
    the other solution — two accent values, one per ground, switched by M1c —
    but the nav can afford it because it is a solid paper bar once stuck; the
    index is transparent chrome that sits directly on whatever is under it, and
-   the under-it changes five times across a scroll (hero field, paper, inset
-   fields, paper, the close's field). Rather than track each, the dots wear the
-   tokens that hold on both extremes: --ink-3 idle (3.12:1 on --paper, 5.4:1 on
-   the field) and --azure-deep current — the token whose own definition is
-   "the lightness midpoint of the two accents", which is to say the accent
-   built for exactly this duality (>= 3.7:1 on both grounds, with the 1.45x
-   scale carrying the rest of the emphasis). The first draft switched grounds
-   with the nav and measured 1.3:1 idle dots over the close; this replaces it.
+   the under-it changes five times across a scroll (hero pool, paper, inset
+   pools, paper, the close's pool). Rather than track each, the dots wear the
+   tokens that hold on both extremes: --ink-2 idle (7.05:1 on --paper, 5.93:1
+   on the pool's darkest stop) and --scarlet-deep current — the deeper step of
+   the one accent, 5.88:1 on paper and 4.95:1 on the pool's darkest stop —
+   both past the 3:1 a nav-state affordance is held to, and the pointer's
+   own state is --scarlet at 3.83:1 on that same stop (the 1.45x
+   scale carrying the rest of the emphasis). --ink-3, the idle pick of the
+   cool sheet, does NOT survive the transplant: it is 2.65:1 on the pool's
+   darkest stop, so the idle dot steps up one ink. The first draft switched
+   grounds with the nav and measured 1.3:1 idle dots over the close; this
+   replaces it.
 
    PRINT. Paper has no scroll position, so there is nothing for an index to
    index into; hidden with the nav in the print block below.
@@ -2988,7 +3126,7 @@ h3 {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--ink-3);
+  background: var(--ink-2);
 }
 /* M26 · the bearing: one ring that rides the rail and settles around the act
    the reader is in, the way a marked hole is picked out on the calendar
@@ -3025,7 +3163,7 @@ h3 {
   top: calc(50% - ((var(--n) - 1) * var(--pitch) + var(--dot)) / 2 + var(--dot) / 2);
   width: 24px;
   height: 24px;
-  border: 1.5px solid var(--azure-deep);
+  border: 1.5px solid var(--scarlet-deep);
   border-radius: 50%;
   transform: translate(-50%, calc(-50% + var(--i, 0) * var(--pitch)));
   pointer-events: none;
@@ -3035,10 +3173,10 @@ h3 {
    Both states ride the MARK, not the target: an 8px dot leaning to 1.45 is the
    gesture, and scaling the 24px target would move the hit area under the
    pointer for no visual gain. */
-.act-index a:hover::after { background: var(--azure); transform: scale(1.3); }
+.act-index a:hover::after { background: var(--scarlet); transform: scale(1.3); }
 .act-index a[aria-current]::after,
 .act-index a[aria-current]:hover::after {
-  background: var(--azure-deep);
+  background: var(--scarlet-deep);
   transform: scale(1.45);
 }
 
@@ -3508,7 +3646,7 @@ h3 {
      period (4.60177 = 0.02 + 4.581770, exactly one hole-to-hole step; the end
      state is one period off from the start and the pattern is period-strict,
      so the drawing is identical and the 355 count stays true), and the claim
-     -- the azure marker, the only thing in the figure that is an argument --
+     -- the scarlet marker, the only thing in the figure that is an argument --
      lands last, when the instrument that measures it is finished.
 
      The dash lengths are the LITERAL circumferences (2*pi*272 = 1709.0264,
@@ -3732,7 +3870,7 @@ h3 {
      390px when the label took flex room), so it gets nowrap; the label is the
      flexible member and shrinks first. max-width caps the flexible member so
      a long act name truncates rather than pushing the bar. The over-field ink
-     pair keeps it legible on the hero's teal. */
+     pair keeps it legible on the hero's pool. */
   .act-label {
     display: block;
     flex: 0 1 auto;
@@ -3744,7 +3882,7 @@ h3 {
     white-space: nowrap;
     /* --ink-2, not --ink-3: this is text, and the token block reserves
        --ink-3 for rules. The over-field pair below still keeps it legible on
-       the hero's teal. */
+       the hero's pool. */
     color: var(--ink-2);
     font-size: var(--t-label);
     text-decoration: none;
@@ -3761,14 +3899,14 @@ h3 {
     height: 8px;
     margin-inline-end: 7px;
     border-radius: 50%;
-    background: var(--azure-deep);
+    background: var(--scarlet-deep);
     vertical-align: 1px;
   }
   /* Authored empty and cleared whenever no act is current, so the dot never
      floats alone in the bar with no name under it. */
   .act-label:empty { display: none; }
   .nav.over-field .act-label { color: var(--field-ink-2); }
-  .nav.over-field .act-label::before { background: var(--azure-lift); }
+  .nav.over-field .act-label::before { background: var(--scarlet); }
   .nav .cta { white-space: nowrap; }
 
   /* Keep the reference-style section nav on compact desktop widths. The
@@ -3865,48 +4003,48 @@ h3 {
 /* ── prefers-contrast: more ──────────────────────────────────
    The library has honoured this since it was built and the landing page did not,
    which is an odd thing for one site to disagree with itself about. What moves is
-   the two inks a reader reads and the rules a reader has to find, and the four
+   the two inks a reader reads and the rules a reader has to find, and the five
    pairs are now re-measured by audit-contrast.py rather than trusted from here:
-   against --paper, --ink-2 goes 5.71:1 to 9.41:1 and --ink-3, which draws the
-   rail, the track and the scrollbar at 3.12:1, goes to 7.80:1. The field's
+   against --paper, --ink-2 goes 7.05:1 to 9.48:1 and --ink-3, which draws the
+   rail, the track and the scrollbar at 3.16:1, goes to 5.70:1. The rules are
+   held to their own 3:1 and clear it: --rule goes 1.26:1 to 3.38:1. The field's
    secondary ink lifts too, because the closing acts are where a reader most often
-   reads something set quiet: 6.07:1 on --field-hi becomes 9.20:1.
+   reads something set quiet: 5.93:1 on the pool's darkest stop becomes
+   7.04:1,
+   and the field's rule, drawn on the same stop at 1.11:1, goes to 3.06:1.
 
    Two of those numbers were 9.8 and 8.4 until the audit learned to emulate the
    state and measured it: neither reproduces on any ground this page has, so both
    are replaced with what the browser actually computes. The old figures were
    white-ish grounds (9.83:1 and 8.14:1 on #FFFFFF), and the base pair they were
    written beside was measured on --paper, which is how a sentence can carry two
-   different grounds and still look consistent. The field pair carried a third
-   error of the same shape: 5.66:1 matched no stop, and --field-hi at 6.07:1 was
-   already written down correctly nine hundred lines above.
+   different grounds and still look consistent. The transplant carried the same
+   rule the other way: the block's cool greys moved with the sheet they sit on.
 
    Nothing moves in the palette's own terms — no new colour, no new ground —
    because the request is "more contrast", not "a different design". */
 @media (prefers-contrast: more) {
   :root {
-    --ink-2: #3F444A;
-    --ink-3: #4A5058;
-    --rule: #9AA0A6;
-    --field-ink-2: #CBD6DA;
-    --field-rule: #4E6A6E;
+    --ink-2: #4A453F;
+    --ink-3: #6B665E;
+    --rule: #918B80;
+    --field-ink-2: #524D46;
+    --field-rule: #8F8574;
   }
 }
 
 /* ── print ────────────────────────────────────────────────────
-   The landing page has no dark theme, and it still printed badly: measured from
-   the printed PDF of the home page, 27,579 of 90,000-odd text-drawing operations
-   used ink at 0.93 luminance or higher. Those are the field acts, whose ink is
-   near-white because their ground is deep teal, and Chrome does not print
-   backgrounds. So the dark half of this page arrived on paper as pale text on
-   white, in light mode, for every reader.
-
-   The fix is the same shape as the library's print block: print gets its own
-   token world. The field inks come down to paper ink, the two accents come down to
-   a printable blue and red, and the two `--on-*` inks go to black because the
-   fills they were chosen against are not printed. The CTA is the one exception to
-   "paper needs no fill": it is small, and its URL is printed after it, so it prints
-   as a plain link with its address rather than as a dark pill.
+   The landing page has no dark theme, and paper is its own world anyway: a
+   button that prints as a click it cannot deliver, a gradient that prints as
+   missing text the moment backgrounds stay home, shadows that a flat sheet
+   gains nothing from, and a state dot at 2.55:1 that never held on a toner.
+   The answer's shape is the block's own: print gets its own token world. The
+   pool's stops come down to plain paper, the accent comes down to v1's
+   printable red #8A1C1C (screen red is 4.55:1 on white, past the 4.5 bar but
+   without a toner's headroom), and --on-scarlet stays white where a fill
+   actually prints. The CTA is the one exception to "paper needs no fill": it
+   is small, and its URL is printed after it, so it prints as a plain link
+   with its address rather than as a dark pill.
 
    `.win` keeps its own token block, so the replica's answer is the light replica
    that already exists as a designed object (§3.4: light-theme windows on teal,
@@ -3928,18 +4066,21 @@ h3 {
    --card for the dialog's ground (the app's own modal, which is what this is),
    --ink and --ink-2 for its two text weights, --rule for its hairlines, --paper for
    a hovered row (the same ground change the library's --canvas/--subtle pair draws),
-   --azure for the focus ring (this page has one interactive colour and this is not
+   --scarlet for the focus ring (this page has one interactive colour and this is not
    a second), --serif for result titles, --sans for everything else, --ease for the
    arrival, and --t-label / --t-body / --t-sm / --t-lede for its type.
 
-   ONE DELIBERATE DEPARTURE from the library's copy, and it is the mark: that file
-   had to take the page's ink because the accent under its wash measures 4.36:1, a
-   hair under the bar on exactly the hovered row a reader is looking at. Here the
-   accent would clear it, at 4.74:1 - and the mark takes --ink anyway, because a
-   reader who meets this widget in the library and then on this page should not have
-   to learn it twice, and because 0.24 of margin is not a margin. Measured here:
-   --ink on --cite-wash is 15.13:1, --ink-2 on it 5.07:1, and the ink on the dialog's
-   ground 17.79:1. */
+   ONE DELIBERATE DEPARTURE from the library's copy, and it is the mark. That file
+   had to take the page's ink because the accent under its wash measures 4.53:1 on
+   the canvas and 4.36:1 on the hovered row's subtle, one hair above the bar and
+   then under it exactly on the row a reader is looking at. The transplant puts the
+   same red on both sheets, and the verdict travels with it: this page's wash is
+   THAT wash composited opaque on the v1 canvas (--cite-wash #E2EEF2), and the
+   accent under it measures 3.84:1, under the bar outright. The mark takes --ink
+   anyway - v1's own reason, and because a reader who meets this widget in the
+   library and then on this page should not have to learn it twice. Measured here:
+   --ink on --cite-wash is 15.15:1, --ink-2 on it 4.53:1, and the ink on the
+   dialog's ground (--card, v1's subtle) 17.17:1. */
 .search-open {
   display: inline-flex;
   align-items: center;
@@ -3955,7 +4096,7 @@ h3 {
 }
 .search-open:hover { color: var(--field-ink); border-color: var(--field-ink-2); }
 /* Same ring, the control's own shape: the global rule squares corners to 2px. */
-.search-open:focus-visible { border-radius: 999px; outline-color: var(--azure-lift); }
+.search-open:focus-visible { border-radius: 999px; outline-color: var(--scarlet); }
 
 .search-glyph {
   width: 16px;
@@ -4044,7 +4185,7 @@ h3 {
 }
 .palette-field::placeholder { color: var(--ink-2); opacity: 1; }
 .palette-field:focus { border-bottom-color: var(--ink); outline: none; }
-.palette-field:focus-visible { border-radius: 8px; outline: 2px solid var(--azure); }
+.palette-field:focus-visible { border-radius: 8px; outline: 2px solid var(--scarlet); }
 
 .palette-said { margin: 11px 2px 6px; color: var(--ink-2); font-size: var(--t-label); }
 
@@ -4134,12 +4275,14 @@ h3 {
     --rule: #8A8A8A;
     --ink-2: #33322F;
     --ink-3: #55534F;
-    --azure: #0B4F63;
-    --azure-lift: #0B4F63;
-    --azure-deep: #0B4F63;
-    --azure-lift-hi: #0B4F63;
-    --on-azure: #FFFFFF;
-    --on-azure-lift: #FFFFFF;
+    /* the print red is v1's own: the sheet's #8A1C1C (9.28:1 on white). The
+       accent's two screen steps collapse here on purpose - paper has one
+       ground, and the deep step's other screen duty (4.95:1 over the pool)
+       is a screen arithmetic. --coral keeps the mapping the sheet already
+       used, so "unverified" prints as the same drawing it showed. */
+    --scarlet: #8A1C1C;
+    --scarlet-deep: #8A1C1C;
+    --on-scarlet: #FFFFFF;
     --coral: #8A1C1C;
     --coral-lift: #8A1C1C;
     --field-ink: #000000;
@@ -4151,9 +4294,12 @@ h3 {
     --shadow-field: none;
   }
 
-  /* A ground that cannot print is not a ground. Stated rather than relied on: a
-     reader whose browser prints backgrounds would otherwise get a sheet of teal
-     with paper ink on it. */
+  /* A ground that cannot print is not a ground. Stated rather than relied on:
+     the pool's stops are re-stopped to white above, so a reader whose browser
+     prints backgrounds sees the pool as paper rather than as the one printed
+     colour on the sheet. The field's inks no longer lean on the ground in
+     either case - pale ink had to disappear when the field went dark on
+     screen; dark ink needs no rescue on paper. */
   .field,
   .poster,
   .win {
@@ -4194,7 +4340,7 @@ h3 {
   }
 
   /* The controls are the one place a fill has to survive, because their ink was
-     chosen against it: `--on-azure` is white and means it. They are small, so
+     chosen against it: `--on-scarlet` is white and means it. They are small, so
      they cost little ink, and `exact` is what stops a browser dropping the fill
      and leaving white text on white paper. Every ground above them still prints
      as paper. */
@@ -4224,8 +4370,8 @@ h3 {
 
   /* The CTA is the exception: a printed pill keeps its shape and loses its
      fill, because a button the reader cannot click is a label, and a label is
-     ink on paper. White ink needed the fill to survive; teal ink on the sheet
-     with the pill drawn as a hairline ring needs nothing to survive. The
+     ink on paper. White ink needed the fill to survive; the print red on the
+     sheet with the pill drawn as a hairline ring needs nothing to survive. The
      selector repeats the screen rule's .field/.poster prefix because a media
      block adds no specificity: unwrapped, plain `.cta` would lose to the
      screen rule's white ink. (With the fill dropped and white ink kept, the
@@ -4235,8 +4381,18 @@ h3 {
   .field .cta,
   .poster .cta {
     background: none;
-    color: var(--azure);
-    box-shadow: inset 0 0 0 1px var(--azure);
+    color: var(--scarlet);
+    box-shadow: inset 0 0 0 1px var(--scarlet);
+  }
+
+  /* The gradient's text clip prints with backgrounds off as an INVISIBLE
+     phrase - color: transparent has no gradient behind it on a sheet. The
+     phrase fills back with the print red (--scarlet's remap above, 9.28:1),
+     which is the promise the hero makes in ink the sheet keeps. */
+  .h1-see {
+    background: none;
+    color: var(--scarlet);
+    -webkit-text-fill-color: var(--scarlet);
   }
 
   /* M24 · the close's cold state has no print release of its own: a reader who

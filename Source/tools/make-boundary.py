@@ -23,7 +23,7 @@ of the argument without becoming a second place the argument lives.
 
 THE BOUNDARY IS THE FIGURE. A hairline rounded rectangle labelled "your machine",
 with the three things that run inside it in a row (or a column, on a phone), and
-one wire leaving it: web research, crossed out in `--azure`, the figure's single
+one wire leaving it: web research, crossed out in `--scarlet`, the figure's single
 accent and its single assertion. Everything else is `--rule` for the frame and
 `--ink`/`--ink-2` for what is named, so the eye reads the crossing first and the
 contents second, in that order, which is the order the act answers in.

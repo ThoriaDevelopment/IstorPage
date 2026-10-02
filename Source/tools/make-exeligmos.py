@@ -163,7 +163,7 @@ def plate(wide):
     # ratios hold at every width the page renders). At the old 0.34 and 0.45 the
     # hub circle fell INSIDE that probe band - 40.1 against 41.7, 46.8 against
     # 49.3 - so the audit read the ring's own 1px stroke instead of the ground
-    # and reported the azure hub text at 3.78:1 against a line the text never
+    # and reported the hub's then-azure text at 3.78:1 against a line the text never
     # touches; the ground under it measures 6.19:1. 0.41 and 0.53 put the ring
     # clear of the probes with room to spare and give the claim 11 units of air
     # on both plates instead of 3, which is the bigger half of the fix: the hub

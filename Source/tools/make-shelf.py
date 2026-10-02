@@ -21,7 +21,7 @@ none. Every title below is transcribed from Source/index.html's notes rail
 (ul.rail-notes), punctuation included.
 
 THE LAYOUT IS THE RAIL'S OWN GRAMMAR, scaled up to a plate: a filter-free
-list of ten rows, title left at the rail's title weight, the azure dot at
+list of ten rows, title left at the rail's title weight, the scarlet dot at
 the right end (the capture's "a status dot at its right"), and the app's
 own zebra band on alternating rows --fill-row, sampled off the exhibit
 capture exactly as the dispute table's was. The longest title measures
@@ -33,7 +33,7 @@ that holds every name without abbreviating any.
 WHAT IS DELIBERATELY ABSENT. No file types, sizes or dates (the page states
 none). No green/amber status colours - the plate does not guess which
 status each row carried in the capture; the dots are the structure the rail
-prints (one per document), drawn in the plate's single azure, the colour
+prints (one per document), drawn in the plate's single scarlet, the colour
 this page already uses for "the machine's own statement". No counts beyond
 ten, which is the number the act states.
 

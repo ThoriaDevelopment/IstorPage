@@ -80,13 +80,13 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VB_W} {VB_H}"
           stroke-dasharray="0.02 {GAP:.6f}"
           transform="rotate({THETA:.4f} {CX:g} {CY:g})"/>
 
-  <!-- The hole in question: the figure's only azure, and the one thing in it that
+  <!-- The hole in question: the figure's only scarlet, and the one thing in it that
        is a claim rather than a measure. class=ring-claim: lands last in M12. -->
   <g class="ring-claim">
-    <circle cx="{mx:.4f}" cy="{my:.4f}" r="{DOT / 2:.2f}" fill="var(--azure)"/>
+    <circle cx="{mx:.4f}" cy="{my:.4f}" r="{DOT / 2:.2f}" fill="var(--scarlet)"/>
     <path d="M{t1[0]:.3f} {t1[1]:.3f} L{t2[0]:.3f} {t2[1]:.3f}"
-          stroke="var(--azure)" stroke-width="1" fill="none"/>
-    <text x="{lx:.3f}" y="{ly:.3f}" fill="var(--azure)" font-size="13"
+          stroke="var(--scarlet)" stroke-width="1" fill="none"/>
+    <text x="{lx:.3f}" y="{ly:.3f}" fill="var(--scarlet)" font-size="13"
           font-family="Inter, sans-serif" text-anchor="middle"
           dominant-baseline="middle">355</text>
   </g>

@@ -30,11 +30,12 @@ TWO HONEST SIMPLIFICATIONS, stated where a reader of this file can weigh them:
     at the inner turn is 1.1 user units and any tangential mark long enough to
     see would merge into a solid line.
 
-The azure statement carries no token in this file: the dot and its name are
+The scarlet statement carries no token in this file: the dot and its name are
 classes (dials-start, dials-startlabel), and the stylesheet picks the token per
-ground, --azure on paper and --azure-lift in the field, the same division the
-etymology plate runs. A plate hanged on a new ground inherits the right blue
-instead of carrying a wrong one inside itself.
+ground, --scarlet on paper and --scarlet-deep over the pool (the deep step,
+because the label is text and the pool's body-ink law is 4.5:1), the same
+division the etymology plate runs. A plate hung on a new ground inherits the
+right red instead of carrying a wrong one inside itself.
 
 TWO VARIANTS, swapped by width, for the reason every art-directed figure on
 this page carries: a phone column at 320px renders the wide plate's labels as
@@ -44,9 +45,9 @@ tall plate stacks them, carries larger type for its 0.76 render scale, and puts
 each dial's count below it.
 
 INKS. Structure is --ink-3 (the drawing, not text), the counts are Inter at
---ink with --ink-2 glosses, and each spiral gets exactly one azure statement:
+--ink with --ink-2 glosses, and each spiral gets exactly one scarlet statement:
 the dot where its count ENDS - the spiral's inner terminus, named "one month"
-in the spiral's free eye. The azure claim is the slot arithmetic itself - one
+in the spiral's free eye. The scarlet claim is the slot arithmetic itself - one
 mark standing for 235, and one for 223 - not a reading direction or a month
 name the page does not have. Both variants carry a <title> and role="img":
 these plates carry their act's meaning, so a screen reader gets the composition
@@ -65,7 +66,7 @@ rendering cannot resolve past; bytes are part of the design too.
 
 SELF-TEST. The invariants a doctored copy would break: turn counts measured by
 accumulating the spiral path's swept angle, month-slot counts counted inside
-the slots path only, the count labels present, exactly one azure statement per
+the slots path only, the count labels present, exactly one scarlet statement per
 spiral (dot plus its name), no hand-hex anywhere, and both variants asserting
 the same two dials.
 """
@@ -152,7 +153,7 @@ def _rel(pts):
     """The house encoding: M absolute once, then relative integer steps. The
     lattice is half a user unit (rounding to integers on a cumulative sum),
     finer than any pixel either plate is ever rendered at, so the drawn curve
-    does not move. Returned with the points, so the caller names the azure dot
+    does not move. Returned with the points, so the caller names the scarlet dot
     from the same lattice rather than inventing a second one."""
     out = ["M%d %d" % (round(pts[0][0]), round(pts[0][1]))]
     lat = [pts[0]]
@@ -198,7 +199,7 @@ def slot_path(cx, cy, r_out, pitch, turns, months):
 
 
 def first_slot(cx, cy, r_out, pitch, turns, months):
-    """The first month slot's centre: each spiral's one azure dot."""
+    """The first month slot's centre: each spiral's one scarlet dot."""
     r_in = r_out - pitch * turns
     return cx + r_in, cy
 
@@ -253,7 +254,7 @@ wide = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDE_W} {WIDE_H
   <title id="dials-wide-title">The two settled rear dials of the Antikythera
     mechanism: the Metonic spiral, five turns holding 235 lunar months, and the
     Saros spiral, four turns holding 223 months, the counts this page’s own
-    answer prints. Each radial tick is one month; the azure dot sits where each
+    answer prints. Each radial tick is one month; the scarlet dot sits where each
     dial’s count ends.</title>
   <!-- The Metonic and Saros spirals as arithmetic: 5 turns / 235 slots and
        4 turns / 223 slots. The counts stand in the gutter between the dials,
@@ -280,7 +281,7 @@ tall = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {TALL_W} {TALL_H
   <title id="dials-tall-title">The two settled rear dials of the Antikythera
     mechanism, read downward: the Metonic spiral, five turns holding 235 lunar
     months, and the Saros spiral, four turns holding 223 months, the counts
-    this page’s own answer prints. Each radial tick is one month; the azure dot
+    this page’s own answer prints. Each radial tick is one month; the scarlet dot
     sits where each dial’s count ends.</title>
   <!-- The same two dials as the wide plate, stacked for a phone column, with
        type sized for this plate's 0.76 render scale. Regenerate with
@@ -394,14 +395,14 @@ def self_test() -> int:
                       (">%s<" % count) in blob)
                 check("%s/%s: sub label %r" % (variant, which, sub),
                       (">%s<" % sub) in blob)
-            # the wide spiral's azure is the dot AND its name; the tall
+            # the wide spiral's scarlet is the dot AND its name; the tall
             # spiral's is the dot alone (the caption carries the meaning there,
             # real HTML at the type floor rather than plate text under it)
-            n_azure = blob.count('class="dials-start"') + \
+            n_scarlet = blob.count('class="dials-start"') + \
                 blob.count('class="dials-startlabel"')
             want = 2 if variant == "wide" else 1
-            check("%s/%s: one azure statement" % (variant, which),
-                  n_azure == want, "found %d" % n_azure)
+            check("%s/%s: one scarlet statement" % (variant, which),
+                  n_scarlet == want, "found %d" % n_scarlet)
         if variant == "wide":
             # side-by-side plate: the counts stand ONCE, in the gutter between
             # the dials, so a reader meets them once rather than four times
@@ -419,7 +420,7 @@ def self_test() -> int:
 
     if worst == 0:
         print("rear-dials self-test ok: turns swept, slots counted, labels, "
-              "azure discipline, token inks, both variants")
+              "scarlet discipline, token inks, both variants")
     return worst
 
 

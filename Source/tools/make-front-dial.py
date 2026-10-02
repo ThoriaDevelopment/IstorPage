@@ -19,7 +19,7 @@ states about it, and nothing else:
     says survive on the ring (ΠΑΧΩΝ, ΠΑΥΝΙ, ΕΠΙΦΙ), placed at their attested
     relative positions (each one month apart, starting at the ram);
 
-  - the sun's mark on the ecliptic, the plate's one azure statement: the source
+  - the sun's mark on the ecliptic, the plate's one scarlet statement: the source
     says the dial "marks the position of the Sun on the ecliptic";
   - the moon's mark beside it, from the same sentence the page's hero quotes -
     "shows where the sun and moon are" - drawn as the small disc the source
@@ -240,7 +240,7 @@ def dial(cx, cy, r_zodiac_out, name_size, cls, r_months):
         g.append('    <text class="fd-month" x="%.2f" y="%.2f" font-size="%s" '
                  'font-family="%s" text-anchor="middle" xml:lang="el">%s</text>'
                  % (lx, ly, name_size, DIDOT, label))
-    # the sun and moon, the plate's one azure statement. The sun is the
+    # the sun and moon, the plate's one scarlet statement. The sun is the
     # rayed mark at the ecliptic longitude; the moon the small disc beside
     # it. Both sit INSIDE the zodiac ring, in the empty hub: the marks read
     # as a hand's tip seen from within, and no sign label can ever collide

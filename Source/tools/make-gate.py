@@ -35,7 +35,7 @@ on the act's own words.
 THE DRAWING'S ONE CLAIM is the asymmetry the two outcomes carry: the library
 path's gloss ends in "never goes online" and the better model's in "can be
 right" - the two promises the page is built on, placed on the two branches
-where the act itself places them. The azure is the test (the small model's
+where the act itself places them. The scarlet is the test (the small model's
 question), the one moving part in the diagram.
 
 THE LAYOUT IS DERIVED. Nodes are boxes sized from MEASURED string widths,
@@ -133,7 +133,7 @@ def plate(wide):
         sm_y = (H - (PAD * 2 + 2 * size * LINE_H)) / 2.0 - 22.0
         sm_g, sm_w, sm_h = node(sm_x, sm_y,
                                 ["the small model",
-                                 "is this already answered here?"], "gn-azure")
+                                 "is this already answered here?"], "gn-scarlet")
         out_x = sm_x + sm_w + 54.0
         lib_y = 8.0
         lib_g, lib_w, lib_h = node(out_x, lib_y,
@@ -186,7 +186,7 @@ def plate(wide):
         sm_y = q_y + q_h + 44.0
         sm_g, sm_w, sm_h = node(sm_x, sm_y,
                                 ["the small model",
-                                 "is this already answered here?"], "gn-azure")
+                                 "is this already answered here?"], "gn-scarlet")
         lib_w2 = node_w(["the library", "answers from them", "never goes online"],
                         size)
         lib_x = (W - lib_w2) / 2.0
@@ -273,8 +273,8 @@ def self_test():
               str([t for t in labels if ">%s<" % t not in svg][:2]))
         check(name + ": four nodes",
               svg.count('class="gn-box') == 4)
-        check(name + ": the test is the azure node",
-              'gn-box gn-azure' in svg)
+        check(name + ": the test is the scarlet node",
+              'gn-box gn-scarlet' in svg)
         # nodes sized from MEASURED: no text wider than its node's box
         import re
         bad = []
@@ -306,7 +306,7 @@ def self_test():
               all((t, size) in MEASURED for t in labels))
 
     if worst == 0:
-        print("gate self-test ok: labels verbatim, nodes fitted, azure test, "
+        print("gate self-test ok: labels verbatim, nodes fitted, scarlet test, "
               "token inks, both variants")
     return worst
 

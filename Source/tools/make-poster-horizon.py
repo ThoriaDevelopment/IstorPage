@@ -81,6 +81,14 @@ EDGE_Y = CY - math.sqrt(R * R - half * half)
 # middle of the band and squashing the radius vertically buys the margin: the
 # glow now ends 22px above the top edge and 22px above the bottom one, and 40px
 # inside each side. Nothing is cropped, so nothing has an edge to see.
+#
+# What the glow is MADE of changed with the colour transplant. It used to take
+# var(--field-ink), which on the dark teal sky was pale near-white, so the stops
+# read as a faint bloom of light over the dark. On the warm pool field-ink is
+# dark ink, and a 9% dark-ink wash would print as a smudge, not a glow. The
+# three stops are re-aimed to var(--field-hi), the pool's own brightest stop, at
+# the same opacities: the mechanism stays, the ink becomes the light it sits on.
+# The limb strokes keep var(--field-ink) — over paper a dark limb is the point.
 GLOW_CY = 260.0
 GLOW_R = 680.0
 GLOW_SQUASH = 0.35
@@ -132,9 +140,9 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VB_W} {VB_H}"
     <radialGradient id="poster-glow" gradientUnits="userSpaceOnUse"
                     cx="0" cy="0" r="{GLOW_R:g}"
                     gradientTransform="translate({CX:g} {GLOW_CY:g}) scale(1 {GLOW_SQUASH:g})">
-      <stop offset="0" stop-color="var(--field-ink)" stop-opacity="0.09"/>
-      <stop offset="0.45" stop-color="var(--field-ink)" stop-opacity="0.034"/>
-      <stop offset="1" stop-color="var(--field-ink)" stop-opacity="0"/>
+      <stop offset="0" stop-color="var(--field-hi)" stop-opacity="0.09"/>
+      <stop offset="0.45" stop-color="var(--field-hi)" stop-opacity="0.034"/>
+      <stop offset="1" stop-color="var(--field-hi)" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
@@ -165,9 +173,9 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {VB_W} {VB_H}"
           stroke-opacity="0.5" stroke-dasharray="0.02 {GAP:.5f}"
           transform="rotate({THETA:.5f} {CX:g} {CY:.1f})"/>
 
-  <!-- The disputed hole, at the apex, in the plate's own azure. The figure's
+  <!-- The disputed hole, at the apex, in the plate's own scarlet. The figure's
        single piece of information, as it is on the plate. -->
-  <circle cx="{CX:g}" cy="{APEX_Y:g}" r="{DOT * 0.72:.2f}" fill="var(--azure)"/>
+  <circle cx="{CX:g}" cy="{APEX_Y:g}" r="{DOT * 0.72:.2f}" fill="var(--scarlet)"/>
 </svg>
 '''
 

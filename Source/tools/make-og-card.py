@@ -32,7 +32,7 @@ WHAT IS ON IT. Three layers, the close's own order:
                  the subject
     the mark     "ἵστωρ." in the wordmark face itself (istor-wordmark.woff2,
                  the 16-codepoint subset that exists for exactly this string),
-                 azure, the dot included - the one glyph pair every crawler
+                 scarlet, the dot included - the one glyph pair every crawler
                  renders as the site's name
 
 THE WORDMARK FACE, NOT GFS DIDOT. The display subset ships zero Greek
@@ -68,13 +68,16 @@ CSS = HERE.parent / "styles.css"
 W, H = 1200, 630
 
 # --- tokens, checked against styles.css by token_check() below ----------------
+# The colour transplant moved the card's whole world with the page's: the field
+# is the warm pool now, the inks are the pool's dark inks, and the mark is the
+# poster's scarlet. The cool dark set survives on the site only inside the
+# .win replica, which the card does not draw.
 TOKENS = {
-    "field-base":  "#0E1E22",
-    "field-hi":    "#163234",
-    "field-ink":   "#E9EDF0",
-    "field-ink-2": "#9FB0B4",
-    "azure":       "#0066CC",
-    "azure-lift":  "#4DA3FF",
+    "field-base":  "#F6F1E6",
+    "field-hi":    "#FBF6EA",
+    "field-ink":   "#171717",
+    "field-ink-2": "#6E6A66",
+    "scarlet":     "#D93A3A",
 }
 
 
@@ -96,19 +99,19 @@ def token_check():
 def paint_field(im):
     """The page's radial gradient, per pixel.
 
-    styles.css: radial-gradient(130% 120% at 78% 14%), stops #163234 0% /
-    #11282B 34% / #0F2024 62% / #0E1E22 86% / #0C1B1E 100% on #0E1E22. The
+    styles.css: radial-gradient(130% 120% at 78% 14%), stops #FBF6EA 0% /
+    #F8F3E9 34% / #F7F2E7 62% / #F6F1E6 86% / #F0EBE0 100% on #F6F1E6. The
     ellipse's radii are 130%/120% OF THE BOX, so the 1.0 isopleth passes
     through the corners' neighbourhood and the far corner is past it - which
-    the last stop catches at #0C1B1E, as on the page.
+    the last stop catches at #F0EBE0, as on the page.
     """
     import numpy as np
     stops = [
-        (0.00, (0x16, 0x32, 0x34)),
-        (0.34, (0x11, 0x28, 0x2B)),
-        (0.62, (0x0F, 0x20, 0x24)),
-        (0.86, (0x0E, 0x1E, 0x22)),
-        (1.00, (0x0C, 0x1B, 0x1E)),
+        (0.00, (0xFB, 0xF6, 0xEA)),
+        (0.34, (0xF8, 0xF3, 0xE9)),
+        (0.62, (0xF7, 0xF2, 0xE7)),
+        (0.86, (0xF6, 0xF1, 0xE6)),
+        (1.00, (0xF0, 0xEB, 0xE0)),
     ]
     cx, cy = 0.78 * W, 0.14 * H
     rx, ry = 1.30 * W, 1.20 * H
@@ -241,10 +244,12 @@ def paint_world(im):
     # Crown: pitch R1 sized so the ARC VISIBLE between the frame's top edge and
     # the wordmark's zone carries drawn teeth. A 900-radius crown on a 1200-wide
     # card is nearly flat: the sag from the apex to the edge is only
-    # 900 - sqrt(900^2 - 360^2) = 78px, and the top strip is dark-on-dark at
-    # 1.6:1 - the world needs to sit in the LIT half of the gradient, which at
-    # 78% 14% origin is the upper CENTRE. So the crown is smaller and placed
-    # apex-down into the lit zone: apex at 40% of the card's height, left of
+    # 900 - sqrt(900^2 - 360^2) = 78px. The world's ink is field-ink-2, a
+    # secondary ink drawn faint because it is ground, and ground works need the
+    # ground that serves them: the pool is BRIGHT at the 78% 14% origin, the
+    # upper CENTRE, and dark hairlines carry faint work best over the brightest
+    # air. So the crown is smaller and placed apex-down into that zone: apex at
+    # 40% of the card's height, left of
     # centre, rising off the left edge - the wheel is seen from inside its own
     # rim, which is the composition the site's close uses.
     R1 = 300.0
@@ -299,8 +304,10 @@ def paint_mark(im):
                               MARK_SIZE)
     d = ImageDraw.Draw(im)
     text = "ἵστωρ."
-    # the face is a subset with exactly this string's codepoints; the dot is
-    # drawn in azure (the mark-dot token), the letters in --azure-lift
+    # the face is a subset with exactly this string's codepoints; the mark is
+    # one ink on the page - `.poster-mark` is var(--scarlet), the dot included
+    # in the same rule - and the card repeats it rather than inventing a
+    # second red
     w_letters = d.textlength("ἵστωρ", font=face)
     w_dot = d.textlength(".", font=face)
     x = (W - (w_letters + w_dot)) / 2
@@ -309,8 +316,8 @@ def paint_mark(im):
     # four stacked strokes, apex at the letters' cap line. Drawn here first so
     # the mark paints over it, and then paint_veil() crosses the beads over.
     _veil_limb(im)
-    d.text((x, y), "ἵστωρ", font=face, fill=TOKENS["azure-lift"])
-    d.text((x + w_letters, y), ".", font=face, fill=TOKENS["azure"])
+    d.text((x, y), "ἵστωρ", font=face, fill=TOKENS["scarlet"])
+    d.text((x + w_letters, y), ".", font=face, fill=TOKENS["scarlet"])
 
 
 TAGLINE = "Local. Offline. Every claim points at its passage."
@@ -321,8 +328,10 @@ TAGLINE = "Local. Offline. Every claim points at its passage."
 # machine goes over the brand. Radius scaled from the page's 2600 at a 220px
 # mark to the card's 168px mark (same composition, same fractions); the apex
 # sits mid-letter, at the MEASURED middle of the rendered cap band: the
-# wordmark face's pixels were measured on the drawn card itself (azure rows
-# 191..330 at MARK_SIZE 168), not taken from font-metric guesses - the same
+# wordmark face's pixels were measured on the drawn card itself (the letters'
+# rows 191..330 at MARK_SIZE 168, read while the mark printed its azure and so
+# unaffected by the colour transplant - the row band is the face's, not the
+# ink's), not taken from font-metric guesses - the same
 # discipline the page's 0.889 baseline fraction sets. Mid-band = 0.654 of the
 # mark box, and the self-test's pixel scan below holds the drawing to it.
 
@@ -351,7 +360,7 @@ def _veil_limb(im):
 def paint_veil(im):
     """The beads, over the letters. Same arithmetic as the horizon's, same
     last-hole-at-apex rotation, at the canopy radius - and the disputed
-    355th bead at the apex in --azure, as on the page."""
+    355th bead at the apex in --scarlet, as on the page."""
     cx = W / 2.0
     cy = veil_apex_y() + R_VEIL
     d = ImageDraw.Draw(im)
@@ -364,7 +373,7 @@ def paint_veil(im):
         if -DOT <= x <= W + DOT and -DOT <= y <= H + DOT:
             disputed = i == HOLES - 1
             r = DOT * 0.72 if disputed else DOT / 2
-            fill = TOKENS["azure"] if disputed else TOKENS["field-ink-2"]
+            fill = TOKENS["scarlet"] if disputed else TOKENS["field-ink-2"]
             d.ellipse([x - r, y - r, x + r, y + r], fill=fill)
 
 
@@ -412,16 +421,20 @@ def main():
         assert abs(d_actual - dist) < 1e-9, "rider is not at the mesh distance"
         assert abs(R2 - R1 * N2 / N1) < 1e-9, "rider is not on the module"
         # The veil crosses mid-letter, held on the DRAWN pixels: scan the card's
-        # azure rows (the letters), find the band, and demand the apex bead sit
+        # scarlet rows (the letters), find the band, and demand the apex bead sit
         # inside its middle third. This is the check that keeps the crossing at
-        # the composition the page draws, even if the face's metrics move.
+        # the composition the page draws, even if the face's metrics move. The
+        # scan reads the letters, not the beads: on the warm card the only
+        # strongly red pixels are the letters and the two disputed beads, and
+        # both beads sit at the crossing itself, inside the letters' band, so
+        # the band's extremes are still letter-driven.
         px = im.load()
         rows = []
         for yy in range(H):
             n = 0
             for xx in range(0, W, 2):
                 r, g, b = px[xx, yy]
-                if b > 220 and 60 < r < 110 and 140 < g < 190:
+                if r > 190 and g < 110 and b < 110:
                     n += 1
             if n > 3:
                 rows.append(yy)

@@ -43,7 +43,7 @@ text and two for structure, all four already in the palette:
     start: the window chips it already ships read "10 sources · 10 notes";
   * the rail and its stubs --rule, the page's hairline, because the descent is
     structure and the eye should read the words first;
-  * exactly one --azure, the short rule under the Greek word. Sites mark their
+  * exactly one --scarlet, the short rule under the Greek word. Sites mark their
     claims with their accent, and this figure makes exactly one.
 
 The root is written with its asterisk, which is the convention for a reconstructed

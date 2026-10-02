@@ -456,15 +456,40 @@ PROBE = r"""
              sampled inside their own padding instead. */
           const own = getComputedStyle(el);
           const ownBg = parse(own.backgroundColor);
-          let ownArt = !!(own.backgroundImage && own.backgroundImage !== 'none') ||
-                        !!(ownBg && ownBg.a >= 1);
+          const ownImg = !!(own.backgroundImage && own.backgroundImage !== 'none');
+          let ownArt = ownImg || !!(ownBg && ownBg.a >= 1);
+          let pseudoPaint = false;
           for (const pseudo of ['::before', '::after']) {
             const pcs = getComputedStyle(el, pseudo);
             if (pcs.content === 'none') continue;
             const pbg = parse(pcs.backgroundColor);
-            if ((pbg && pbg.a > 0) || (pcs.backgroundImage && pcs.backgroundImage !== 'none')) ownArt = true;
+            if ((pbg && pbg.a > 0) || (pcs.backgroundImage && pcs.backgroundImage !== 'none')) {
+              ownArt = true; pseudoPaint = true;
+            }
           }
           rec.hasOwn = ownArt;
+          /* A FLAT OPAQUE COLOUR of its own makes the ground KNOWN. The screenshot
+             hunt that the hasOwn elements otherwise get exists because a gradient
+             or an image cannot be read from CSS -- but a background-color at alpha
+             1 can: the pair is exactly ink over that colour, and no probe needs to
+             touch a pixel. It also closes the failure a 13px citation chip made
+             visible: its glyph edge carries a 1px ClearType fringe (two channels
+             keep the wash, one is dragged), the chip is too small for any probe
+             window to be dominated by the wash, and the fringe came back as the
+             ground at 4.32:1 for an ink that sits at 4.53:1 on the wash it is
+             actually on. Where the ground is known, it is asserted, not hunted.
+             Pseudos painting their own surface disqualify it: a ::before fill
+             could be the real paint under the glyph. */
+          rec.ownFlat = ownArt && !pseudoPaint && !ownImg &&
+                        !!(ownBg && ownBg.a >= 1);
+          if (rec.ownFlat) rec.ownGround = [ownBg.rgb[0], ownBg.rgb[1], ownBg.rgb[2]];
+          /* Where `background-clip: text` clips the element's own background
+             into the glyphs, the recorded ink (`color`) is `transparent`, the
+             in-page figure is 1.00, and the sampler's interior probes read the
+             spaces between the glyph strokes. Such an element is measured from
+             the pixels it paints (see clipScan) not from any token, and this
+             flag routes it there. */
+          rec.ownClip = ownArt && /text/.test(own.webkitBackgroundClip || own.backgroundClip || '');
           /* THE WALK STOPS AT MULTIPLES OF THE VIEWPORT, so an element can land
              in the band a FIXED bar occupies, and the pixels sampled there
              belong to the bar. The notes act's caption, first seen at the stop
@@ -836,8 +861,8 @@ SEAM_PROBE = r"""
 (async () => {
   /* The separator rule, measured instead of read off the stylesheet.
 
-     As §3.4 now states it: a window on a DARK ground is separated by a 1px seam
-     in --field-rule plus --shadow-field; a window on a LIGHT ground by
+     As §3.4 states it: a window on a FIELD is separated by a 1px seam in
+     --field-rule plus --shadow-field; a window on PAPER is separated by
      --shadow-paper alone. Two decisions make this a measurement rather than a
      restatement:
 
@@ -849,6 +874,21 @@ SEAM_PROBE = r"""
          looked for `.field` would not see it -- which is the mistake the old
          version of §3.4 made, and why it claimed a rule the page does not follow.
 
+     A third decision arrived with the warm transplant: WHICH GROUND the window
+     stands on is a kind, not a brightness. The old probe tested `lum < 0.15` as
+     the proxy for "field", which held while the field was the cool sheet's
+     near-black pool -- there, field and dark were the same grounds -- and broke
+     the moment the fields came back warm, because v1's pool is CREAM at luminance
+     0.88. Eleven windows all standing on the pool as the law calls for (seam +
+     --shadow-field, Tempo's technique, and §3.4's premise unchanged) were each
+     reported as a window on paper wearing a seam it should not wear. So the
+     proxy is gone and the kind is measured: a ground calls for the field's
+     separator when it IS the field's base colour -- the pool's sections all
+     declare that exact token, resolved here and compared within a breath (a
+     squared RGB distance of 64, a few counts a channel) -- or when it is dark
+     enough that only a seam can separate a window from it, which the brightness
+     rule keeps as the fallback for a ground this stylesheet does not yet know.
+
      Line art is out of scope by construction: the ring's plate has no fill, so it
      is not a window on a ground, and nothing about it should be asserted here. */
 
@@ -856,7 +896,18 @@ SEAM_PROBE = r"""
     const t = String(s), a = t.indexOf('('), b = t.indexOf(')');
     return a < 0 ? '' : t.slice(a + 1, b < 0 ? t.length : b);
   };
-  const nums = s => inner(s).split(/[^0-9.]+/).filter(Boolean).map(Number);
+  /* Colours arrive two ways: computed styles speak rgb()/rgba(), and tokens may
+     be written as hex (--field-rule is #E7DFD2 on this site). Anchored to the
+     string's start, the hex branch cannot catch a computed value, and a token
+     written as rgb() still takes the inner() path -- no invented parsing. */
+  const nums = s => {
+    const m = String(s).match(/^\s*#([0-9a-f]{6}|[0-9a-f]{3})\s*$/i);
+    if (m) {
+      const h = m[1].length === 3 ? m[1].replace(/[0-9a-f]/gi, c => c + c) : m[1];
+      return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+    }
+    return inner(s).split(/[^0-9.]+/).filter(Boolean).map(Number);
+  };
   const px = s => (String(s).match(/[0-9.]+px/g) || []).map(v => parseFloat(v));
   const trim0 = a => { const b = a.slice(); while (b.length && !b[0]) b.shift();
                        while (b.length && !b[b.length - 1]) b.pop(); return b; };
@@ -889,7 +940,7 @@ SEAM_PROBE = r"""
      the 75 carried pages as a failure that had "measured nothing". A check that
      fails on the pages it does not apply to is a check that gets switched off. */
   if (!targets.length) {
-    return { seam: true, width: Math.round(w.innerWidth), windows: 0, onDark: 0,
+    return { seam: true, width: Math.round(w.innerWidth), windows: 0, onField: 0,
              onPaper: 0, fails: [] };
   }
 
@@ -897,6 +948,7 @@ SEAM_PROBE = r"""
   const seamColor = key(nums(T('--field-rule')));
   const fieldShadow = { c: key(nums(T('--shadow-field')).slice(0, 3)), px: px(T('--shadow-field')) };
   const paperShadow = { c: key(nums(T('--shadow-paper')).slice(0, 3)), px: px(T('--shadow-paper')) };
+  const fieldBase = key(nums(T('--field-base')).slice(0, 3));
   if (!seamColor || !fieldShadow.c || !paperShadow.c) {
     return { error: 'this page HAS windows and its stylesheet does not resolve the '
                     + 'separator tokens (--field-rule ' + seamColor + ', --shadow-field '
@@ -907,25 +959,35 @@ SEAM_PROBE = r"""
   for (const el of targets) {
     const cs = getComputedStyle(el);
     const g = ground(el);
+    /* The ground's call: field, by kind (the colour above) or by darkness (the
+       fallback for a ground this stylesheet does not yet know), else paper. */
     const dark = g.lum < 0.15;
+    let field = dark;
+    if (!field && fieldBase) {
+      const fbc = fieldBase.split(',');
+      const dr = g.c[0] - Number(fbc[0]),
+            dg = g.c[1] - Number(fbc[1]),
+            db = g.c[2] - Number(fbc[2]);
+      field = dr * dr + dg * dg + db * db <= 64;
+    }
     const bw = parseFloat(cs.borderTopWidth) || 0;
     const bcolor = key(nums(cs.borderTopColor));
     const sh = cs.boxShadow === 'none' ? null : cs.boxShadow;
     const scolor = sh ? key(nums(sh).slice(0, 3)) : '';
     const spx = sh ? trim0(px(sh)) : [];
-    const want = dark ? fieldShadow : paperShadow;
+    const want = field ? fieldShadow : paperShadow;
     const why = [];
-    if (dark && (bw !== 1 || bcolor !== seamColor)) {
+    if (field && (bw !== 1 || bcolor !== seamColor)) {
       why.push('no seam: border is ' + cs.borderTopWidth + ' ' + cs.borderTopColor +
                ', expected 1px ' + T('--field-rule'));
     }
-    if (!dark && bw !== 0) {
+    if (!field && bw !== 0) {
       why.push('a seam on paper: ' + cs.borderTopWidth + ' ' + cs.borderTopColor +
                ', expected none');
     }
     if (scolor !== want.c) {
       why.push('shadow is ' + (scolor || 'none') + ', expected ' + want.c +
-               (dark ? ' (--shadow-field)' : ' (--shadow-paper)'));
+               (field ? ' (--shadow-field)' : ' (--shadow-paper)'));
     } else if (sh && trim0(want.px).join() !== spx.join()) {
       why.push('shadow geometry is ' + spx.join(' ') + ', expected ' + trim0(want.px).join(' '));
     }
@@ -933,6 +995,7 @@ SEAM_PROBE = r"""
       el.className && el.className.baseVal !== undefined ? el.className.baseVal
       : el.className || '').split(' ').slice(0, 2).join('.')).replace(/\.$/, ''),
       ground: g.sel, groundLum: Math.round(g.lum * 1000) / 1000, dark: dark,
+      field: field,
       border: cs.borderTopWidth + ' ' + cs.borderTopColor, shadow: scolor || 'none' };
     rows.push(row);
     if (why.length) fails.push(Object.assign({ why: why.join('; ') }, row));
@@ -941,8 +1004,8 @@ SEAM_PROBE = r"""
     seam: true,
     width: Math.round(w.innerWidth),
     windows: rows.length,
-    onDark: rows.filter(r => r.dark).length,
-    onPaper: rows.filter(r => !r.dark).length,
+    onField: rows.filter(r => r.field).length,
+    onPaper: rows.filter(r => !r.field).length,
     fails: fails
   };
 })()
@@ -1266,6 +1329,47 @@ function ratio(a, b) {{
       return [px[i], px[i + 1], px[i + 2]];
     }};
 
+    /* THE GROUND AT A POINT IS WHAT THE POINT'S 5x5 WINDOW IS MOSTLY PAINTED
+       WITH, not the single pixel under the prober's crosshair. A single probe
+       pixel cannot tell the ground from a neighbour's antialiased fringe, and
+       both have appeared as false "grounds": the citation chip's numeral fringe
+       read rgb(199,238,242) at the chip's own right edge, and a plate's key
+       read a neighbouring column's glyph stroke nine pixels to the side. The
+       honest distinction is dominance: if one clear colour covers most of the
+       window (>= 16 of 25), that colour -- the cluster's average, so a single
+       stray pixel cannot drag it -- IS the ground, and a minority fringe is
+       noise to be dropped. If no colour dominates, the window is genuinely
+       mixed (a probe landed inside a shape, a boundary runs through it), and
+       the single pixel keeps the old worst-wins behaviour. The tolerance is
+       squared RGB distance 144, about as far as one edge antialiasing step can
+       smear a flat field. */
+    var dist2 = function (a, b) {{
+      var dr = a[0] - b[0], dg = a[1] - b[1], db = a[2] - b[2];
+      return dr * dr + dg * dg + db * db;
+    }};
+    var CLEAN = 16, TOL2 = 144;
+    var windowGround = function (x, y) {{
+      var cs = [];
+      for (var dy = -2; dy <= 2; dy++)
+        for (var dx = -2; dx <= 2; dx++) cs.push(at(x + dx, y + dy));
+      var clusters = [];
+      for (var i = 0; i < cs.length; i++) {{
+        var c = cs[i], hit = null;
+        for (var j = 0; j < clusters.length; j++) {{
+          var m = [clusters[j].sum[0] / clusters[j].n,
+                   clusters[j].sum[1] / clusters[j].n,
+                   clusters[j].sum[2] / clusters[j].n];
+          if (dist2(c, m) <= TOL2) {{ hit = clusters[j]; break; }}
+        }}
+        if (hit) {{ hit.n += 1; hit.sum = [hit.sum[0] + c[0], hit.sum[1] + c[1], hit.sum[2] + c[2]]; }}
+        else clusters.push({{ sum: [c[0], c[1], c[2]], n: 1 }});
+      }}
+      var top = null;
+      for (var q = 0; q < clusters.length; q++) if (!top || clusters[q].n > top.n) top = clusters[q];
+      if (top && top.n >= CLEAN) return {{ c: [top.sum[0] / top.n, top.sum[1] / top.n, top.sum[2] / top.n], clean: true }};
+      return {{ clean: false }};
+    }};
+
     var probes = function (r) {{
       if (r.svg) {{
         /* OUTSIDE the glyph box, because SVG text has no leading to sample.
@@ -1325,10 +1429,93 @@ function ratio(a, b) {{
       }});
       return out;
     }};
+    /* A candidate for a clipped ink is a FLAT region of paint: every pixel in
+       its 5x5 window is away from the ground AND the window is mutually
+       uniform (each channel within a 16-step span). The first condition alone
+       is not enough -- a fringe pixel between the glyph's core and the wash
+       carries no wash in its window yet is still a blend, and a bronze the
+       tokens make 8:1 came back 1.69:1 through it. Flatness keeps only the
+       cores, which is where a gradient's stop is at full strength. */
+    var windowFlat = function (x, y, grounds, w) {{
+      var cm = [256, 256, 256], cx = [-1, -1, -1];
+      for (var dy = -w; dy <= w; dy++) {{
+        for (var dx = -w; dx <= w; dx++) {{
+          var p = at(x + dx, y + dy);
+          for (var gg = 0; gg < grounds.length; gg++)
+            if (dist2(p, grounds[gg]) <= TOL2) return false;
+          for (var k = 0; k < 3; k++) {{
+            if (p[k] < cm[k]) cm[k] = p[k];
+            if (p[k] > cx[k]) cx[k] = p[k];
+          }}
+        }}
+      }}
+      return cx[0] - cm[0] <= 16 && cx[1] - cm[1] <= 16 && cx[2] - cm[2] <= 16;
+    }};
+    /* A GRADIENT INKED WITH BACKGROUND-CLIP: TEXT IS NOT `color`. The element's
+       recorded ink is `transparent`, the in-page walk reads a ratio of 1.00,
+       and no token in the stylesheet is the figure the reader sees: the paint
+       IS the gradient, pixel by pixel, and only the finished page holds it. So
+       this element is measured from its own screenshot. The ground comes from
+       the field beside the box, as SVG text's does; the ink comes from the
+       pixels inside the box whose neighbourhood carries no ground at all --
+       glyph cores, not antialiased edges, since an edge pixel is a blend toward
+       the ground and would report a ratio worse than the real paint. The worst
+       interior pixel against the worst probe ground is the honest figure: the
+       gradient's own weakest stop, at full strength. */
+    var clipScan = function (r) {{
+      var rr = r.rect, off = Math.max(5, rr.h * 0.6), ym = rr.y + rr.h / 2;
+      var gpts = [[rr.x - off, ym], [rr.x + rr.w + off, ym],
+                  [rr.x - off, rr.y + rr.h * 0.25], [rr.x + rr.w + off, rr.y + rr.h * 0.25],
+                  [rr.x - off, rr.y + rr.h * 0.75], [rr.x + rr.w + off, rr.y + rr.h * 0.75]];
+      var gsamples = gpts.map(function (pt) {{ return windowGround(pt[0], pt[1]); }});
+      var grounds = [], glums = [];
+      for (var i = 0; i < gsamples.length; i++) {{
+        var s = gsamples[i].clean ? gsamples[i].c : at(gpts[i][0], gpts[i][1]);
+        grounds.push(s); glums.push(lum(s));
+      }}
+      var glo = Math.min.apply(null, glums), ghi = Math.max.apply(null, glums);
+      if (ghi - glo > 0.12) {{
+        return Object.assign({{ sampled: 0,
+                                reason: 'ground varies too much to be a gradient (photo or mask?): '
+                                        + 'luminance ' + glo + ' to ' + ghi }}, r);
+      }}
+      var x0 = Math.max(0, Math.round(rr.x)), x1 = Math.min(cv.width - 1, Math.round(rr.x + rr.w - 1));
+      var y0 = Math.max(0, Math.round(rr.y)), y1 = Math.min(cv.height - 1, Math.round(rr.y + rr.h - 1));
+      var worst = null, found = 0;
+      for (var pass = 0; pass < 2 && !worst; pass++) {{
+        var w = pass === 0 ? 2 : 1;
+        for (var yy = y0; yy <= y1; yy++) {{
+          for (var xx = x0; xx <= x1; xx++) {{
+            if (!windowFlat(xx, yy, grounds, w)) continue;
+            found++;
+            var p = at(xx, yy);
+            for (var gg = 0; gg < grounds.length; gg++) {{
+              var q = ratio(p, grounds[gg]);
+              if (!worst || q < worst.q) worst = {{ q: q, pt: [xx, yy], ground: grounds[gg] }};
+            }}
+          }}
+        }}
+      }}
+      if (!worst) {{
+        return Object.assign({{ sampled: 0,
+                                reason: 'background-clip: text element carried no paint distinct from '
+                                        + 'its ground inside ' + JSON.stringify(rr) }}, r);
+      }}
+      return {{ sampled: found, need: r.need,
+                ratio: Math.round(worst.q * 100) / 100,
+                ground: 'rgb(' + worst.ground.map(function (v) {{ return Math.round(v); }}).join(', ') + ')',
+                lumMin: glo, lumMax: ghi,
+                size: r.size, weight: r.weight, sel: r.sel, text: r.text,
+                replica: !!r.replica,
+                rect: r.rect, shot: r.shot, anchor: r.anchor || 0,
+                worstPt: worst.pt,
+                inkNote: 'painted per pixel (background-clip: text)' }};
+    }};
     var results = RECTS.map(function (r) {{
       size(IMG[r.shot || 0]);
       ctx.drawImage(IMG[r.shot || 0], 0, 0);
       px = ctx.getImageData(0, 0, cv.width, cv.height).data;
+      if (r.ownClip) return clipScan(r);
       var pts = probes(r);
       if (!pts.length) {{
         return Object.assign({{ sampled: 0,
@@ -1339,7 +1526,15 @@ function ratio(a, b) {{
       }}
       var samples = [], worst = null, lums = [];
       pts.forEach(function (pt) {{
-        var s = at(pt[0], pt[1]);
+        /* Where the ground is known (the walk recorded a flat opaque colour of
+           the element's own), the CSS pair is used directly and no probe pixel
+           is consulted: the 1px ClearType fringe a small chip's glyph can put
+           into its own window is ink, not ground, and a 13px chip is too small
+           for the window's dominance rule to separate the two (see the walk). */
+        var s = r.ownFlat ? r.ownGround : (function () {{
+          var wg = windowGround(pt[0], pt[1]);
+          return wg.clean ? wg.c : at(pt[0], pt[1]);
+        }})();
         samples.push(s);
         var ink = over({{ rgb: r.ink, a: r.alpha === undefined ? 1 : r.alpha }}, s);
         var q = ratio(ink, s);
@@ -1364,7 +1559,7 @@ function ratio(a, b) {{
          it, so the app's own surfaces were counted as site failures. */
       return {{ sampled: samples.length, need: r.need,
                 ratio: Math.round(worst.ratio * 100) / 100,
-                ground: 'rgb(' + worst.ground.join(', ') + ')',
+                ground: 'rgb(' + worst.ground.map(function (v) {{ return Math.round(v); }}).join(', ') + ')',
                 lumMin: Math.min.apply(null, lums),
                 lumMax: Math.max.apply(null, lums),
                 size: r.size, weight: r.weight, sel: r.sel, text: r.text,
@@ -1642,25 +1837,67 @@ SELF_TEST_CONTRAST_BAD = """<!doctype html>
             pixels - which is the only sampler that can see a plate's ground. */
          background: linear-gradient(#F4F6F7, #EDF0F2) #F4F6F7; }
   .html-bad { color: #B0B0B0; }
+  /* A gradient inked with background-clip: text has no `color` to composite:
+     the ink IS the gradient painted into the glyphs. The sampler must read the
+     painted pixels - here a light paint on the light wash, ~1.3:1, a failure
+     the transparent ink on its own can never name. */
+  .clip-bad { -webkit-background-clip: text; background-clip: text; color: transparent;
+              font: 700 34px/2 system-ui, sans-serif;
+              background-image: linear-gradient(90deg, #C8D8DB, #A9C2C7); }
   svg { display: block; }
   .st-field { fill: #12343B; }
   .st-bad { fill: #3E6470; font: 14px system-ui, sans-serif; }
   .st-ok { fill: #E8ECEE; font: 14px system-ui, sans-serif; }
+  /* The fringe and the neighbour: a 1px brightness that a probe may step on
+     must NOT take a passing word's ground away (its 5x5 window is dominated by
+     the field), while an 80px panel beside the same kind of word is spread the
+     probes cannot name a ground across - field beside, panel within - so it
+     is REPORTED unmeasured rather than measured against either, which is the
+     honest finding the ground-varies guard has always given a real shape
+     beside text. `textLength` pins every box's width so the probe coordinates
+     are fixed numbers, not font metrics. */
+  .st-hair { fill: #E8ECEE; }
+  .st-near { fill: #E8ECEE; font: 14px system-ui, sans-serif; }
+  .st-panel { fill: #E8ECEE; }
+  /* The chip: TEXT ON ITS OWN FLAT OPAQUE COLOUR. The real page's citation
+     numeral is exactly this, 13px on the wash, and a 1px ClearType fringe at
+     its glyph's edge is too narrow for the window's dominance rule to reject:
+     the probe window straddles the glyph's stroke and the fringe won. Where
+     the element paints its own flat opaque ground the pair is computed from
+     CSS, not hunted in pixels, so the fixture asserts both halves: the ink
+     below AA on the wash must be NAMED, and the real citation pair (teal on
+     the wash, 4.53:1, one hair over the bar) must hold its marginal figure
+     rather than be bullied by whatever pixel its glyph edge happens to sit on. */
+  .chip-bad { background: #E2EEF2; color: #8A8A8A;
+              font-size: 13px; font-weight: 500; line-height: 2; }
+  .chip-ok  { background: #E2EEF2; color: #0E7490;
+              font-size: 13px; font-weight: 500; line-height: 2; }
 </style></head>
 <body>
   <p class="html-ok">readable body copy</p>
   <p class="html-bad">ink below AA on this ground</p>
-  <svg width="300" height="80" viewBox="0 0 300 80" role="img"
+  <p class="chip-bad">chip ink below AA</p>
+  <p class="chip-ok">chip ink above AA</p>
+  <p class="clip-bad">clipped ink below AA</p>
+  <svg width="640" height="96" viewBox="0 0 640 96" role="img"
        aria-label="contrast fixture" xmlns="http://www.w3.org/2000/svg">
-    <rect class="st-field" x="0" y="0" width="300" height="80"/>
-    <text class="st-bad" x="20" y="32">svg word below AA</text>
-    <text class="st-ok" x="20" y="64">svg word above AA</text>
+    <rect class="st-field" x="0" y="0" width="640" height="96"/>
+    <rect class="st-hair" x="170" y="48" width="1" height="32"/>
+    <rect class="st-panel" x="448" y="40" width="60" height="40"/>
+    <text class="st-bad" x="20" y="32" textLength="140" lengthAdjust="spacing">svg word below AA</text>
+    <text class="st-ok" x="20" y="64" textLength="140" lengthAdjust="spacing">svg word above AA</text>
+    <text class="st-near" x="300" y="64" textLength="140" lengthAdjust="spacing">svg word above AA</text>
   </svg>
 </body></html>
 """
 SELF_TEST_CONTRAST_GOOD = (SELF_TEST_CONTRAST_BAD
     .replace(".html-bad { color: #B0B0B0; }", ".html-bad { color: #222222; }")
-    .replace(".st-bad { fill: #3E6470;", ".st-bad { fill: #E8ECEE;"))
+    .replace(".chip-bad { background: #E2EEF2; color: #8A8A8A;",
+             ".chip-bad { background: #E2EEF2; color: #0E7490;")
+    .replace(".st-bad { fill: #3E6470;", ".st-bad { fill: #E8ECEE;")
+    .replace("background-image: linear-gradient(90deg, #C8D8DB, #A9C2C7); }",
+             "background-image: linear-gradient(90deg, #8A5A12, #6E4710); }")
+    .replace(".st-panel { fill: #E8ECEE; }", ".st-panel { display: none; }"))
 
 SELF_TEST_PRINT = """<!doctype html>
 <html><head><meta charset="utf-8"><title>print self-test</title>
@@ -1680,6 +1917,44 @@ SELF_TEST_PRINT = """<!doctype html>
 """
 SELF_TEST_PRINT_BAD = SELF_TEST_PRINT.format(ink="#C9C9C9", size="0.5em")
 SELF_TEST_PRINT_GOOD = SELF_TEST_PRINT.format(ink="#222222", size="0.85em")
+
+# The separator fixture, one window for every call the law can name. The
+# ground's classification used to be a LUMINANCE proxy (dark under 0.15 = field),
+# which held only while the field and "dark" were the same ground: the warm pool
+# is cream at luminance 0.88, and under the proxy every window standing on it as
+# §3.4 calls for (seam + --shadow-field) was reported as a window on paper
+# wearing a seam it should not wear. So the fixture carries the three calls and
+# one deliberate error: on a dark ground the seam is required, on the field's
+# own tone -- cream, LIGHT -- it is required, and on paper it is forbidden. The
+# failing one is a window on the pool that took the paper treatment.
+SELF_TEST_SEAM_BAD = """<!doctype html>
+<html><head><meta charset="utf-8"><title>seam self-test</title>
+<style>
+  :root { --field-rule: #E7DFD2; --field-base: #F6F1E6;
+          --shadow-field: 0 24px 60px rgb(40 32 18 / 0.18);
+          --shadow-paper: 0 18px 44px rgb(31 26 16 / 0.12); }
+  body { margin: 0; background: #FFFFFF; }
+  main { display: block; }
+  .dark-keeper { background: #0B0C0F; padding: 20px; }
+  .pool { background: var(--field-base); padding: 20px; }
+  .win { height: 50px; width: 240px; background: #0A0A0A; }
+  .win-dark { box-shadow: var(--shadow-field); border: 1px solid var(--field-rule); }
+  .win-pool-ok { box-shadow: var(--shadow-field); border: 1px solid var(--field-rule); }
+  .win-pool-bad { border: none; box-shadow: var(--shadow-paper); }
+  .win-paper-ok { box-shadow: var(--shadow-paper); border: none; }
+</style></head>
+<body>
+  <main>
+    <div class="dark-keeper"><div class="win win-dark"></div></div>
+    <div class="pool"><div class="win win-pool-ok"></div>
+                      <div class="win win-pool-bad"></div></div>
+    <div class="win win-paper-ok"></div>
+  </main>
+</body></html>
+"""
+SELF_TEST_SEAM_GOOD = SELF_TEST_SEAM_BAD.replace(
+    ".win-pool-bad { border: none; box-shadow: var(--shadow-paper); }",
+    ".win-pool-bad { box-shadow: var(--shadow-field); border: 1px solid var(--field-rule); }")
 
 
 SELF_TEST_LAYOUT_SHIFTS = SELF_TEST_LAYOUT
@@ -1824,6 +2099,8 @@ def self_test(chrome, keep=False):
     write(os.path.join(site, "print-good.html"), SELF_TEST_PRINT_GOOD)
     write(os.path.join(site, "contrast-bad.html"), SELF_TEST_CONTRAST_BAD)
     write(os.path.join(site, "contrast-good.html"), SELF_TEST_CONTRAST_GOOD)
+    write(os.path.join(site, "seam-bad.html"), SELF_TEST_SEAM_BAD)
+    write(os.path.join(site, "seam-good.html"), SELF_TEST_SEAM_GOOD)
     # The face the growth waits on has to be a real file, served by the run's own
     # handler, so the delay the pass applies is the delay the fixture waits out. It
     # is one of the site's own fonts rather than a test blob, because a fixture that
@@ -1935,6 +2212,25 @@ def self_test(chrome, keep=False):
                   "%r, so it is not sampling the plate's own ground anymore"
                   % (core_named,))
             return 1
+        if "p.clip-bad" not in core_named:
+            print("self-test FAILED - the gradient the fixture clips into its "
+                  "glyphs is ~1.3:1 on the wash and the sampler named %r, so "
+                  "background-clip: text is being read through its transparent "
+                  "`color` (or not measured from its own pixels at all)"
+                  % (core_named,))
+            return 1
+        if "text.st-near" not in [g.get("sel") for g in core_bad.get("onPixels") or []]:
+            print("self-test FAILED - the word beside the 80px panel is missing "
+                  "from the pixel pass entirely; expected reported unmeasured")
+            return 1
+        stnear = [g for g in core_bad.get("onPixels") or []
+                  if g.get("sel") == "text.st-near"][0]
+        if stnear.get("sampled"):
+            print("self-test FAILED - the word beside the 80px panel measured a "
+                  "figure (%s at %r) instead of being reported unmeasured: the "
+                  "mixed grounds on either side must trip the ground-varies guard"
+                  % (stnear.get("ratio"), stnear.get("ground")))
+            return 1
         core_good = run_state(chrome, site, tmp, "/contrast-good.html", 1024, 700,
                               400, None, True)
         good_below = ([f.get("sel") for f in core_good.get("fails") or []]
@@ -1944,6 +2240,72 @@ def self_test(chrome, keep=False):
             print("self-test FAILED - the printable contrast fixture was "
                   "reported as failing (%s)"
                   % (core_good.get("error") or good_below[:1]))
+            return 1
+        stgood = [g for g in core_good.get("onPixels") or []
+                  if g.get("sel") == "text.st-ok"][0]
+        if not stgood.get("sampled"):
+            print("self-test FAILED - the clean fixture's passing word was not "
+                  "measured (%s): the 1px fringe beside it took its ground away, "
+                  "and the window's dominance rule should have kept the field"
+                  % (stgood.get("reason"),))
+            return 1
+        # The CHIP fixtures and the ownFlat rule they prove. The bad chip's ink
+        # is #8A8A8A on the citation wash: named in the bad fixture and absent
+        # from the good one. The good chip is the case the fringe fix was
+        # written for - a tiny box whose own flat background makes its ground
+        # EXACTLY known from CSS, so its record must carry sampled > 0 and the
+        # wash as its ground, not a glyph-edge fringe read as ground.
+        if "p.chip-bad" not in core_named:
+            print("self-test FAILED - the chip ink below AA on the wash was not "
+                  "named (fixture named %r)" % (core_named,))
+            return 1
+        chip_bad_rec = ([g for g in core_bad.get("onPixels") or []
+                         if g.get("sel") == "p.chip-bad"] + [None])[0]
+        if chip_bad_rec is not None and chip_bad_rec.get("sampled"):
+            bgr = (chip_bad_rec.get("ground") or "").replace(" ", "")
+            if bgr != "rgb(226,238,242)":
+                print("self-test FAILED - the bad chip was sampled against the "
+                      "ground %r, not the wash (226, 238, 242): the ownFlat rule "
+                      "is not being applied where it should bite" % (bgr,))
+                return 1
+        chip_ok = ([g for g in core_good.get("onPixels") or []
+                    if g.get("sel") == "p.chip-ok"] + [None])[0]
+        if chip_ok is None:
+            print("self-test FAILED - the good chip's record is missing from the "
+                  "pixel pass entirely")
+            return 1
+        if not chip_ok.get("sampled"):
+            print("self-test FAILED - the good chip was not measured (%s): its "
+                  "background is a FLAT opaque colour, so the ground is known "
+                  "from CSS and the sampler should measure it, not hunt pixels "
+                  "and trip over a glyph-edge fringe" % (chip_ok.get("reason"),))
+            return 1
+        okgr = (chip_ok.get("ground") or "").replace(" ", "")
+        if okgr != "rgb(226,238,242)":
+            print("self-test FAILED - the good chip's ground is %r, not the "
+                  "wash exactly; ownFlat must hand the sampler the CSS value, "
+                  "which it knows without screenshots" % (okgr,))
+            return 1
+        # The SEPARATOR's own fixture, run as the real pages are run: the bad
+        # page must fail exactly the pool window that took the paper
+        # treatment - under the old luminance proxy, BOTH honest pool windows
+        # were named instead - and the good page must come back clean.
+        seam_bad = run_seam_pass(chrome, site, tmp, "/seam-bad.html", 1024, 700, 400)
+        if seam_bad.get("error"):
+            print("self-test FAILED - the separator pass did not run: %s"
+                  % seam_bad["error"])
+            return 1
+        seam_named = sorted({f.get("sel") for f in seam_bad.get("fails") or []})
+        if len(seam_named) != 1 or not seam_named[0].endswith("div.win.win-pool-bad"):
+            print("self-test FAILED - the separator probe named %r; expected "
+                  "only the pool window in the paper's clothes (win-pool-bad)"
+                  % (seam_named,))
+            return 1
+        seam_good = run_seam_pass(chrome, site, tmp, "/seam-good.html", 1024, 700, 400)
+        if seam_good.get("error") or seam_good.get("fails"):
+            print("self-test FAILED - the separator probe reported %r on the "
+                  "fixture whose windows all wear what their ground calls for"
+                  % (seam_good.get("error") or seam_good.get("fails")))
             return 1
         screen_type = run_type_pass(chrome, site, tmp, "/print-good.html", 700, 400,
                                     widths=(1024,))
@@ -1955,9 +2317,17 @@ def self_test(chrome, keep=False):
         print("self-test ok - the motion pass named the entrance outside the guard "
               "and nothing else, the layout pass failed the fixture that grows "
               "(CLS %.4f) and passed the one that does not, the core sampler named "
-              "the HTML ink below AA and the SVG word whose ground is the sibling "
-              "field behind it (the ring, not an ancestor walk) and passed the "
-              "printable fixture, the print state failed "
+              "the HTML ink below AA, the SVG word whose ground is the sibling "
+              "field behind it (the ring, not an ancestor walk), the gradient "
+              "clipped into its glyphs, and the word whose ground is the big "
+              "panel beside it - left the 1px fringe beside the panel's word "
+              "unmeasured on purpose, kept the passing word measured past a "
+              "1px fringe of its own, and passed the clean fixture - while the "
+              "chip ink below the wash's bar was named, the good chip measured "
+              "against the wash the CSS itself names (ownFlat, no screenshot "
+              "hunt), and the separator pass named only the pool window in the "
+              "paper's clothes, not the two honest pool windows the luminance "
+              "proxy would have accused, and the printable world failed "
               "the sheet that is unreadable and passed the one that is not, and the "
               "type sweep named the printed annotation at 10px while the same page "
               "showed no generated text on screen" % shifting["total"])
@@ -2629,16 +2999,16 @@ def main(argv):
                     # ground does not change with the colour scheme, and a pass that
                     # claimed to check it twice would only be checking twice.
                     seam_fails += len(s["fails"])
-                    print("  %s  %-42s %3d windows  %2d on a dark ground  "
+                    print("  %s  %-42s %3d windows  %2d on a field  "
                           "%2d on paper  %d FAIL"
                           % ("ok  " if not s["fails"] else "FAIL",
                              "%s separators@%dpx" % (page, s["width"]), s["windows"],
-                             s["onDark"], s["onPaper"], len(s["fails"])))
+                             s["onField"], s["onPaper"], len(s["fails"])))
                     for f in s["fails"]:
                         print("          %s on %s (luminance %.3f)  %s\n              %s"
                               % (f["sel"], f["ground"], f["groundLum"], f["why"], f["border"]))
                     findings.append({"page": page, "seam": True, "width": s["width"],
-                                     "windows": s["windows"], "onDark": s["onDark"],
+                                     "windows": s["windows"], "onField": s["onField"],
                                      "onPaper": s["onPaper"], "fails": s["fails"]})
                     continue
                 if s.get("tap"):
@@ -2833,10 +3203,10 @@ def main(argv):
             if emulated else "no media state emulated")
     seam = [f for f in findings if f.get("seam")]
     if seam:
-        print("\n%d separator passes: %d windows, %d standing on a dark ground and "
+        print("\n%d separator passes: %d windows, %d standing on a field and "
               "%d on paper"
               % (len(seam), sum(f["windows"] for f in seam),
-                 sum(f["onDark"] for f in seam), sum(f["onPaper"] for f in seam)))
+                 sum(f["onField"] for f in seam), sum(f["onPaper"] for f in seam)))
 
     tap = [f for f in findings if f.get("tap")]
     if tap:

@@ -884,6 +884,40 @@ trusted.
 
 Anchored in measurement at both ends — the brand's locked assets, and the app's own sampled palette.
 
+**AMENDED 2026-10-02 — the colour world transplant.** Thoria's direction, on the record, taken
+through the question tool in three parts: a **full transplant** of the v1 site's light world
+("the whole v1 light world"), the dark theme staying **faithful to v1** (v1's own accent and
+gradient keep their dark-theme posts), and the hero ground going v1 white with the smoke mesh
+re-graded to print dark over paper (the M47 record in §7 carries that amendment). The visitor's
+light world is therefore no longer the cool table below — it is this, re-measured the day of the
+swap by `Istor Output/palette-measure.py`, with every figure carried in check 6 of
+`Source/tools/verify-links.py`:
+
+| Token | Value | Role, and its figure |
+|---|---|---|
+| `--paper` | `#FFFFFF` | v1's canvas; note the swap: paper and `--card` took each other's old values |
+| `--card` | `#FAFAFA` | v1's subtle panel |
+| `--ink` | `#171717` | v1's ink; 17.93:1 on paper |
+| `--ink-2` | `#6E6A66` | v1's mist; 5.36:1 on paper |
+| `--ink-3` | `#96908A` | graphic ink only — rules, track, scrollbar (3.16:1; caption text takes `--ink-2`) |
+| `--scarlet` | `#D93A3A` | the accent: links, filled CTA, selection, the close's re-ink; 4.55:1 on paper |
+| `--scarlet-deep` | `#BE2B2B` | two duties: body links inside the pool (4.95:1 on the pool's darkest stop) and the hover (4.55→5.88) |
+| `--coral` | `#C7292A` | unchanged: the mark's artwork and "unverified" only |
+| `--g1` / `--g2` | `#D93A3A` / `#CE7F14` | the red→amber family: straight pair under `--btn-shade` on the filled pill; headline gradient text clips to `--g-tint` `#BC7712` (the straight amber is 3.15:1 on paper, under the 3:1 large-text bar) |
+
+The teal field is re-stopped to the pool: same geometry — `radial-gradient(130% 120% at 78% 14%)` —
+with v1's warm world on the subtle scale, `#FBF6EA` at the origin through `#F0EBE0` at the edge.
+Because the pool is now LIGHT, the field law inverts: dark ink's worst case is the **darkest**
+stop, `--field-edge` (field-ink 15.08:1, field-ink-2 4.51:1, scarlet-deep 4.95:1) — the cool
+sheet's trap, half a turn later. Scarlett itself is BELOW-AA on paper-adjacent washes (3.83 on
+`--field-edge`, 3.84 on `--cite-wash`), which is why the pool's body links take `--scarlet-deep`
+and the citation mark takes `--ink`. The teal keeps its citations: `--cite-ink` `#0E7490` (5.36:1
+on paper, 4.53 on its wash). Naming law: the accent family is `--scarlet` — v1's token name
+`--witness` is taken, the landing already gives it to the citation popover. **What stays azure**
+without amendment: the `.win` replica window's app-measured internals, the 404 page's own world,
+and the dark theme — faithful to v1 by decision. The table below stands as the historical record
+of the world this amendment retired.
+
 | Token | Value | Where it comes from |
 |---|---|---|
 | `--paper` | `#FAFAFA` | **measured** — the app's own light rail |
@@ -1646,6 +1680,24 @@ dip on frame 159), accepted on the record as the look; the lede, CTA and cue sta
 2,831,843 B, −44 %) at Thoria's direction, on-page indistinguishable at measure — the
 full quality ladder, the lossless ceiling and the decode-cost story (software decode where
 no AV1 block exists, static hero where the codec is absent) are dated in §12.1.
+**AMENDED 2026-10-02 again, the grade inverted for the paper hero.** The transplant turned
+the hero's ground from the cool field to v1's paper, and the screen grade — smoke brighter
+than its black plate — multiplied over paper would have printed the plate's black ground.
+The same 50 s source plate ships inverted instead: a filter chain of `negate`, a `curves`
+pin holding the output white point at 255, and an explicit bt709/tv-range 4:2:0
+down-conversion, whose last step is not cosmetic — `negate`/`curves` silently promote the
+chain to 4:4:4 full-range RGB and libaom then spends 2.5x the bytes on the same art (the
+first cut measured 7,231,449 B over the 4:2:0 final's **2,536,452 B**, −10 % against the
+screen grade's own crf-28 cut). Re-verified through the page's rendering path: a full-loop
+band sweep of all 1,500 shipped frames gives a visible-band mean composite factor of 0.92,
+a worst frame at t ≈ 0.17 s with a factor of 0.50 (the opacity's own floor, the plate's
+blackest pixel over the pool) and a mask-ramp worst of 0.68; the live-page pair, taken
+while playing with the capture 1:1 with the CSS viewport, reads max delta 0.0 in every
+text rect, and a second pair parked on the loop's densest frame (t ≈ 21.9 s) matches the
+plate's own per-pixel prediction across the visible band at 0.98 correlation (measured band
+ratio 0.88 against the predicted 0.87, mean per-pixel difference 0.015) — the mask's job,
+re-proven over the paper pool it now serves. The mask ships
+unchanged; the blend stays multiply at 50 %.
 
 ---
 
@@ -1909,6 +1961,17 @@ decorative blend; and a browser that cannot decode AV1 at all renders the static
 the mask holds clean. `budget.json`'s manifest, `hero_video` and the artifact total move in
 this same commit (~9.3 MB → ≈ 7.1 MB); `verify-links.py`'s count is untouched (a replacement,
 not a new file); §7.7's record carries the codec with the M47 entry.
+
+**AMENDED 2026-10-02 again, the mesh's grade inverted.** The codec decision above was made for
+the screen grade and stands; what changed is the plate that AV1 encodes. The screen grade's own
+quality figures (VMAF 84 at the grain ceiling, the 0.0009 page-path diff) stay as its record; the
+inverted grade is not a re-encode of that file but of the untouched source, with the bytes above
+(2,536,452 B in the M47 record, §7). One toolchain lesson is dated beside them: ffmpeg's
+`negate`/`curves` filters promote the frame to `gbrp` (4:4:4 full-range RGB), and a filter chain
+that ends where the old one ended (`format=yuv420p` alone) then encodes 4:4:4 — a 2.5x byte
+blow-up with no visual change; the fix is an explicit `scale=out_color_matrix=bt709:out_range=tv`
+before the format conversion, verified by round-tripping a decoded frame to plain white at the
+exact 255 and by the chroma cast of the warm plume surviving 4:2:0.
 
 ### 12.2 Gate changes
 

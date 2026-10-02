@@ -15,12 +15,12 @@ ordinal in the epigraphic L+numeral form (LΑ, LΒ, LΓ, LΔ) and the names of
 the two games held that year - Isthmia and Olympia, Nemea and Naa, Isthmia
 and Pythia, Nemea and Halieia. Six games, four sectors, one pointer.
 
-THE ONE AZURE STATEMENT. Every settled plate here earns exactly one, and the
+THE ONE SCARLET STATEMENT. Every settled plate here earns exactly one, and the
 games dial's is the discovery that made the 2008 paper famous: its pointer is
 the ONLY one on the whole mechanism that turns anticlockwise as time advances
 (a consequence of the gear train, 223:60 through two more meshes than the
 others). The arrow stands at year 1 pointing anticlockwise, named "the only
-pointer that runs anticlockwise" in the caption; inside the drawing the azure
+pointer that runs anticlockwise" in the caption; inside the drawing the scarlet
 claims it without a word.
 
 HONESTY LEDGER. The sector ORDER (which year carries which pair) is the
@@ -134,7 +134,7 @@ def tw(s, size):
 # The dial: four 90-degree sectors, r_out to r_in, each with its ordinal at
 # the rim and its two games stacked toward the centre. The pointer stands at
 
-# the LΑ boundary, its arrow running ANTICLOCKWISE (the azure statement).
+# the LΑ boundary, its arrow running ANTICLOCKWISE (the scarlet statement).
 
 SECTOR_SPAN = 90.0
 GAP_DEG = 3.0        # the visible seam between sectors: the dividers' lanes
@@ -223,7 +223,7 @@ def dial(cx, cy, r_out, name_size, ordinal_size, cls, hub_k=0.36):
 
 
 def pointer(cx, cy, r_out, hub_k=0.36):
-    """The azure statement: one pointer at the cycle's start, its arrowhead
+    """The scarlet statement: one pointer at the cycle's start, its arrowhead
     running ANTICLOCKWISE - the arrow points backwards against the sectors'
     clockwise order, which is the whole discovery."""
     a = 0.0

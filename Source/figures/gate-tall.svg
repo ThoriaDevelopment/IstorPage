@@ -12,9 +12,9 @@
     <text class="gn-t gn-plain" x="170" y="23.61" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">the question</text>
   </g>
   <g class="gn" data-x="38.45" data-y="97.925" data-w="263.1" data-h="71.85">
-    <rect class="gn-box gn-azure" x="38.45" y="97.925" width="263.1" height="71.85" rx="6"/>
-    <text class="gn-t gn-azure" x="170" y="115.535" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">the small model</text>
-    <text class="gn-t gn-azure" x="170" y="139.46" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">is this already answered here?</text>
+    <rect class="gn-box gn-scarlet" x="38.45" y="97.925" width="263.1" height="71.85" rx="6"/>
+    <text class="gn-t gn-scarlet" x="170" y="115.535" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">the small model</text>
+    <text class="gn-t gn-scarlet" x="170" y="139.46" font-size="16.5" font-family="Inter, sans-serif" text-anchor="middle">is this already answered here?</text>
   </g>
   <g class="gn" data-x="81.9" data-y="213.775" data-w="176.2" data-h="95.775">
     <rect class="gn-box gn-plain" x="81.9" y="213.775" width="176.2" height="95.775" rx="6"/>

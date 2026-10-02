@@ -12,9 +12,9 @@
     <text class="gn-t gn-plain" x="57.1" y="16.25" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the question</text>
   </g>
   <g class="gn" data-x="160.2" data-y="97.875" data-w="205.1" data-h="60.25">
-    <rect class="gn-box gn-azure" x="160.2" y="97.875" width="205.1" height="60.25" rx="6"/>
-    <text class="gn-t gn-azure" x="262.75" y="114.125" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the small model</text>
-    <text class="gn-t gn-azure" x="262.75" y="132.25" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">is this already answered here?</text>
+    <rect class="gn-box gn-scarlet" x="160.2" y="97.875" width="205.1" height="60.25" rx="6"/>
+    <text class="gn-t gn-scarlet" x="262.75" y="114.125" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">the small model</text>
+    <text class="gn-t gn-scarlet" x="262.75" y="132.25" font-size="12.5" font-family="Inter, sans-serif" text-anchor="middle">is this already answered here?</text>
   </g>
   <g class="gn" data-x="419.3" data-y="8" data-w="139.3" data-h="78.375">
     <rect class="gn-box gn-plain" x="419.3" y="8" width="139.3" height="78.375" rx="6"/>

@@ -16,7 +16,7 @@
 <meta property="og:image" content="https://istor.fyi/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The name Istor in Greek letters, azure on the site’s deep teal field, a horizon of 355 beads crossing it and the mechanism’s geared wheels behind it.">
+<meta property="og:image:alt" content="The name Istor in Greek letters, scarlet on the site’s warm paper field, a horizon of 355 beads crossing it and the mechanism’s geared wheels behind it.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/gfs-didot.woff2" as="font" type="font/woff2" crossorigin>
@@ -57,8 +57,8 @@
          other. It is NOT aria-hidden: the rail it mirrors is itself hidden at
          this width, so the duplication the old aria-hidden guarded against
          cannot occur here, and hiding a real link from the readers who have
-         only this one was the wrong half of that trade. An 8px azure dot marks
-         it as the bearing in the header rather than as loose text. -->
+         only this one was the wrong half of that trade. An 8px scarlet dot
+         marks it as the bearing in the header rather than as loose text. -->
     <a class="act-label"></a>
     <div class="nav-links">
       <a href="#how-it-answers">How it answers</a>
@@ -101,42 +101,38 @@
        Decorative, and marked as such: no title, no caption, `aria-hidden`. It
        states nothing a reader has to take on trust from a picture. -->
   <!-- M47 · the hero's mesh: the smoke plate, shipped as video. A 50-second
-       AV1 loop (Assets/video/hero-mesh.webm, 1920x1080, no audio) screened
-       over the field at 50 percent -- Thoria's 2026-09-29 direction to push
-       the visibility from the 25 the treatment mock approved, taken with the
-       mask as it shipped rather than with a deeper text hole, so the loop's
-       worst frames do graze the text block: the ramp lets the ground under
-       the kicker lift by up to ~0.14 luminance on frame 159 and the azure
-       line dips under 3:1 there, measured on the live page and accepted as
-       the look. Screen blend can only lighten, so the field stays the ground
-       and the smoke's bright plumes read as light drifting over it. The
-       encode was re-cut on 2026-10-02 at Thoria's direction to lose most of
-       the video's weight: AV1 crf 28, two-pass libaom, 2,831,843 B -- 44
-       percent off the VP9 first cut, VMAF-measured against the source plate
-       (82.91 on the same measure VP9's shipped encode sits at 84.01, which is
-       itself the grain ceiling), and diffed through the page's own rendering
-       path at a mean of 0.0009 linear luminance against the old render:
-       invisible at measure. Where no AV1 hardware block exists it decodes in
-       software; a browser without the codec renders the static hero, which
-       the mask holds clean.
+       AV1 loop (Assets/video/hero-mesh.webm, 1920x1080, no audio) MULTIPLIED
+       over the pool at 50 percent -- the strength Thoria raised to
+       ("from fade to 50%"), carried across the color transplant with the grade
+       inverted: the source plate is NEGATED and its white point pinned to the
+       pool's brightest stop, so the same art reads as dark grain over paper.
+       Screen blend could only lighten, and its risk was ink losing ratio on
+       brightened plumes; multiply darkens, and the pool's dark ink only gains
+       from a darker ground, so the mask ships unchanged.
+       The grade is a filter chain over the untouched source, not a re-shoot:
+       negate, a curves pin that holds the output white point at 255, then an
+       explicit down-conversion (scale to bt709/tv range, format yuv420p) --
+       the last two are not optional, because the inversion filters silently
+       promote the chain to 4:4:4 full-range RGB and libaom then spends 2.5x
+       the bytes on the same art (the first cut measured 7,231,449 B over the
+       4:2:0 final). Encoded on 2026-10-02 at AV1 crf 28, two-pass libaom,
+       2,536,452 B -- 10 percent under the screen grade's own crf-28 encode
+       at 2,831,843 B, which itself took 44 percent off the VP9 first cut.
+       The old decision's figures (VMAF plateaued at the grain ceiling 84,
+       the 0.0009 page-path luminance diff) belong to that screen grade and
+       stay recorded in the plan's section 12.1; this grade was verified
+       through the page's own rendering path instead (section 7). Where no
+       AV1 hardware block exists it decodes in software; a browser without
+       the codec renders the static hero, which the mask holds clean.
 
-       THE MASK IS THE PARTIAL ARGUMENT. On the loop's worst frame the smoke
-       lifts the ground under the headline to L 0.17 at full strength, where
-       no ink in the palette keeps AA -- the uniform blend is illegal at any
-       strength worth having. So the mesh carries its own mask, two layers
-       intersected: the nav band (full width, the bar's 68px plus fade) and
-       one ellipse in ABSOLUTE px (420x340 at 50% 20%) over the text block.
-       Absolute px, because the text block's half-width is bounded by the
-       16ch headline (~262px) at every width, while a %-radius ellipse would
-       shrink under it. Measured against the worst frame's per-rect maxima
-       (kicker 0.651, h1 0.671, lede 0.588, cue 0.420, nav links 0.706), the
-       mask bounds the ramp's reach over the text; at 50 percent the worst
-       frame still grazes it (kicker ground +~0.14 luminance on frame 159,
-       the azure line under 3:1 there) and Thoria accepted that as the look,
-       declining the deeper text hole that would have held every frame clean.
-       Below 840px the ellipse covers the whole hero anyway, so the mesh is
-       display:none there and the script below never starts it -- a phone's
-       first screen keeps its 135 KB.
+       THE MASK IS THE PARTIAL ARGUMENT, shipped as before: the nav band (full
+       width, the bar's 68px plus fade) and one ellipse in ABSOLUTE px (420x340
+       at 50% 20%) over the text block. Absolute px, because the text block's
+       half-width is bounded by the 16ch headline (~262px) at every width,
+       while a %-radius ellipse would shrink under it. Below 840px the ellipse
+       covers the whole hero anyway, so the mesh is display:none there and the
+       script below never starts it -- a phone's first screen keeps its
+       135 KB.
 
        No autoplay: a muted video could, but motion starts on the reader's
        own clock like every other motion on this page -- the script below
@@ -144,7 +140,7 @@
        (added on the video's own playing event, not on a timer) is what fades
        it in whenever the first frames actually arrive, so a slow fetch fades
        instead of popping. Without script the element fetches nothing and
-       renders nothing: the plain teal field, which is today's hero. -->
+       renders nothing: the plain pool, which is today's hero. -->
   <video class="hero-mesh" src="/video/hero-mesh.webm" muted playsinline loop preload="none" aria-hidden="true"></video>
 
   <div class="hero-world"><!--#include hero-gears--></div>
@@ -453,7 +449,7 @@
        transcribed verbatim - the drawing is arithmetic on the act's own
        words, not a second place the argument lives. The boundary plate in
        the questions act draws what stays INSIDE the machine; this one draws
-       HOW it decides, and neither repeats the other. The azure is the test,
+       HOW it decides, and neither repeats the other. The scarlet is the test,
        the one moving part. Generated: make-gate.py, with the self-test that
        demands the labels verbatim and the nodes sized from measured strings. -->
   <div class="wrap reveal">
@@ -721,12 +717,13 @@
      THE SECTION ITSELF IS THE FIELD, not a paper act carrying an inset panel.
      Measured before the change: the paper run from act 2 to act 6 was five
      same-ground acts in a row, and the one rhythm break the page had (this
-     act's teal inset) was an 11px seam of teal inside paper - a break you had
+     act's inset) was a hairline-seam break inside paper - a break you had
      to notice. The references break their runs with GROUNDS: Gamma and Tempo
      both drop a full-bleed colour band mid-run, and this is that move. It
      also gives the act's own claim a body: "nothing leaves" is a privacy
      statement, and a privacy statement reads one way on paper and another
-     way inside the dark, sealed field the product itself runs in.
+     way inside the sealed pool the product's own settings were captured
+     from.
      ===================================================================== -->
 <section class="act field band band-private" id="on-your-machine">
   <div class="wrap">
@@ -831,7 +828,7 @@
          verbatim, punctuation included. No file types, sizes or dates (the
          page states none) and no status colours (the plate does not guess
          which state each row carried in the capture; the dots are the
-         structure, in the plate's one azure). Generated: make-shelf.py,
+         structure, in the plate's one scarlet). Generated: make-shelf.py,
          with the self-test that reassembles the wrapped rows and demands
          the rail's ten verbatim. -->
     <figure class="shelf-fig plate-row reveal">
@@ -1001,7 +998,7 @@
          tropical years as the inner dial's divisions (360/19 degrees, the
          first at 12 o'clock), one anchor where both counts start together,
          and the gap in the hub as the page prints it - a TIME, "about two
-         hours", the plate's one azure. Every drawn string is the paragraph's
+         hours", the plate's one scarlet. Every drawn string is the paragraph's
          own prose. Deliberately absent: no month names (the rear-dials plate
          carries the recovered ones), no month numbers (235 beads would label
          themselves into noise), no drift arrow (the prose prints a time, and
@@ -1039,7 +1036,7 @@
       <figcaption>The two settled dials of the rear plates. On the Metonic
         spiral, five turns carry 235 lunar months, the 19-year cycle; on the
         Saros spiral, four turns carry 223, the eclipse cycle. Each radial tick
-        is one month, and the azure dot sits where each count ends.</figcaption>
+        is one month, and the scarlet dot sits where each count ends.</figcaption>
     </figure>
 
     <!-- The exeligmos sub-dial, drawn for the first time on this page, right
@@ -1467,9 +1464,9 @@
          the bar and the bar floats in it with no surface of its own; that is
          decided here rather than in CSS because the field's height is a
          function of the viewport. Measured rather than assumed, because the
-         failure is asymmetric: a stale half-second of paper behind teal is
-         invisible, while a stale half-second of teal behind paper leaves
-         near-white nav text on a near-white ground. So it recomputes whenever
+         failure is asymmetric: a stale half-second of paper behind the pool
+         is invisible, while a stale half-second of pool behind paper leaves
+         the wrong over-field ink on the bar. So it recomputes whenever
          the layout can have changed, and never on scroll alone;
 
        * which section the reader is in (M1c), for the hero rail. That rail is
@@ -2081,7 +2078,7 @@
         // three of the eight acts, so most of the page clears all three: a
         // stale current-location is worse than none, the same rule the rail's
         // own note records. Screen readers get the announcement; the stylesheet
-        // gets the ink and the azure underline it shares with the bearing.
+        // gets the ink and the scarlet underline it shares with the bearing.
         var here = next ? next.getAttribute('href') : null;
         navLinks.forEach(function (a) {
           if (here && a.getAttribute('href') === here) a.setAttribute('aria-current', 'location');
