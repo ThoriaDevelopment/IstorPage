@@ -1392,9 +1392,12 @@ h3 {
   margin-block-start: calc(-1 * var(--nav-h));
   padding-block: calc(var(--nav-h) + 72px) calc(var(--world-h) - var(--world-overlap));
 }
-/* M47 · the mesh, the video ground. Multiply blend at 50 percent -- the same
-   strength Thoria raised the screen blend to ("from fade to 25% to fade to
-   50%"), carried across the transplant with the grade inverted. The video is
+/* M47 · the mesh, the video ground. Multiply blend at 70 percent -- raised
+   from the 50% Thoria shipped at the screen blend ("too invisible",
+   2026-10-03; the strength's only arithmetic is linear, see the guard's
+   note at the bottom of this file). The same strength Thoria raised the
+   screen blend through ("from fade to 25% to fade to 50%"), carried across
+   the transplant with the grade inverted. The video is
    the source plate NEGATED with its white point pinned to the pool's brightest
    stop: where the old composite lightened a dark field with pale smoke and
    the paper had to stay out of the way, this composite darkens a light field
@@ -1416,12 +1419,18 @@ h3 {
    trusting the composite. The element's opacity is the one strength knob
    (multiply is linear in the mesh fraction the same way screen is). The
    record now carries the grade's own measures, not just the arithmetic: a
-   sweep of all 1,500 shipped frames puts the visible band's mean composite
-   factor at 0.92, the loop's worst single frame at the opacity's own floor
-   of 0.50 (t ~ 0.17 s, the plate's blackest pixel over the pool), the ramp's
-   worst touch at 0.68; and the live-page pairs re-prove the mask's
-   zero-delta job over the pool in every text rect, the densest-moment pair
-   matching the plate's own per-pixel prediction at 0.98 correlation.
+   sweep of all 1,500 shipped frames puts the plate's own mesh fractions
+   (strength-free) at a mean of 0.84 in the visible band, a blackest pixel
+   of 1.0, a ramp worst of 0.64; at the shipped strength those come through
+   as composite factors of 0.92 mean and a ramp worst of 0.68 when the
+   strength sat at 50%, and of 0.89 and 0.55 at the 70% the live page now
+   runs. The plate's fractions, not the strength, are what stays fixed
+   under any future move. The live-page pairs re-proved the mask's
+   zero-delta job over the pool in every text rect -- the densest-moment
+   pair matching the plate's own per-pixel prediction at 0.98 correlation
+   -- a fact about the MASK, not the strength, and it does not move with
+   raising the opacity: inside the text's ellipse the smoke simply is not
+   there, whatever strength the video would be run at.
 
    The mask is the contrast argument, not decoration, and it is two layers
    intersected because the two regions the smoke must stay out of are not
@@ -3498,7 +3507,7 @@ h3 {
                                    calc(var(--arrive) * 800ms), 0ms; }
   .hero-world { transition: opacity 900ms var(--ease); }
   /* M47 · the mesh fades on the world's own 900ms clock: the smoke arrives
-     with the mechanism, one entrance instead of two. The 50 percent lives
+     with the mechanism, one entrance instead of two. The strength lives
      here rather than on the base rule so the rise is a state change
      (is-mesh-live, from the video's playing event) a transition can run,
      and so a reader without script -- who never gets the class -- sees the
@@ -3506,7 +3515,15 @@ h3 {
      releases, and is spelled after is-mesh-live so the tie at equal
      specificity falls to the cold state while it lasts. */
   .hero-mesh { transition: opacity 900ms var(--ease); }
-  .hero.is-mesh-live .hero-mesh { opacity: 0.5; }
+  /* 70%, raised from the 50% Thoria shipped at the screen blend ("too
+     invisible", 2026-10-03). The strength is linear in multiply's own
+     arithmetic, so the shipped record's plate fractions carry across:
+     the plate's mean mesh fraction 0.84, blackest pixel 1.0 and ramp
+     worst 0.64 come through as composite factors of 0.89 mean, 0.70
+     worst and 0.55 at the ramp, against the 0.92 / 0.50 / 0.68 the
+     audit measured at 50%. The masks still bound where the smoke may
+     reach, and dark ink only gains from the darker ground it paints. */
+  .hero.is-mesh-live .hero-mesh { opacity: 0.7; }
   .hero.is-cold .h1-reveal .h1-line { transform: translateY(118%); }
   .hero.is-cold .kicker,
   .hero.is-cold .lede,
