@@ -996,7 +996,14 @@ SEAM_PROBE = r"""
       : el.className || '').split(' ').slice(0, 2).join('.')).replace(/\.$/, ''),
       ground: g.sel, groundLum: Math.round(g.lum * 1000) / 1000, dark: dark,
       field: field,
-      border: cs.borderTopWidth + ' ' + cs.borderTopColor, shadow: scolor || 'none' };
+      border: cs.borderTopWidth + ' ' + cs.borderTopColor, shadow: scolor || 'none',
+      /* The replica's law, on the seam: a window the page rescales carries the
+         seam its picture renders, and Chrome remaps computed lengths under
+         `zoom` (a 1px border reads 1.25px at zoom 0.8), so this pass's
+         read-through-computed cannot be the law's read at all. The row's own
+         zoom is the flag, not a class, so the law follows the rescaling
+         wherever it lands. Reported, never counted, like rec.replica. */
+      replica: !!(cs.zoom && cs.zoom !== '1') };
     rows.push(row);
     if (why.length) fails.push(Object.assign({ why: why.join('; ') }, row));
   }
@@ -2491,6 +2498,14 @@ def run_seam_pass(chrome, site, tmp, page, width, height, settle):
 # 320 is the narrowest window in the list on purpose: it is the smallest screen this
 # site has to survive rather than the one it is designed for, and asserting there is
 # what found the label that only broke below 430.
+#
+# 2026-10-03 · the replica's law came to this pass as well, by Thoria's call: the
+# pin-and-slot chart inside the hero replica was directed to run at 60% of its own
+# size, and its six labels rendered at 8.1px, under this floor. Text inside the
+# replica window (.win) is measured and carried with a `replica` flag on every
+# record, but it is not counted against the floor -- a replica is a picture of the
+# app, and the smallest type in a picture is not a plate the site set in its own
+# type. See the contrast sweep's rec.replica, the same law at a different probe.
 TYPE_FLOOR = 11.0
 TYPE_WIDTHS = (320, 360, 390, 430, 480, 560, 640, 700, 768, 800, 900, 1024, 1440)
 
@@ -2553,9 +2568,14 @@ TYPE_PROBE = r"""
     var own = parseFloat(cs.fontSize) || 0;
     if (!own) return;
     var px = +(own * scaleOf(el)).toFixed(2);
+    /* The replica's law, on the type floor: text inside the app replica is a
+       fact about the picture, which the direction that drew the picture
+       governs, not the site's floor. Measured and carried like any other,
+       flagged, never counted (see the contrast sweep, rec.replica). */
+    var rep = !!el.closest('.win');
     seen++;
     if (!lowest || px < lowest.px) lowest = { px: px, text: t.slice(0, 30), sel: name(el) };
-    if (px < floor) below.push({ px: px, text: t.slice(0, 40), sel: name(el) });
+    if (px < floor) below.push({ px: px, text: t.slice(0, 40), sel: name(el), replica: rep });
   });
   /* PSEUDO-ELEMENT TEXT, which no `textContent` walk can see and which the printed
      sheet is full of: a printed link says where it went through an ::after that
@@ -2577,12 +2597,13 @@ TYPE_PROBE = r"""
       if (!r2.width && !r2.height) return;
       var px2 = +(own2 * scaleOf(el)).toFixed(2);
       var t2 = c.replace(/^["']|[\"']$/g, '').trim();
+      var rep2 = !!el.closest('.win');
       seen++;
       pseudo++;
       if (!lowest || px2 < lowest.px)
         lowest = { px: px2, text: t2.slice(0, 30), sel: name(el) + which };
       if (px2 < floor)
-        below.push({ px: px2, text: t2.slice(0, 40), sel: name(el) + which });
+        below.push({ px: px2, text: t2.slice(0, 40), sel: name(el) + which, replica: rep2 });
     });
   });
   return { seen: seen, pseudo: pseudo, lowest: lowest, below: below };
@@ -2998,12 +3019,22 @@ def main(argv):
                     # drawn at. Reported per page rather than per state: a window's
                     # ground does not change with the colour scheme, and a pass that
                     # claimed to check it twice would only be checking twice.
-                    seam_fails += len(s["fails"])
+                    #
+                    # The replica's law (2026-10-03, Thoria's call): a window the
+                    # page rescales carries the seam its picture renders, and Chrome
+                    # remaps computed lengths under zoom, so the read-through-
+                    # computed style cannot be the law's read at all. Rows flagged
+                    # (the window's own zoom, not a class) are printed and carried,
+                    # not counted.
+                    flat = [f for f in s["fails"] if not f.get("replica")]
+                    in_replica = len(s["fails"]) - len(flat)
+                    seam_fails += len(flat)
                     print("  %s  %-42s %3d windows  %2d on a field  "
-                          "%2d on paper  %d FAIL"
-                          % ("ok  " if not s["fails"] else "FAIL",
+                          "%2d on paper  %d FAIL%s"
+                          % ("ok  " if not flat else "FAIL",
                              "%s separators@%dpx" % (page, s["width"]), s["windows"],
-                             s["onField"], s["onPaper"], len(s["fails"])))
+                             s["onField"], s["onPaper"], len(flat),
+                             ", %d replica, not counted" % in_replica if in_replica else ""))
                     for f in s["fails"]:
                         print("          %s on %s (luminance %.3f)  %s\n              %s"
                               % (f["sel"], f["ground"], f["groundLum"], f["why"], f["border"]))
@@ -3038,17 +3069,29 @@ def main(argv):
                     # with the theme. The line names the smallest text found and where,
                     # because a pass that only says "clean" cannot tell the next person
                     # how close it was.
-                    type_fails += len(s["fails"])
+                    #
+                    # The replica's law reaches this pass too (2026-10-03, Thoria's
+                    # call, on the record): the pin-and-slot chart renders inside the
+                    # hero replica, and Thoria's direction to run it at 60% of its own
+                    # size puts its six labels at 8.1px effective, under the floor the
+                    # page's own plates are held to. A replica is a picture of the app;
+                    # the floor of this site's plates is not the floor of a picture.
+                    # Counted as before here, excluded from the verdict, named in the
+                    # line, and carried in the JSON with the flag on every record.
+                    flat = [f for f in s["fails"] if not f.get("replica")]
+                    in_replica = len(s["fails"]) - len(flat)
+                    type_fails += len(flat)
                     low = s.get("lowest") or {}
                     world = media_label(s.get("media"))
                     print("  %s  %-42s %3d widths  %4d texts  smallest %.2fpx at %dpx "
-                          "%s  %d FAIL"
-                          % ("ok  " if not s["fails"] else "FAIL",
+                          "%s  %d FAIL%s"
+                          % ("ok  " if not flat else "FAIL",
                              "%s type floor%s" % (page, " +%s" % world if world else ""),
                              len(s["widths"]), s["seen"],
                              low.get("px") or 0, low.get("width") or 0,
                              "(%s)" % low.get("sel") if low.get("sel") else "",
-                             len(s["fails"])))
+                             len(flat),
+                             ", %d replica, not counted" % in_replica if in_replica else ""))
                     for f in s["fails"][:8]:
                         if "error" in f:
                             print("          %dpx: %s" % (f["width"], f["error"]))

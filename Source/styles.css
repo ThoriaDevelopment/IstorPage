@@ -901,12 +901,15 @@ h3 {
    Hover keeps an app-grammar cue without reading as a selection: the window's
    own zebra wash, half the pill's fill. The pill'd row stays the brightest state
    ("which section am I in" in the app's own grammar), and its radius is --r-cite,
-   the same token the rail's own filter uses. */
+   the same token the rail's own filter uses. 2026-10-03 · the row's padding is
+   6px, not the 5px it first stood at: these rows are real links, and inside the
+   80% window a 28.75px box renders 23px, under the page's 24px tap law; 6px
+   makes the box 30.75px and the touch target 24.6px, real at any zoom. */
 .rail-nav { margin-inline: -8px; }
 .rail-nav li { padding: 0; }
 .field .rail-nav a {
   display: block;
-  padding: 5px 8px;
+  padding: 6px 8px;
   border-radius: var(--r-cite);
   color: var(--ink);
   text-decoration: none;
@@ -1619,6 +1622,32 @@ h3 {
   width: min(calc((100vw + var(--win-lg)) / 2), calc(100vw - var(--gutter) * 2));
   margin-block-start: 64px;
   text-align: left;   /* the window is the app; the hero's centring stops at it */
+}
+/* 2026-10-03 · the showcase runs at 80% of its own size, by direction (asked as
+   "scale down the showcase of istor", re-cut to "about 80% of the size of what
+   it is"). Zoom shrinks the whole replica uniformly, text, rails, controls and
+   the rendered box together; transform: scale would shrink the painting and
+   leave a dead band under it, while zoom reflows, so the hero's column follows.
+   Computed font sizes read UNzoomed under zoom (13px stays 13px in the parser
+   even while the paint is 10.4px), which keeps the instrument's type floor
+   honest; every rendered rect scales by the exact factor, so rect maps are
+   consistent. Where a browser carries no zoom, the window stands at its full
+   size -- a graceful fallback, not a graceful failure. The phone keeps its
+   full-bleed window unshrunken: below 1080 the rails are gone and the replica
+   is the screen's width; the showcase of record lives in this block only.
+
+   The same block carries the answer's own chart: 2026-10-03 · the pin-and-slot
+   figure, the one whose legend says "constant rate" and "variable velocity",
+   runs at 60% of its own pre-change size, by direction. The window's zoom and
+   the figure's zoom multiply, so the figure's own factor is 0.75 and the
+   composite is 0.8 x 0.75 = 0.6: the chart renders at 60% of today's 640px
+   world while the prose around it renders at 80%. Measured, not eyeballed:
+   the composite read 512px at window zoom alone, 384px with the figure's 0.75
+   added -- exact on both steps. Below 1080 the figure keeps its full size on
+   the phone, as the window does. */
+@media (min-width: 1081px) {
+  .hero .win { zoom: 0.8; }
+  .hero .pin-slot-fig { zoom: 0.75; }
 }
 /* The pane flexes only here. The band's full-window captures keep the measured
    959 geometry - they are pictures of the app at the size it was captured, and
